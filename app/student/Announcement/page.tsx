@@ -1,3 +1,5 @@
+"use client"
+import { useSession } from "next-auth/react";
 import React from "react";
 
 interface Item {
@@ -25,6 +27,8 @@ const courseAnno: Item[] = [
 ];
 
 const AnnoPage = () => {
+  const session = useSession({required : true})
+
   const uni = uniAnno.map((i) => (
     <tr>
       <td className=" p-1 pr-3 " key={i.id}>

@@ -1,10 +1,11 @@
-import React from 'react'
+import { useSession } from "next-auth/react"
+import React from "react"
 
 interface Item {
-  id: number;
-  name: string;
-  date: string;
-  place:string
+  id: number
+  name: string
+  date: string
+  place: string
 }
 
 const examsData: Item[] = [
@@ -14,17 +15,18 @@ const examsData: Item[] = [
   { id: 4, name: "اسم المادة", date: "تاريخ", place: "435" },
   { id: 5, name: "اسم المادة", date: "تاريخ", place: "435" },
   { id: 6, name: "اسم المادة", date: "تاريخ", place: "435" },
-];
+]
 
 const page = () => {
-
-    const exams = examsData.map((exam) => (
-      <tr key={exam.id}>
-        <td className=" text-sm p-3">{exam.place}</td>
-        <td className=" text-sm p-3">{exam.date}</td>
-        <td className=" text-sm p-3">{exam.name}</td>
-      </tr>
-    ));
+  const session = useSession({ required: true })
+  
+  const exams = examsData.map((exam) => (
+    <tr key={exam.id}>
+      <td className=" text-sm p-3">{exam.place}</td>
+      <td className=" text-sm p-3">{exam.date}</td>
+      <td className=" text-sm p-3">{exam.name}</td>
+    </tr>
+  ))
 
   return (
     <table className="fixed w-[800px] top-[250px] right-[464px] text-sm p-3">
@@ -35,7 +37,7 @@ const page = () => {
       </tr>
       {exams}
     </table>
-  );
+  )
 }
 
 export default page

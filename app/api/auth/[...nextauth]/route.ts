@@ -27,17 +27,14 @@ const authOptions: NextAuthOptions = {
       },
       async authorize(credentials, req) {
         const { username, password } = credentials as any;
-        console.log("auth");
       
-
-
+        console.log("auth")
         const { data, error } = await supabase.from("tb_students_info").select("*").eq("username", username).eq("password", password)
-      
+        const data1  = await supabase.from("tb_students_info").select("*")
+        console.log(data)
         if (!data && error || data && data.length === 0) {
-          console.log("password bad")
           return null
         } else {
-          console.log("password good")
           return data[0] as any
         }
       },
@@ -49,7 +46,6 @@ const authOptions: NextAuthOptions = {
       return { ...token, ...user };
     },
     async session({ session, token, user }) {
-      // Send properties to the client, like an access_token from a provider.
       session.user = token;
 
       return session;

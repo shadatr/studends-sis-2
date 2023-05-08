@@ -1,7 +1,15 @@
-import React from 'react'
+// "use client"
+import { useSession, signOut } from "next-auth/react"
+import React from "react"
 
 const Navbar = () => {
-  return <div className="text-lg text-left p-[35px] bg-darkBlue text-secondary" >جامعة طرابلس</div>;
+  const session = useSession()
+  return (
+    <div className="flex justify-between text-lg text-left p-[35px] bg-darkBlue text-secondary">
+      <p>جامعة طرابلس</p>
+      <button onClick={() => (signOut({redirect : true, callbackUrl : "/"}))} >logout</button>
+    </div>
+  )
 }
 
 export default Navbar

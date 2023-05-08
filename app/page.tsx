@@ -1,18 +1,19 @@
 "use client"
 import { Switch } from "@headlessui/react"
-import axios from "axios"
 import { FC, useRef, useState } from "react"
 import { toast } from "react-toastify"
 import { createHash } from "crypto";
+import { signIn } from "next-auth/react"
 
 export default function Home() {
   const username = useRef<HTMLInputElement>(null)
   const password = useRef<HTMLInputElement>(null)
   const [student, setStudent] = useState<boolean>(true)
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!student) {
-      toast.error("")
+      toast.error("not implemented yet")
+      return
     }
     if (!username.current?.value || !password.current?.value) {
       toast.error("يجب ملئ جميع الحقول")
@@ -20,13 +21,13 @@ export default function Home() {
     }
     const passwordHash = createHash('sha256').update(password.current?.value).digest('hex')
 
-    axios.post("/api/login/student", {
-      username: username.current?.value,
-      password: passwordHash,
-    }).then(res => {
-      res.status === 200 ? toast.success(res.data.message) : toast.error(res.data.error)
-    }).catch(err => {
-      toast.error(err.response.data.error)    })
+    const result = await signIn("credentials", {
+      username : username.current.value,
+      password : passwordHash,
+      redirect : true,
+      callbackUrl : "/student/announcement"
+    })
+    console.log(result)
   }
   
   const handleForgotPassword = () => {
