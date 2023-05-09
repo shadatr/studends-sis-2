@@ -1,3 +1,4 @@
+"use client"
 import { useSession } from 'next-auth/react';
 import React from 'react'
 
@@ -54,7 +55,7 @@ const header: string[] = [
 ];
 
 const page = () => {
-  const session = useSession({required : true})
+  // const session = useSession({required : true})
 
     const attendance = attenData.map((item) => (
       <tr key={item.id}>
