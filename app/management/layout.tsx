@@ -15,7 +15,7 @@ export default function MangLayout({
 }) {
   return (
     <html lang="ar">
-      <body>
+      <body >
         <Navbar />
         {children}
         <ManagMenu/>
