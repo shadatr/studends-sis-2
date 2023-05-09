@@ -1,6 +1,6 @@
-"use client"
-import React from 'react'
-import {useSession} from "next-auth/react"
+"use client";
+import React from 'react';
+import {useSession} from "next-auth/react";
 
 interface Item {
   name: string;
@@ -45,7 +45,7 @@ const courses: Item[] = [
 const title: string[] = ["كرديت", "عدد الساعات", "الدكتور","اسم المادة"];
 
 const page = () => {
-  const session = useSession({required : true})
+  const session = useSession({required : true});
     const info = courses.map((course) => (
       <tr>
         <td className="p-3 pr-6">{course.credit}</td>
@@ -63,6 +63,6 @@ const page = () => {
       {info}
     </table>
   );
-}
+};
 
-export default page
+export default page;

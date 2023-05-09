@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import Link from "next/link";
 
 interface Item {
@@ -39,6 +39,6 @@ const Menu = () => {
       </div>
     );
 
-}
+};
 
-export default Menu
+export default Menu;

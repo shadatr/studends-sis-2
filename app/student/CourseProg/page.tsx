@@ -1,6 +1,7 @@
-import { useSession } from "next-auth/react"
-import { it } from "node:test"
-import React from "react"
+import { it } from "node:test";
+
+import { useSession } from "next-auth/react";
+import React from "react";
 
 interface Item {
   h1: string
@@ -49,7 +50,7 @@ const days: Course[] = [
     name: "السبت",
     hour: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
   },
-]
+];
 
 const hours: Item[] = [
   { h1: "19:00", h2: "20:00" },
@@ -64,7 +65,7 @@ const hours: Item[] = [
   { h1: "10:00", h2: "11:00" },
   { h1: "9:00", h2: "10:00" },
   { h1: "8:00", h2: "9:00" },
-]
+];
 
 const page = () => {
   // const session = useSession({ required: true })
@@ -74,7 +75,7 @@ const page = () => {
       <div>{hour.h1}</div>
       <div>{hour.h2}</div>
     </th>
-  ))
+  ));
 
   const table = days.map((item) => (
     <tr key={item.id}>
@@ -83,14 +84,14 @@ const page = () => {
       ))}
       <td className="text-center bg-darkBlue text-secondary">{item.name}</td>
     </tr>
-  ))
+  ));
 
   return (
     <table className=" fixed max-w-[1200px] w-[1200px] h-[500px] text-sm top-[180px] right-[280px] bg-lightBlue">
       {hoursCol}
       {table}
     </table>
-  )
-}
+  );
+};
 
-export default page
+export default page;

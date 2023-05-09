@@ -1,6 +1,7 @@
-import React from 'react'
-import Table from "../../table";
+import React from 'react';
 import { ColumnDefinitionType } from '@/app/types';
+
+import Table from "../../table";
 
 
 
@@ -78,6 +79,6 @@ const page = () => {
       <Table data={data} columns={columns} />
     </div>
   );
-}
+};
 
-export default page
+export default page;

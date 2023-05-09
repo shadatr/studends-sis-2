@@ -1,6 +1,6 @@
-"use client"
-import { useSession, signOut } from "next-auth/react"
-import React from "react"
+"use client";
+import { useSession, signOut } from "next-auth/react";
+import React from "react";
 
 const Navbar = () => {
   // const session = useSession()
@@ -9,7 +9,7 @@ const Navbar = () => {
       <p>جامعة طرابلس</p>
       <button onClick={() => (signOut({redirect : true, callbackUrl : "/"}))} >logout</button>
     </div>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 interface Item {
   id: number
@@ -35,4 +35,4 @@ const stuInfo: Item[] = [
     );
     };
 
-    export default page
+    export default page;

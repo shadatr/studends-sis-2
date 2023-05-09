@@ -1,43 +1,44 @@
-"use client"
-import { Switch } from "@headlessui/react"
-import { FC, useRef, useState } from "react"
-import { toast } from "react-toastify"
+"use client";
 import { createHash } from "crypto";
-import { signIn } from "next-auth/react"
+
+import { Switch } from "@headlessui/react";
+import { FC, useRef, useState } from "react";
+import { toast } from "react-toastify";
+import { signIn } from "next-auth/react";
 
 export default function Home() {
-  const username = useRef<HTMLInputElement>(null)
-  const password = useRef<HTMLInputElement>(null)
-  const [student, setStudent] = useState<boolean>(true)
+  const username = useRef<HTMLInputElement>(null);
+  const password = useRef<HTMLInputElement>(null);
+  const [student, setStudent] = useState<boolean>(true);
 
   const handleLogin = async () => {
     if (!student) {
-      toast.error("not implemented yet")
-      return
+      toast.error("not implemented yet");
+      return;
     }
     if (!username.current?.value || !password.current?.value) {
-      toast.error("يجب ملئ جميع الحقول")
-      return
+      toast.error("يجب ملئ جميع الحقول");
+      return;
     }
-    const passwordHash = createHash('sha256').update(password.current?.value).digest('hex')
+    const passwordHash = createHash('sha256').update(password.current?.value).digest('hex');
 
     const result = await signIn("credentials", {
       username : username.current.value,
       password : passwordHash,
       redirect : true,
       callbackUrl : "/student/announcement"
-    })
-    console.log(result)
-  }
+    });
+    console.log(result);
+  };
   
   const handleForgotPassword = () => {
-    toast.error("not implemented yet")
-  }
+    toast.error("not implemented yet");
+  };
 
   const handleKeyDown = (e: any) => {
-    console.log("key down")
+    console.log("key down");
     if (e.code === "Enter") {
-      handleLogin()
+      handleLogin();
     }
   };
 
@@ -81,7 +82,7 @@ export default function Home() {
         </div>
       </div>
     </main>
-  )
+  );
 }
 
 interface UserSwitchProps {
@@ -108,5 +109,5 @@ const UserSwitch: FC<UserSwitchProps> = ({ student, setStudent }) => {
       </Switch>
       <p className="text-white ml-1">طالب</p>
     </div>
-  )
-}
+  );
+};

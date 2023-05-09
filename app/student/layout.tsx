@@ -1,9 +1,10 @@
-"use client"
+"use client";
 import "../globals.css";
+import {SessionProvider } from "next-auth/react";
+
 import Navbar from "../components/Navbar";
 import Menu from "../components/studentMenu";
 import Footer from "../components/Footer";
-import {SessionProvider } from "next-auth/react"
 
 // export const metadata = {
 //   title: "Create Next App",

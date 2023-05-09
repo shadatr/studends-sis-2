@@ -1,6 +1,6 @@
-"use client"
+"use client";
 import { useSession } from 'next-auth/react';
-import React from 'react'
+import React from 'react';
 
 type Item = {
   id: number;
@@ -76,6 +76,6 @@ const page = () => {
         {attendance}
       </table>
   );
-}
+};
 
-export default page
+export default page;

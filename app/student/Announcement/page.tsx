@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useSession } from "next-auth/react";
 import React from "react";
 
@@ -27,7 +27,7 @@ const courseAnno: Item[] = [
 ];
 
 const AnnoPage = () => {
-  const session = useSession({required : true})
+  const session = useSession({required : true});
 
   const uni = uniAnno.map((i) => (
     <tr>

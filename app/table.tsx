@@ -1,4 +1,5 @@
 import React from "react";
+
 import { TableHeaderProps, TableRowsProps, TableProps } from "./types";
 
 const TableHeader = <T, K extends keyof T>({

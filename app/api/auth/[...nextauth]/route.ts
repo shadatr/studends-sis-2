@@ -3,7 +3,7 @@ import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "")
+const supabase = createClient(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "");
 
 const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
@@ -28,14 +28,14 @@ const authOptions: NextAuthOptions = {
       async authorize(credentials, req) {
         const { username, password } = credentials as any;
       
-        console.log("auth")
-        const { data, error } = await supabase.from("tb_students_info").select("*").eq("username", username).eq("password", password)
-        const data1  = await supabase.from("tb_students_info").select("*")
-        console.log(data)
+        console.log("auth");
+        const { data, error } = await supabase.from("tb_students_info").select("*").eq("username", username).eq("password", password);
+        const data1  = await supabase.from("tb_students_info").select("*");
+        console.log(data);
         if (!data && error || data && data.length === 0) {
-          return null
+          return null;
         } else {
-          return data[0] as any
+          return data[0] as any;
         }
       },
     }),
@@ -57,5 +57,5 @@ const authOptions: NextAuthOptions = {
   },
 };
 
-const handler = NextAuth(authOptions)
-export { handler as GET, handler as POST }
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };

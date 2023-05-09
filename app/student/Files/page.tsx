@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 interface Item {
   id: number;
@@ -28,6 +28,6 @@ const page = () => {
         {courses}
       </table>
     );
-}
+};
 
-export default page
+export default page;
