@@ -8,15 +8,15 @@ interface Item {
 }
 
 const item: Item[] = [
-  { id: 1, link:"Annoucments", name: "الإعلانات" },
-  { id: 2, link:"StudentInfo",name: "بيانات الطالب" },
-  { id: 3, link:"Courses",name: "المواد الدراسية" },
-  { id: 4, link:"CourseProg",name: "جدول المحاضرات" },
-  { id: 5, link:"Files",name: "الملفات" },
-  { id: 6, link:"ExamProg",name: "جدول الامتحانات" },
-  { id: 7, link:"ExamRes",name: "نتائج الامتحانات" },
-  { id: 8, link:"Attendance",name: "الحضور" },
-  { id: 9, link:"CourseReg",name: "تنزيل المواد" },
+  { id: 1, link:"annoucments", name: "الإعلانات" },
+  { id: 2, link:"studentInfo",name: "بيانات الطالب" },
+  { id: 3, link:"courses",name: "المواد الدراسية" },
+  { id: 4, link:"courseProg",name: "جدول المحاضرات" },
+  { id: 5, link:"files",name: "الملفات" },
+  { id: 6, link:"examProg",name: "جدول الامتحانات" },
+  { id: 7, link:"examRes",name: "نتائج الامتحانات" },
+  { id: 8, link:"attendance",name: "الحضور" },
+  { id: 9, link:"courseReg",name: "تنزيل المواد" },
 ];
 
 const Menu = () => {
