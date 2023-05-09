@@ -17,3 +17,9 @@ export type TableRowsProps<T, K extends keyof T> = {
 export type TableHeaderProps<T, K extends keyof T> = {
   columns: Array<ColumnDefinitionType<T, K>>;
 };
+
+export interface menuItem {
+  id: number;
+  name: string;
+  link: string;
+}
