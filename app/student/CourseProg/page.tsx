@@ -67,7 +67,7 @@ const hours: Item[] = [
 ]
 
 const page = () => {
-  const session = useSession({ required: true })
+  // const session = useSession({ required: true })
 
   const hoursCol = hours.map((hour) => (
     <th className="text-center bg-darkBlue text-secondary">

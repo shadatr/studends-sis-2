@@ -20,7 +20,7 @@ const checkList: string[] = [
 
 function App() {
   const [checked, setChecked] = useState<string[]>([])
-  const session = useSession({ required: true })
+  // const session = useSession({ required: true })
 
   const handleCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
     var updatedList = [...checked]
