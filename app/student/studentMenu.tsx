@@ -22,8 +22,9 @@ const item: Item[] = [
 const Menu = () => {
     const items = item.map((i) => (
       <Link
+        
         href={`/student/${i.link}`}
-        className="flex justify-between items-center p-1   "
+        className="flex justify-between hover:text-lightBlue hover:text-md items-center p-1   "
         key={i.id}
       >
         {i.name}
