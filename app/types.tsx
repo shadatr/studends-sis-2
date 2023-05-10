@@ -18,10 +18,22 @@ export type TableHeaderProps<T, K extends keyof T> = {
   columns: Array<ColumnDefinitionType<T, K>>;
 };
 
-export type menuItem ={
+export type menuItem = {
   id: number;
   name: string;
   link: string;
+}
+
+export type RegisterStudentType = {
+  name: string;
+  surname: string;
+  birth_date : string;
+  email: string;
+  password: string;
+  department?: string;
+  phone?: string;
+  address?: string;
+  enrollment_date? : string;
 }
 
 export type announcmentsItem= {

@@ -1,7 +1,7 @@
-"use client"
-import { useSession } from "next-auth/react"
-import React from "react"
-import { useState } from "react"
+"use client";
+import { useSession } from "next-auth/react";
+import React, { useState } from "react";
+
 
 const checkList: string[] = [
   "مادة",
@@ -16,26 +16,26 @@ const checkList: string[] = [
   "مادة",
   "مادة",
   "مادة",
-]
+];
 
 function App() {
-  const [checked, setChecked] = useState<string[]>([])
+  const [checked, setChecked] = useState<string[]>([]);
   // const session = useSession({ required: true })
 
   const handleCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
-    var updatedList = [...checked]
+    let updatedList = [...checked];
     if (event.target.checked) {
-      updatedList = [...checked, event.target.value]
+      updatedList = [...checked, event.target.value];
     } else {
-      updatedList.splice(checked.indexOf(event.target.value), 1)
+      updatedList.splice(checked.indexOf(event.target.value), 1);
     }
-    setChecked(updatedList)
-  }
+    setChecked(updatedList);
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    console.log(checked)
-  }
+    event.preventDefault();
+    console.log(checked);
+  };
 
   return (
     <div className="fixed w-[800px] text-sm right-[464px] top-[140px] ">
@@ -64,7 +64,7 @@ function App() {
         </div>
       </form>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

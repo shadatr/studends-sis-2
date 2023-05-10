@@ -1,6 +1,6 @@
-"use client"
-import { useSession } from "next-auth/react";
-import React from "react";
+'use client';
+import { useSession } from 'next-auth/react';
+import React from 'react';
 
 interface Item {
   id: number;
@@ -8,30 +8,25 @@ interface Item {
 }
 
 const uniAnno: Item[] = [
-  { id: 1, name: "اعلان...." },
-  { id: 2, name: "اعلان...." },
-  { id: 3, name: "اعلان...." },
-  { id: 4, name: "اعلان...." },
-  { id: 5, name: "اعلان...." },
-  { id: 6, name: "اعلان...." },
+  { id: 1, name: 'اعلان....' },
+  { id: 2, name: 'اعلان....' },
+  { id: 3, name: 'اعلان....' },
+  { id: 4, name: 'اعلان....' },
+  { id: 5, name: 'اعلان....' },
+  { id: 6, name: 'اعلان....' },
 ];
 
 const courseAnno: Item[] = [
-  { id: 1, name: "اعلان...." },
-  { id: 2, name: "اعلان...." },
-  { id: 3, name: "اعلان...." },
-  { id: 4, name: "اعلان...." },
-  { id: 5, name: "اعلان...." },
-  { id: 6, name: "اعلان...." },
- 
+  { id: 1, name: 'اعلان....' },
+  { id: 2, name: 'اعلان....' },
+  { id: 3, name: 'اعلان....' },
+  { id: 4, name: 'اعلان....' },
+  { id: 5, name: 'اعلان....' },
+  { id: 6, name: 'اعلان....' },
 ];
 
 const AnnoPage = () => {
-<<<<<<<< HEAD:app/student/Announcment/page.tsx
-  // const session = useSession({required : true})
-========
-  const session = useSession({required : true})
->>>>>>>> 815d1f63c47e79bb17de01fa164812beaaa26f05:app/student/Announcement/page.tsx
+  const session = useSession({ required: true });
 
   const uni = uniAnno.map((i) => (
     <tr>
@@ -42,9 +37,9 @@ const AnnoPage = () => {
   ));
   const course = courseAnno.map((i) => (
     <tr>
-    <td className=" p-1 pr-3" key={i.id}>
-      {i.name}
-    </td>
+      <td className=" p-1 pr-3" key={i.id}>
+        {i.name}
+      </td>
     </tr>
   ));
 

@@ -1,7 +1,7 @@
-import React from 'react'
-import { menuItem } from '../types';
+import React from 'react';
+import { ColumnDefinitionType , menuItem } from "@/app/types";
+
 import Table from "../table";
-import { ColumnDefinitionType } from "@/app/types";
 
 const item: menuItem[] = [
   { id: 1, link: "annoucments", name: "الإعلانات" },
@@ -29,4 +29,4 @@ function ManagMenu() {
     );
 }
 
-export default ManagMenu
+export default ManagMenu;

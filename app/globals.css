@@ -14,3 +14,9 @@ table ,td, th{
   border: 1px solid black;
   border-collapse: collapse;
 }
+
+@layer components {
+  .btn_base {
+    @apply inline-block px-4 py-2 text-white rounded-lg bg-darkBlue;
+  }
+}

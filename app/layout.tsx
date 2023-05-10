@@ -1,7 +1,7 @@
-"use client"
+"use client";
 import 'react-toastify/dist/ReactToastify.css';
-import './globals.css'
-import { ToastContainer } from 'react-toastify'
+import './globals.css';
+import { ToastContainer } from 'react-toastify';
 
 // export const metadata = {
 //   title: 'Create Next App',
