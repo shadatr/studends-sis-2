@@ -35,3 +35,9 @@ export type RegisterStudentType = {
   address?: string;
   enrollment_date? : string;
 }
+
+export type announcmentsItem= {
+  id: number;
+  name: string;
+
+}

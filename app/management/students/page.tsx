@@ -66,6 +66,7 @@ const Page = () => {
       password: passwordHash,
       birth_date: (birthDate.getTime() / 1000).toFixed(),
     };
+    
     axios
       .post('/api/register/student', data)
       .then((res) => {

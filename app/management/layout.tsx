@@ -1,8 +1,7 @@
 import "../globals.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-
-import ManagMenu from "./ManagMenu";
+import ManagMenu from "../components/ManagMenu";
 
 export const metadata = {
   title: "Create Next App",

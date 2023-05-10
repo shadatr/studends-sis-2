@@ -18,7 +18,7 @@ const examsData: Item[] = [
 ];
 
 const page = () => {
-  const session = useSession({ required: true });
+  // const session = useSession({ required: true })
   
   const exams = examsData.map((exam) => (
     <tr key={exam.id}>
