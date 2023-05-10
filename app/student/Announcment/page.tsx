@@ -27,7 +27,7 @@ const courseAnno: Item[] = [
 ];
 
 const AnnoPage = () => {
-  const session = useSession({required : true})
+  // const session = useSession({required : true})
 
   const uni = uniAnno.map((i) => (
     <tr>

@@ -8,7 +8,7 @@ interface Item {
 }
 
 const item: Item[] = [
-  { id: 1, link: "annoucments", name: "الإعلانات" },
+  { id: 1, link: "announcments", name: "الإعلانات" },
   { id: 2, link: "studentInfo", name: "بيانات الطالب" },
   { id: 3, link: "courses", name: "المواد الدراسية" },
   { id: 4, link: "courseProg", name: "جدول المحاضرات" },
@@ -19,24 +19,28 @@ const item: Item[] = [
   { id: 9, link: "courseReg", name: "تنزيل المواد" },
 ];
 
-const Menu = () => {
-  const items = item.map((i) => (
-    <Link
-      href={`/student/${i.link}`}
-      className="flex justify-between items-center p-1   "
-      key={i.id}
-    >
-      {i.name}
-    </Link>
+function Menu() {
+  const data = item.map((i) => (
+    <tr key={i.id}>
+      <td className="flex p-2 items-center justify-center hover:text-[23px] hover:text-cyan-300">
+        <Link
+          href={`/student/${i.link}`}
+          className="flex justify-between items-center p-1   "
+          key={i.id}
+        >
+          {i.name}
+        </Link>
+      </td>
+    </tr>
   ));
 
   return (
-    <div className="flex items-center justify-end pt-[100px]">
-      <h1 className="w-[232px] bg-darkBlue text-secondary text-sm flex flex-col h-[400px] justify-between items-center  ">
-        {items}
-      </h1>
+    <div className="  flex justify-end  text-sm ">
+      <table className=" text-sm flex flex-col mt-[150px] w-[260px] bg-darkBlue text-white ">
+        {data}
+      </table>
     </div>
   );
-};
+}
 
 export default Menu;
