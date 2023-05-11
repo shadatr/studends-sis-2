@@ -1,70 +1,86 @@
-'use client'
-import React, { useRef } from "react";
-import { announcmentsItem } from "@/app/types";
-import { FaTrashAlt } from "react-icons/fa";
+'use client';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  AnnouncementType,
+  AnnouncmentsItemType,
+  AnnouncmentsMangType,
+} from '@/app/types';
+import { FaTrashAlt } from 'react-icons/fa';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
+// import { toast } from 'react-toastify';
 
-
-
-const item: announcmentsItem[] = [
-  { id: 1, name: "اعلان...." },
-  { id: 2, name: "اعلان...." },
-  { id: 3, name: "اعلان...." },
-  { id: 4, name: "اعلان...." },
-  { id: 5, name: "اعلان...." },
-  { id: 6, name: "اعلان...." },
+const itemm: AnnouncmentsItemType[] = [
+  { id: 1, subject: 'اعلان....' },
+  { id: 2, subject: 'اعلان....' },
+  { id: 3, subject: 'اعلان....' },
+  { id: 4, subject: 'اعلان....' },
+  { id: 5, subject: 'اعلان....' },
+  { id: 6, subject: 'اعلان....' },
 ];
 
+const Page = () => {
+  // const x=axios.get('/api/announs/employeeread');
 
+  const [loadAnnouncements, setLoad] = useState(false);
+  const [newItem, setNewItem] = useState('');
+  const [announcements, setAnnouncements] = useState<AnnouncementType[]>([]);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-const page = async() => {
-  
-  const [items, setItems] = React.useState<string[]>([]);
-  const [newItem, setNewItem] = React.useState('');
-  const inputRef = useRef();
+  useEffect(() => {
+    const fetchPosts = async () => {
+      axios.get('/api/announcements').then((resp) => {
+        console.log(resp.data);
+        const message: AnnouncementType[] = resp.data.message;
+        setAnnouncements(message);
+      });
+    };
+    fetchPosts();
+  }, [loadAnnouncements]);
 
+  const handleDelete = (id: number) => {
+    const data = { item_id: id };
+    axios.post('/api/announcements', data).then((resp) => {
+      toast.success(resp.data.message);
+      setLoad(!loadAnnouncements);
+    });
+  };
 
-
-   const handleDelete = (id:number) => {
-     const listItems = items.filter((item) => item.id !== id);
-     setItems(listItems);
-   };
-
-  const data = items.map((i) => (
-    <tr key={i.id}>
+  const data1 = announcements.map((item, index) => (
+    <tr key={index}>
       <td className="flex items-center justify-between p-2 ">
-        {" "}
-        <FaTrashAlt onClick={() => handleDelete(i.id)} role="button" />
-        {i.name}
+        {' '}
+        <FaTrashAlt className='w-10' onClick={() => handleDelete(item.id)} role="button" />
+        {item.subject}
       </td>
     </tr>
   ));
 
-
-  const addItem = async (item:string) => {
-    const id = items.length ? items[items.length - 1].id + 1 : 1;
-    const myNewItem = { id:id, name:item };
-    const updatedLists = [...items, myNewItem];
-    // updatedLists[id] = myNewItem;
-
-
-
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      if (!newItem) return;
-      addItem(newItem);
-      setNewItem('');
-
-    const { data, error } = await supabase.from("uni_annoncments").insert([]);
-
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!newItem) return;
+    // // const id = items.length ? items[items.length - 1].id + 1 : 1;
+    // const myNewItem = {  subject: newItem };
+    // const updatedLists = [...items, myNewItem];
+    // setItems(updatedLists);
+    const data: AnnouncmentsMangType = {
+      subject: newItem,
     };
+    axios.post('/api/announcements/new', data).then(
+      ()=>{
+        setLoad(!loadAnnouncements);
+      }
+    );
+    setNewItem('');
+  };
 
   return (
     <div className=" absolute text-sm  mt-[70px] ml-[250px]  w-[860px]">
-      <table className=" w-[860px] bg-grey ">
+      <table className=" w-[860px] bg-grey h-[300px] overflow-y-auto flex flex-col">
         <th className="p-4 bg-darkBlue text-secondary">اعلانات الجامعة</th>
-        {data.length ? (
-          data
+        {data1.length ? (
+          data1
         ) : (
           <tr>
             <td className="flex items-center justify-center p-2 ">
@@ -73,14 +89,17 @@ const page = async() => {
           </tr>
         )}
       </table>
-      <form className="flex flex-col mt-3 border-solid border-black border-2" onSubmit={handleSubmit}>
+      <form
+        className="flex flex-col mt-3 border-solid border-black border-2"
+        onSubmit={handleSubmit}
+      >
         <label htmlFor="addItem" className="bg-darkBlue text-secondary  ">
           اضف اعلان
         </label>
         <textarea
           className="h-[150px] text-right "
           autoFocus
-          ref={inputRef.current}
+          ref={inputRef}
           id="addItem"
           placeholder="Add Item"
           required
@@ -98,4 +117,4 @@ const page = async() => {
   );
 };
 
-export default page;
+export default Page;

@@ -41,7 +41,6 @@ const Page = () => {
   const address = useRef<HTMLInputElement>(null);
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
-  const [modalOpen, setModalOpen] = useState(false);
 
   const handleRegister = () => {
     if (
@@ -68,7 +67,7 @@ const Page = () => {
       password: passwordHash,
       birth_date: (birthDate.getTime() / 1000).toFixed(),
     };
-
+    
     axios
       .post('/api/register/student', data)
       .then((res) => {
@@ -80,50 +79,37 @@ const Page = () => {
       });
   };
   return (
-    <div>
-      <SearchStudent isOpen={modalOpen} setIsOpen={setModalOpen} />
-      <div className="flex flex-col items-center h-[40px]">
-        <button
-          onClick={() => setModalOpen(true)}
-          className="btn_base bg-white text-darkBlue text-sm border-darkBlue border-2 h-10 mt-1"
-        >
-          ابحث عن طالب
-        </button>
-        <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
-        <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
-        <InputBox label="القسم" placeholder="هندسه" inputRef={department} />
-        <InputBox
-          label="رقم الهاتف"
-          placeholder="01000000000"
-          inputRef={phone}
+    <div className="flex flex-col items-center h-[40px]">
+      <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
+      <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
+      <InputBox label="القسم" placeholder="هندسه" inputRef={department} />
+      <InputBox label="رقم الهاتف" placeholder="01000000000" inputRef={phone} />
+      <InputBox label="العنوان" placeholder="طرابلس" inputRef={address} />
+      <div className="flex flex-col">
+        <label htmlFor="" lang="ar">
+          تاريخ الميلاد
+        </label>
+        <DatePicker
+          locale="ar"
+          className={'bg-slate-200 w-[350px] h-[30px] rounded-md border-none'}
+          onChange={(val) => setBirthDate(val as any)}
+          value={birthDate}
         />
-        <InputBox label="العنوان" placeholder="طرابلس" inputRef={address} />
-        <div className="flex flex-col">
-          <label htmlFor="" lang="ar">
-            تاريخ الميلاد
-          </label>
-          <DatePicker
-            locale="ar"
-            className={'bg-slate-200 w-[350px] h-[30px] rounded-md border-none'}
-            onChange={(val) => setBirthDate(val as any)}
-            value={birthDate}
-          />
-        </div>
-        <InputBox
-          label="البريد الالكتروني"
-          placeholder="email@example.com"
-          inputRef={email}
-        />
-        <InputBox
-          label="كلمة المرور"
-          placeholder="********"
-          inputRef={password}
-          type="password"
-        />
-        <button onClick={handleRegister} className="btn_base mt-5 w-[350px]">
-          تسجبل الطالب
-        </button>
       </div>
+      <InputBox
+        label="البريد الالكتروني"
+        placeholder="email@example.com"
+        inputRef={email}
+      />
+      <InputBox
+        label="كلمة المرور"
+        placeholder="********"
+        inputRef={password}
+        type="password"
+      />
+      <button onClick={handleRegister} className="btn_base mt-5 w-[350px]">
+        تسجبل الطالب
+      </button>
     </div>
   );
 };

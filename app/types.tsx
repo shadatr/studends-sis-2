@@ -1,4 +1,4 @@
-export type TableProps<T, K extends keyof T> = {
+export type TablePropsType<T, K extends keyof T> = {
   data: Array<T>;
   columns: Array<ColumnDefinitionType<T, K>>;
 };
@@ -9,16 +9,16 @@ export type ColumnDefinitionType<T, K extends keyof T> = {
   width?: number;
 };
 
-export type TableRowsProps<T, K extends keyof T> = {
+export type TableRowsPropsType<T, K extends keyof T> = {
   data: Array<T>;
   columns: Array<ColumnDefinitionType<T, K>>;
 };
 
-export type TableHeaderProps<T, K extends keyof T> = {
+export type TableHeaderPropsType<T, K extends keyof T> = {
   columns: Array<ColumnDefinitionType<T, K>>;
 };
 
-export type menuItem = {
+export type MenuItemType = {
   id: number;
   name: string;
   link: string;
@@ -36,8 +36,19 @@ export type RegisterStudentType = {
   enrollment_date? : string;
 }
 
-export type announcmentsItem= {
+export type AnnouncmentsItemType= {
   id: number;
-  name: string;
+  subject: string;
 
+}
+
+export type AnnouncmentsMangType = {
+  subject: string;
+};
+
+
+export type AnnouncementType ={
+  id: number;
+  created_at: string;
+  subject: string;
 }

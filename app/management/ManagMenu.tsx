@@ -1,9 +1,9 @@
 import React from 'react';
-import { ColumnDefinitionType , menuItem } from "@/app/types";
+import { ColumnDefinitionType , MenuItemType } from "@/app/types";
 
 import Table from "../table";
 
-const item: menuItem[] = [
+const item: MenuItemType[] = [
   { id: 1, link: "annoucments", name: "الإعلانات" },
   { id: 2, link: "employeeInfo", name: "بيانات الموظف" },
   { id: 3, link: "students", name: "الطلاب" },
@@ -14,7 +14,7 @@ const item: menuItem[] = [
 
 
 
-const columns: ColumnDefinitionType<menuItem, keyof menuItem>[] = [
+const columns: ColumnDefinitionType<MenuItemType, keyof MenuItemType>[] = [
   {
     key: "name",
     header: "",
