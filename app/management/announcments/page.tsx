@@ -1,70 +1,70 @@
-'use client'
-import React, { useRef } from "react";
-import { announcmentsItem } from "@/app/types";
+'use client';
+import React, { useState,useRef } from "react";
+import { AnnouncmentsItemType, AnnouncmentsMangType } from '@/app/types';
 import { FaTrashAlt } from "react-icons/fa";
+import axios from "axios";
+// import { toast } from 'react-toastify';
 
 
 
-
-const item: announcmentsItem[] = [
-  { id: 1, name: "اعلان...." },
-  { id: 2, name: "اعلان...." },
-  { id: 3, name: "اعلان...." },
-  { id: 4, name: "اعلان...." },
-  { id: 5, name: "اعلان...." },
-  { id: 6, name: "اعلان...." },
+const itemm: AnnouncmentsItemType[] = [
+  { id: 1, subject: 'اعلان....' },
+  { id: 2, subject: 'اعلان....' },
+  { id: 3, subject: 'اعلان....' },
+  { id: 4, subject: 'اعلان....' },
+  { id: 5, subject: 'اعلان....' },
+  { id: 6, subject: 'اعلان....' },
 ];
 
 
-
-const page = async() => {
+const Page = () => {
   
-  const [items, setItems] = React.useState<string[]>([]);
-  const [newItem, setNewItem] = React.useState('');
-  const inputRef = useRef();
+  const [items, setItems] = useState(itemm);
+  const [newItem, setNewItem] = useState('');
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-
+ 
 
    const handleDelete = (id:number) => {
      const listItems = items.filter((item) => item.id !== id);
      setItems(listItems);
    };
 
-  const data = items.map((i) => (
+  const data1 = items.map((i) => (
     <tr key={i.id}>
       <td className="flex items-center justify-between p-2 ">
-        {" "}
+        {' '}
         <FaTrashAlt onClick={() => handleDelete(i.id)} role="button" />
-        {i.name}
+        {i.subject}
       </td>
     </tr>
   ));
 
 
-  const addItem = async (item:string) => {
-    const id = items.length ? items[items.length - 1].id + 1 : 1;
-    const myNewItem = { id:id, name:item };
-    const updatedLists = [...items, myNewItem];
-    // updatedLists[id] = myNewItem;
-
-
-
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit =  (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!newItem) return;
-      addItem(newItem);
+      const id = items.length ? items[items.length - 1].id + 1 : 1;
+      const myNewItem = { id: id, subject: newItem };
+      const updatedLists = [...items, myNewItem];
+      setItems(updatedLists);
+      const data: AnnouncmentsMangType = {
+        subject: newItem,
+      };
+      
+      axios
+      .post('/api/announs/employee', data);
       setNewItem('');
+  };
 
-    const { data, error } = await supabase.from("uni_annoncments").insert([]);
-
-    };
+    
 
   return (
     <div className=" absolute text-sm  mt-[70px] ml-[250px]  w-[860px]">
       <table className=" w-[860px] bg-grey ">
         <th className="p-4 bg-darkBlue text-secondary">اعلانات الجامعة</th>
-        {data.length ? (
-          data
+        {data1.length ? (
+          data1
         ) : (
           <tr>
             <td className="flex items-center justify-center p-2 ">
@@ -80,7 +80,7 @@ const page = async() => {
         <textarea
           className="h-[150px] text-right "
           autoFocus
-          ref={inputRef.current}
+          ref={inputRef}
           id="addItem"
           placeholder="Add Item"
           required
@@ -98,4 +98,4 @@ const page = async() => {
   );
 };
 
-export default page;
+export default Page;
