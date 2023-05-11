@@ -29,8 +29,12 @@ const authOptions: NextAuthOptions = {
         const { username, password } = credentials as any;
       
         console.log("auth");
-        const { data, error } = await supabase.from("tb_students_info").select("*").eq("username", username).eq("password", password);
-        const data1  = await supabase.from("tb_students_info").select("*");
+        const { data, error } = await supabase
+          .from('tb_students_login')
+          .select('*')
+          .eq('username', username)
+          .eq('password', password);
+        const data1 = await supabase.from('tb_students_login').select('*');
         console.log(data);
         if (!data && error || data && data.length === 0) {
           return null;

@@ -17,7 +17,7 @@ const InputBox: FC<{
 }> = ({ label, placeholder, inputRef, type }) => {
   return (
     <div className="flex flex-col">
-      <label htmlFor="" lang="ar" className="p-1">
+      <label htmlFor="" lang="ar" className='p-1'>
         {label}
       </label>
       <input
@@ -66,9 +66,9 @@ const Page = () => {
       password: passwordHash,
       birth_date: (birthDate.getTime() / 1000).toFixed(),
     };
-    
+
     axios
-      .post('/api/register/student', data)
+      .post('/api/register/doctor', data)
       .then((res) => {
         console.log(res.data);
         toast.success(res.data.message);
@@ -84,13 +84,13 @@ const Page = () => {
       <InputBox label="القسم" placeholder="هندسه" inputRef={department} />
       <InputBox label="رقم الهاتف" placeholder="01000000000" inputRef={phone} />
       <InputBox label="العنوان" placeholder="طرابلس" inputRef={address} />
-      <div className="flex flex-col">
+      <div className="flex flex-col ">
         <label htmlFor="" lang="ar">
           تاريخ الميلاد
         </label>
         <DatePicker
           locale="ar"
-          className={'bg-slate-200 w-[400px] h-[40px] rounded-md border-none'}
+          className={'bg-slate-200 w-[400px] h-[40px] rounded-md border-none '}
           onChange={(val) => setBirthDate(val as any)}
           value={birthDate}
         />
@@ -106,8 +106,9 @@ const Page = () => {
         inputRef={password}
         type="password"
       />
+
       <button onClick={handleRegister} className="btn_base mt-5 w-[400px]">
-        تسجبل الطالب
+        تسجبل الموظف الاداري  
       </button>
     </div>
   );
