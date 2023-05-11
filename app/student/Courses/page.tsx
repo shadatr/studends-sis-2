@@ -48,7 +48,7 @@ const page = () => {
   // const session = useSession({required : true})
   const info = courses.map((course) => (
     <tr>
-      <td className="p-3 pr-6">{course.credit}</td>
+      <td key={1} className="p-3 pr-6">{course.credit}</td>
       <td className="p-3 pr-6">{course.hours}</td>
       <td className="p-3 pr-6">{course.dr}</td>
       <td className="p-3 pr-6">{course.name}</td>

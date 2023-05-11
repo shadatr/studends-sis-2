@@ -14,7 +14,7 @@ export type TableRowsProps<T, K extends keyof T> = {
   columns: Array<ColumnDefinitionType<T, K>>;
 };
 
-export type TableHeaderProps<T, K extends keyof T> = {
+export type TableHeaderPropsType<T, K extends keyof T> = {
   columns: Array<ColumnDefinitionType<T, K>>;
 };
 
@@ -36,8 +36,19 @@ export type RegisterStudentType = {
   enrollment_date? : string;
 }
 
-export type announcmentsItem= {
+export type AnnouncmentsItemType= {
   id: number;
-  name: string;
+  subject: string;
 
+}
+
+export type AnnouncmentsMangType = {
+  subject: string;
+};
+
+
+export type AnnouncementType ={
+  id: number;
+  created_at: string;
+  subject: string;
 }
