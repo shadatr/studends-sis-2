@@ -1,10 +1,14 @@
 import React from "react";
 
-import { TableHeaderProps, TableRowsProps, TableProps } from "./types";
+import {
+  TableHeaderPropsType,
+  TableRowsPropsType,
+  TablePropsType,
+} from './types';
 
 const TableHeader = <T, K extends keyof T>({
   columns,
-}: TableHeaderProps<T, K>): JSX.Element => {
+}: TableHeaderPropsType<T, K>): JSX.Element => {
   const headers = columns.map((column, index) => {
     return (
       <th
@@ -26,7 +30,7 @@ const TableHeader = <T, K extends keyof T>({
 const TableRows = <T, K extends keyof T>({
   data,
   columns,
-}: TableRowsProps<T, K>): JSX.Element => {
+}: TableRowsPropsType<T, K>): JSX.Element => {
   const rows = data.map((row, index) => {
     return (
       <tr key={`row-${index}`}>
@@ -50,7 +54,7 @@ const TableRows = <T, K extends keyof T>({
 const Table = <T, K extends keyof T>({
   data,
   columns,
-}: TableProps<T, K>): JSX.Element => {
+}: TablePropsType<T, K>): JSX.Element => {
   return (
     <table>
       <TableHeader columns={columns} />
