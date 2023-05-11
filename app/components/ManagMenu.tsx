@@ -29,11 +29,12 @@ function ManagMenu() {
 
     return (
       <div className="  flex justify-end  text-sm ">
-        <table className=" text-sm flex flex-col mt-[150px] w-[260px] bg-darkBlue text-white ">
+        <table className=" text-sm flex flex-col w-[260px] bg-darkBlue text-white ">
           {data}
         </table>
       </div>
     );
 }
 
-export default ManagMenu
+export default ManagMenu;
+
