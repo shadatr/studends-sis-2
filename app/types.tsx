@@ -45,3 +45,10 @@ export type AnnouncmentsItemType= {
 export type AnnouncmentsMangType = {
   subject: string;
 };
+
+
+export type AnnouncementType ={
+  id: number;
+  created_at: string;
+  subject: string;
+}

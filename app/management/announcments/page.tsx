@@ -1,11 +1,15 @@
 'use client';
-import React, { useState,useRef } from "react";
-import { AnnouncmentsItemType, AnnouncmentsMangType } from '@/app/types';
-import { FaTrashAlt } from "react-icons/fa";
-import axios from "axios";
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  AnnouncementType,
+  AnnouncmentsItemType,
+  AnnouncmentsMangType,
+} from '@/app/types';
+import { FaTrashAlt } from 'react-icons/fa';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+
 // import { toast } from 'react-toastify';
-
-
 
 const itemm: AnnouncmentsItemType[] = [
   { id: 1, subject: 'اعلان....' },
@@ -16,52 +20,64 @@ const itemm: AnnouncmentsItemType[] = [
   { id: 6, subject: 'اعلان....' },
 ];
 
-
 const Page = () => {
-  
-  const [items, setItems] = useState(itemm);
+  // const x=axios.get('/api/announs/employeeread');
+
+  const [loadAnnouncements, setLoad] = useState(false);
   const [newItem, setNewItem] = useState('');
+  const [announcements, setAnnouncements] = useState<AnnouncementType[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
- 
+  useEffect(() => {
+    const fetchPosts = async () => {
+      axios.get('/api/announcements').then((resp) => {
+        console.log(resp.data);
+        const message: AnnouncementType[] = resp.data.message;
+        setAnnouncements(message);
+      });
+    };
+    fetchPosts();
+  }, [loadAnnouncements]);
 
-   const handleDelete = (id:number) => {
-     const listItems = items.filter((item) => item.id !== id);
-     setItems(listItems);
-   };
+  const handleDelete = (id: number) => {
+    const data = { item_id: id };
+    axios.post('/api/announcements', data).then((resp) => {
+      toast.success(resp.data.message);
+      setLoad(!loadAnnouncements);
+    });
+  };
 
-  const data1 = items.map((i) => (
-    <tr key={i.id}>
+  const data1 = announcements.map((item, index) => (
+    <tr key={index}>
       <td className="flex items-center justify-between p-2 ">
         {' '}
-        <FaTrashAlt onClick={() => handleDelete(i.id)} role="button" />
-        {i.subject}
+        <FaTrashAlt className='w-10' onClick={() => handleDelete(item.id)} role="button" />
+        {item.subject}
       </td>
     </tr>
   ));
 
-
-    const handleSubmit =  (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      if (!newItem) return;
-      const id = items.length ? items[items.length - 1].id + 1 : 1;
-      const myNewItem = { id: id, subject: newItem };
-      const updatedLists = [...items, myNewItem];
-      setItems(updatedLists);
-      const data: AnnouncmentsMangType = {
-        subject: newItem,
-      };
-      
-      axios
-      .post('/api/announs/employee', data);
-      setNewItem('');
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!newItem) return;
+    // // const id = items.length ? items[items.length - 1].id + 1 : 1;
+    // const myNewItem = {  subject: newItem };
+    // const updatedLists = [...items, myNewItem];
+    // setItems(updatedLists);
+    const data: AnnouncmentsMangType = {
+      subject: newItem,
+    };
+    axios.post('/api/announcements/new', data).then(
+      ()=>{
+        setLoad(!loadAnnouncements);
+      }
+    );
+    setNewItem('');
   };
-
-    
 
   return (
     <div className=" absolute text-sm  mt-[70px] ml-[250px]  w-[860px]">
-      <table className=" w-[860px] bg-grey ">
+      <table className=" w-[860px] bg-grey h-[300px] overflow-y-auto flex flex-col">
         <th className="p-4 bg-darkBlue text-secondary">اعلانات الجامعة</th>
         {data1.length ? (
           data1
@@ -73,7 +89,10 @@ const Page = () => {
           </tr>
         )}
       </table>
-      <form className="flex flex-col mt-3 border-solid border-black border-2" onSubmit={handleSubmit}>
+      <form
+        className="flex flex-col mt-3 border-solid border-black border-2"
+        onSubmit={handleSubmit}
+      >
         <label htmlFor="addItem" className="bg-darkBlue text-secondary  ">
           اضف اعلان
         </label>
