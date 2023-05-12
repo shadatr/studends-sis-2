@@ -80,7 +80,7 @@ const AnnoPage = () => {
         subject: newItem,
         type: 'course',
       };
-      axios.post('/api/new', data).then(() => {
+      axios.post('/api/newUniAnnouncements', data).then(() => {
         setLoad(!loadAnnouncements);
       });
       setNewItem('');

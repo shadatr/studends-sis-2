@@ -85,3 +85,7 @@ export type PersonalInfoType = {
   department: string;
   advisor: string;
 };
+
+export type DepartmentRegType = {
+  name: string;
+};
