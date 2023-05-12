@@ -2,39 +2,38 @@
 import { useSession } from 'next-auth/react';
 import React from 'react';
 
-type Item = {
+type ItemType = {
   id: number;
   name: string;
   weeks:string[];
 }
 
-const attenData: Item[] = [
+const attenData: ItemType[] = [
   {
     id: 1,
-    name: "اسم المادة",
-    weeks: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-    },
-    {
+    name: 'اسم المادة',
+    weeks: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+  },
+  {
     id: 2,
-    name: "اسم المادة",
-    weeks: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-    },
-    {
+    name: 'اسم المادة',
+    weeks: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+  },
+  {
     id: 3,
-    name: "اسم المادة",
-    weeks: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-    },
-    {
+    name: 'اسم المادة',
+    weeks: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+  },
+  {
     id: 4,
-    name: "اسم المادة",
-    weeks: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-    },
-    {
+    name: 'اسم المادة',
+    weeks: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+  },
+  {
     id: 5,
-    name: "اسم المادة",
-    weeks: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-    },
-  
+    name: 'اسم المادة',
+    weeks: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+  },
 ];
 
 const header: string[] = [
@@ -59,15 +58,15 @@ const page = () => {
 
     const attendance = attenData.map((item) => (
       <tr key={item.id}>
-        {item.weeks.map((i) => (
-            <td className=" p-2 pr-5">{i}</td>
+        {item.weeks.map((item, index) => (
+            <td key={index} className=" p-2 pr-5">{item}</td>
             ))}
         <td className=" p-2 pr-5">{item.name}</td>
       </tr>
     ));
 
-    const headers = header.map((h) => (
-      <th className=" p-2 pr-5 bg-darkBlue text-secondary ">{h}</th>
+    const headers = header.map((hour,index) => (
+      <th key={index} className=" p-2 pr-5 bg-darkBlue text-secondary ">{hour}</th>
     ));
     
   return (

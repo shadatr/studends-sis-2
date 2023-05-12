@@ -9,7 +9,7 @@ const supabase = createClient(
 
 export async function GET() {
   try {
-    const data = await supabase.from('tb_announcements').select('*').order("created_at", {ascending : false});
+    const data = await supabase.from('tb_announcements').select('*').order("created_at", {ascending : false}).eq('type', 'uni');
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {

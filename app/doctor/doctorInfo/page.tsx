@@ -10,12 +10,10 @@ const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'اللقب' },
   { header: 'تاريخ الميلاد' },
   { header: 'التخصص' },
-  { header: 'الفصل الدراسي' },
   { header: 'عنوان السكن' },
   { header: 'رقم الهاتف' },
   { header: 'الايميل' },
   { header: 'تاريخ التسجيل' },
-  { header: 'المشرف' },
 ];
 
 const page = () => {
@@ -23,7 +21,7 @@ const page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      axios.get(`/api/personalInfo/15/student`).then((resp) => {
+      axios.get(`/api/personalInfo/9/doctor`).then((resp) => {
         console.log(resp.data);
         const message: PersonalInfoType[] = resp.data.message;
         useSetMydata(message);
@@ -52,9 +50,6 @@ const page = () => {
         {item.department}
       </td>
       <td className="p-2" key={index}>
-        {item.semester}
-      </td>
-      <td className="p-2" key={index}>
         {item.address}
       </td>
       <td className="p-2" key={index}>
@@ -66,14 +61,11 @@ const page = () => {
       <td className="p-2" key={index}>
         {item.enrollment_date}
       </td>
-      <td className="p-2" key={index}>
-        {item.advisor}
-      </td>
     </tr>
   ));
 
   return (
-    <table className="fixed flex text-sm w-[800px] top-[200px] right-[500px]">
+    <table className="fixed flex text-sm w-[800px] top-[280px] right-[500px]">
       <tr className="w-full">{data}</tr>
       <tr className="w-1/4 bg-darkBlue text-secondary">{titles}</tr>
     </table>

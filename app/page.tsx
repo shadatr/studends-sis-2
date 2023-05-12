@@ -26,7 +26,7 @@ export default function Home() {
       username : username.current.value,
       password : passwordHash,
       redirect : true,
-      callbackUrl : "/student/announcement"
+      callbackUrl : "/student/announcements"
     });
     console.log(result);
   };

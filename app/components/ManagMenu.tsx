@@ -6,7 +6,7 @@ import { MenuItemType } from '../types';
 
 const item: MenuItemType[] = [
   { id: 1, link: 'announcments', name: 'الإعلانات' },
-  { id: 2, link: 'employeeInfo', name: 'بيانات الموظف' },
+  { id: 2, link: 'managerInfo', name: 'بيانات الموظف' },
   { id: 3, link: 'students', name: 'الطلاب' },
   { id: 4, link: 'doctors', name: ' اعضاء هيئة التدريس' },
   { id: 5, link: 'managers', name: 'موظفين الادارة' },

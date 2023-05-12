@@ -8,7 +8,7 @@ interface Item {
 }
 
 const item: Item[] = [
-  { id: 1, link:"annoucments", name: "الإعلانات" },
+  { id: 1, link:"announcements", name: "الإعلانات" },
   { id: 2, link:"studentInfo",name: "بيانات الطالب" },
   { id: 3, link:"courses",name: "المواد الدراسية" },
   { id: 4, link:"courseProg",name: "جدول المحاضرات" },

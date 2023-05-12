@@ -35,7 +35,6 @@ const Page = () => {
   const [birthDate, setBirthDate] = useState(new Date());
   const name = useRef<HTMLInputElement>(null);
   const surname = useRef<HTMLInputElement>(null);
-  const department = useRef<HTMLInputElement>(null);
   const phone = useRef<HTMLInputElement>(null);
   const address = useRef<HTMLInputElement>(null);
   const email = useRef<HTMLInputElement>(null);
@@ -59,7 +58,6 @@ const Page = () => {
     const data: RegisterStudentType = {
       name: name.current?.value,
       surname: surname.current?.value,
-      department: department.current?.value,
       phone: phone.current?.value,
       address: address.current?.value,
       email: email.current?.value,
@@ -68,7 +66,7 @@ const Page = () => {
     };
 
     axios
-      .post('/api/register/doctor', data)
+      .post('/api/register/manager', data)
       .then((res) => {
         console.log(res.data);
         toast.success(res.data.message);
@@ -81,7 +79,6 @@ const Page = () => {
     <div className="flex flex-col items-center h-[150px] pt-5 fixed right-[600px] text-sm ">
       <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
       <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
-      <InputBox label="القسم" placeholder="هندسه" inputRef={department} />
       <InputBox label="رقم الهاتف" placeholder="01000000000" inputRef={phone} />
       <InputBox label="العنوان" placeholder="طرابلس" inputRef={address} />
       <div className="flex flex-col ">
