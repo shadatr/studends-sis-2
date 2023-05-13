@@ -17,13 +17,12 @@ export async function POST(request: Request) {
       console.log(res.error);
       throw res.error;
     }
-    return new Response(JSON.stringify({ message: "تم تسجيل التخصص بنجاح"}), {
+    return new Response(JSON.stringify({ message: "تم تسجيل الكلية بنجاح"}), {
       headers: { 'content-type': 'application/json' },
     });
   } catch (error) {
-    // send a 400 response with an error happened during registration in arabic
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل التخصص' }),
+      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الكلية' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }

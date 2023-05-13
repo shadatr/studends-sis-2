@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 'use client';
-import { DepartmentRegType } from '@/app/types';
+import { DepartmentRegType, MajorRegType } from '@/app/types';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -7,90 +8,223 @@ import { FaTrashAlt } from 'react-icons/fa';
 
 
 const page = () => {
+
+const major = useRef<HTMLInputElement>(null);
+const majorDep = useRef<HTMLSelectElement>(null);
+const [majors, setMajors] = useState<MajorRegType[]>([]);
+const [loadMajor, setLoadMajor] = useState(false);
+const [newItemMajor, setNewItemMajor] = useState('');
+const [newMajorDep, setNewMajorDep] = useState('');
+
+
 const department = useRef<HTMLInputElement>(null);
 const [departments, setDepartments] = useState<DepartmentRegType[]>([]);
-const [loadDepartments, setLoad] = useState(false);
-const [newItem, setNewItem] = useState('');
+const [loadDepartments, setLoadDep] = useState(false);
+const [newItemDep, setNewItemDep] = useState('');
 
-const handleRegister = () => {
-    if (!newItem) {
-      toast.error('يجب كتابة اسم المادة');
+
+const handleRegisterDep = () => {
+  if (!newItemDep) {
+    toast.error('يجب كتابة اسم المادة');
+    return;
+  }
+  const data: DepartmentRegType = { department_name: newItemDep };
+  axios
+    .post('/api/department/departmentRegister', data)
+    .then((res) => {
+      console.log(res.data);
+      toast.success(res.data.message);
+      setLoadDep(!loadDepartments);
+    })
+    .catch((err) => {
+      toast.error(err.response.data.message);
+    });
+  setNewItemDep('');
+};
+
+useEffect(() => {
+  const fetchPosts = async () => {
+    axios.get('/api/department/departmentRegister').then((resp) => {
+      console.log(resp.data);
+      const message: DepartmentRegType[] = resp.data.message;
+      setDepartments(message);
+    });
+  };
+  fetchPosts();
+}, [loadDepartments]);
+
+const handleDelete = (department_name: string) => {
+  const data = { item_name: department_name };
+  axios.post('/api/department/deleteDepartment', data).then((resp) => {
+    toast.success(resp.data.message);
+    setLoadDep(!loadDepartments);
+  });
+};
+
+const departmetItems = departments.map((item, index) => (
+  <tr key={index} className="flex flex-row w-full">
+    <td
+      className="flex flex-row w-full p-1 items-center justify-between"
+      key={index}
+    >
+      <FaTrashAlt
+        className="  flex"
+        onClick={() => handleDelete(item.department_name)}
+        role="button"
+      />
+      {item.department_name}
+    </td>
+    <td className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</td>
+  </tr>
+));
+
+const departmentOptions = departments.map((item, index) => (
+  <option key={index}>{item.department_name}</option>
+));
+
+
+
+
+
+const handleRegisterMajor = () => {
+    if (!newItemMajor || !newMajorDep) {
+      toast.error('يجب كتابة ملئ جميع البيانات');
       return;
     }
-    const data: DepartmentRegType = { name: newItem };
+    const data: MajorRegType = { major_name: newItemMajor , department_name: newMajorDep};
     axios
-      .post('/api/departmentRegister', data)
+      .post('/api/major/majorReg', data)
       .then((res) => {
-        console.log(res.data);
+        console.log(res.data.message);
         toast.success(res.data.message);
-        setLoad(!loadDepartments);
+        setLoadMajor(!loadMajor);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
       });
-      setNewItem('');
+      setNewItemMajor('');
+      setNewMajorDep('');
     };
 
     useEffect(() => {
       const fetchPosts = async () => {
-        axios.get('/api/departmentRegister').then((resp) => {
+        axios.get('/api/major/majorReg').then((resp) => {
           console.log(resp.data);
-          const message: DepartmentRegType[] = resp.data.message;
-          setDepartments(message);
+          const message: MajorRegType[] = resp.data.message;
+          setMajors(message);
         });
       };
       fetchPosts();
-    }, [loadDepartments]);
+    }, [loadMajor]);
 
-    const handleDelete = (name: string) => {
-      const data = { item_name: name };
-      axios.post('/api/deleteDepartment', data).then((resp) => {
+    const handleDeleteMajor = (major_name: string) => {
+      const data = { item_name: major_name };
+      axios.post('/api/major/majorDelete', data).then((resp) => {
         toast.success(resp.data.message);
-        setLoad(!loadDepartments);
+        setLoadMajor(!loadMajor);
       });
     };
 
 
-    const items = departments.map((item, index) => (
+    const majorItems = majors.map((item, index) => (
       <tr key={index} className="flex flex-row w-full">
         <td
-          className="flex flex-row w-full p-2 items-center justify-between"
+          className="flex flex-row w-full p-1 items-center justify-between"
           key={index}
         >
           <FaTrashAlt
-            className="w-[50px] flex"
-            onClick={() => handleDelete(item.name)}
+            className="  flex"
+            onClick={() => handleDeleteMajor(item.major_name)}
             role="button"
           />
-          {item.name}
+          {item.major_name}
         </td>
-        <td className="flex flex-row w-1/8 p-4">{index + 1}</td>
+        <td className="flex flex-row w-1/5 items-center justify-center pr-2 pl-2">
+          {item.department_name}
+        </td>
+        <td className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</td>
       </tr>
     ));
   return (
-    <div className="flex flex-col fixed items-center justify-center">
-      <div className="flex flex-row-reverse items-center justify-center w-screen text-sm mt-10">
-        <label htmlFor="" lang="ar" className="p-3 bg-darkBlue text-secondary">
-          سجل تخصص
-        </label>
-        <input
-          ref={department}
-          dir="rtl"
-          placeholder="ادخل اسم التخصص"
-          type="text"
-          className="w-[600px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
-          value={newItem}
-          onChange={(e) => setNewItem(e.target.value)}
-        />
-        <button
-          className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
-          type="submit"
-          onClick={handleRegister}
-        >
-          سجل
-        </button>
+    <div className="fixed flex flex-col">
+      <div className="flex flex-col  items-center justify-center text-sm">
+        <div className="flex flex-row-reverse items-center justify-center w-screen text-sm mt-10">
+          <label
+            htmlFor=""
+            lang="ar"
+            className="p-3 bg-darkBlue text-secondary"
+          >
+            سجل كلية
+          </label>
+          <input
+            ref={department}
+            dir="rtl"
+            placeholder="ادخل اسم الكلية"
+            type="text"
+            className="w-[600px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
+            value={newItemDep}
+            onChange={(e) => setNewItemDep(e.target.value)}
+          />
+          <button
+            className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
+            type="submit"
+            onClick={handleRegisterDep}
+          >
+            سجل
+          </button>
+        </div>
+        <table className="w-[1000px] mt-[50px] flex flex-col h-[200px] overflow-y-auto">
+          {departmetItems}
+        </table>
       </div>
-      <table className="w-[800px] mt-[50px] flex flex-col">{items}</table>
+      <div className="flex flex-col items-center justify-center text-sm">
+        <div className="flex flex-row-reverse items-center justify-center w-screen text-sm mt-10">
+          <label
+            htmlFor=""
+            lang="ar"
+            className="p-3 bg-darkBlue text-secondary"
+          >
+            سجل تخصص
+          </label>
+          <input
+            ref={major}
+            dir="rtl"
+            placeholder="ادخل اسم التخصص"
+            type="text"
+            className="w-[600px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
+            value={newItemMajor}
+            onChange={(e) => setNewItemMajor(e.target.value)}
+          />
+          <select
+            id="dep"
+            dir="rtl"
+            ref={majorDep}
+            onChange={(e) => setNewMajorDep(e.target.value)}
+          >
+            <option selected disabled>
+              اختر اسم الكلية
+            </option>
+            {departmentOptions}
+          </select>
+
+          <button
+            className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
+            type="submit"
+            onClick={handleRegisterMajor}
+          >
+            سجل
+          </button>
+        </div>
+        <table className="w-[1000px] mt-[50px] flex flex-col">
+          {majorItems.length ? (
+            majorItems
+          ) : (
+            <tr className="flex flex-row w-full p-1 items-center justify-center">
+              لا يوجد تخصصات
+            </tr>
+          )}
+        </table>
+      </div>
     </div>
   );
 };
