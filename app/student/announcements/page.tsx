@@ -79,9 +79,9 @@ const AnnoPage = () => {
         </tr>
         {uni}
       </table>
-      <table className="mt-[30px]">
-        <tr className='w-full'>
-          <th className="bg-darkBlue  text-secondary  p-[10px]">
+      <table className="mt-[30px] w-full h-[300px] overflow-y-auto flex flex-col">
+        <tr className="w-full">
+          <th className="bg-darkBlue   text-secondary   w-full flex items-center justify-end p-1">
             اعلانات المواد
           </th>
         </tr>

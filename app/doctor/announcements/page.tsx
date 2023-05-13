@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { AnnouncementType, AnnouncmentsMangType } from '@/app/types';
+import {  AnnouncmentsMangType } from '@/app/types';
 
 
 const AnnoPage = () => {
@@ -21,10 +21,10 @@ const AnnoPage = () => {
     fetchPosts();
   }, []);
 
-  const uni = Announcements.map((i) => (
-    <tr key={i.id}>
-      <td className=" p-1 w-full flex items-center justify-end " key={i.id}>
-        {i.subject}
+  const uni = Announcements.map((item,index) => (
+    <tr key={index}>
+      <td className=" p-1 w-full flex items-center justify-end " key={index}>
+        {item.subject}
       </td>
     </tr>
   ));
@@ -47,8 +47,8 @@ const AnnoPage = () => {
       fetchPosts();
     }, [loadAnnouncements]);
 
-    const handleDelete = (id: number) => {
-      const data = { item_id: id };
+    const handleDelete = (subject: string) => {
+      const data = { item_subject: subject };
       axios.post('/api/uniAnnouncements', data).then((resp) => {
         toast.success(resp.data.message);
         setLoad(!loadAnnouncements);
@@ -60,7 +60,7 @@ const AnnoPage = () => {
         <td className="flex items-center w-full justify-between p-2 ">
           <FaTrashAlt
             className="w-10"
-            onClick={() => handleDelete(item.id)}
+            onClick={() => handleDelete(item.subject)}
             role="button"
           />
           {item.subject}
@@ -72,15 +72,12 @@ const AnnoPage = () => {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!newItem) return;
-      const id = announcements2.length
-        ? announcements2[announcements2.length - 1].id + 1
-        : 1;
+      // const id = announcements2.length   ? announcements2[announcements2.length - 1].key + 1: 1;
       const data: AnnouncmentsMangType = {
-        id: id,
         subject: newItem,
         type: 'course',
       };
-      axios.post('/api/newUniAnnouncements', data).then(() => {
+      axios.post('/api/newUniAnnouncement', data).then(() => {
         setLoad(!loadAnnouncements);
       });
       setNewItem('');
@@ -106,11 +103,9 @@ const AnnoPage = () => {
           {data1.length ? (
             data1
           ) : (
-            <tr>
               <td className="flex items-center justify-center p-2 ">
                 لا يوجد اعلانات
               </td>
-            </tr>
           )}
         </table>
         <form

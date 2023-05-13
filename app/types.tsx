@@ -38,14 +38,15 @@ export type RegisterStudentType = {
   enrollment_date? : string;
 }
 
-export type AnnouncmentsItemType= {
-  id: number;
-  subject: string;
 
-}
 
 export type AnnouncmentsMangType = {
-  id:number
+  // key:number
+  subject: string;
+  type: string;
+};
+
+export type AnnouncmentsMang2Type = {
   subject: string;
   type: string;
 };

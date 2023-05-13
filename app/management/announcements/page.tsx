@@ -26,8 +26,8 @@ const Page = () => {
     fetchPosts();
   }, [loadAnnouncements]);
 
-  const handleDelete = (id: number) => {
-    const data = { item_id: id };
+  const handleDelete = (subject: string) => {
+    const data = { item_subject: subject };
     axios.post('/api/uniAnnouncements', data).then((resp) => {
       toast.success(resp.data.message);
       setLoad(!loadAnnouncements);
@@ -37,9 +37,8 @@ const Page = () => {
   const data1 = announcements.map((item, index) => (
     <tr key={index} className='flex w-full flex-row'>
       <td className="flex items-center w-full justify-between p-2 ">
-        <FaTrashAlt className='w-10' onClick={() => handleDelete(item.id)} role="button" />
+        <FaTrashAlt className='w-10' onClick={() => handleDelete(item.subject)} role="button" />
         {item.subject}
-
       </td>
         <td className='p-2'>
         {item.type}
@@ -50,12 +49,11 @@ const Page = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!newItem) return;
-    const id = announcements.length ? announcements[announcements.length - 1].id + 1: 1;
     const data: AnnouncmentsMangType = {
-      id: id,
       subject: newItem,
       type: "uni"
     };
+    console.log(data);
     axios.post('/api/newUniAnnouncement', data).then(() => {
       setLoad(!loadAnnouncements);
     });
@@ -69,11 +67,9 @@ const Page = () => {
         {data1.length ? (
           data1
         ) : (
-          <tr>
             <td className="flex items-center justify-center p-2 ">
               لا يوجد اعلانات
             </td>
-          </tr>
         )}
       </table>
       <form

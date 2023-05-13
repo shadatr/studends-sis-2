@@ -24,7 +24,7 @@ export async function GET() {
 export async function POST(request : Request) {
   const req = await request.json();
   console.log(req);
-  const deleteReq = await supabase.from("tb_announcements").delete().eq("id" , req.item_id);
+  const deleteReq = await supabase.from("tb_announcements").delete().eq("subject" , req.item_subject);
   console.log(deleteReq.error);
   return new Response(JSON.stringify({message : "announcement was deleted sucessfully"}));
 }
