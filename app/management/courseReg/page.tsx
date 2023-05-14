@@ -67,7 +67,11 @@ const departmetItems = departments.map((item, index) => (
       className="flex flex-row w-full p-1 items-center justify-between"
       key={index}
     >
-      <MyModel name='الكلية' deleteModle={() => handleDelete(item.department_name)} />
+      <MyModel
+        depOrMaj="الكلية"
+        name={item.department_name}
+        deleteModle={() => handleDelete(item.department_name)}
+      />
       {item.department_name}
     </td>
     <td className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</td>
@@ -129,7 +133,8 @@ const handleRegisterMajor = () => {
           key={index}
         >
           <MyModel
-            name="التخصص"
+            name={item.major_name}
+            depOrMaj="التخصص"
             deleteModle={() => handleDeleteMajor(item.major_name)}
           />
           {item.major_name}

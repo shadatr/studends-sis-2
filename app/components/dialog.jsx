@@ -3,7 +3,7 @@ import { Fragment, useState } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
 
 
-export default function MyModal({ deleteModle, name }) {
+export default function MyModal({ deleteModle, name, depOrMaj }) {
   let [isOpen, setIsOpen] = useState(false);
 
   function closeModal() {
@@ -17,11 +17,7 @@ export default function MyModal({ deleteModle, name }) {
   return (
     <>
       <div className="">
-        <FaTrashAlt
-          className="  flex"
-          onClick={openModal}
-          role="button"
-        />
+        <FaTrashAlt className="  flex" onClick={openModal} role="button" />
       </div>
 
       <Transition appear show={isOpen} as={Fragment}>
@@ -53,12 +49,10 @@ export default function MyModal({ deleteModle, name }) {
                   <Dialog.Title
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
-                  >
-                    
-                  </Dialog.Title>
+                  ></Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
-                      هل انت متاكد انك تريد حذف هذا {name}؟
+                      هل انت متاكد انك تريد حذف هذا {depOrMaj}( {name})
                     </p>
                   </div>
 
