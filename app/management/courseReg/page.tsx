@@ -4,8 +4,8 @@ import { DepartmentRegType, MajorRegType } from '@/app/types';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { FaTrashAlt } from 'react-icons/fa';
 
+import MyModel from '../../components/dialog';
 
 const page = () => {
 
@@ -67,11 +67,7 @@ const departmetItems = departments.map((item, index) => (
       className="flex flex-row w-full p-1 items-center justify-between"
       key={index}
     >
-      <FaTrashAlt
-        className="  flex"
-        onClick={() => handleDelete(item.department_name)}
-        role="button"
-      />
+      <MyModel name='الكلية' deleteModle={() => handleDelete(item.department_name)} />
       {item.department_name}
     </td>
     <td className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</td>
@@ -132,10 +128,9 @@ const handleRegisterMajor = () => {
           className="flex flex-row w-full p-1 items-center justify-between"
           key={index}
         >
-          <FaTrashAlt
-            className="  flex"
-            onClick={() => handleDeleteMajor(item.major_name)}
-            role="button"
+          <MyModel
+            name="التخصص"
+            deleteModle={() => handleDeleteMajor(item.major_name)}
           />
           {item.major_name}
         </td>
@@ -146,7 +141,7 @@ const handleRegisterMajor = () => {
       </tr>
     ));
   return (
-    <div className="fixed flex flex-col">
+    <div className="fixed flex flex-col right-[150px]">
       <div className="flex flex-col  items-center justify-center text-sm">
         <div className="flex flex-row-reverse items-center justify-center w-screen text-sm mt-10">
           <label
@@ -200,6 +195,7 @@ const handleRegisterMajor = () => {
             dir="rtl"
             ref={majorDep}
             onChange={(e) => setNewMajorDep(e.target.value)}
+            className='p-4 text-sm bg-lightBlue '
           >
             <option selected disabled>
               اختر اسم الكلية
@@ -208,7 +204,7 @@ const handleRegisterMajor = () => {
           </select>
 
           <button
-            className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
+            className="bg-darkBlue text-secondary p-3 w-[200px] "
             type="submit"
             onClick={handleRegisterMajor}
           >
