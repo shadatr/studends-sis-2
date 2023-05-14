@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
 
   try {
-    const res = await supabase.from('tb_managers').insert([data]);
+    const res = await supabase.from('tb_admins').insert([data]);
     if (res.error) {
       console.log(res.error);
       throw res.error;

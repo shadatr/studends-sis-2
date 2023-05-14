@@ -8,7 +8,7 @@ const supabase = createClient(
 export async function POST(request : Request) {
   const req = await request.json();
   console.log(req);
-  const deleteReq = await supabase.from("tb_departments").delete().eq("department_name" , req.item_name);
+  const deleteReq = await supabase.from("tb_departments").delete().eq("name" , req.item_name);
   console.log(deleteReq.error);
   return new Response(JSON.stringify({message : "تم مسح الكلية بنجاح"}));
 }

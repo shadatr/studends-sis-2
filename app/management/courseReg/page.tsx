@@ -28,7 +28,7 @@ const handleRegisterDep = () => {
     toast.error('يجب كتابة اسم المادة');
     return;
   }
-  const data: DepartmentRegType = { department_name: newItemDep };
+  const data: DepartmentRegType = { name: newItemDep };
   axios
     .post('/api/department/departmentRegister', data)
     .then((res) => {
@@ -53,8 +53,8 @@ useEffect(() => {
   fetchPosts();
 }, [loadDepartments]);
 
-const handleDelete = (department_name: string) => {
-  const data = { item_name: department_name };
+const handleDelete = (name: string) => {
+  const data = { item_name: name };
   axios.post('/api/department/deleteDepartment', data).then((resp) => {
     toast.success(resp.data.message);
     setLoadDep(!loadDepartments);
@@ -69,17 +69,17 @@ const departmetItems = departments.map((item, index) => (
     >
       <MyModel
         depOrMaj="الكلية"
-        name={item.department_name}
-        deleteModle={() => handleDelete(item.department_name)}
+        name={item.name}
+        deleteModle={() => handleDelete(item.name)}
       />
-      {item.department_name}
+      {item.name}
     </td>
     <td className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</td>
   </tr>
 ));
 
 const departmentOptions = departments.map((item, index) => (
-  <option key={index}>{item.department_name}</option>
+  <option key={index}>{item.name}</option>
 ));
 
 
@@ -148,11 +148,11 @@ const handleRegisterMajor = () => {
   return (
     <div className="fixed flex flex-col right-[150px]">
       <div className="flex flex-col  items-center justify-center text-sm">
-        <div className="flex flex-row-reverse items-center justify-center w-screen text-sm mt-10">
+        <div className="flex flex-row-reverse items-center justify-center  text-sm mt-10 w-[1000px]">
           <label
             htmlFor=""
             lang="ar"
-            className="p-3 bg-darkBlue text-secondary"
+            className="p-3 bg-darkBlue text-secondary w-[200px]"
           >
             سجل كلية
           </label>

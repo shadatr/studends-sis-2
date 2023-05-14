@@ -5,7 +5,7 @@ import React, { FC, useRef, useState } from 'react';
 import { DatePicker } from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import { RegisterManagerType } from '@/app/types';
+import { RegisterdoctorType } from '@/app/types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -39,13 +39,15 @@ const Page = () => {
   const address = useRef<HTMLInputElement>(null);
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
+  const speciality = useRef<HTMLInputElement>(null);
 
   const handleRegister = () => {
     if (
       !name.current?.value ||
       !surname.current?.value ||
       !email.current?.value ||
-      !password.current?.value
+      !password.current?.value||
+      !speciality.current?.value
     ) {
       toast.error('يجب ملئ جميع الحقول');
       return;
@@ -55,18 +57,19 @@ const Page = () => {
       .update(password.current?.value)
       .digest('hex');
 
-    const data: RegisterManagerType = {
+    const data: RegisterdoctorType = {
       name: name.current?.value,
       surname: surname.current?.value,
       phone: phone.current?.value,
       address: address.current?.value,
       email: email.current?.value,
+      speciality: speciality.current?.value,
       password: passwordHash,
       birth_date: (birthDate.getTime() / 1000).toFixed(),
     };
 
     axios
-      .post('/api/register/manager', data)
+      .post('/api/register/doctor', data)
       .then((res) => {
         console.log(res.data);
         toast.success(res.data.message);
@@ -81,6 +84,7 @@ const Page = () => {
       <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
       <InputBox label="رقم الهاتف" placeholder="01000000000" inputRef={phone} />
       <InputBox label="العنوان" placeholder="طرابلس" inputRef={address} />
+      <InputBox label="التخصص" placeholder="احصاء" inputRef={speciality} />
       <div className="flex flex-col">
         <label htmlFor="" lang="ar">
           تاريخ الميلاد

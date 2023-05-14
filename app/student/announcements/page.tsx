@@ -1,23 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { AnnouncementType } from '@/app/types';
+import { AnnouncmentsMangType } from '@/app/types';
 import axios from 'axios';
-
-interface Item {
-  id: number;
-  name: string;
-}
-
-const courseAnno: Item[] = [
-  { id: 1, name: "اعلان...." },
-  { id: 2, name: "اعلان...." },
-  { id: 3, name: "اعلان...." },
-  { id: 4, name: "اعلان...." },
-  { id: 5, name: "اعلان...." },
-  { id: 6, name: "اعلان...." },
- 
-];
 
 const AnnoPage = () => {
 // <<<<<<<< HEAD:app/student/Announcment/page.tsx
@@ -25,15 +10,15 @@ const AnnoPage = () => {
 // ========
 //   const session = useSession({required : true})
 // >>>>>>>> 815d1f63c47e79bb17de01fa164812beaaa26f05:app/student/Announcement/page.tsx
-    const [Announcements, setAnnouncements] = useState < AnnouncementType[]>([]);
-    const [courseAnnouncements, setCourseAnnouncements] = useState < AnnouncementType[]>([]);
+    const [Announcements, setAnnouncements] = useState < AnnouncmentsMangType[]>([]);
+    const [courseAnnouncements, setCourseAnnouncements] = useState < AnnouncmentsMangType[]>([]);
 
 
     useEffect(() => {
       const fetchPosts = async () => {
         axios.get('/api/uniAnnouncements').then((resp) => {
           console.log(resp.data);
-          const message: AnnouncementType[] = resp.data.message;
+          const message: AnnouncmentsMangType[] = resp.data.message;
           setAnnouncements(message);
         });
       };
@@ -44,7 +29,7 @@ const AnnoPage = () => {
       const fetchPosts = async () => {
         axios.get('/api/courseAnnouncements').then((resp) => {
           console.log(resp.data);
-          const message: AnnouncementType[] = resp.data.message;
+          const message: AnnouncmentsMangType[] = resp.data.message;
           setCourseAnnouncements(message);
         });
       };
@@ -52,18 +37,18 @@ const AnnoPage = () => {
     }, []);
 
 
-  const uni = Announcements.map((i) => (
-    <tr key={i.id}>
-      <td className=" p-1 w-full flex items-center justify-end " key={i.id}>
-        {i.subject}
+  const uni = Announcements.map((item,index) => (
+    <tr key={index}>
+      <td className=" p-1 w-full flex items-center justify-end " key={index}>
+        {item.announcement_text}
       </td>
     </tr>
   ));
 
-  const course = courseAnnouncements.map((i) => (
-    <tr key={i.id}>
-      <td className=" p-1 w-full flex items-center justify-end " key={i.id}>
-        {i.subject}
+  const course = courseAnnouncements.map((item,index) => (
+    <tr key={index}>
+      <td className=" p-1 w-full flex items-center justify-end " key={index}>
+        {item.announcement_text}
       </td>
     </tr>
   ));

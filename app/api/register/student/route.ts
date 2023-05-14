@@ -13,14 +13,14 @@ export async function POST(request: Request) {
   if (data.phone === ""){
     data.phone = undefined;
   }
-  if (data.department === ""){
-    data.department = undefined;
+  if (data.major === ""){
+    data.major = undefined;
   }
 
   try {
     const res = await supabase.from("tb_students").insert([data]);
     if (res.error) {
-      console.log(res.error);
+      console.log(res);
       throw res.error;
     }
     return new Response(JSON.stringify({ "message": "تم تسجيل الحساب بنجاح" }), { headers: { "content-type": "application/json" } },);

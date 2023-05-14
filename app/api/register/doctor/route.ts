@@ -10,15 +10,7 @@ export async function POST(request: Request) {
   // TODO: Maybe add some validation for security here
 
   const data: RegisterStudentType = await request.json();
-  if (data.address === '') {
-    data.address = undefined;
-  }
-  if (data.phone === '') {
-    data.phone = undefined;
-  }
-  if (data.department === '') {
-    data.department = undefined;
-  }
+
 
   try {
     const res = await supabase.from('tb_doctors').insert([data]);

@@ -1,4 +1,3 @@
-import { type } from "os";
 
 export type TablePropsType<T, K extends keyof T> = {
   data: Array<T>;
@@ -32,24 +31,20 @@ export type RegisterStudentType = {
   birth_date : string;
   email: string;
   password: string;
-  department?: string;
+  major?: string;
   phone?: string;
   address?: string;
   enrollment_date? : string;
 }
 
 
-
 export type AnnouncmentsMangType = {
-  // key:number
-  subject: string;
-  type: string;
+  general: boolean;
+  announcement_text: string;
+  posted_for_class_id?: number;
+  doctor_id?: number;
 };
 
-export type AnnouncmentsMang2Type = {
-  subject: string;
-  type: string;
-};
 
 
 export type AnnouncementType ={
@@ -57,6 +52,19 @@ export type AnnouncementType ={
   created_at: string;
   subject: string;
 }
+
+
+export type RegisterdoctorType = {
+  name: string;
+  surname: string;
+  birth_date: string;
+  email: string;
+  password: string;
+  phone?: string;
+  address?: string;
+  enrollment_date?: string;
+  speciality: string;
+};
 
 export type RegisterManagerType = {
   name: string;
@@ -83,15 +91,16 @@ export type PersonalInfoType = {
   birth_date: number;
   semester: number;
   enrollment_date?: number;
-  department: string;
+  major: string;
   advisor: string;
 };
 
 export type MajorRegType = {
   major_name: string;
   department_name: string;
+
 };
 
 export type DepartmentRegType = {
-  department_name: string;
+  name: string;
 };

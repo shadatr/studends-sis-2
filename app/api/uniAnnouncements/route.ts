@@ -9,7 +9,11 @@ const supabase = createClient(
 
 export async function GET() {
   try {
-    const data = await supabase.from('tb_announcements').select('*').order("created_at", {ascending : false}).eq('type', 'uni');
+    const data = await supabase
+      .from('tb_announcements')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .eq('general', 'TRUE');
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
@@ -24,7 +28,10 @@ export async function GET() {
 export async function POST(request : Request) {
   const req = await request.json();
   console.log(req);
-  const deleteReq = await supabase.from("tb_announcements").delete().eq("subject" , req.item_subject);
+  const deleteReq = await supabase
+    .from('tb_announcements')
+    .delete()
+    .eq('announcement_text', req.item_announcement_text);
   console.log(deleteReq.error);
-  return new Response(JSON.stringify({message : "announcement was deleted sucessfully"}));
+  return new Response(JSON.stringify({message : "تم حذف الاعلان بنجاح"}));
 }

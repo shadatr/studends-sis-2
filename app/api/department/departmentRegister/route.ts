@@ -13,6 +13,7 @@ export async function POST(request: Request) {
 
   try {
     const res = await supabase.from('tb_departments').insert([data]);
+    console.log(res.error?.message);
     if (res.error) {
       console.log(res.error);
       throw res.error;

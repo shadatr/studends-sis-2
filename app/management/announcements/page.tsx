@@ -26,8 +26,8 @@ const Page = () => {
     fetchPosts();
   }, [loadAnnouncements]);
 
-  const handleDelete = (subject: string) => {
-    const data = { item_subject: subject };
+  const handleDelete = (announcement_text: string) => {
+    const data = { item_announcement_text: announcement_text };
     axios.post('/api/uniAnnouncements', data).then((resp) => {
       toast.success(resp.data.message);
       setLoad(!loadAnnouncements);
@@ -37,12 +37,9 @@ const Page = () => {
   const data1 = announcements.map((item, index) => (
     <tr key={index} className='flex w-full flex-row'>
       <td className="flex items-center w-full justify-between p-2 ">
-        <FaTrashAlt className='w-10' onClick={() => handleDelete(item.subject)} role="button" />
-        {item.subject}
+        <FaTrashAlt className='w-10' onClick={() => handleDelete(item.announcement_text)} role="button" />
+        {item.announcement_text}
       </td>
-        <td className='p-2'>
-        {item.type}
-        </td>
     </tr>
   ));
 
@@ -50,8 +47,8 @@ const Page = () => {
     e.preventDefault();
     if (!newItem) return;
     const data: AnnouncmentsMangType = {
-      subject: newItem,
-      type: "uni"
+      announcement_text: newItem,
+      general: true,
     };
     console.log(data);
     axios.post('/api/newUniAnnouncement', data).then(() => {

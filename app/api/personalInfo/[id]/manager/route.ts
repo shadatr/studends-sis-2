@@ -7,7 +7,7 @@ const supabase = createClient(
 
 export async function GET(request: Request, { params }: { params: { id: number } }) {
   try {
-    const data = await supabase.from('tb_managers').select('*').eq("id", params.id);
+    const data = await supabase.from('tb_admins').select('*').eq("id", params.id);
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
