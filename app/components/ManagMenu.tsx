@@ -1,5 +1,5 @@
 import React from 'react'
-import { MenuItemType } from '../types';
+import { MenuItemType } from '../types/types';
 import Link from 'next/link';
 
 const item: MenuItemType[] = [

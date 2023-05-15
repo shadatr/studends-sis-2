@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 interface Item {
   name: string;
@@ -44,8 +45,11 @@ const courses: Item[] = [
 
 const title: string[] = ['كرديت', 'عدد الساعات', 'الدكتور', 'اسم المادة'];
 
-const page = () => {
-  // const session = useSession({required : true})
+const Page = () => {
+  useSession({required : true, onUnauthenticated() {
+    redirect("/login/student");
+  },});
+
   const info = courses.map((course, index) => (
     <tr key={index}>
       <td className="p-3 pr-6">{course.credit}</td>
@@ -65,4 +69,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -1,7 +1,6 @@
-import { it } from "node:test";
-
 import { useSession } from "next-auth/react";
 import React from "react";
+import { redirect } from "next/navigation";
 
 interface Item {
   h1: string
@@ -67,11 +66,13 @@ const hours: Item[] = [
   { h1: "8:00", h2: "9:00" },
 ];
 
-const page = () => {
-  // const session = useSession({ required: true })
-
-  const hoursCol = hours.map((hour) => (
-    <th className="text-center bg-darkBlue text-secondary">
+const Page = () => {
+  useSession({required : true, onUnauthenticated() {
+    redirect("/login/student");
+  },});
+  
+  const hoursCol = hours.map((hour, index) => (
+    <th key={index} className="text-center bg-darkBlue text-secondary">
       <div>{hour.h1}</div>
       <div>{hour.h2}</div>
     </th>
@@ -79,8 +80,8 @@ const page = () => {
 
   const table = days.map((item) => (
     <tr key={item.id}>
-      {item.hour.map((i) => (
-        <td className="text-center">{i}</td>
+      {item.hour.map((i, index) => (
+        <td key={index} className="text-center">{i}</td>
       ))}
       <td className="text-center bg-darkBlue text-secondary">{item.name}</td>
     </tr>
@@ -94,4 +95,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

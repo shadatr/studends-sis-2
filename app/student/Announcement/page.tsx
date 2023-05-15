@@ -1,5 +1,6 @@
 'use client';
 import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 import React from 'react';
 
 interface Item {
@@ -26,18 +27,20 @@ const courseAnno: Item[] = [
 ];
 
 const AnnoPage = () => {
-  const session = useSession({ required: true });
-
+  useSession({required : true, onUnauthenticated() {
+    redirect("/login/student");
+  },});
+  
   const uni = uniAnno.map((i) => (
-    <tr>
-      <td className=" p-1 pr-3 " key={i.id}>
+    <tr key={i.id}>
+      <td className=" p-1 pr-3 " >
         {i.name}
       </td>
     </tr>
   ));
   const course = courseAnno.map((i) => (
-    <tr>
-      <td className=" p-1 pr-3" key={i.id}>
+    <tr key={i.id}>
+      <td className=" p-1 pr-3">
         {i.name}
       </td>
     </tr>

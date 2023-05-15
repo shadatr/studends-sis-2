@@ -1,5 +1,5 @@
 import React from 'react';
-import { ColumnDefinitionType , MenuItemType } from "@/app/types";
+import { ColumnDefinitionType , MenuItemType } from "@/app/types/types";
 
 import Table from "../table";
 

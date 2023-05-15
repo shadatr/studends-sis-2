@@ -1,5 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 import React, { useState } from "react";
 
 
@@ -20,8 +21,10 @@ const checkList: string[] = [
 
 function App() {
   const [checked, setChecked] = useState<string[]>([]);
-  // const session = useSession({ required: true })
-
+  useSession({required : true, onUnauthenticated() {
+    redirect("/login/student");
+  },});
+  
   const handleCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
     let updatedList = [...checked];
     if (event.target.checked) {

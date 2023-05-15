@@ -1,10 +1,10 @@
 import React from "react";
 
-import { TableHeaderProps, TableRowsPropsType, TablePropsType } from "./types";
+import { TableHeaderPropsType, TableRowsPropsType, TablePropsType } from "./types/types";
 
 const TableHeader = <T, K extends keyof T>({
   columns,
-}: TableHeaderProps<T, K>): JSX.Element => {
+}: TableHeaderPropsType<T, K>): JSX.Element => {
   const headers = columns.map((column, index) => {
     return (
       <th
