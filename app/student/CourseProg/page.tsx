@@ -1,5 +1,5 @@
-import { it } from "node:test";
 
+import { it } from "node:test";
 import { useSession } from "next-auth/react";
 import React from "react";
 
@@ -70,17 +70,17 @@ const hours: Item[] = [
 const page = () => {
   // const session = useSession({ required: true })
 
-  const hoursCol = hours.map((hour) => (
-    <th className="text-center bg-darkBlue text-secondary">
+  const hoursCol = hours.map((hour, index) => (
+    <th key={index} className="text-center bg-darkBlue text-secondary">
       <div>{hour.h1}</div>
       <div>{hour.h2}</div>
     </th>
   ));
 
-  const table = days.map((item) => (
-    <tr key={item.id}>
-      {item.hour.map((i) => (
-        <td className="text-center">{i}</td>
+  const table = days.map((item,index) => (
+    <tr key={index}>
+      {item.hour.map((item,index) => (
+        <td key={index} className="text-center">{item}</td>
       ))}
       <td className="text-center bg-darkBlue text-secondary">{item.name}</td>
     </tr>

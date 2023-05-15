@@ -34,7 +34,7 @@ export async function GET() {
   try {
     const data = await supabase
       .from('tb_departments')
-      .select('*');
+      .select('*',);
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
