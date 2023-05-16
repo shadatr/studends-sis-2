@@ -19,6 +19,7 @@ export async function GET() {
       surname: result.data[i].surname,
       admin: result.data[i].admin,
       createdAt: result.data[i].enrollment_date,
+      active : result.data[i].active
     });
   }
 

@@ -118,4 +118,5 @@ export type AdminStaffType = {
   surname: string;
   admin : boolean;
   createdAt : string | null;
+  active : boolean;
 };
