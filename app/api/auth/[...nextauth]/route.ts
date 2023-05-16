@@ -74,7 +74,6 @@ const authOptions: NextAuthOptions = {
           return null;
         } else {
           const userObj = data[0] as any;
-          console.log("it's a doctor");
           userObj.userType = 'doctor';
           return data[0] as any;
         }
