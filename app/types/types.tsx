@@ -96,6 +96,7 @@ export type PersonalInfoType = {
 };
 
 export type MajorRegType = {
+  id?: number;
   major_name: string;
   semesters?: number;
   department_id?: number;
@@ -109,6 +110,7 @@ export type MajorRegType = {
 export type DepartmentRegType = {
   id?:number;
   name: string;
+  
 };
 
 export type AdminStaffType = {
@@ -117,4 +119,24 @@ export type AdminStaffType = {
   surname: string;
   admin : boolean;
   createdAt : string | null;
+};
+
+export type AddCourseType = {
+  id?: number;
+  course_name: string;
+  major_id?: number;
+  min_semester?: string;
+  hours?: string;
+  credits?: string;
+  passing_percentage?: string;
+};
+
+export type AddCourse2Type = {
+  id: number;
+  course_name: string;
+  major_id?: number;
+  min_semester?: number;
+  hours?: string;
+  credits?: string;
+  passing_percentage?: string;
 };

@@ -5,6 +5,8 @@ import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+
 
 import MyModel from '../../components/dialog';
 
@@ -86,6 +88,10 @@ const page = () => {
     <option key={index}>{item.name}</option>
   ));
 
+
+
+
+
   const selectedDep = departments.filter((item) => item.name == newMajorDep);
   const depId = selectedDep.map((i) => i.id);
 
@@ -142,7 +148,7 @@ const page = () => {
           depOrMaj="التخصص"
           deleteModle={() => handleDeleteMajor(item.major_name)}
         />
-        {item.major_name}
+        <Link href={`/management/course/${item.id}`}>{item.major_name}</Link>
       </td>
       <td className="flex flex-row w-1/5 items-center justify-center pr-2 pl-2">
         {item.tb_departments?.name}
