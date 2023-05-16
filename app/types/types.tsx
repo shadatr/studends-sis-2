@@ -43,6 +43,7 @@ export type AnnouncmentsMangType = {
   announcement_text: string;
   posted_for_class_id?: number;
   doctor_id?: number;
+  admin_id?: number;
 };
 
 

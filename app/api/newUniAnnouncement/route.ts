@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { AnnouncmentsMangType } from '@/app/types/types';
+import { Database } from '@/app/types/supabase';
 
-const supabase = createClient(
+const supabase = createClient<Database>(
   process.env.SUPABASE_URL || '',
   process.env.SUPABASE_KEY || ''
 );

@@ -56,6 +56,7 @@ const Page = () => {
     const data: AnnouncmentsMangType = {
       announcement_text: newItem,
       general: true,
+      admin_id: session.data?.user.id,
     };
     console.log(data);
     axios.post('/api/newUniAnnouncement', data).then(() => {
