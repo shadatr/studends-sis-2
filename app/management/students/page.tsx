@@ -9,6 +9,7 @@ import { RegisterStudentType } from '@/app/types/types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
+import SearchBar from '@/app/components/searchBar';
 
 const InputBox: FC<{
   label: string;
@@ -85,8 +86,10 @@ const Page = () => {
         toast.error(err.response.data.message);
       });
   };
+
   return (
     <div className="flex flex-col items-center h-[150px] pt-5 fixed right-[600px] text-sm ">
+      <SearchBar />
       <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
       <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
       <InputBox label="القسم" placeholder="هندسه" inputRef={major} />

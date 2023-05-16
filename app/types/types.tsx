@@ -120,3 +120,8 @@ export type AdminStaffType = {
   createdAt : string | null;
   active : boolean;
 };
+
+export type SearchIntityType = {
+  searchType : 'student' | 'doctor' | 'admin';
+  searchBy : string
+};
