@@ -1,5 +1,4 @@
-
-import { it } from "node:test";
+'use client';
 import { useSession } from "next-auth/react";
 import React from "react";
 
@@ -67,8 +66,13 @@ const hours: Item[] = [
   { h1: "8:00", h2: "9:00" },
 ];
 
-const page = () => {
-  // const session = useSession({ required: true })
+const Page = () => {
+  // handling authentication
+  const session = useSession({ required: true });
+  // if user isn't a student, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'student' : false) {
+    throw new Error('Unauthorized');
+  }
 
   const hoursCol = hours.map((hour, index) => (
     <th key={index} className="text-center bg-darkBlue text-secondary">
@@ -94,4 +98,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

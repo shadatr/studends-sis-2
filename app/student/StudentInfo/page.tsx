@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
 
 import { PersonalInfoHeaderType, PersonalInfoType } from '../../types/types';
 
@@ -18,9 +19,14 @@ const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'المشرف' },
 ];
 
-const page = () => {
+const Page = () => {
+  // handling authentication
+  const session = useSession({ required: true });
+  // if user isn't a student, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'student' : false) {
+    throw new Error('Unauthorized');
+  }
   const [useMyData, useSetMydata] = useState<PersonalInfoType[]>([]);
-
   useEffect(() => {
     const fetchPosts = async () => {
       axios.get(`/api/personalInfo/15/student`).then((resp) => {
@@ -80,4 +86,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

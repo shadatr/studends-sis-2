@@ -1,26 +1,30 @@
-"use client";
-import { useSession } from "next-auth/react";
-import React, { useState } from "react";
-
+'use client';
+import { useSession } from 'next-auth/react';
+import React, { useState } from 'react';
 
 const checkList: string[] = [
-  "مادة",
-  "مادة",
-  "مادة",
-  "مادة",
-  "مادة",
-  "مادة",
-  "مادة",
-  "مادة",
-  "مادة",
-  "مادة",
-  "مادة",
-  "مادة",
+  'مادة',
+  'مادة',
+  'مادة',
+  'مادة',
+  'مادة',
+  'مادة',
+  'مادة',
+  'مادة',
+  'مادة',
+  'مادة',
+  'مادة',
+  'مادة',
 ];
 
-function App() {
+const Page = () => {
   const [checked, setChecked] = useState<string[]>([]);
-  // const session = useSession({ required: true })
+  // handling authentication
+  const session = useSession({ required: true });
+  // if user isn't a student, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'student' : false) {
+    throw new Error('Unauthorized');
+  }
 
   const handleCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
     let updatedList = [...checked];
@@ -65,6 +69,6 @@ function App() {
       </form>
     </div>
   );
-}
+};
 
-export default App;
+export default Page;

@@ -4,11 +4,18 @@ import { FaTrashAlt } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import {  AnnouncmentsMangType } from '@/app/types/types';
+import { useSession } from 'next-auth/react';
 
 
 const AnnoPage = () => {
 
   const [Announcements, setAnnouncements] = useState<AnnouncmentsMangType[]>([]);
+  // handling authentication
+  const session = useSession({ required: true });
+  // TODO if user isn't a doctor, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
+    throw new Error('Unauthorized');
+  }
 
   useEffect(() => {
     const fetchPosts = async () => {

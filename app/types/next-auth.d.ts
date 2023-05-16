@@ -22,6 +22,7 @@ declare module "next-auth" {
       surname: string
       speciality: string | null
       admin: boolean
+      userType : 'student' | 'doctor' | 'admin'
     }
   }
 }

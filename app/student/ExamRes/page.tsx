@@ -1,3 +1,4 @@
+import { useSession } from 'next-auth/react';
 import React from 'react';
 
 interface Item {
@@ -60,7 +61,14 @@ const examsData: Item[] = [
 
 const title: string[] = ["اسم المادة", "الامتحان النصفي", "الامتحان النهائي","اعمال السنة","المعدل","معدل النجاح"];
 
-const page = () => {
+const Page = () => {
+    // handling authentication
+    const session = useSession({ required: true });
+    // if user isn't a student, throw an error
+    if (session.data?.user ? session.data?.user.userType !== 'student' : false) {
+      throw new Error('Unauthorized');
+    }
+
     const results = examsData.map((exam) => (
       <tr key={exam.id}>
         <td className=" text-sm p-3">{exam.passingGrade}</td>
@@ -72,8 +80,8 @@ const page = () => {
       </tr>
     ));
 
-    const titles = title.map((t) => (
-      <th className=" text-sm p-3">{t} </th>
+    const titles = title.map((t, index) => (
+      <th key={index} className=" text-sm p-3">{t} </th>
     ));
 
   return (
@@ -86,4 +94,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
 
 import { PersonalInfoHeaderType, PersonalInfoType } from '../../types/types';
 
@@ -16,7 +17,14 @@ const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'تاريخ التسجيل' },
 ];
 
-const page = () => {
+const Page = () => {
+  // handling authentication
+  const session = useSession({ required: true });
+  // TODO if user isn't a doctor, throw an error, can be simplified mostly
+  if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
+    throw new Error('Unauthorized');
+  }
+  console.log(session.data?.user);
   const [useMyData, useSetMydata] = useState<PersonalInfoType[]>([]);
 
   useEffect(() => {
@@ -72,4 +80,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

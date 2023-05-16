@@ -1,43 +1,47 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { AnnouncmentsMangType } from '@/app/types/types';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
 
 const AnnoPage = () => {
-// <<<<<<<< HEAD:app/student/Announcment/page.tsx
-//   const session = useSession({required : true})
-// ========
-//   const session = useSession({required : true})
-// >>>>>>>> 815d1f63c47e79bb17de01fa164812beaaa26f05:app/student/Announcement/page.tsx
-    const [Announcements, setAnnouncements] = useState < AnnouncmentsMangType[]>([]);
-    const [courseAnnouncements, setCourseAnnouncements] = useState < AnnouncmentsMangType[]>([]);
+  // handling authentication
+  const session = useSession({ required: true });
+  // if user isn't a student, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'student' : false) {
+    throw new Error('Unauthorized');
+  }
+  const [Announcements, setAnnouncements] = useState<AnnouncmentsMangType[]>(
+    []
+  );
+  const [courseAnnouncements, setCourseAnnouncements] = useState<
+    AnnouncmentsMangType[]
+  >([]);
 
+  useEffect(() => {
+    const fetchPosts = async () => {
+      axios.get('/api/uniAnnouncements').then((resp) => {
+        console.log(resp.data);
+        const message: AnnouncmentsMangType[] = resp.data.message;
+        setAnnouncements(message);
+      });
+    };
+    fetchPosts();
+  }, []);
 
-    useEffect(() => {
-      const fetchPosts = async () => {
-        axios.get('/api/uniAnnouncements').then((resp) => {
-          console.log(resp.data);
-          const message: AnnouncmentsMangType[] = resp.data.message;
-          setAnnouncements(message);
-        });
-      };
-      fetchPosts();
-    }, []);
+  useEffect(() => {
+    const fetchPosts = async () => {
+      axios.get('/api/courseAnnouncements').then((resp) => {
+        console.log(resp.data);
+        const message: AnnouncmentsMangType[] = resp.data.message;
+        setCourseAnnouncements(message);
+      });
+    };
+    fetchPosts();
+  }, []);
 
-    useEffect(() => {
-      const fetchPosts = async () => {
-        axios.get('/api/courseAnnouncements').then((resp) => {
-          console.log(resp.data);
-          const message: AnnouncmentsMangType[] = resp.data.message;
-          setCourseAnnouncements(message);
-        });
-      };
-      fetchPosts();
-    }, []);
-
-
-  const uni = Announcements.map((item,index) => (
+  const uni = Announcements.map((item, index) => (
     <tr key={index}>
       <td className=" p-1 w-full flex items-center justify-end " key={index}>
         {item.announcement_text}
@@ -45,14 +49,13 @@ const AnnoPage = () => {
     </tr>
   ));
 
-  const course = courseAnnouncements.map((item,index) => (
+  const course = courseAnnouncements.map((item, index) => (
     <tr key={index}>
       <td className=" p-1 w-full flex items-center justify-end " key={index}>
         {item.announcement_text}
       </td>
     </tr>
   ));
-  
 
   return (
     <div className=" flex w-[800px] right-[464px]  flex-col absolute  top-[180px] text-sm  ">
