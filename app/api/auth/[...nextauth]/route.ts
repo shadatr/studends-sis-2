@@ -4,8 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
 import { createClient } from "@supabase/supabase-js";
-
-import { Database } from "../../../types/supabase";
+import { Database } from "@/app/types/supabase";
 
 
 const supabase = createClient<Database>(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "");

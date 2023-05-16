@@ -9,6 +9,8 @@ import { RegisterStudentType } from '@/app/types/types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 const InputBox: FC<{
   label: string;
@@ -18,7 +20,7 @@ const InputBox: FC<{
 }> = ({ label, placeholder, inputRef, type }) => {
   return (
     <div className="flex flex-col">
-      <label htmlFor="" lang="ar" className='p-1'>
+      <label htmlFor="" lang="ar" className="p-1">
         {label}
       </label>
       <input
@@ -84,7 +86,9 @@ const Page = () => {
   };
   return (
     <div className="flex flex-col items-center h-[150px] pt-5 fixed right-[600px] text-sm ">
-      <button onClick={()=> toast.error("not implemeneted yet")} className='btn_base py-1' >ابحث عن كل الاداريين/الموظفين</button>
+      <button className="btn_base py-1">
+        <Link href={"/management/allStaff"}>ابحث عن كل الاداريين/الموظفين</Link>
+      </button>
       <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
       <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
       <InputBox label="رقم الهاتف" placeholder="01000000000" inputRef={phone} />
@@ -113,7 +117,7 @@ const Page = () => {
       />
 
       <button onClick={handleRegister} className="btn_base mt-5 w-[400px]">
-        تسجبل الموظف الاداري  
+        تسجبل الموظف الاداري
       </button>
     </div>
   );
