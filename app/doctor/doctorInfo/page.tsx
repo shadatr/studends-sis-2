@@ -2,7 +2,6 @@
 
 import { useSession } from 'next-auth/react';
 
-import { PersonalInfoHeaderType } from '../../types/types';
 
 const Page = () => {
   // handling authentication
