@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-import { PersonalInfoHeaderType, PersonalInfoType } from '../../types';
+import { PersonalInfoHeaderType, PersonalInfoType } from '../../types/types';
 
 const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'الاسم' },

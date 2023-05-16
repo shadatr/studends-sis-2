@@ -5,7 +5,7 @@ import React, { FC, useRef, useState } from 'react';
 import { DatePicker } from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import { RegisterdoctorType } from '@/app/types';
+import { RegisterdoctorType } from '@/app/types/types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 

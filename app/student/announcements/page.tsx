@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { AnnouncmentsMangType } from '@/app/types';
+import { AnnouncmentsMangType } from '@/app/types/types';
 import axios from 'axios';
 
 const AnnoPage = () => {

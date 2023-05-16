@@ -1,4 +1,4 @@
-import { DepartmentRegType } from '@/app/types';
+import { DepartmentRegType } from '@/app/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(

@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import {  AnnouncmentsMangType } from '@/app/types';
+import {  AnnouncmentsMangType } from '@/app/types/types';
 
 
 const AnnoPage = () => {

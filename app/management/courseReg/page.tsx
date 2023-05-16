@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client';
-import { DepartmentRegType, MajorRegType } from '@/app/types';
+import { DepartmentRegType, MajorRegType } from '@/app/types/types';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
