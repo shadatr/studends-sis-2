@@ -1,7 +1,8 @@
-"use client";
+'use client';
 import 'react-toastify/dist/ReactToastify.css';
 import './globals.css';
 import { ToastContainer } from 'react-toastify';
+import { SessionProvider } from 'next-auth/react';
 
 // export const metadata = {
 //   title: 'Create Next App',
@@ -10,15 +11,17 @@ import { ToastContainer } from 'react-toastify';
 
 export default function RootLayout({
   children,
+  session,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
+  session: any;
 }) {
   return (
     <html lang="ar">
-      <body className='h-screen' >
-            {children}
-      </body>
-      <ToastContainer position='bottom-right' autoClose={2000} rtl={true}/>
+      <SessionProvider session={session}>
+        <body className="h-screen">{children}</body>
+        <ToastContainer position="bottom-right" autoClose={2000} rtl={true} />
+      </SessionProvider>
     </html>
   );
 }

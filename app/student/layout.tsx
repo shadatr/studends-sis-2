@@ -13,21 +13,17 @@ import Footer from "../components/Footer";
 
 export default function StudentLayout({
   children,
-  session,
 }: {
   children: React.ReactNode;
-  session: any;
 }) {
   return (
     <html lang="ar">
-      <SessionProvider session={session}>
         <body>
           <Navbar />
           {children}
           <Menu />
           <Footer />
         </body>
-      </SessionProvider>
     </html>
   );
 }
