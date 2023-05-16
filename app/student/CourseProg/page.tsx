@@ -1,69 +1,24 @@
 'use client';
-import { useSession } from "next-auth/react";
-import React from "react";
+import { useSession } from 'next-auth/react';
+import React from 'react';
 
 interface Item {
-  h1: string
-  h2: string
+  startTime: string;
 }
-
-interface Course {
-  id: number
-  name: string
-  hour: string[]
-}
-
-const days: Course[] = [
-  {
-    id: 1,
-    name: "الاحد",
-    hour: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-  },
-  {
-    id: 2,
-    name: "الاثنين",
-    hour: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-  },
-  {
-    id: 3,
-    name: "الثلثاء",
-    hour: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-  },
-  {
-    id: 4,
-    name: "الاربعاء",
-    hour: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-  },
-  {
-    id: 5,
-    name: "الخميس",
-    hour: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-  },
-  {
-    id: 6,
-    name: "الجمعة",
-    hour: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-  },
-  {
-    id: 7,
-    name: "السبت",
-    hour: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-  },
-];
 
 const hours: Item[] = [
-  { h1: "19:00", h2: "20:00" },
-  { h1: "18:00", h2: "19:00" },
-  { h1: "17:00", h2: "18:00" },
-  { h1: "16:00", h2: "17:00" },
-  { h1: "15:00", h2: "16:00" },
-  { h1: "14:00", h2: "15:00" },
-  { h1: "13:00", h2: "14:00" },
-  { h1: "12:00", h2: "13:00" },
-  { h1: "11:00", h2: "12:00" },
-  { h1: "10:00", h2: "11:00" },
-  { h1: "9:00", h2: "10:00" },
-  { h1: "8:00", h2: "9:00" },
+  { startTime: '19:00' },
+  { startTime: '18:00' },
+  { startTime: '17:00' },
+  { startTime: '16:00' },
+  { startTime: '15:00' },
+  { startTime: '14:00' },
+  { startTime: '13:00' },
+  { startTime: '12:00' },
+  { startTime: '11:00' },
+  { startTime: '10:00' },
+  { startTime: '9:00' },
+  { startTime: '8:00' },
 ];
 
 const Page = () => {
@@ -74,19 +29,31 @@ const Page = () => {
     throw new Error('Unauthorized');
   }
 
+  const daysOfWeek = [
+    'السبت',
+    'الاحد',
+    'الاثنين',
+    'الثلثاء',
+    'الاربعاء',
+    'الخميس',
+    'الجمعة',
+  ];
+
+
   const hoursCol = hours.map((hour, index) => (
     <th key={index} className="text-center bg-darkBlue text-secondary">
-      <div>{hour.h1}</div>
-      <div>{hour.h2}</div>
+      <div>{hour.startTime}</div>
     </th>
   ));
 
-  const table = days.map((item,index) => (
+  const table = daysOfWeek.map((item, index) => (
     <tr key={index}>
-      {item.hour.map((item,index) => (
-        <td key={index} className="text-center">{item}</td>
+      {Array.from({ length: 12 }, (_, index) => (
+        <td key={index} className="text-center">
+          {''}
+        </td>
       ))}
-      <td className="text-center bg-darkBlue text-secondary">{item.name}</td>
+      <td className="text-center bg-darkBlue text-secondary">{item}</td>
     </tr>
   ));
 
