@@ -5,8 +5,10 @@ import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
 import { createClient } from "@supabase/supabase-js";
 
+import { Database } from "../../../types/supabase";
 
-const supabase = createClient(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "");
+
+const supabase = createClient<Database>(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "");
 
 const authOptions: NextAuthOptions = {
   providers: [CredentialsProvider({
@@ -116,7 +118,21 @@ const authOptions: NextAuthOptions = {
       return { ...token, ...user };
     },
     async session({ session, token, user }) {
-      session.user = token;
+      session.user.token = token;
+      session.user.active = token.active as any;
+      session.user.address = token.address as any;
+      session.user.birth_date = token.birth_date as any;
+      session.user.created_at = token.created_at as any;
+      session.user.email = token.email as any;
+      session.user.enrollment_date = token.enrollment_date as any;
+      session.user.id = token.id as any;
+      session.user.major = token.major as any;
+      session.user.name = token.name as any;
+      session.user.phone = token.phone as any;
+      session.user.semester = token.semester as any;
+      session.user.surname = token.surname as any;
+      session.user.speciality = token.speciality as any;
+      session.user.admin = token.admin as any;
 
       return session;
     },
