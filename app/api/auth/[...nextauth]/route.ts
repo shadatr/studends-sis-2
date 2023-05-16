@@ -1,44 +1,114 @@
+import { createHash } from "crypto";
+
 import CredentialsProvider from "next-auth/providers/credentials";
 import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
 import { createClient } from "@supabase/supabase-js";
+import { Database } from "@/app/types/supabase";
 
-const supabase = createClient(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "");
+
+const supabase = createClient<Database>(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "");
 
 const authOptions: NextAuthOptions = {
-  // Configure one or more authentication providers
-  providers: [
-    // ...add more providers here
+  providers: [CredentialsProvider({
+    name: "admin",
+    id: 'admin',
+    credentials: {
+      email: {
+        label: "البريد الالكتروني",
+        type: "text",
+        placeholder: "email@example.com",
+      },
+      password: {
+        label: "كلمة المرور",
+        type: "password",
+      },
+    },
+    async authorize(credentials) {
+      const { email, password } = credentials as any;
+      const passwordHash = createHash('sha256').update(password).digest('hex');
+
+      const { data, error } = await supabase
+        .from('tb_admins')
+        .select('*')
+        .eq('email', email)
+        .eq('password', passwordHash);
+
+      if (!data && error || data && data.length === 0) {
+
+        return null;
+      } else {
+        const userObj = data[0] as any;
+        userObj.userType = 'admin';
+        return data[0] as any;
+      }
+    },
+  }),
     CredentialsProvider({
-      // The name to display on the sign in form (e.g. "Sign in with...")
-      name: "Credentials",
-
-
+      name: "professor",
+      id: 'professor',
       credentials: {
-        username: {
-          label: "Username",
+        email: {
+          label: "البريد الالكتروني",
           type: "text",
-          placeholder: "jsmith",
+          placeholder: "email@example.com",
         },
         password: {
-          label: "Password",
+          label: "كلمة المرور",
           type: "password",
         },
       },
-      async authorize(credentials, req) {
-        const { username, password } = credentials as any;
-      
-        console.log("auth");
+      async authorize(credentials) {
+        const { email, password } = credentials as any;
+        const passwordHash = createHash('sha256').update(password).digest('hex');
+
         const { data, error } = await supabase
-          .from('tb_students_login')
+          .from('tb_doctors')
           .select('*')
-          .eq('username', username)
-          .eq('password', password);
-        const data1 = await supabase.from('tb_students_login').select('*');
-        console.log(data);
+          .eq('email', email)
+          .eq('password', passwordHash);
+
         if (!data && error || data && data.length === 0) {
+
           return null;
         } else {
+          const userObj = data[0] as any;
+          userObj.userType = 'doctor';
+          return data[0] as any;
+        }
+      },
+    }),
+    CredentialsProvider({
+      name: "Student",
+      id: 'student',
+
+      credentials: {
+        email: {
+          label: "البريد الالكتروني",
+          type: "text",
+          placeholder: "email@example.com",
+        },
+        password: {
+          label: "كلمة المرور",
+          type: "password",
+        },
+      },
+      async authorize(credentials) {
+        const { email, password } = credentials as any;
+        const passwordHash = createHash('sha256').update(password).digest('hex');
+
+        const { data, error } = await supabase
+          .from('tb_students')
+          .select('*')
+          .eq('email', email)
+          .eq('password', passwordHash);
+
+        if (!data && error || data && data.length === 0) {
+
+          return null;
+        } else {
+          const userObj = data[0] as any;
+          userObj.userType = 'student';
           return data[0] as any;
         }
       },
@@ -49,16 +119,28 @@ const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       return { ...token, ...user };
     },
-    async session({ session, token, user }) {
-      session.user = token;
-      
+    async session({ session, token}) {
+      session.user.token = token;
+      session.user.active = token.active as any;
+      session.user.address = token.address as any;
+      session.user.birth_date = token.birth_date as any;
+      session.user.created_at = token.created_at as any;
+      session.user.email = token.email as any;
+      session.user.enrollment_date = token.enrollment_date as any;
+      session.user.id = token.id as any;
+      session.user.major = token.major as any;
+      session.user.name = token.name as any;
+      session.user.phone = token.phone as any;
+      session.user.semester = token.semester as any;
+      session.user.surname = token.surname as any;
+      session.user.speciality = token.speciality as any;
+      session.user.admin = token.admin as any;
+      session.user.userType = token.userType as any;
+
       return session;
     },
   },
 
-  pages: {
-    signIn: "/",
-  },
 };
 
 const handler = NextAuth(authOptions);

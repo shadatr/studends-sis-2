@@ -5,9 +5,10 @@ import React, { FC, useRef, useState } from 'react';
 import { DatePicker } from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import { RegisterdoctorType } from '@/app/types';
+import { RegisterdoctorType } from '@/app/types/types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useSession } from 'next-auth/react';
 
 const InputBox: FC<{
   label: string;
@@ -32,6 +33,13 @@ const InputBox: FC<{
 };
 
 const Page = () => {
+  // handling authentication
+  const session = useSession({ required: true });
+  // if user isn't a admin, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
+    throw new Error('Unauthorized');
+  }
+
   const [birthDate, setBirthDate] = useState(new Date());
   const name = useRef<HTMLInputElement>(null);
   const surname = useRef<HTMLInputElement>(null);
@@ -46,7 +54,7 @@ const Page = () => {
       !name.current?.value ||
       !surname.current?.value ||
       !email.current?.value ||
-      !password.current?.value||
+      !password.current?.value ||
       !speciality.current?.value
     ) {
       toast.error('يجب ملئ جميع الحقول');

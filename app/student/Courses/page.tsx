@@ -44,18 +44,27 @@ const courses: Item[] = [
 
 const title: string[] = ['كرديت', 'عدد الساعات', 'الدكتور', 'اسم المادة'];
 
-const page = () => {
-  // const session = useSession({required : true})
-  const info = courses.map((course) => (
-    <tr>
-      <td key={1} className="p-3 pr-6">{course.credit}</td>
+const Page = () => {
+  // handling authentication
+  const session = useSession({ required: true });
+  // if user isn't a student, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'student' : false) {
+    throw new Error('Unauthorized');
+  }
+  const info = courses.map((course, index) => (
+    <tr key={index}>
+      <td key={1} className="p-3 pr-6">
+        {course.credit}
+      </td>
       <td className="p-3 pr-6">{course.hours}</td>
       <td className="p-3 pr-6">{course.dr}</td>
       <td className="p-3 pr-6">{course.name}</td>
     </tr>
   ));
-  const titles = title.map((item) => (
-    <th className="p-3 pr-6 bg-darkBlue text-secondary">{item}</th>
+  const titles = title.map((item, index) => (
+    <th key={index} className="p-3 pr-6 bg-darkBlue text-secondary">
+      {item}
+    </th>
   ));
   return (
     <table className=" w-[1000px] h-[400px] text-sm fixed top-[220px] right-[400px]">
@@ -65,4 +74,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -110,3 +110,11 @@ export type DepartmentRegType = {
   id?:number;
   name: string;
 };
+
+export type AdminStaffType = {
+  id: number;
+  name: string;
+  surname: string;
+  admin : boolean;
+  createdAt : string | null;
+};

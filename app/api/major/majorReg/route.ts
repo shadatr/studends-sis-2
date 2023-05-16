@@ -1,4 +1,4 @@
-import {  MajorRegType } from '@/app/types';
+import {  MajorRegType } from '@/app/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(

@@ -53,8 +53,13 @@ const header: string[] = [
   'اسم المادة',
 ];
 
-const page = () => {
-  // const session = useSession({required : true})
+const Page = () => {
+  // handling authentication
+  const session = useSession({ required: true });
+  // if user isn't a student, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'student' : false) {
+    throw new Error('Unauthorized');
+  }
 
   const attendance = attenData.map((item) => (
     <tr key={item.id}>
@@ -81,4 +86,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

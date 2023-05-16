@@ -1,68 +1,49 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useSession } from 'next-auth/react';
 
-import { PersonalInfoHeaderType, PersonalInfoType } from '../../types';
 
-const stuInfo: PersonalInfoHeaderType[] = [
-  { header: 'الاسم' },
-  { header: 'اللقب' },
-  { header: 'تاريخ الميلاد' },
-  { header: 'التخصص' },
-  { header: 'عنوان السكن' },
-  { header: 'رقم الهاتف' },
-  { header: 'الايميل' },
-  { header: 'تاريخ التسجيل' },
-];
+const Page = () => {
+  // handling authentication
+  const session = useSession({ required: true });
+  // TODO if user isn't a doctor, throw an error, can be simplified mostly
+  if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
+    throw new Error('Unauthorized');
+  }
+  const stuInfo = [
+    'الاسم',
+    'اللقب',
+    'تاريخ الميلاد',
+    'التخصص',
+    'عنوان السكن',
+    'رقم الهاتف',
+    'الايميل',
+    'تاريخ التسجيل',
+  ];
 
-const page = () => {
-  const [useMyData, useSetMydata] = useState<PersonalInfoType[]>([]);
+  const user = session.data?.user;
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      axios.get(`/api/personalInfo/9/doctor`).then((resp) => {
-        console.log(resp.data);
-        const message: PersonalInfoType[] = resp.data.message;
-        useSetMydata(message);
-      });
-    };
-
-    fetchPosts();
-  }, []);
   const titles = stuInfo.map((title, index) => (
     <td className="flex justify-center p-2 items-center text-right" key={index}>
-      {title.header}
+      {title}
     </td>
   ));
-  const data = useMyData.map((item, index) => (
+  const data = (
     <tr key={1} className="flex flex-col">
-      <td className="p-2" key={index}>
-        {item.name}
+      <td className="p-2">{user?.name ? user?.name : 'غير محدد'}</td>
+      <td className="p-2">{user?.surname ? user?.surname : 'غير محدد'}</td>
+      <td className="p-2">
+        {user?.birth_date ? user?.birth_date : 'غير محدد'}
       </td>
-      <td className="p-2" key={index}>
-        {item.surname}
+      <td className="p-2">
+        {user?.speciality ? user?.speciality : 'غير محدد'}
       </td>
-      <td className="p-2" key={index}>
-        {item.birth_date}
-      </td>
-      <td className="p-2" key={index}>
-        {item.department}
-      </td>
-      <td className="p-2" key={index}>
-        {item.address}
-      </td>
-      <td className="p-2" key={index}>
-        {item.phone}
-      </td>
-      <td className="p-2" key={index}>
-        {item.email}
-      </td>
-      <td className="p-2" key={index}>
-        {item.enrollment_date}
-      </td>
+      <td className="p-2">{user?.address ? user?.address : 'غير محدد'}</td>
+      <td className="p-2">{user?.phone ? user?.phone : 'غير محدد'}</td>
+      <td className="p-2">{user?.email ? user?.email : 'غير محدد'}</td>
+      <td className="p-2">{user?.enrollment_date}</td>
     </tr>
-  ));
+  );
 
   return (
     <table className="fixed flex text-sm w-[800px] top-[280px] right-[500px]">
@@ -72,4 +53,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

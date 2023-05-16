@@ -2,13 +2,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   AnnouncmentsMangType,
-} from '@/app/types';
+} from '@/app/types/types';
 import { FaTrashAlt } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useSession } from 'next-auth/react';
 
 
 const Page = () => {
+  // handling authentication
+  const session = useSession({ required: true });
+  // if user isn't a admin, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
+    throw new Error('Unauthorized');
+  }
 
   const [loadAnnouncements, setLoad] = useState(false);
   const [newItem, setNewItem] = useState('');

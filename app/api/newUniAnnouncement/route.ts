@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { AnnouncmentsMangType } from '@/app/types';
+import { AnnouncmentsMangType } from '@/app/types/types';
 
 const supabase = createClient(
   process.env.SUPABASE_URL || '',

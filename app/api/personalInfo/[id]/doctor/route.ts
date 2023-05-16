@@ -1,3 +1,4 @@
+// ! deprecated
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -20,6 +21,7 @@ export async function GET(
         status: 403,
       });
     }
+
 
     return new Response(JSON.stringify({ message: data.data }));
   } catch {}

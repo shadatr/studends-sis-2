@@ -5,9 +5,12 @@ import React, { FC, useRef, useState } from 'react';
 import { DatePicker } from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import { RegisterStudentType } from '@/app/types';
+import { RegisterStudentType } from '@/app/types/types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 const InputBox: FC<{
   label: string;
@@ -17,7 +20,7 @@ const InputBox: FC<{
 }> = ({ label, placeholder, inputRef, type }) => {
   return (
     <div className="flex flex-col">
-      <label htmlFor="" lang="ar" className='p-1'>
+      <label htmlFor="" lang="ar" className="p-1">
         {label}
       </label>
       <input
@@ -32,6 +35,13 @@ const InputBox: FC<{
 };
 
 const Page = () => {
+  // handling authentication
+  const session = useSession({ required: true });
+  // if user isn't a admin, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
+    throw new Error('Unauthorized');
+  }
+
   const [birthDate, setBirthDate] = useState(new Date());
   const name = useRef<HTMLInputElement>(null);
   const surname = useRef<HTMLInputElement>(null);
@@ -68,7 +78,6 @@ const Page = () => {
     axios
       .post('/api/register/manager', data)
       .then((res) => {
-        console.log(res.data);
         toast.success(res.data.message);
       })
       .catch((err) => {
@@ -77,6 +86,9 @@ const Page = () => {
   };
   return (
     <div className="flex flex-col items-center h-[150px] pt-5 fixed right-[600px] text-sm ">
+      <button className="btn_base py-1">
+        <Link href={"/management/allStaff"}>ابحث عن كل الاداريين/الموظفين</Link>
+      </button>
       <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
       <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
       <InputBox label="رقم الهاتف" placeholder="01000000000" inputRef={phone} />
@@ -105,7 +117,7 @@ const Page = () => {
       />
 
       <button onClick={handleRegister} className="btn_base mt-5 w-[400px]">
-        تسجبل الموظف الاداري  
+        تسجبل الموظف الاداري
       </button>
     </div>
   );

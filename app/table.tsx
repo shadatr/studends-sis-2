@@ -4,7 +4,7 @@ import {
   TableHeaderPropsType,
   TableRowsPropsType,
   TablePropsType,
-} from './types';
+} from './types/types';
 
 const TableHeader = <T, K extends keyof T>({
   columns,

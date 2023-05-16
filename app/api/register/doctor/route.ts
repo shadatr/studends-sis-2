@@ -1,4 +1,4 @@
-import { RegisterStudentType } from '@/app/types';
+import { RegisterStudentType } from '@/app/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(

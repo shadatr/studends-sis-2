@@ -1,13 +1,20 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client';
-import { DepartmentRegType, MajorRegType } from '@/app/types';
+import { DepartmentRegType, MajorRegType } from '@/app/types/types';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useSession } from 'next-auth/react';
 
 import MyModel from '../../components/dialog';
 
 const page = () => {
+  // handling authentication
+  const session = useSession({ required: true });
+  // if user isn't a admin, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
+    throw new Error('Unauthorized');
+  }
   const major = useRef<HTMLInputElement>(null);
   const majorDep = useRef<HTMLSelectElement>(null);
   const [majors, setMajors] = useState<MajorRegType[]>([]);
@@ -143,7 +150,7 @@ const page = () => {
       <td className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</td>
     </tr>
   ));
-  
+
   return (
     <div className="fixed flex flex-col right-[150px]">
       <div className="flex flex-col  items-center justify-center text-sm">
@@ -198,9 +205,11 @@ const page = () => {
             id="dep"
             dir="rtl"
             ref={majorDep}
-            onChange={
-              ((e) => {{setNewMajorDep(e.target.value);}})
-            }
+            onChange={(e) => {
+              {
+                setNewMajorDep(e.target.value);
+              }
+            }}
             className="p-4 text-sm bg-lightBlue "
           >
             <option selected disabled>
@@ -218,8 +227,7 @@ const page = () => {
           </button>
         </div>
         <table className="w-[1000px] mt-[50px] flex flex-col">
-          
-            {majorItems}
+          {majorItems}
         </table>
       </div>
     </div>
