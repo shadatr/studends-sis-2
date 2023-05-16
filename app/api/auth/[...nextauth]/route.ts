@@ -25,7 +25,7 @@ const authOptions: NextAuthOptions = {
         type: "password",
       },
     },
-    async authorize(credentials, req) {
+    async authorize(credentials) {
       const { email, password } = credentials as any;
       const passwordHash = createHash('sha256').update(password).digest('hex');
 
@@ -59,7 +59,7 @@ const authOptions: NextAuthOptions = {
           type: "password",
         },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const { email, password } = credentials as any;
         const passwordHash = createHash('sha256').update(password).digest('hex');
 
@@ -94,7 +94,7 @@ const authOptions: NextAuthOptions = {
           type: "password",
         },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const { email, password } = credentials as any;
         const passwordHash = createHash('sha256').update(password).digest('hex');
 
@@ -120,7 +120,7 @@ const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       return { ...token, ...user };
     },
-    async session({ session, token, user }) {
+    async session({ session, token}) {
       session.user.token = token;
       session.user.active = token.active as any;
       session.user.address = token.address as any;

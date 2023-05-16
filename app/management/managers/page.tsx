@@ -76,7 +76,6 @@ const Page = () => {
     axios
       .post('/api/register/manager', data)
       .then((res) => {
-        console.log(res.data);
         toast.success(res.data.message);
       })
       .catch((err) => {
@@ -85,6 +84,7 @@ const Page = () => {
   };
   return (
     <div className="flex flex-col items-center h-[150px] pt-5 fixed right-[600px] text-sm ">
+      <button onClick={()=> toast.error("not implemeneted yet")} className='btn_base py-1' >ابحث عن كل الاداريين/الموظفين</button>
       <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
       <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
       <InputBox label="رقم الهاتف" placeholder="01000000000" inputRef={phone} />
