@@ -12,6 +12,7 @@ export async function GET() {
   if (result.error) {
     return { status: 400, body: { message: "حدث خطا ما" } };
   }
+
   for (let i = 0; i < result.data.length; i++) {
     resp.push({
       id: result.data[i].id,
