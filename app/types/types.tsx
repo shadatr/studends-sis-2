@@ -36,7 +36,18 @@ export type RegisterStudentType = {
   address?: string;
   enrollment_date? : string;
 }
-
+export type RegisterStudent2Type = {
+  id: number;
+  name: string;
+  surname: string;
+  birth_date: string;
+  email: string;
+  password: string;
+  major?: string;
+  phone?: string;
+  address?: string;
+  enrollment_date?: string;
+};
 
 export type AnnouncmentsMangType = {
   general: boolean;
@@ -108,6 +119,18 @@ export type MajorRegType = {
   };
 };
 
+export type MajorReg2Type = {
+  id: number;
+  major_name: string;
+  semesters?: number;
+  department_id?: number;
+  credits_needed?: number;
+  tb_departments?: {
+    name: string;
+    id: number;
+  };
+};
+
 export type DepartmentRegType = {
   id?:number;
   name: string;
@@ -147,3 +170,9 @@ export type AddCourse2Type = {
   credits?: string;
   passing_percentage?: string;
 };
+
+export type MajorEnrollmentType = {
+
+  major_id: number;
+  student_id:number
+}
