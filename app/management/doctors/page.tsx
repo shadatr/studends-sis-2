@@ -1,14 +1,15 @@
 'use client';
 import { createHash } from 'crypto';
 
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { DatePicker } from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import { RegisterdoctorType } from '@/app/types/types';
+import { PersonalInfoType, RegisterdoctorType } from '@/app/types/types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 const InputBox: FC<{
   label: string;
@@ -40,6 +41,37 @@ const Page = () => {
     throw new Error('Unauthorized');
   }
 
+  const [activeTab, setActiveTab] = useState(1);
+  const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
+
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      axios.get('/api/register/doctor').then((resp) => {
+        console.log(resp.data);
+        const message: PersonalInfoType[] = resp.data.message;
+        setDoctors(message);
+      });
+    };
+    fetchPosts();
+  }, []);
+
+
+  const doctorsItems = doctors.map((item, index) => (
+    <tr key={index} className="flex flex-row w-full">
+      <td
+        className="flex flex-row w-full p-1 items-center justify-end"
+        key={index}
+      >
+        <Link href={`/management/personalInformation/doctor/${item.id}`}>
+          {item.name} { }{item.surname}
+        </Link>
+      </td>
+      <td className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</td>
+    </tr>
+  ));
+
+
   const [birthDate, setBirthDate] = useState(new Date());
   const name = useRef<HTMLInputElement>(null);
   const surname = useRef<HTMLInputElement>(null);
@@ -48,6 +80,10 @@ const Page = () => {
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
   const speciality = useRef<HTMLInputElement>(null);
+
+  const handleTabClick = (tabIndex: number) => {
+    setActiveTab(tabIndex);
+  };
 
   const handleRegister = () => {
     if (
@@ -87,7 +123,33 @@ const Page = () => {
       });
   };
   return (
-    <div className="flex flex-col items-center h-[150px] pt-5 fixed right-[600px] text-sm ">
+    <div className="flex absolute flex-col justify-center items-center">
+      <div className="flex w-screen  flex-row mb-4 justify-center items-center">
+        <button
+          className={`flex w-full flex-row p-2 justify-center items-center text-sm ${
+            activeTab === 1
+              ? 'bg-darkBlue text-secondary'
+              : 'bg-grey '
+          }`}
+          onClick={() => handleTabClick(1)}
+        >
+          Tab 1
+        </button>
+        <button
+          className={`flex w-full flex-row p-2 justify-center items-center text-sm ${
+            activeTab === 2
+              ? 'bg-darkBlue text-secondary'
+              : 'bg-grey'
+          }`}
+          onClick={() => handleTabClick(2)}
+        >
+          Tab 2
+        </button>
+      </div>
+    <div className="flex flex-col items-center h-[150px]  right-[600px] text-sm ">
+      <div>
+      {activeTab === 1 && (
+        <div>
       <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
       <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
       <InputBox label="رقم الهاتف" placeholder="01000000000" inputRef={phone} />
@@ -119,6 +181,14 @@ const Page = () => {
       <button onClick={handleRegister} className="btn_base mt-5 w-[400px] ">
         تسجبل عضو هيئة التدريس
       </button>
+      </div>)}
+      </div>
+      {activeTab === 2 && (
+          <table className="w-[800px] mt-[50px] flex flex-col ">
+            {doctorsItems}
+          </table>
+        )}
+    </div>
     </div>
   );
 };

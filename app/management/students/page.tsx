@@ -104,8 +104,6 @@ const Page = () => {
     setActiveTab(tabIndex);
   };
   
-
-
   useEffect(() => {
     const fetchPosts = async () => {
       axios.get('/api/major/majorReg').then((resp) => {
@@ -116,8 +114,6 @@ const Page = () => {
     };
     fetchPosts();
   }, []);
-
-
 
   const majorItems = majors.map((item, index) => (
     <tr key={index} className="flex flex-row w-full">
