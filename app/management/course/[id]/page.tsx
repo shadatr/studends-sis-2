@@ -17,7 +17,7 @@ const CourseItems: FC<{courses:AddCourse2Type[],num:number, handleDelete:any}> =
           <td>
             <MyModel
               depOrMaj="المادة"
-              name={item.id}
+              name={""}
               deleteModle={() => handleDelete(item.id)}
             />
           </td>
@@ -197,21 +197,23 @@ const page = ({ params }: { params: { id: number } }) => {
         <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
           <tr className='flex justify-center items-center text-sm bg-darkBlue text-secondary '>الفصل الدراسي الخامس</tr>
           <thead>{headers}</thead>
-          <tbody className="course"><CourseItems handleDelete={handleDelete} num={4} courses={courses}/></tbody>
+          <tbody className="course"><CourseItems handleDelete={handleDelete} num={5} courses={courses}/></tbody>
         </table>
         <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
           <tr className='flex justify-center items-center text-sm bg-darkBlue text-secondary '>الفصل الدراسي السادس</tr>
           <thead>{headers}</thead>
-          <tbody className="course"><CourseItems handleDelete={handleDelete} num={4} courses={courses}/></tbody>
+          <tbody className="course"><CourseItems handleDelete={handleDelete} num={6} courses={courses}/></tbody>
         </table>
         <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
           <tr className='flex justify-center items-center text-sm bg-darkBlue text-secondary '>الفصل الدراسي السابع </tr>
           <thead>{headers}</thead>
-          <tbody className="course"><CourseItems handleDelete={handleDelete} num={4} courses={courses}/></tbody>
+          <tbody className="course"><CourseItems handleDelete={handleDelete} num={7} courses={courses}/></tbody>
         </table>
         <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
           <tr className='flex justify-center items-center text-sm bg-darkBlue text-secondary '>الفصل الدراسي الثامن</tr>
           <thead>{headers}</thead>
+          <tbody className="course"><CourseItems handleDelete={handleDelete} num={8} courses={courses}/></tbody>
+          </table>
       </div>
     </div>
   );
