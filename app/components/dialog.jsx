@@ -4,7 +4,7 @@ import { FaTrashAlt } from 'react-icons/fa';
 
 
 export default function MyModal({ deleteModle, name, depOrMaj }) {
-  let [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   function closeModal() {
     setIsOpen(false);

@@ -183,3 +183,9 @@ export type DoctorsWithDepartmentsType = {
       name: string | null;
   } | undefined;
 };
+
+
+export type AssignDepartmentType = {
+  doctor_id: number;
+  department_id: number | null;
+};
