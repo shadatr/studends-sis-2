@@ -8,13 +8,13 @@ const supabase = createClient(
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: number } }
+  { params }: { params: { name: number } }
 ) {
   try {
     const data = await supabase
       .from('tb_students')
       .select('*')
-      .eq('id', params.id);
+      .eq('major', params.name);
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {

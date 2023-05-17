@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 const stuInfo = [
   'الاسم',
   'اللقب',
+  'رقم الطالب',
   'تاريخ الميلاد',
   'التخصص',
   'الفصل الدراسي',
@@ -35,6 +36,7 @@ const Page = () => {
     <tr key={1} className="flex flex-col">
       <td className="p-2">{user?.name ? user?.name : 'غير محدد'}</td>
       <td className="p-2">{user?.surname ? user?.surname : 'غير محدد'}</td>
+      <td className="p-2">{user?.id ? user?.id : 'غير محدد'}</td>
       <td className="p-2">
         {user?.birth_date ? user?.birth_date : 'غير محدد'}
       </td>

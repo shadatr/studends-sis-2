@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { AnnouncmentsMangType } from '@/app/types/types';
+import { MajorEnrollmentType } from '@/app/types/types';
 import { Database } from '@/app/types/supabase';
 
 const supabase = createClient<Database>(
@@ -8,13 +8,14 @@ const supabase = createClient<Database>(
 );
 
 export async function POST(request: Request) {
-  const data: AnnouncmentsMangType = await request.json();
-
+  const data: MajorEnrollmentType = await request.json();
+console.log(data);
   try {
-    const res = await supabase.from('tb_announcements').insert([data]);
+    const res = await supabase.from('tb_major_enrollments').insert([data]);
+    
     console.log(res.error?.message);
     if (res.error) {
-      throw res.error;
+      throw res.error.message;
     }
     return new Response(JSON.stringify({ message: 'تم  نشر الاعلان بنجاح' }), {
       headers: { 'content-type': 'application/json' },

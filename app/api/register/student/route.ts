@@ -13,9 +13,7 @@ export async function POST(request: Request) {
   if (data.phone === ""){
     data.phone = undefined;
   }
-  if (data.major === ""){
-    data.major = undefined;
-  }
+
 
   try {
     const res = await supabase.from("tb_students").insert([data]);

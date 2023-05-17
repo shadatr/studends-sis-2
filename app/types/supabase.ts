@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export type Json =
   | string
   | number
@@ -180,34 +179,34 @@ export interface Database {
       }
       tb_courses: {
         Row: {
-          course_name: number | null
+          course_name: string | null
           created_at: string | null
           credits: number | null
           hours: number | null
           id: number
           major_id: number | null
           min_semester: number | null
-          passing_percents: number | null
+          passing_percentage: number | null
         }
         Insert: {
-          course_name?: number | null
+          course_name?: string | null
           created_at?: string | null
           credits?: number | null
           hours?: number | null
           id?: number
           major_id?: number | null
           min_semester?: number | null
-          passing_percents?: number | null
+          passing_percentage?: number | null
         }
         Update: {
-          course_name?: number | null
+          course_name?: string | null
           created_at?: string | null
           credits?: number | null
           hours?: number | null
           id?: number
           major_id?: number | null
           min_semester?: number | null
-          passing_percents?: number | null
+          passing_percentage?: number | null
         }
       }
       tb_departments: {
@@ -234,12 +233,13 @@ export interface Database {
           birth_date: number | null
           created_at: string | null
           email: string
-          enrollment_date: string | null
+          enrollment_date: string
+          head_of_deparment_id: number | null
           id: number
+          major: string | null
           name: string
           password: string
           phone: number | null
-          speciality: string | null
           surname: string
         }
         Insert: {
@@ -248,12 +248,13 @@ export interface Database {
           birth_date?: number | null
           created_at?: string | null
           email: string
-          enrollment_date?: string | null
+          enrollment_date?: string
+          head_of_deparment_id?: number | null
           id?: number
+          major?: string | null
           name: string
           password: string
           phone?: number | null
-          speciality?: string | null
           surname: string
         }
         Update: {
@@ -262,12 +263,13 @@ export interface Database {
           birth_date?: number | null
           created_at?: string | null
           email?: string
-          enrollment_date?: string | null
+          enrollment_date?: string
+          head_of_deparment_id?: number | null
           id?: number
+          major?: string | null
           name?: string
           password?: string
           phone?: number | null
-          speciality?: string | null
           surname?: string
         }
       }
@@ -315,32 +317,6 @@ export interface Database {
           grade?: number | null
           id?: number
           name?: string | null
-        }
-      }
-      tb_login_creds: {
-        Row: {
-          created_at: string | null
-          email: string | null
-          id: number
-          password: string | null
-          type: number | null
-          user_id: number | null
-        }
-        Insert: {
-          created_at?: string | null
-          email?: string | null
-          id?: number
-          password?: string | null
-          type?: number | null
-          user_id?: number | null
-        }
-        Update: {
-          created_at?: string | null
-          email?: string | null
-          id?: number
-          password?: string | null
-          type?: number | null
-          user_id?: number | null
         }
       }
       tb_major_enrollments: {
