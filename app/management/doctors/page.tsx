@@ -8,14 +8,16 @@ import AssignDepartment from '@/app/components/asignDepartment';
 const Page = () => {
   const [doctors, setDoctors] = useState<DoctorsWithDepartmentsType[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedDoctor, setSelectedDoctor] = useState<DoctorsWithDepartmentsType>();
+  
+  const [selectedDoctor, setSelectedDoctor] =
+    useState<DoctorsWithDepartmentsType>();
   useEffect(() => {
     axios.get('/api/getAllDoctors').then((res) => {
       console.log(res.data);
       const message: DoctorsWithDepartmentsType[] = res.data.message;
       setDoctors(message);
     });
-  });
+  }, []);
 
   return (
     <div>
@@ -38,10 +40,12 @@ const Page = () => {
             </tr>
           </thead>
           <AssignDepartment
-                  isOpen={isModalOpen}
-                  setIsOpen={setIsModalOpen}
-                  selectedDoctor={selectedDoctor}
-                />
+            isOpen={isModalOpen}
+            setIsOpen={setIsModalOpen}
+            selectedDoctor={selectedDoctor}
+            doctors = {doctors}
+            setdoctors = {setDoctors}
+          />
           <tbody>
             {doctors.map((user, index) => (
               <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
@@ -56,7 +60,14 @@ const Page = () => {
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {user.department ? (
-                    user.department.name
+                    <p
+                      onClick={() => {
+                        setSelectedDoctor(user);
+                        setIsModalOpen(true);
+                      }}
+                    >
+                      {user.department.name}
+                    </p>
                   ) : (
                     <button
                       className="bg-green-500 hover:bg-green-600 px-5 py-1 rounded-md text-white"

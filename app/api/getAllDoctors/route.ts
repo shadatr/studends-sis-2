@@ -4,7 +4,7 @@ import { Database } from "@/app/types/supabase";
 const supabase = createClient<Database>( process.env.SUPABASE_URL || '', process.env.SUPABASE_KEY || '');
 
 export async function GET() {
-  const fetchDoctorsQuery = supabase.from('tb_doctors').select('*');
+  const fetchDoctorsQuery = supabase.from('tb_doctors').select('*').order('id');
   const fetchDepartmentsQuery = supabase.from('tb_departments').select('*');
   const [doctorsResponse, departmentsResponse] = await Promise.all([
     fetchDoctorsQuery,

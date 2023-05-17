@@ -8,12 +8,18 @@ interface AsignDepartmentProps {
   isOpen: any;
   setIsOpen: any;
   selectedDoctor: DoctorsWithDepartmentsType | undefined;
+  doctors: DoctorsWithDepartmentsType[];
+  setdoctors: React.Dispatch<
+    React.SetStateAction<DoctorsWithDepartmentsType[]>
+  >;
 }
 
 export default function AssignDepartment({
   isOpen,
   setIsOpen,
   selectedDoctor,
+  doctors,
+  setdoctors,
 }: AsignDepartmentProps) {
   function closeModal() {
     setIsOpen(false);
@@ -30,17 +36,39 @@ export default function AssignDepartment({
   const selectedDepartment = useRef<HTMLSelectElement>(null);
 
   const handleAssignDepartment = () => {
+    let departmentId: string | null | undefined;
+    if (selectedDepartment.current?.value === 'null') {
+      departmentId = null;
+    } else {
+      departmentId = selectedDepartment.current?.value;
+    }
     axios
       .post('/api/assignDepartment', {
-        department_id: selectedDepartment.current?.value,
+        department_id: departmentId,
         doctor_id: selectedDoctor?.id,
       })
       .then((res) => {
         toast.success('تم تعيين القسم بنجاح');
+        const newDoctors: DoctorsWithDepartmentsType[] = [];
+        const department = departments.find(
+          (department) => department.id == (departmentId as any)
+        );
+        doctors.forEach((doctor) => {
+          if (doctor.id === selectedDoctor?.id) {
+            newDoctors.push({
+              ...doctor,
+              department: department,
+            });
+          } else {
+            newDoctors.push(doctor);
+          }
+        });
+        setdoctors(newDoctors);
       })
       .catch((err) => {
         toast.error('حدث خطأ ما');
       });
+
   };
 
   useEffect(() => {
@@ -53,7 +81,7 @@ export default function AssignDepartment({
       }[] = res.data.message;
       setDepartments(message);
     });
-  }, [selectedDoctor]);
+  }, []);
 
   return (
     <>
@@ -95,6 +123,7 @@ export default function AssignDepartment({
                             {department.name}
                           </option>
                         ))}
+                        <option value="null">ولا قسم</option>
                       </select>
                       اختر قسم
                     </p>
