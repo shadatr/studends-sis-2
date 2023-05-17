@@ -4,7 +4,8 @@ import axios from 'axios';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import { AddCourseType, AddCourse2Type } from '../../../types/types';
+import { AddCourseType, AddCourse2Type} from '@/app/types';
+
 import MyModel from '../../../components/dialog';
 
 
