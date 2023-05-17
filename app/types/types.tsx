@@ -1,4 +1,3 @@
-
 export type TablePropsType<T, K extends keyof T> = {
   data: Array<T>;
   columns: Array<ColumnDefinitionType<T, K>>;
@@ -23,19 +22,19 @@ export type MenuItemType = {
   id: number;
   name: string;
   link: string;
-}
+};
 
 export type RegisterStudentType = {
   name: string;
   surname: string;
-  birth_date : string;
+  birth_date: string;
   email: string;
   password: string;
   major?: string;
   phone?: string;
   address?: string;
-  enrollment_date? : string;
-}
+  enrollment_date?: string;
+};
 export type RegisterStudent2Type = {
   id: number;
   name: string;
@@ -57,14 +56,11 @@ export type AnnouncmentsMangType = {
   admin_id?: number;
 };
 
-
-
-export type AnnouncementType ={
+export type AnnouncementType = {
   id: number;
   created_at: string;
   subject: string;
-}
-
+};
 
 export type RegisterdoctorType = {
   name: string;
@@ -132,23 +128,22 @@ export type MajorReg2Type = {
 };
 
 export type DepartmentRegType = {
-  id?:number;
+  id?: number;
   name: string;
-  
 };
 
 export type AdminStaffType = {
   id: number;
   name: string;
   surname: string;
-  admin : boolean;
-  createdAt : string | null;
-  active : boolean;
+  admin: boolean;
+  createdAt: string | null;
+  active: boolean;
 };
 
 export type SearchIntityType = {
-  searchType : 'student' | 'doctor' | 'admin';
-  searchBy : string
+  searchType: 'student' | 'doctor' | 'admin';
+  searchBy: string;
 };
 
 export type AddCourseType = {
@@ -172,7 +167,19 @@ export type AddCourse2Type = {
 };
 
 export type MajorEnrollmentType = {
-
   major_id: number;
-  student_id:number
-}
+  student_id: number;
+};
+
+export type DoctorsWithDepartmentsType = {
+  id: number;
+  name: string;
+  surname: string;
+  doctorSince: string;
+  email: string;
+  department: {
+      created_at: string | null;
+      id: number;
+      name: string | null;
+  } | undefined;
+};
