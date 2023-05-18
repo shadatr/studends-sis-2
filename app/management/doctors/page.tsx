@@ -1,4 +1,5 @@
 'use client';
+<<<<<<< HEAD
 import { createHash } from 'crypto';
 
 import React, { FC, useEffect, useRef, useState } from 'react';
@@ -32,15 +33,29 @@ const InputBox: FC<{
     </div>
   );
 };
+=======
+import { DoctorsWithDepartmentsType } from '@/app/types/types';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import AssignDepartment from '@/app/components/asignDepartment';
+>>>>>>> 6c47a59c27d4115e842fb4c43bd1113e740cf309
 
 const Page = () => {
-  // handling authentication
-  const session = useSession({ required: true });
-  // if user isn't a admin, throw an error
-  if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
-    throw new Error('Unauthorized');
-  }
+  const [doctors, setDoctors] = useState<DoctorsWithDepartmentsType[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  
+  const [selectedDoctor, setSelectedDoctor] =
+    useState<DoctorsWithDepartmentsType>();
+  useEffect(() => {
+    axios.get('/api/getAllDoctors').then((res) => {
+      console.log(res.data);
+      const message: DoctorsWithDepartmentsType[] = res.data.message;
+      setDoctors(message);
+    });
+  }, []);
 
+<<<<<<< HEAD
   const [activeTab, setActiveTab] = useState(1);
   const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
 
@@ -189,6 +204,74 @@ const Page = () => {
           </table>
         )}
     </div>
+=======
+  return (
+    <div>
+      <div className="w-[80%] flex flex-col fixed justify-end">
+        <Link
+          className="btn_base mt-20 w-[200px] mb-3"
+          href={'/management/doctors/register'}
+        >
+          اضافة عضو
+        </Link>
+        <table className="border-collapse w-full">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="border border-gray-300 px-4 py-2">اسم</th>
+              <th className="border border-gray-300 px-4 py-2">لقب</th>
+              <th className="border border-gray-300 px-4 py-2">
+                تاريخ الانشاء
+              </th>
+              <th className="border border-gray-300 px-4 py-2">رئيس قسم</th>
+            </tr>
+          </thead>
+          <AssignDepartment
+            isOpen={isModalOpen}
+            setIsOpen={setIsModalOpen}
+            selectedDoctor={selectedDoctor}
+            doctors = {doctors}
+            setdoctors = {setDoctors}
+          />
+          <tbody>
+            {doctors.map((user, index) => (
+              <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
+                <td className="border border-gray-300 px-4 py-2">
+                  {user.name}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {user.name}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {user.doctorSince}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {user.department ? (
+                    <p
+                      onClick={() => {
+                        setSelectedDoctor(user);
+                        setIsModalOpen(true);
+                      }}
+                    >
+                      {user.department.name}
+                    </p>
+                  ) : (
+                    <button
+                      className="bg-green-500 hover:bg-green-600 px-5 py-1 rounded-md text-white"
+                      onClick={() => {
+                        setSelectedDoctor(user);
+                        setIsModalOpen(true);
+                      }}
+                    >
+                      تعين
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+>>>>>>> 6c47a59c27d4115e842fb4c43bd1113e740cf309
     </div>
   );
 };

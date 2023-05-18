@@ -5,6 +5,7 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import { DatePicker } from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
+<<<<<<< HEAD
 import {
   MajorReg2Type,
   RegisterStudentType,
@@ -12,6 +13,13 @@ import {
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
+=======
+import { MajorReg2Type, RegisterStudentType } from '@/app/types/types';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useSession } from 'next-auth/react';
+import SearchBar from '@/app/components/searchBar';
+>>>>>>> 6c47a59c27d4115e842fb4c43bd1113e740cf309
 import Link from 'next/link';
 
 const InputBox: FC<{
@@ -49,8 +57,11 @@ const Page = () => {
   const [activeTab, setActiveTab] = useState(1);
   const [majors, setMajors] = useState<MajorReg2Type[]>([]);
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 6c47a59c27d4115e842fb4c43bd1113e740cf309
   const [birthDate, setBirthDate] = useState(new Date());
   const name = useRef<HTMLInputElement>(null);
   const surname = useRef<HTMLInputElement>(null);
@@ -66,11 +77,19 @@ const Page = () => {
       !surname.current?.value ||
       !email.current?.value ||
       !password.current?.value
+<<<<<<< HEAD
       ) {
         toast.error('يجب ملئ جميع الحقول');
         return;
       }
       const passwordHash = createHash('sha256')
+=======
+    ) {
+      toast.error('يجب ملئ جميع الحقول');
+      return;
+    }
+    const passwordHash = createHash('sha256')
+>>>>>>> 6c47a59c27d4115e842fb4c43bd1113e740cf309
       .update(password.current?.value)
       .digest('hex');
       
@@ -98,12 +117,20 @@ const Page = () => {
       });
     
   };
+<<<<<<< HEAD
     
     
   const handleTabClick = (tabIndex:number) => {
     setActiveTab(tabIndex);
   };
   
+=======
+
+  const handleTabClick = (tabIndex: number) => {
+    setActiveTab(tabIndex);
+  };
+
+>>>>>>> 6c47a59c27d4115e842fb4c43bd1113e740cf309
   useEffect(() => {
     const fetchPosts = async () => {
       axios.get('/api/major/majorReg').then((resp) => {
@@ -121,7 +148,13 @@ const Page = () => {
         className="flex flex-row w-full p-1 items-center justify-between"
         key={index}
       >
+<<<<<<< HEAD
         <Link href={`/management/majorStudents/${item.major_name}`}>{item.major_name}</Link>
+=======
+        <Link href={`/management/majorStudents/${item.major_name}`}>
+          {item.major_name}
+        </Link>
+>>>>>>> 6c47a59c27d4115e842fb4c43bd1113e740cf309
       </td>
       <td className="flex flex-row w-1/5 items-center justify-center pr-2 pl-2">
         {item.tb_departments?.name}
@@ -130,15 +163,22 @@ const Page = () => {
     </tr>
   ));
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6c47a59c27d4115e842fb4c43bd1113e740cf309
   return (
     <div className="flex absolute flex-col justify-center items-center">
       <div className="flex w-screen  flex-row mb-4 justify-center items-center">
         <button
           className={`flex w-full flex-row p-2 justify-center items-center text-sm ${
+<<<<<<< HEAD
             activeTab === 1
               ? 'bg-darkBlue text-secondary'
               : 'bg-grey '
+=======
+            activeTab === 1 ? 'bg-darkBlue text-secondary' : 'bg-grey '
+>>>>>>> 6c47a59c27d4115e842fb4c43bd1113e740cf309
           }`}
           onClick={() => handleTabClick(1)}
         >
@@ -146,9 +186,13 @@ const Page = () => {
         </button>
         <button
           className={`flex w-full flex-row p-2 justify-center items-center text-sm ${
+<<<<<<< HEAD
             activeTab === 2
               ? 'bg-darkBlue text-secondary'
               : 'bg-grey'
+=======
+            activeTab === 2 ? 'bg-darkBlue text-secondary' : 'bg-grey'
+>>>>>>> 6c47a59c27d4115e842fb4c43bd1113e740cf309
           }`}
           onClick={() => handleTabClick(2)}
         >
@@ -161,6 +205,11 @@ const Page = () => {
             className="flex flex-col items-center h-[150px]   text-sm "
             onSubmit={(e) => e.preventDefault}
           >
+<<<<<<< HEAD
+=======
+            <SearchBar />
+
+>>>>>>> 6c47a59c27d4115e842fb4c43bd1113e740cf309
             <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
             <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
             <InputBox label="التخصص" placeholder="محمد" inputRef={major} />

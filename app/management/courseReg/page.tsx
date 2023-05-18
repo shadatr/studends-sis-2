@@ -185,7 +185,8 @@ const page = () => {
             سجل
           </button>
         </div>
-        <table className="w-[1000px] mt-[50px] flex flex-col h-[200px] overflow-y-auto">
+        <p className='mt-[50px] text-lg' >اقسام</p>
+        <table className="w-[1000px] flex flex-col h-[200px] overflow-y-auto">
           {departmetItems}
         </table>
       </div>
@@ -232,7 +233,8 @@ const page = () => {
             سجل
           </button>
         </div>
-        <table className="w-[1000px] mt-[50px] flex flex-col">
+        <p className='mt-[50px] text-lg' >تخصصات</p>
+        <table className="w-[1000px] flex flex-col">
           {majorItems}
         </table>
       </div>
