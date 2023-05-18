@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
     const data = await supabase
-      .from('tb_doctors')
+      .from('tb_students')
       .select('*')
       .eq('id', params.id);
 
