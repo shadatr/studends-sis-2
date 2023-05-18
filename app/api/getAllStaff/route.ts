@@ -1,5 +1,5 @@
 import { Database } from "@/app/types/supabase";
-import { AdminStaffType } from "@/app/types/types";
+import { AdminStaffType } from '@/app/types/types';
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient<Database>(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "");

@@ -31,32 +31,31 @@ const Page = () => {
         <table className="border-collapse w-full">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border border-gray-300 px-4 py-2">اسم</th>
-              <th className="border border-gray-300 px-4 py-2">لقب</th>
+              <th className="border border-gray-300 px-4 py-2"> الملف الشخصي للدكتور</th>
+              <th className="border border-gray-300 px-4 py-2">رئيس قسم</th>
               <th className="border border-gray-300 px-4 py-2">
                 تاريخ الانشاء
               </th>
-              <th className="border border-gray-300 px-4 py-2">رئيس قسم</th>
+              <th className="border border-gray-300 px-4 py-2">لقب</th>
+              <th className="border border-gray-300 px-4 py-2">اسم</th>
             </tr>
           </thead>
           <AssignDepartment
             isOpen={isModalOpen}
             setIsOpen={setIsModalOpen}
             selectedDoctor={selectedDoctor}
-            doctors = {doctors}
-            setdoctors = {setDoctors}
+            doctors={doctors}
+            setdoctors={setDoctors}
           />
           <tbody>
             {doctors.map((user, index) => (
               <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
                 <td className="border border-gray-300 px-4 py-2">
-                  {user.name}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {user.name}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {user.doctorSince}
+                  <Link
+                    href={`/management/personalInformation/doctor/${user.id}`}
+                  >
+                    الملف الشخصي للدكتور
+                  </Link>
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {user.department ? (
@@ -79,6 +78,15 @@ const Page = () => {
                       تعين
                     </button>
                   )}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {user.doctorSince}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {user.surname}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {user.name}
                 </td>
               </tr>
             ))}
