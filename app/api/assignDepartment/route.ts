@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/namespace
 import { AssignDepartmentType } from "@/app/types/types";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/app/types/supabase";
