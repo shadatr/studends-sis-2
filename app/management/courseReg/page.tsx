@@ -158,7 +158,7 @@ const page = () => {
   ));
 
   return (
-    <div className="fixed flex flex-col right-[150px]">
+    <div className="absolute flex flex-col right-[150px]">
       <div className="flex flex-col  items-center justify-center text-sm">
         <div className="flex flex-row-reverse items-center justify-center  text-sm mt-10 w-[1000px]">
           <label

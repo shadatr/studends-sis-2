@@ -20,11 +20,7 @@ const CourseItems: FC<{
           <td>
             <MyModel
               depOrMaj="المادة"
-<<<<<<< HEAD
-              name={""}
-=======
               name={''}
->>>>>>> 6c47a59c27d4115e842fb4c43bd1113e740cf309
               deleteModle={() => handleDelete(item.id)}
             />
           </td>

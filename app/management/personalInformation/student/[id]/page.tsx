@@ -22,8 +22,8 @@ const page = ({ params }: { params: { id: number } }) => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      axios.get(`/api/personalInfo/${params.id}/student`).then((resp) => {
-        console.log(resp.data);
+      axios.get(`/api/personalInfo/student/${params.id}`).then((resp) => {
+        console.log(resp.data.message);
         const message: PersonalInfoType[] = resp.data.message;
         useSetMydata(message);
       });

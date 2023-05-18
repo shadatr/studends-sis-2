@@ -33,13 +33,8 @@ export type RegisterStudentType = {
   major?: string;
   phone?: string;
   address?: string;
-<<<<<<< HEAD
-  enrollment_date? : string;
-}
-=======
   enrollment_date?: string;
 };
->>>>>>> 6c47a59c27d4115e842fb4c43bd1113e740cf309
 export type RegisterStudent2Type = {
   id: number;
   name: string;
@@ -172,12 +167,6 @@ export type AddCourse2Type = {
 };
 
 export type MajorEnrollmentType = {
-<<<<<<< HEAD
-
-  major_id: number;
-  student_id:number
-}
-=======
   major_id: number;
   student_id: number;
 };
@@ -200,4 +189,3 @@ export type AssignDepartmentType = {
   doctor_id: number;
   department_id: number | null;
 };
->>>>>>> 6c47a59c27d4115e842fb4c43bd1113e740cf309

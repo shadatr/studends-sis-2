@@ -20,7 +20,7 @@ const page = ({ params }: { params: { id: number } }) => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      axios.get(`/api/personalInfo/${params.id}/doctor`).then((resp) => {
+      axios.get(`/api/personalInfo/doctor/${params.id}`).then((resp) => {
         console.log(resp.data);
         const message: PersonalInfoType[] = resp.data.message;
         useSetMydata(message);
