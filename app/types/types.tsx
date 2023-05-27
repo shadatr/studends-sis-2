@@ -34,6 +34,7 @@ export type RegisterStudentType = {
   phone?: string;
   address?: string;
   enrollment_date?: string;
+  advisor?: string;
 };
 export type RegisterStudent2Type = {
   id: number;
@@ -46,6 +47,7 @@ export type RegisterStudent2Type = {
   phone?: string;
   address?: string;
   enrollment_date?: string;
+  advisor?: string;
 };
 
 export type AnnouncmentsMangType = {
@@ -101,6 +103,7 @@ export type PersonalInfoType = {
   enrollment_date?: number;
   major: string;
   advisor: string;
+  active?: boolean
 };
 
 export type MajorRegType = {
@@ -189,3 +192,20 @@ export type AssignDepartmentType = {
   doctor_id: number;
   department_id: number | null;
 };
+
+export type AssignPermissionType = {
+  id:number;
+  name: string;
+  active: boolean;
+};
+
+export type GetPermissionType={
+  permission_id: number;
+  admin_id: number;
+  active: boolean;
+}
+
+export type CheckedType={
+  id:number;
+  name: string;
+}

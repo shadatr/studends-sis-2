@@ -84,7 +84,7 @@ const Page = () => {
       });
   };
   return (
-    <div className="flex absolute flex-col justify-center items-center">
+    <div className="flex absolute flex-col justify-center items-center w-screen pt-10">
       <div className="flex flex-col items-center h-[150px]  right-[600px] text-sm ">
         <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
         <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />

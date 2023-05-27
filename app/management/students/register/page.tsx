@@ -72,6 +72,7 @@ const Page = () => {
       email: email.current.value,
       password: passwordHash,
       birth_date: (birthDate.getTime() / 1000).toFixed(),
+      advisor: "غير محدد"
     };
 
     axios
@@ -88,53 +89,46 @@ const Page = () => {
   
 
   return (
-    <div className="flex absolute flex-col justify-center items-center">
-          <div
-            className="flex flex-col items-center h-[150px]   text-sm "
-            onSubmit={(e) => e.preventDefault}
-          >
-            <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
-            <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
-            <InputBox label="التخصص" placeholder="محمد" inputRef={major} />
-            <InputBox
-              label="رقم الهاتف"
-              placeholder="01000000000"
-              inputRef={phone}
-            />
-            <InputBox label="العنوان" placeholder="طرابلس" inputRef={address} />
-            <div className="flex flex-col">
-              <label htmlFor="" lang="ar">
-                تاريخ الميلاد
-              </label>
-              <DatePicker
-                locale="ar"
-                className={
-                  'bg-slate-200 w-[400px] h-[40px] rounded-md border-none'
-                }
-                onChange={(val) => setBirthDate(val as any)}
-                value={birthDate}
-              />
-            </div>
-            <InputBox
-              label="البريد الالكتروني"
-              placeholder="email@example.com"
-              inputRef={email}
-            />
-            <InputBox
-              label="كلمة المرور"
-              placeholder="********"
-              inputRef={password}
-              type="password"
-            />
-            <button
-              onClick={handleRegister}
-              className="btn_base mt-5 w-[400px]"
-            >
-              تسجبل الطالب
-            </button>
-          </div>
+    <div className="flex absolute flex-col  items-center w-[100%] p-10 h-[150px]   text-sm">
+      <div
+        onSubmit={(e) => e.preventDefault}
+      >
+        <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
+        <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
+        <InputBox label="التخصص" placeholder="محمد" inputRef={major} />
+        <InputBox
+          label="رقم الهاتف"
+          placeholder="01000000000"
+          inputRef={phone}
+        />
+        <InputBox label="العنوان" placeholder="طرابلس" inputRef={address} />
+        <div className="flex flex-col">
+          <label htmlFor="" lang="ar">
+            تاريخ الميلاد
+          </label>
+          <DatePicker
+            locale="ar"
+            className={'bg-slate-200 w-[400px] h-[40px] rounded-md border-none'}
+            onChange={(val) => setBirthDate(val as any)}
+            value={birthDate}
+          />
+        </div>
+        <InputBox
+          label="البريد الالكتروني"
+          placeholder="email@example.com"
+          inputRef={email}
+        />
+        <InputBox
+          label="كلمة المرور"
+          placeholder="********"
+          inputRef={password}
+          type="password"
+        />
+        <button onClick={handleRegister} className="btn_base mt-5 w-[400px]">
+          تسجبل الطالب
+        </button>
       </div>
-
+    </div>
   );
 };
 

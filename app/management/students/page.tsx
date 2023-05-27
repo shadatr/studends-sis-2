@@ -59,7 +59,7 @@ const Page = () => {
     <div className="flex absolute flex-col justify-center items-center w-[1300px]">
       <div className="flex flex-row items-center justify-between w-[900px] text-sm">
         <Link
-          className="bg-red-500 hover:bg-red-600 px-5 py-1 rounded-md text-white"
+          className="bg-green-700 hover:bg-green-600 px-5 py-1 rounded-md text-white"
           href={'/management/students/register'}
         >
           سجل طالب جديد

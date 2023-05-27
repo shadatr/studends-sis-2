@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client';
-import { DepartmentRegType, MajorRegType } from '@/app/types/types';
+import { DepartmentRegType, GetPermissionType, MajorRegType } from '@/app/types/types';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -11,12 +11,14 @@ import Link from 'next/link';
 import MyModel from '../../components/dialog';
 
 const page = () => {
-  // handling authentication
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
     throw new Error('Unauthorized');
   }
+  const user = session.data?.user;
+
+  
   const major = useRef<HTMLInputElement>(null);
   const majorDep = useRef<HTMLSelectElement>(null);
   const [majors, setMajors] = useState<MajorRegType[]>([]);
@@ -28,6 +30,20 @@ const page = () => {
   const [departments, setDepartments] = useState<DepartmentRegType[]>([]);
   const [loadDepartments, setLoadDep] = useState(false);
   const [newItemDep, setNewItemDep] = useState('');
+  const [perms, setPerms] = useState<GetPermissionType[]>([]);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      const response = await axios.get(
+        `/api/allPermission/selectedPerms/${user?.id}`
+      );
+      const message: GetPermissionType[] = response.data.message;
+      setPerms(message);
+      console.log(message);
+    };
+
+    fetchPosts();
+  }, [user?.id]);
 
   const handleRegisterDep = () => {
     if (!newItemDep) {
@@ -58,38 +74,37 @@ const page = () => {
     };
     fetchPosts();
   }, [loadDepartments]);
+  
 
-  const handleDelete = (name: string) => {
-    const data = { item_name: name };
-    axios.post('/api/department/deleteDepartment', data).then((resp) => {
-      toast.success(resp.data.message);
-      setLoadDep(!loadDepartments);
-    });
-  };
+const departmetItems = departments.map((deptItem, index) => (
+  <tr key={index} className="flex flex-row w-full">
+    <td
+      className="flex flex-row w-full p-1 items-center justify-between"
+      key={index}
+    >
+      {perms.map((permItem, idx) => {
+        if (permItem.permission_id === 8 && permItem.active) {
+          return (
+            <MyModel
+              key={idx}
+              depOrMaj="الكلية"
+              name={deptItem.name}
+              deleteModle={() => handleDeleteMajor(deptItem.name)}
+            />
+          );
+        }
+        return null;
+      })}
+      {deptItem.name}
+    </td>
+    <td className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</td>
+  </tr>
+));
 
-  const departmetItems = departments.map((item, index) => (
-    <tr key={index} className="flex flex-row w-full">
-      <td
-        className="flex flex-row w-full p-1 items-center justify-between"
-        key={index}
-      >
-        <MyModel
-          depOrMaj="الكلية"
-          name={item.name}
-          deleteModle={() => handleDelete(item.name)}
-        />
-        {item.name}
-      </td>
-      <td className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</td>
-    </tr>
-  ));
 
   const departmentOptions = departments.map((item, index) => (
     <option key={index}>{item.name}</option>
   ));
-
-
-
 
 
   const selectedDep = departments.filter((item) => item.name == newMajorDep);
@@ -139,14 +154,17 @@ const page = () => {
 
   const majorItems = majors.map((item, index) => (
     <tr key={index} className="flex flex-row w-full">
-      <td
-        className="flex flex-row w-full p-1 items-center justify-between"
-        key={index}
-      >
+      <td className="flex flex-row w-full p-1 items-center justify-between">
         <MyModel
           name={item.major_name}
           depOrMaj="التخصص"
-          deleteModle={() => handleDeleteMajor(item.major_name)}
+          deleteModle={() =>
+            perms.map((permItem) => {
+              if (permItem.permission_id === 7 && permItem.active) {
+                handleDeleteMajor(item.major_name);
+              } 
+            })
+          }
         />
         <Link href={`/management/course/${item.id}`}>{item.major_name}</Link>
       </td>
@@ -157,10 +175,13 @@ const page = () => {
     </tr>
   ));
 
+
   return (
     <div className="absolute flex flex-col right-[150px]">
       <div className="flex flex-col  items-center justify-center text-sm">
-        <div className="flex flex-row-reverse items-center justify-center  text-sm mt-10 w-[1000px]">
+        {perms.map((item, idx) => 
+          item.permission_id === 8 && item.active ? (
+          <div key={idx} className="flex flex-row-reverse items-center justify-center  text-sm mt-10 w-[1000px]">
           <label
             htmlFor=""
             lang="ar"
@@ -184,14 +205,19 @@ const page = () => {
           >
             سجل
           </button>
-        </div>
+        </div>): ' ' )}
+        
         <p className='mt-[50px] text-lg' >اقسام</p>
         <table className="w-[1000px] flex flex-col h-[200px] overflow-y-auto">
           {departmetItems}
         </table>
       </div>
-      <div className="flex flex-col items-center justify-center text-sm">
-        <div className="flex flex-row-reverse items-center justify-center w-screen text-sm mt-10">
+      <div className="flex flex-col items-center justify-center text-sm p-10">
+        {perms.map((item, idx) => 
+          item.permission_id === 7 && item.active ?  (
+          <div 
+          key={idx}
+          className="flex flex-row-reverse items-center justify-center w-screen text-sm mt-10">
           <label
             htmlFor=""
             lang="ar"
@@ -232,7 +258,8 @@ const page = () => {
           >
             سجل
           </button>
-        </div>
+        </div>): '')}
+        
         <p className='mt-[50px] text-lg' >تخصصات</p>
         <table className="w-[1000px] flex flex-col">
           {majorItems}

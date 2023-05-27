@@ -5,7 +5,7 @@ const supabase = createClient(
 );
 
 
-export async function GET({ params }: { params: { id: number } }) {
+export async function GET(request: Request, { params }: { params: { id: number } }) {
   try {
     const data = await supabase
       .from('tb_admins')

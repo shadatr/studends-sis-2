@@ -4,9 +4,12 @@ const supabase = createClient(
   process.env.SUPABASE_KEY || ''
 );
 
-export async function GET( { params }: { params: { id: number }}) {
+export async function GET(request: Request, { params }: { params: { id: number } }) {
   try {
-    const data = await supabase.from('tb_doctors').select('*').eq( "id", params.id);
+    const data = await supabase
+      .from('tb_doctors')
+      .select('*')
+      .eq('id', params.id);
     console.log(data.data);
     console.log(data.error?.message);
     if (data.error) {
