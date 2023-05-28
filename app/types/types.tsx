@@ -209,3 +209,19 @@ export type CheckedType={
   id:number;
   name: string;
 }
+
+export type SectionType = {
+  id?: number;
+  name: string;
+};
+
+export type ClassesType = {
+  id?: number;
+  doctor_id?: number;
+  section_id?: number;
+  location?: string;
+  start_time?: number;
+  duration?: number;
+  class_work?: number;
+  exams?: number;
+};

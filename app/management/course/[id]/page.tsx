@@ -33,27 +33,27 @@ const CourseItems: FC<{
         if (item.min_semester === num) {
           return (
             <div key={index} className="courses">
-                <td>
-                  {perms.map((permItem, permIndex) => {
-                    if (permItem.permission_id === 8 && permItem.active) {
-                      return (
-                        <MyModel
-                          key={permIndex}
-                          depOrMaj="المادة"
-                          name={''}
-                          deleteModle={() => handleDelete(item.course_name)}
-                        />
-                      );
-                    }
-                    return null;
-                  })}
-                </td>
-                <td>{item.passing_percentage}</td>
-                <td>{item.min_semester}</td>
-                <td>{item.credits}</td>
-                <td>{item.hours}</td>
-                <td>{item.course_name}</td>
-                <td className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</td>
+              <div>
+                {perms.map((permItem, permIndex) => {
+                  if (permItem.permission_id === 8 && permItem.active) {
+                    return (
+                      <MyModel
+                        key={permIndex}
+                        depOrMaj="المادة"
+                        name=""
+                        deleteModle={() => handleDelete(item.course_name)}
+                      />
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+              <div>{item.passing_percentage}</div>
+              <div>{item.min_semester}</div>
+              <div>{item.credits}</div>
+              <div>{item.hours}</div>
+              <div>{item.course_name}</div>
+              <div className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</div>
             </div>
           );
         }

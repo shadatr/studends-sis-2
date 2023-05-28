@@ -32,7 +32,7 @@ function DoctorMenu() {
 
   return (
     <div className="  flex justify-end  text-sm ">
-      <table className=" text-sm flex flex-col mt-[100px] w-[260px] bg-darkBlue text-white ">
+      <table className=" text-sm flex flex-col mt-[70px] w-[260px] bg-darkBlue text-white ">
         {data}
       </table>
     </div>
