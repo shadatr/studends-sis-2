@@ -223,5 +223,16 @@ export type ClassesType = {
   start_time?: number;
   duration?: number;
   class_work?: number;
-  exams?: number;
+  midterm?: number;
+  final?: number;
+};
+
+export type StudentClassType = {
+  id?: number;
+  student_id: number;
+  class_id?: number;
+  semester?: number;
+  class_work?: number;
+  midterm?: number;
+  final?: number;
 };

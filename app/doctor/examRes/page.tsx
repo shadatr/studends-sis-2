@@ -2,6 +2,7 @@
 import { SectionType } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 const Page = () => {
@@ -26,12 +27,19 @@ const Page = () => {
   return (
     <div className=" w-[80%] justify-center items-center flex p-10 absolute">
       <table className=" w-[800px] border-collapse">
-        <th className="border px-4 py-2 bg-darkBlue text-secondary">اسم المادة</th>
+        <th className="border px-4 py-2 bg-darkBlue text-secondary">
+          اسم المادة
+        </th>
         <tbody>
           {sections.map((item, index) => (
-            <tr key={index} className="border">
-              <td className="border px-4 py-2 bg-lightBlue">{item.name}</td>
-            </tr>
+            <Link
+              key={index}
+              href={`/doctor/examRes/courseStudents/${item.id}`}
+            >
+              <tr className="w-full flex">
+                <td className="border px-4 py-2 w-full bg-lightBlue">{item.name}</td>
+              </tr>
+            </Link>
           ))}
         </tbody>
       </table>
