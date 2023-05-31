@@ -30,7 +30,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             key={index}
             className="p-3 m-5 bg-lightBlue pl-[80px] pr-[80px] items-center flex justify-center rounded-sm"
           >
-            <Link href={`/doctor/managementWork/section/${sec.id}`}>
+            <Link href={`/doctor/managementWork/course/${sec.id}`}>
               {sec.name}
             </Link>
           </div>
