@@ -19,14 +19,13 @@ export async function GET(
     const messageData = parsedData.data;
     const data3: ClassesType[] = messageData;
 
+  const sectionIds = data3.map((item) => item.section_id);
 
-    const data2 = await supabase
-      .from('tb_section')
-      .select('*')
-      .eq('id', data3[0].section_id);
+  const data2 = await supabase
+  .from('tb_section')
+  .select('*')
+  .in('id', sectionIds);
 
-    console.log(data2.data);
-    console.log(data2.error?.message);
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,

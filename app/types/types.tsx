@@ -232,7 +232,14 @@ export type StudentClassType = {
   student_id: number;
   class_id?: number;
   semester?: number;
-  class_work?: number;
-  midterm?: number;
-  final?: number;
+  class_work?: string;
+  midterm: string;
+  final?: string;
+  [key: string]: any;
 };
+
+export type ExamType={
+  exam?:string;
+  student_id?:number;
+  grade?:string
+}
