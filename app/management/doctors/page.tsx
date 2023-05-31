@@ -33,7 +33,7 @@ const Page = () => {
   const [selectedDoctor, setSelectedDoctor] =
     useState<DoctorsWithDepartmentsType>();
   useEffect(() => {
-    axios.get('/api/getAllDoctors').then((res) => {
+    axios.get('/api/getAll/getAllDoctors').then((res) => {
       console.log(res.data);
       const message: DoctorsWithDepartmentsType[] = res.data.message;
       setDoctors(message);
@@ -102,15 +102,7 @@ const Page = () => {
                     <p className='text-red-500'>لا يوجد </p>
                   )}
                 </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {user.doctorSince}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {user.surname}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {user.name}
-                </td>
+              
                 <td className="border border-gray-300 px-4 py-2">
                   {user.doctorSince}
                 </td>

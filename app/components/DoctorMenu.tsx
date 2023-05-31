@@ -12,7 +12,7 @@ const item: MenuItemType[] = [
   { id: 6, link: 'examProg', name: 'جدول الامتحانات' },
   { id: 7, link: 'examRes', name: 'نتائج الامتحانات' },
   { id: 8, link: 'courseReg', name: 'تنزيل المواد' },
-  { id: 9, link: 'courseReg', name:  'الاعمال الادارية' },
+  { id: 9, link: 'managementWork', name:  'الاعمال الادارية' },
 ];
 
 function DoctorMenu() {

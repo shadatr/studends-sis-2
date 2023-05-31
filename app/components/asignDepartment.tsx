@@ -47,7 +47,7 @@ export default function AssignDepartment({
         department_id: departmentId,
         doctor_id: selectedDoctor?.id,
       })
-      .then((res) => {
+      .then(() => {
         toast.success('تم تعيين القسم بنجاح');
         const newDoctors: DoctorsWithDepartmentsType[] = [];
         const department = departments.find(
@@ -65,7 +65,7 @@ export default function AssignDepartment({
         });
         setdoctors(newDoctors);
       })
-      .catch((err) => {
+      .catch(() => {
         toast.error('حدث خطأ ما');
       });
 

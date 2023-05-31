@@ -16,7 +16,7 @@ const Page = () => {
     useEffect(() => {
     const fetchPosts = async () => {
       const response = await axios.get(
-        `/api/courses/${user?.id}/doctor`
+        `/api/course/courses/${user?.id}/doctor`
       );
       const message: SectionType[] = response.data.message;
       setSections(message);

@@ -21,7 +21,7 @@ const AnnoPage = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      axios.get('/api/uniAnnouncements').then((resp) => {
+      axios.get('/api/announcements/uniAnnouncements').then((resp) => {
         console.log(resp.data);
         const message: AnnouncmentsMangType[] = resp.data.message;
         setAnnouncements(message);
@@ -32,7 +32,7 @@ const AnnoPage = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      axios.get('/api/courseAnnouncements').then((resp) => {
+      axios.get('/api/announcements/courseAnnouncements').then((resp) => {
         console.log(resp.data);
         const message: AnnouncmentsMangType[] = resp.data.message;
         setCourseAnnouncements(message);

@@ -37,7 +37,7 @@ const Page = () => {
 
   const [staff, setStaff] = useState<AdminStaffType[]>([]);
   useEffect(() => {
-    axios.get('/api/getAllStaff').then((res) => {
+    axios.get('/api/getAll/getAllStaff').then((res) => {
       const message: AdminStaffType[] = res.data.message;
       setStaff(message);
     });

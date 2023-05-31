@@ -24,7 +24,7 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      axios.get('/api/uniAnnouncements').then((resp) => {
+      axios.get('/api/announcements/uniAnnouncements').then((resp) => {
         console.log(resp.data);
         const message: AnnouncmentsMangType[] = resp.data.message;
         setAnnouncements(message);
@@ -35,7 +35,7 @@ const Page = () => {
 
   const handleDelete = (announcement_text: string) => {
     const data = { item_announcement_text: announcement_text };
-    axios.post('/api/uniAnnouncements', data).then((resp) => {
+    axios.post('/api/announcements/uniAnnouncements', data).then((resp) => {
       toast.success(resp.data.message);
       setLoad(!loadAnnouncements);
     });
@@ -59,7 +59,7 @@ const Page = () => {
       admin_id: session.data?.user.id,
     };
     console.log(data);
-    axios.post('/api/newUniAnnouncement', data).then(() => {
+    axios.post('/api/announcements/newUniAnnouncement', data).then(() => {
       setLoad(!loadAnnouncements);
     });
     setNewItem('');

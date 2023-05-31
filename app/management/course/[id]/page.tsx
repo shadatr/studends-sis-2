@@ -134,7 +134,7 @@ const page = ({ params }: { params: { id: number } }) => {
       passing_percentage: passingGrade,
     };
     axios
-      .post(`/api/courseRegistration/${params.id}`, data)
+      .post(`/api/course/courseRegistration/${params.id}`, data)
       .then((res) => {
         console.log(res.data);
         toast.success(res.data.message);
@@ -147,7 +147,7 @@ const page = ({ params }: { params: { id: number } }) => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      axios.get(`/api/courseRegistration/${params.id}`).then((resp) => {
+      axios.get(`/api/course/courseRegistration/${params.id}`).then((resp) => {
         console.log(resp.data);
         const message: AddCourse2Type[] = resp.data.message;
         setCourses(message);
@@ -158,7 +158,7 @@ const page = ({ params }: { params: { id: number } }) => {
 
   const handleDelete = (id: number) => {
     const data = { item_name: id };
-    axios.post(`/api/courseRegDelete/${params.id}`, data).then((resp) => {
+    axios.post(`/api/course/courseRegDelete/${params.id}`, data).then((resp) => {
       console.log(resp.data);
       toast.success(resp.data.message);
       setLoadCourse(!loadCourses);
