@@ -111,6 +111,15 @@ const Page = () => {
                 <td className="border border-gray-300 px-4 py-2">
                   {user.name}
                 </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {user.doctorSince}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {user.surname}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {user.name}
+                </td>
               </tr>
             ))}
           </tbody>
