@@ -9,7 +9,6 @@ const Page = () => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   const user = session.data?.user;
-  
   const [sections, setSections] = useState<SectionType[]>([]);
 
 

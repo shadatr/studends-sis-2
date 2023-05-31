@@ -33,6 +33,8 @@ table ,td, th{
   display: flex;
   flex-direction: row;
   width: 100%;
+  font-size: 14px;
+  
 } 
 
 .coursesHeader th{

@@ -213,6 +213,7 @@ export type CheckedType={
 export type SectionType = {
   id?: number;
   name: string;
+  course_id: number;
 };
 
 export type ClassesType = {
@@ -243,3 +244,17 @@ export type ExamType={
   student_id?:number;
   grade?:string
 }
+
+export type MajorType = {
+  id: number;
+  major_name: string;
+  semesters?: number;
+  department_id?: number;
+  credits_needed?: number;
+};
+
+export type TabType = {
+  id: number;
+  title: string;
+  content: string;
+};

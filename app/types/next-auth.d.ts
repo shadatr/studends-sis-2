@@ -7,22 +7,23 @@ declare module "next-auth" {
    */
   interface Session {
     user: {
-      token : JWT
-      active: boolean 
-      address: string | null
-      birth_date: number | null
-      created_at: string | null
-      email: string
-      enrollment_date: string
-      id: number
-      major: string | null
-      name: string
-      phone: number | null
-      semester: number | null
-      surname: string
-      speciality: string | null
-      admin: boolean
-      userType : 'student' | 'doctor' | 'admin'
-    }
+      token: JWT;
+      active: boolean;
+      address: string | null;
+      birth_date: number | null;
+      created_at: string | null;
+      email: string;
+      enrollment_date: string;
+      id: number;
+      major: string | null;
+      name: string;
+      phone: number | null;
+      semester: number | null;
+      surname: string;
+      speciality: string | null;
+      admin: boolean;
+      head_of_deparment_id: number;
+      userType: 'student' | 'doctor' | 'admin';
+    };
   }
 }

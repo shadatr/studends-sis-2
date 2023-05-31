@@ -135,6 +135,8 @@ const authOptions: NextAuthOptions = {
       session.user.surname = token.surname as any;
       session.user.speciality = token.speciality as any;
       session.user.admin = token.admin as any;
+      session.user.active = token.active as any;
+      session.user.head_of_deparment_id = token.head_of_deparment_id as any;
       session.user.userType = token.userType as any;
 
       return session;

@@ -3,6 +3,16 @@
 import { useSession } from 'next-auth/react';
 
 
+const stuInfo = [
+  'الاسم',
+  'اللقب',
+  'تاريخ الميلاد',
+  'التخصص',
+  'عنوان السكن',
+  'رقم الهاتف',
+  'الايميل',
+  'تاريخ التسجيل',
+];
 const Page = () => {
   // handling authentication
   const session = useSession({ required: true });
@@ -10,16 +20,6 @@ const Page = () => {
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
     throw new Error('Unauthorized');
   }
-  const stuInfo = [
-    'الاسم',
-    'اللقب',
-    'تاريخ الميلاد',
-    'التخصص',
-    'عنوان السكن',
-    'رقم الهاتف',
-    'الايميل',
-    'تاريخ التسجيل',
-  ];
 
   const user = session.data?.user;
 

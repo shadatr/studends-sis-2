@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import MyModel from '@/app/components/dialog';
 import { AddCourseType, AddCourse2Type, GetPermissionType } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 const numbers: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -32,8 +33,8 @@ const CourseItems: FC<{
       {courses.map((item, index) => {
         if (item.min_semester === num) {
           return (
-            <div key={index} className="courses">
-              <div>
+            <tr key={index} className="courses hover:bg-grey">
+              <td>
                 {perms.map((permItem, permIndex) => {
                   if (permItem.permission_id === 8 && permItem.active) {
                     return (
@@ -47,14 +48,18 @@ const CourseItems: FC<{
                   }
                   return null;
                 })}
-              </div>
-              <div>{item.passing_percentage}</div>
-              <div>{item.min_semester}</div>
-              <div>{item.credits}</div>
-              <div>{item.hours}</div>
-              <div>{item.course_name}</div>
-              <div className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</div>
-            </div>
+              </td>
+              <td>{item.passing_percentage}</td>
+              <td>{item.min_semester}</td>
+              <td>{item.credits}</td>
+              <td>{item.hours}</td>
+              <td>
+                <Link href={`/doctor/managementWork/section/${item.id}`}>
+                  {item.course_name}
+                </Link>
+              </td>
+              <td className="flex flex-row w-1/7  pl-2">{index + 1}</td>
+            </tr>
           );
         }
         return null;
@@ -67,10 +72,10 @@ const CourseItems: FC<{
 const page = ({ params }: { params: { id: number } }) => {
 
   const session = useSession({ required: true });
-  // // if user isn't a admin, throw an error
-  // if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
-  //   throw new Error('Unauthorized');
-  // }
+  // if user isn't a admin, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
+    throw new Error('Unauthorized');
+  }
   const user = session.data?.user;
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
 
@@ -189,7 +194,6 @@ const page = ({ params }: { params: { id: number } }) => {
                 className="p-4 text-sm bg-lightBlue "
               >
                 <option selected disabled>
-                  {' '}
                   الكريدت
                 </option>
                 {selection}
