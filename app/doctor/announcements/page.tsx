@@ -10,7 +10,6 @@ import { useSession } from 'next-auth/react';
 const AnnoPage = () => {
 
   const [Announcements, setAnnouncements] = useState<AnnouncmentsMangType[]>([]);
-  // handling authentication
   const session = useSession({ required: true });
   // TODO if user isn't a doctor, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {

@@ -1,5 +1,4 @@
 'use client';
-/* eslint-disable react-hooks/rules-of-hooks */
 import { GetPermissionType, PersonalInfoType } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
@@ -7,7 +6,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-const page = ({ params }: { params: { name: string } }) => {
+const Page = ({ params }: { params: { name: string } }) => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
@@ -126,6 +125,6 @@ const page = ({ params }: { params: { name: string } }) => {
 };
 
 
-export default page;
+export default Page;
 
 
