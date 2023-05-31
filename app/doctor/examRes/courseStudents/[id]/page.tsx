@@ -76,21 +76,28 @@ const Page = ({ params }: { params: { id: number } }) => {
     <div className="flex absolute flex-col w-4/5">
       <form onSubmit={(e) => e.preventDefault()}>
         <button
-        className='m-10'
+          className="m-10 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px] "
           type="submit"
-          onClick={() => (editHw ? handleSubmit("class_work") : setEditHw(!editHw))}
+          onClick={() =>
+            editHw ? handleSubmit('class_work') : setEditHw(!editHw)
+          }
         >
           {editHw ? 'ارسال' : 'hwتعديل'}
         </button>
         <button
+          className="m-10 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px] "
           type="submit"
-          onClick={() => editFinal ? handleSubmit("final") : setEditFinal(!editFinal)}
+          onClick={() =>
+            editFinal ? handleSubmit('final') : setEditFinal(!editFinal)
+          }
         >
           {editFinal ? 'ارسال' : 'finتعديل'}
         </button>
         <button
+          className="m-10 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px] "
           type="submit"
-          onClick={() => editMid ? handleSubmit("midterm") : setEditMid(!editMid)
+          onClick={() =>
+            editMid ? handleSubmit('midterm') : setEditMid(!editMid)
           }
         >
           {editMid ? 'ارسال' : 'midتعديل'}
