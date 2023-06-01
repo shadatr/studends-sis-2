@@ -53,3 +53,7 @@ table ,td, th{
   width: 100%;
   font-size: 15px;
 } 
+
+.courseInfo td{
+  padding: 10px;
+}

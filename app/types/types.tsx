@@ -258,3 +258,20 @@ export type TabType = {
   title: string;
   content: string;
 };
+
+export type CourseType = {
+  id?: number;
+  course_name: string;
+  major_id?: number;
+  credits?: number;
+  hours?: number;
+  passing_grade?: number;
+  min_semester?: number;
+  tb_majors?: {
+    major_name?: string;
+    id?: number;
+    total_semester: number;
+    department_id: number;
+    credits_needed: number;
+  };
+};

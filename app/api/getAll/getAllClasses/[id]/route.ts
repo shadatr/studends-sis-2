@@ -10,11 +10,10 @@ export async function GET(
   { params }: { params: { id: number } }
 ) {
   try {
-    console.log(params.id);
     const data = await supabase
-      .from('tb_section')
+      .from('tb_classes')
       .select('*')
-      .eq('course_id', params.id);
+      .eq('section_id', params.id);
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {

@@ -98,9 +98,10 @@ const page = ({ params }: { params: { id: number } }) => {
       setPerms(message);
       console.log(message);
     };
-
     fetchPosts();
   }, [user?.id]);
+
+
   const selection = numbers.map((num, index) => (
     <option key={index}>{num}</option>
   ));
