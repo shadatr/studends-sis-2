@@ -102,8 +102,9 @@ export type PersonalInfoType = {
   semester: number;
   enrollment_date?: number;
   major: string;
-  advisor: string;
-  active?: boolean
+  advisor?: string;
+  active?: boolean;
+  head_of_deparment_id?: number;
 };
 
 export type MajorRegType = {

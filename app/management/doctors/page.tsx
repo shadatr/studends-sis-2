@@ -33,7 +33,7 @@ const Page = () => {
   const [selectedDoctor, setSelectedDoctor] =
     useState<DoctorsWithDepartmentsType>();
   useEffect(() => {
-    axios.get('/api/getAll/getAllDoctors').then((res) => {
+    axios.get('/api/getAll/getDoctorsHeadOfDep').then((res) => {
       console.log(res.data);
       const message: DoctorsWithDepartmentsType[] = res.data.message;
       setDoctors(message);

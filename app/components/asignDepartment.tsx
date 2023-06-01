@@ -72,7 +72,7 @@ export default function AssignDepartment({
   };
 
   useEffect(() => {
-    axios.get('/api/getAllDepartments').then((res) => {
+    axios.get('/api/getAll/getAllDepartments').then((res) => {
       console.log(res.data);
       const message: {
         created_at: string | null;
