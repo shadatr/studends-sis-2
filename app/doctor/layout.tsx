@@ -14,13 +14,11 @@ export default function MangLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ar">
-      <body>
-        <Navbar />
-        {children}
-        <DoctorMenu />
-        <Footer />
-      </body>
-    </html>
+    <>
+      <Navbar />
+      {children}
+      <DoctorMenu />
+      <Footer />
+    </>
   );
 }

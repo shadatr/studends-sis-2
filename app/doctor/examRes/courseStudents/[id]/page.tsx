@@ -21,9 +21,9 @@ const Page = ({ params }: { params: { id: number } }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get(`/api/examRes/${params.id}/section`);
+        const response = await axios.get(`/api/exams/examRes/${params.id}/section`);
         const message: StudentClassType[] = response.data.message;
-        const resp = await axios.get(`/api/student`);
+        const resp = await axios.get(`/api/getAll/student`);
         const personalInfoMessage: PersonalInfoType[] = resp.data.message;
         setStudentsNames(personalInfoMessage);
         setStudents(message);
@@ -62,7 +62,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     setEdit(!edit);
     console.log('Submitted grades:', grades);
     axios
-      .post(`/api/examRes/${params.id}/${name}`, grades)
+      .post(`/api/exams/examRes/${params.id}/${name}`, grades)
       .then(() => {
         toast.success('تم نشر الدرجات بنجاح');
       })
