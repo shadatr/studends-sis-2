@@ -137,7 +137,7 @@ const Tabs = ({ params }: { params: { idSec: number; idClass: number } }) => {
                   <td> اعمال السنة</td>
                 </tr>
                 <tr>
-                  <td>{selectedCourse?.passing_grade}</td>
+                  <td>{selectedCourse?.passing_percentage}</td>
                   <td>درجة النجاح</td>
                 </tr>
                 <tr>

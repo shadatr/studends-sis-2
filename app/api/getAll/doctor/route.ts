@@ -9,7 +9,6 @@ const supabase = createClient<Database>(
 export async function GET() {
   try {
     const data = await supabase.from('tb_doctors').select('*');
-
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,

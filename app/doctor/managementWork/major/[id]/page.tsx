@@ -1,94 +1,39 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client';
+import {
+  DepartmentRegType,
+  GetPermissionType,
+  MajorRegType,
+} from '@/app/types/types';
 import axios from 'axios';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import MyModel from '@/app/components/dialog';
-import { AddCourseType, AddCourse2Type, GetPermissionType } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
-const numbers: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+import MyModel from '../../../../components/dialog';
 
-const headers = (
-    <tr className="coursesHeader">
-      <th> </th>
-      <th>درجة النجاح</th>
-      <th>تبدا من الفصل الدراسي</th>
-      <th>الكريدت</th>
-      <th>الساعات</th>
-      <th>اسم المادة</th>
-      <th> </th>
-    </tr>
-  );
-
-const CourseItems: FC<{
-  perms: GetPermissionType[];
-  courses: AddCourse2Type[];
-  num: number;
-  handleDelete: any;
-}> = ({ perms, courses, num, handleDelete }) => {
-  return (
-    <div>
-      {courses.map((item, index) => {
-        if (item.min_semester === num) {
-          return (
-            <tr key={index} className="courses hover:bg-grey">
-              <td>
-                {perms.map((permItem, permIndex) => {
-                  if (permItem.permission_id === 8 && permItem.active) {
-                    return (
-                      <MyModel
-                        key={permIndex}
-                        depOrMaj="المادة"
-                        name=""
-                        deleteModle={() => handleDelete(item.course_name)}
-                      />
-                    );
-                  }
-                  return null;
-                })}
-              </td>
-              <td>{item.passing_percentage}</td>
-              <td>{item.min_semester}</td>
-              <td>{item.credits}</td>
-              <td>{item.hours}</td>
-              <td>
-                <Link href={`/doctor/managementWork/section/${item.id}`}>
-                  {item.course_name}
-                </Link>
-              </td>
-              <td className="flex flex-row w-1/7  pl-2">{index + 1}</td>
-            </tr>
-          );
-        }
-        return null;
-      })}
-    </div>
-  );
-};
-
-
-const page = ({ params }: { params: { id: number } }) => {
-
+const page = () => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
     throw new Error('Unauthorized');
   }
   const user = session.data?.user;
+
+  const major = useRef<HTMLInputElement>(null);
+  const majorDep = useRef<HTMLSelectElement>(null);
+  const [majors, setMajors] = useState<MajorRegType[]>([]);
+  const [loadMajor, setLoadMajor] = useState(false);
+  const [newItemMajor, setNewItemMajor] = useState('');
+  const [newMajorDep, setNewMajorDep] = useState('');
+
+  const department = useRef<HTMLInputElement>(null);
+  const [departments, setDepartments] = useState<DepartmentRegType[]>([]);
+  const [loadDepartments, setLoadDep] = useState(false);
+  const [newItemDep, setNewItemDep] = useState('');
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
 
-  
-  const [courses, setCourses] = useState<AddCourse2Type[]>([]);
-  const course = useRef<HTMLInputElement>(null);
-  const [loadCourses, setLoadCourse] = useState(false);
-  const [semester, setSemester] = useState('');
-  const [credits, setCredits] = useState('');
-  const [hours, setHours] = useState('');
-  const [newItemCourse, setNewItemCourse] = useState('');
-  const [passingGrade, setPassingGrade] = useState('');
-  
   useEffect(() => {
     const fetchPosts = async () => {
       const response = await axios.get(
@@ -98,317 +43,238 @@ const page = ({ params }: { params: { id: number } }) => {
       setPerms(message);
       console.log(message);
     };
+
     fetchPosts();
   }, [user?.id]);
 
-
-  const selection = numbers.map((num, index) => (
-    <option key={index}>{num}</option>
-  ));
-
-  const handleRegisterCourse = () => {
-    if (!newItemCourse) {
+  const handleRegisterDep = () => {
+    if (!newItemDep) {
       toast.error('يجب كتابة اسم المادة');
       return;
     }
-
-    if (!credits && !hours && !passingGrade && !semester) {
-      toast.error('يجب ملئ جميع الحقول');
-      return;
-    }
-
-    let duplicateFound = false;
-
-    courses.forEach((item) => {
-      if (item.course_name === newItemCourse) {
-        duplicateFound = true;
-        return;
-      }
-    });
-
-    if (duplicateFound) {
-      toast.error('هذه المادة مسجلة بالفعل');
-      return;
-    }
-
-    const data: AddCourseType = {
-      major_id: params.id,
-      course_name: newItemCourse,
-      credits: credits,
-      min_semester: semester,
-      hours: hours,
-      passing_percentage: passingGrade,
-    };
+    const data: DepartmentRegType = { name: newItemDep };
     axios
-      .post(`/api/course/courseRegistration/${params.id}`, data)
+      .post('/api/department/departmentRegister', data)
       .then((res) => {
         console.log(res.data);
         toast.success(res.data.message);
-        setLoadCourse(!loadCourses);
+        setLoadDep(!loadDepartments);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
       });
+    setNewItemDep('');
   };
 
   useEffect(() => {
     const fetchPosts = async () => {
-      axios.get(`/api/course/courseRegistration/${params.id}`).then((resp) => {
+      axios.get('/api/department/departmentRegister').then((resp) => {
         console.log(resp.data);
-        const message: AddCourse2Type[] = resp.data.message;
-        setCourses(message);
+        const message: DepartmentRegType[] = resp.data.message;
+        setDepartments(message);
       });
     };
     fetchPosts();
-  }, [loadCourses, params.id]);
+  }, [loadDepartments]);
 
-  const handleDelete = (id: number) => {
-    const data = { item_name: id };
-    axios.post(`/api/course/courseRegDelete/${params.id}`, data).then((resp) => {
-      console.log(resp.data);
+  const departmetItems = departments.map((deptItem, index) => (
+    <tr key={index} className="flex flex-row w-full">
+      <td
+        className="flex flex-row w-full p-1 items-center justify-between"
+        key={index}
+      >
+        {perms.map((permItem, idx) => {
+          if (permItem.permission_id === 8 && permItem.active) {
+            return (
+              <MyModel
+                key={idx}
+                depOrMaj="الكلية"
+                name={deptItem.name}
+                deleteModle={() => handleDeleteMajor(deptItem.name)}
+              />
+            );
+          }
+          return null;
+        })}
+        {deptItem.name}
+      </td>
+      <td className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</td>
+    </tr>
+  ));
+
+  const departmentOptions = departments.map((item, index) => (
+    <option key={index}>{item.name}</option>
+  ));
+
+  const selectedDep = departments.filter((item) => item.name == newMajorDep);
+  const depId = selectedDep.map((i) => i.id);
+
+  const handleRegisterMajor = () => {
+    if (!newItemMajor || !newMajorDep) {
+      toast.error('يجب كتابة ملئ جميع البيانات');
+      return;
+    }
+    const data: MajorRegType = {
+      major_name: newItemMajor,
+      department_id: depId[0],
+    };
+    axios
+      .post('/api/major/majorReg', data)
+      .then((res) => {
+        console.log(res.data.message);
+        toast.success(res.data.message);
+        setLoadMajor(!loadMajor);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      });
+    setNewItemMajor('');
+    setNewMajorDep('');
+  };
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      axios.get('/api/major/majorReg').then((resp) => {
+        console.log(resp.data);
+        const message: MajorRegType[] = resp.data.message;
+        setMajors(message);
+      });
+    };
+    fetchPosts();
+  }, [loadMajor]);
+
+  const handleDeleteMajor = (major_name: string) => {
+    const data = { item_name: major_name };
+    axios.post('/api/major/majorDelete', data).then((resp) => {
       toast.success(resp.data.message);
-      setLoadCourse(!loadCourses);
+      setLoadMajor(!loadMajor);
     });
   };
 
+  const majorItems = majors.map((item, index) => (
+    <tr key={index} className="flex flex-row w-full">
+      <td className="flex flex-row w-full p-1 items-center justify-between">
+        <MyModel
+          name={item.major_name}
+          depOrMaj="التخصص"
+          deleteModle={() =>
+            perms.map((permItem) => {
+              if (permItem.permission_id === 7 && permItem.active) {
+                handleDeleteMajor(item.major_name);
+              }
+            })
+          }
+        />
+        <Link href={`/management/managementwork/major/${item.id}`}>{item.major_name}</Link>
+      </td>
+      <td className="flex flex-row w-1/5 items-center justify-center pr-2 pl-2">
+        {item.tb_departments?.name}
+      </td>
+      <td className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</td>
+    </tr>
+  ));
+
   return (
-    <div className="flex flex-col absolute w-[90%] mt-10 items-center justify-center text-sm">
-      {perms.map((item, idx) => {
-        if (item.permission_id === 8 && item.active) {
-          return (
+    <div className="absolute flex flex-col right-[150px]">
+      <div className="flex flex-col  items-center justify-center text-sm">
+        {perms.map((item, idx) =>
+          item.permission_id === 8 && item.active ? (
             <div
               key={idx}
-              className="flex flex-row-reverse items-center justify-center  text-sm  mb-10 w-[1000px]"
+              className="flex flex-row-reverse items-center justify-center  text-sm mt-10 w-[1000px]"
             >
+              <label
+                htmlFor=""
+                lang="ar"
+                className="p-3 bg-darkBlue text-secondary w-[200px]"
+              >
+                سجل كلية
+              </label>
               <input
-                ref={course}
+                ref={department}
                 dir="rtl"
-                placeholder="ادخل اسم المادة"
+                placeholder="ادخل اسم الكلية"
                 type="text"
-                className="w-[700px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
-                onChange={(e) => setNewItemCourse(e.target.value)}
-              />
-              <select
-                id="dep"
-                dir="rtl"
-                onChange={(e) => setCredits(e.target.value)}
-                className="p-4 text-sm bg-lightBlue "
-              >
-                <option selected disabled>
-                  الكريدت
-                </option>
-                {selection}
-              </select>
-              <select
-                id="dep"
-                dir="rtl"
-                onChange={(e) => setHours(e.target.value)}
-                className="p-4 text-sm bg-lightBlue "
-              >
-                <option selected disabled>
-                  الساعات
-                </option>
-                {selection}
-              </select>
-              <select
-                id="dep"
-                dir="rtl"
-                onChange={(e) => setSemester(e.target.value)}
-                className="p-4 text-sm bg-lightBlue "
-              >
-                <option selected disabled>
-                  تبدا من الفصل الدراسي
-                </option>
-                {selection}
-              </select>
-              <input
-                ref={course}
-                dir="rtl"
-                placeholder="درجة النجاح"
-                type="text"
-                className="w-[200px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
-                onChange={(e) => setPassingGrade(e.target.value)}
+                className="w-[600px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
+                value={newItemDep}
+                onChange={(e) => setNewItemDep(e.target.value)}
               />
               <button
                 className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
                 type="submit"
-                onClick={handleRegisterCourse}
+                onClick={handleRegisterDep}
               >
                 سجل
               </button>
             </div>
-          );
-        }
-        return null;
-      })}
-      <table className="w-[1000px] flex flex-col h-[200px] overflow-y-auto">
-        <tr className="flex justify-center items-center text-sm bg-darkBlue text-secondary ">
-          الفصل الدراسي الاول
-        </tr>
-        <thead>{headers}</thead>
-        <tbody className="course">
-          <CourseItems
-            perms={perms}
-            handleDelete={handleDelete}
-            num={1}
-            courses={courses}
-          />
-        </tbody>
-      </table>
-      <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
-        <tr className="flex justify-center items-center text-sm bg-darkBlue text-secondary ">
-          الفصل الدراسي الثاني
-        </tr>
-        <thead>{headers}</thead>
-        <tbody className="course">
-          <CourseItems
-            perms={perms}
-            handleDelete={handleDelete}
-            num={2}
-            courses={courses}
-          />
-        </tbody>
-      </table>
-      <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
-        <tr className="flex justify-center items-center text-sm bg-darkBlue text-secondary ">
-          الفصل الدراسي الثالث
-        </tr>
-        <thead>{headers}</thead>
-        <tbody className="course">
-          <CourseItems
-            perms={perms}
-            handleDelete={handleDelete}
-            num={3}
-            courses={courses}
-          />
-        </tbody>
-      </table>
-      <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
-        <tr className="flex justify-center items-center text-sm bg-darkBlue text-secondary ">
-          الفصل الدراسي الرابع
-        </tr>
-        <thead>{headers}</thead>
-        <tbody className="course">
-          <CourseItems
-            perms={perms}
-            handleDelete={handleDelete}
-            num={4}
-            courses={courses}
-          />
-        </tbody>
-      </table>
-      <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
-        <tr className="flex justify-center items-center text-sm bg-darkBlue text-secondary ">
-          الفصل الدراسي الخامس
-        </tr>
-        <thead>{headers}</thead>
-        <tbody className="course">
-          <CourseItems
-            perms={perms}
-            handleDelete={handleDelete}
-            num={5}
-            courses={courses}
-          />
-        </tbody>
-      </table>
-      <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
-        <tr className="flex justify-center items-center text-sm bg-darkBlue text-secondary ">
-          الفصل الدراسي السادس
-        </tr>
-        <thead>{headers}</thead>
-        <tbody className="course">
-          <CourseItems
-            perms={perms}
-            handleDelete={handleDelete}
-            num={6}
-            courses={courses}
-          />
-        </tbody>
-      </table>
-      <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
-        <tr className="flex justify-center items-center text-sm bg-darkBlue text-secondary ">
-          الفصل الدراسي السابع{' '}
-        </tr>
-        <thead>{headers}</thead>
-        <tbody className="course">
-          <CourseItems
-            perms={perms}
-            handleDelete={handleDelete}
-            num={7}
-            courses={courses}
-          />
-        </tbody>
-      </table>
-      <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
-        <tr className="flex justify-center items-center text-sm bg-darkBlue text-secondary ">
-          الفصل الدراسي الثامن
-        </tr>
-        <thead>{headers}</thead>
-        <tbody className="course">
-          <CourseItems
-            perms={perms}
-            handleDelete={handleDelete}
-            num={8}
-            courses={courses}
-          />
-        </tbody>
-      </table>
-      <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
-        <tr className="flex justify-center items-center text-sm bg-darkBlue text-secondary ">
-          الفصل الدراسي الخامس
-        </tr>
-        <thead>{headers}</thead>
-        <tbody className="course">
-          <CourseItems
-            perms={perms}
-            handleDelete={handleDelete}
-            num={5}
-            courses={courses}
-          />
-        </tbody>
-      </table>
-      <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
-        <tr className="flex justify-center items-center text-sm bg-darkBlue text-secondary ">
-          الفصل الدراسي السادس
-        </tr>
-        <thead>{headers}</thead>
-        <tbody className="course">
-          <CourseItems
-            perms={perms}
-            handleDelete={handleDelete}
-            num={6}
-            courses={courses}
-          />
-        </tbody>
-      </table>
-      <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
-        <tr className="flex justify-center items-center text-sm bg-darkBlue text-secondary ">
-          الفصل الدراسي السابع{' '}
-        </tr>
-        <thead>{headers}</thead>
-        <tbody className="course">
-          <CourseItems
-            perms={perms}
-            handleDelete={handleDelete}
-            num={7}
-            courses={courses}
-          />
-        </tbody>
-      </table>
-      <table className="w-[1000px]  flex flex-col h-[200px] overflow-y-auto">
-        <tr className="flex justify-center items-center text-sm bg-darkBlue text-secondary ">
-          الفصل الدراسي الثامن
-        </tr>
-        <thead>{headers}</thead>
-        <tbody className="course">
-          <CourseItems
-            perms={perms}
-            handleDelete={handleDelete}
-            num={8}
-            courses={courses}
-          />
-        </tbody>
-      </table>
+          ) : (
+            ' '
+          )
+        )}
+
+        <p className="mt-[50px] text-lg">اقسام</p>
+        <table className="w-[1000px] flex flex-col h-[200px] overflow-y-auto">
+          <tbody>{departmetItems}</tbody>
+        </table>
+      </div>
+      <div className="flex flex-col items-center justify-center text-sm p-10">
+        {perms.map((item, idx) =>
+          item.permission_id === 7 && item.active ? (
+            <div
+              key={idx}
+              className="flex flex-row-reverse items-center justify-center w-screen text-sm mt-10"
+            >
+              <label
+                htmlFor=""
+                lang="ar"
+                className="p-3 bg-darkBlue text-secondary"
+              >
+                سجل تخصص
+              </label>
+              <input
+                ref={major}
+                dir="rtl"
+                placeholder="ادخل اسم التخصص"
+                type="text"
+                className="w-[600px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
+                value={newItemMajor}
+                onChange={(e) => setNewItemMajor(e.target.value)}
+              />
+              <select
+                id="dep"
+                dir="rtl"
+                ref={majorDep}
+                onChange={(e) => {
+                  {
+                    setNewMajorDep(e.target.value);
+                  }
+                }}
+                className="p-4 text-sm bg-lightBlue "
+              >
+                <option selected disabled>
+                  اختر اسم الكلية
+                </option>
+                {departmentOptions}
+              </select>
+
+              <button
+                className="bg-darkBlue text-secondary p-3 w-[200px] "
+                type="submit"
+                onClick={handleRegisterMajor}
+              >
+                سجل
+              </button>
+            </div>
+          ) : (
+            ''
+          )
+        )}
+
+        <p className="mt-[50px] text-lg">تخصصات</p>
+        <table className="w-[1000px] flex flex-col">
+          <tbody>{majorItems}</tbody>
+        </table>
+      </div>
     </div>
   );
 };

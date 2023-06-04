@@ -154,10 +154,10 @@ export type AddCourseType = {
   id?: number;
   course_name: string;
   major_id?: number;
-  min_semester?: string;
-  hours?: string;
-  credits?: string;
-  passing_percentage?: string;
+  min_semester?: number;
+  hours?: number;
+  credits?: number;
+  passing_percentage?: number;
 };
 
 export type AddCourse2Type = {
@@ -213,8 +213,8 @@ export type CheckedType={
 
 export type SectionType = {
   id?: number;
-  name: string;
-  course_id: number;
+  name?: string;
+  course_id?: number;
 };
 
 export type ClassesType = {
@@ -266,7 +266,7 @@ export type CourseType = {
   major_id?: number;
   credits?: number;
   hours?: number;
-  passing_grade?: number;
+  passing_percentage?: number;
   min_semester?: number;
   tb_majors?: {
     major_name?: string;

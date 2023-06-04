@@ -1,4 +1,4 @@
-import { AddCourseType } from '@/app/types/types';
+import { AddCourseType, SectionType } from '@/app/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -11,17 +11,31 @@ export async function POST(request: Request) {
 
   try {
     const res = await supabase.from('tb_courses').insert([data]);
-    console.log(res.error?.message);
+
+    const data3 = await supabase
+      .from('tb_courses')
+      .select('*')
+      .eq('major_id', data.major_id)
+      .eq('course_name', data.course_name);
+
+      const parsedData = JSON.parse(JSON.stringify(data3));
+      const messageData = parsedData.data;
+      const data4: AddCourseType[] = messageData;
+      console.log(data4);
+
+
+    const data2: SectionType =  {name: data.course_name+'(S1)', course_id: data4[0].id};
+    console.log(data2);
+    await supabase.from('tb_section').insert([data2]);
     if (res.error) {
-      console.log(res.error);
       throw res.error;
     }
-    return new Response(JSON.stringify({ message: 'تم تسجيل الكلية بنجاح' }), {
+    return new Response(JSON.stringify({ message: 'تم تسجيل المادة بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });
   } catch (error) {
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الكلية' }),
+      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل المادة' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }

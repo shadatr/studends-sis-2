@@ -179,90 +179,102 @@ const departmetItems = departments.map((deptItem, index) => (
   return (
     <div className="absolute flex flex-col right-[150px]">
       <div className="flex flex-col  items-center justify-center text-sm">
-        {perms.map((item, idx) => 
+        {perms.map((item, idx) =>
           item.permission_id === 8 && item.active ? (
-          <div key={idx} className="flex flex-row-reverse items-center justify-center  text-sm mt-10 w-[1000px]">
-          <label
-            htmlFor=""
-            lang="ar"
-            className="p-3 bg-darkBlue text-secondary w-[200px]"
-          >
-            سجل كلية
-          </label>
-          <input
-            ref={department}
-            dir="rtl"
-            placeholder="ادخل اسم الكلية"
-            type="text"
-            className="w-[600px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
-            value={newItemDep}
-            onChange={(e) => setNewItemDep(e.target.value)}
-          />
-          <button
-            className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
-            type="submit"
-            onClick={handleRegisterDep}
-          >
-            سجل
-          </button>
-        </div>): ' ' )}
-        
-        <p className='mt-[50px] text-lg' >اقسام</p>
+            <div
+              key={idx}
+              className="flex flex-row-reverse items-center justify-center  text-sm mt-10 w-[1000px]"
+            >
+              <label
+                htmlFor=""
+                lang="ar"
+                className="p-3 bg-darkBlue text-secondary w-[200px]"
+              >
+                سجل كلية
+              </label>
+              <input
+                ref={department}
+                dir="rtl"
+                placeholder="ادخل اسم الكلية"
+                type="text"
+                className="w-[600px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
+                value={newItemDep}
+                onChange={(e) => setNewItemDep(e.target.value)}
+              />
+              <button
+                className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
+                type="submit"
+                onClick={handleRegisterDep}
+              >
+                سجل
+              </button>
+            </div>
+          ) : (
+            ' '
+          )
+        )}
+
+        <p className="mt-[50px] text-lg">اقسام</p>
         <table className="w-[1000px] flex flex-col h-[200px] overflow-y-auto">
-          {departmetItems}
+          <tbody>{departmetItems}</tbody>
         </table>
       </div>
       <div className="flex flex-col items-center justify-center text-sm p-10">
-        {perms.map((item, idx) => 
-          item.permission_id === 7 && item.active ?  (
-          <div 
-          key={idx}
-          className="flex flex-row-reverse items-center justify-center w-screen text-sm mt-10">
-          <label
-            htmlFor=""
-            lang="ar"
-            className="p-3 bg-darkBlue text-secondary"
-          >
-            سجل تخصص
-          </label>
-          <input
-            ref={major}
-            dir="rtl"
-            placeholder="ادخل اسم التخصص"
-            type="text"
-            className="w-[600px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
-            value={newItemMajor}
-            onChange={(e) => setNewItemMajor(e.target.value)}
-          />
-          <select
-            id="dep"
-            dir="rtl"
-            ref={majorDep}
-            onChange={(e) => {
-              {
-                setNewMajorDep(e.target.value);
-              }
-            }}
-            className="p-4 text-sm bg-lightBlue "
-          >
-            <option selected disabled>
-              اختر اسم الكلية
-            </option>
-            {departmentOptions}
-          </select>
+        {perms.map((item, idx) =>
+          item.permission_id === 7 && item.active ? (
+            <div
+              key={idx}
+              className="flex flex-row-reverse items-center justify-center w-screen text-sm mt-10"
+            >
+              <label
+                htmlFor=""
+                lang="ar"
+                className="p-3 bg-darkBlue text-secondary"
+              >
+                سجل تخصص
+              </label>
+              <input
+                ref={major}
+                dir="rtl"
+                placeholder="ادخل اسم التخصص"
+                type="text"
+                className="w-[600px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
+                value={newItemMajor}
+                onChange={(e) => setNewItemMajor(e.target.value)}
+              />
+              <select
+                id="dep"
+                dir="rtl"
+                ref={majorDep}
+                onChange={(e) => {
+                  {
+                    setNewMajorDep(e.target.value);
+                  }
+                }}
+                className="p-4 text-sm bg-lightBlue "
+              >
+                <option selected disabled>
+                  اختر اسم الكلية
+                </option>
+                {departmentOptions}
+              </select>
 
-          <button
-            className="bg-darkBlue text-secondary p-3 w-[200px] "
-            type="submit"
-            onClick={handleRegisterMajor}
-          >
-            سجل
-          </button>
-        </div>): '')}
-        
-        <p className='mt-[50px] text-lg' >تخصصات</p>
+              <button
+                className="bg-darkBlue text-secondary p-3 w-[200px] "
+                type="submit"
+                onClick={handleRegisterMajor}
+              >
+                سجل
+              </button>
+            </div>
+          ) : (
+            ''
+          )
+        )}
+
+        <p className="mt-[50px] text-lg">تخصصات</p>
         <table className="w-[1000px] flex flex-col">
-          {majorItems}
+          <tbody>{majorItems}</tbody>
         </table>
       </div>
     </div>
