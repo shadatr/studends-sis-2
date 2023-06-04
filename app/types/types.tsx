@@ -276,3 +276,9 @@ export type CourseType = {
     credits_needed: number;
   };
 };
+
+export type PrerequisiteCourseType = {
+  id?: number;
+  course_id?: number;
+  prerequisite_course_id?: number;
+};
