@@ -14,7 +14,7 @@ const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
   const [activeTab, setActiveTab] = useState<string>('Tab 1');
   const [selectedCourseName, setSelectedCourseName] = useState('');
   const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>([]);
-
+  const [maxStudents, setMaxStudents] = useState<number>();
 
   const handleCourseChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCourseName(event.target.value);
@@ -56,9 +56,16 @@ const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
     const selectedCourse = courses.find(
       (course) => params.courseId == course.id
     );
+
+    if (!maxStudents){
+      toast.error('يجب ادخال الحد الاقصى لطلاب');
+      return;
+    }
+
     const data: SectionType = {
       name: selectedCourse?.course_name + `(S${section.length + 1})`,
-      course_id: selectedCourse?.id
+      course_id: selectedCourse?.id,
+      max_students: maxStudents
     };
     console.log(data);
     axios
@@ -155,6 +162,11 @@ const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
           >
             اضاف مجموعة
           </button>
+          <input
+            placeholder="الحد الاقصى لطلاب"
+            onChange={(event) => setMaxStudents(parseInt(event.target.value))}
+            className="border border-gray-300 px-4 py-2 flex items-right"
+          />
           {section.map((sec, index) => (
             <div
               key={index}

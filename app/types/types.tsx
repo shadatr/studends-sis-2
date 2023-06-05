@@ -215,6 +215,7 @@ export type SectionType = {
   id?: number;
   name?: string;
   course_id?: number;
+  max_students?: number;
 };
 
 export type ClassesType = {
