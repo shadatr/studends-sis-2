@@ -84,7 +84,7 @@ const Tabs = ({ params }: { params: { idSec: number; idClass: number } }) => {
       };
       fetchdata();
     }
-  }, [load]);
+  }, [load, params.idClass, params.idSec]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {

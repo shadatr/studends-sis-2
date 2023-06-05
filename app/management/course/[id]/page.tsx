@@ -7,7 +7,6 @@ import {
   AddCourseType,
   AddCourse2Type,
   GetPermissionType,
-  SectionType,
 } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';

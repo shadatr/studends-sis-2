@@ -1,20 +1,24 @@
 'use client';
-import { CourseType, PrerequisiteCourseType, SectionType } from '@/app/types/types';
+import {
+  CourseType,
+  PrerequisiteCourseType,
+  SectionType,
+} from '@/app/types/types';
 import axios from 'axios';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaTrashAlt } from 'react-icons/fa';
 
-
-const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
+const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
   const [section, setSection] = useState<SectionType[]>([]);
   const [courses, setCourses] = useState<CourseType[]>([]);
   const [load, setLoad] = useState(true);
   const [activeTab, setActiveTab] = useState<string>('Tab 1');
   const [selectedCourseName, setSelectedCourseName] = useState('');
-  const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>([]);
-
+  const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>(
+    []
+  );
 
   const handleCourseChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCourseName(event.target.value);
@@ -25,40 +29,40 @@ const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
   };
 
   useEffect(() => {
-    if(typeof window !== 'undefined'){
-    const fetchPosts = async () => {
-      const response = await axios.get(
-        `/api/getAll/getAllSections/${params.courseId}`
-      );
-      const message: SectionType[] = response.data.message;
-      setSection(message);
+    if (typeof window !== 'undefined') {
+      const fetchPosts = async () => {
+        const response = await axios.get(
+          `/api/getAll/getAllSections/${params.courseId}`
+        );
+        const message: SectionType[] = response.data.message;
+        setSection(message);
 
-      const responseCourse = await axios.get(
-        `/api/course/majorCourses/${params.majId}`
-      );
-      const messageCourse: CourseType[] = responseCourse.data.message;
-      console.log(messageCourse);
-      setCourses(messageCourse);
+        const responseCourse = await axios.get(
+          `/api/course/majorCourses/${params.majId}`
+        );
+        const messageCourse: CourseType[] = responseCourse.data.message;
+        console.log(messageCourse);
+        setCourses(messageCourse);
 
-      const responsePerCourse = await axios.get(
-        `/api/course/prerequisitesCourses/${params.courseId}`
-      );
-      const messagePerCourse: PrerequisiteCourseType[] =
-        responsePerCourse.data.message;
-      console.log(messageCourse);
-      setPrerequisites(messagePerCourse);
-    };
-    fetchPosts();}
+        const responsePerCourse = await axios.get(
+          `/api/course/prerequisitesCourses/${params.courseId}`
+        );
+        const messagePerCourse: PrerequisiteCourseType[] =
+          responsePerCourse.data.message;
+        console.log(messageCourse);
+        setPrerequisites(messagePerCourse);
+      };
+      fetchPosts();
+    }
   }, [params.courseId, load, params.majId]);
 
   const handleRegisterSection = () => {
-    
     const selectedCourse = courses.find(
       (course) => params.courseId == course.id
     );
     const data: SectionType = {
       name: selectedCourse?.course_name + `(S${section.length + 1})`,
-      course_id: selectedCourse?.id
+      course_id: selectedCourse?.id,
     };
     console.log(data);
     axios
@@ -73,55 +77,53 @@ const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
       });
   };
 
-    const handleRegisterCourPre = () => {
-      const selectedCourse = courses.find(
-        (course) => params.courseId == course.id
-        );
+  const handleRegisterCourPre = () => {
+    const selectedCourse = courses.find(
+      (course) => params.courseId == course.id
+    );
 
-        const selectedCoursePer = courses.find(
-          (course) =>selectedCourseName == course.course_name
-          );
+    const selectedCoursePer = courses.find(
+      (course) => selectedCourseName == course.course_name
+    );
 
+    let duplicateFound = false;
 
-          let duplicateFound = false;
-    
-          prerequisites.forEach((item) => {
-            if (item.prerequisite_course_id === selectedCoursePer?.id) {
-              duplicateFound = true;
-              return;
-            }
-          });
-    
-          if (duplicateFound) {
-            toast.error('هذه المادة مسجلة بالفعل');
-            return;
-          }
+    prerequisites.forEach((item) => {
+      if (item.prerequisite_course_id === selectedCoursePer?.id) {
+        duplicateFound = true;
+        return;
+      }
+    });
 
-          
-      const data: PrerequisiteCourseType = {
-        course_id: selectedCourse?.id,
-        prerequisite_course_id: selectedCoursePer?.id,
-      };
-      console.log(data);
-      axios
-        .post(`/api/course/prerequisitesCourses/${params.courseId}`, data)
-        .then((res) => {
-          setLoad(!load);
-          console.log(res.data);
-          toast.success(res.data.message);
-        })
-        .catch((err) => {
-          toast.error(err.response.data.message);
-        });
+    if (duplicateFound) {
+      toast.error('هذه المادة مسجلة بالفعل');
+      return;
+    }
+
+    const data: PrerequisiteCourseType = {
+      course_id: selectedCourse?.id,
+      prerequisite_course_id: selectedCoursePer?.id,
     };
+    console.log(data);
+    axios
+      .post(`/api/course/prerequisitesCourses/${params.courseId}`, data)
+      .then((res) => {
+        setLoad(!load);
+        console.log(res.data);
+        toast.success(res.data.message);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      });
+  };
 
-      const handleDelete = (course_id?: number) => {
-        const data = { item_course_id: course_id };
-        axios.post('/api/course/prerequisitesCourses/delete', data).then((resp) => {
-          toast.success(resp.data.message);
-          setLoad(!load);
-        });
-      };
+  const handleDelete = (course_id?: number) => {
+    const data = { item_course_id: course_id };
+    axios.post('/api/course/prerequisitesCourses/delete', data).then((resp) => {
+      toast.success(resp.data.message);
+      setLoad(!load);
+    });
+  };
 
   return (
     <div className="flex absolute flex-col w-screen justify-center items-center  text-sm">
@@ -161,7 +163,7 @@ const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
               className="p-3 m-5 bg-lightBlue pl-[80px] pr-[80px] items-center flex justify-center rounded-sm"
             >
               <Link
-                href={`/management/course/managementWork/course/${sec.id}/${params.courseId}`}
+                href={`/managementWork/course/${sec.id}/${params.courseId}`}
               >
                 {sec.name}
               </Link>
