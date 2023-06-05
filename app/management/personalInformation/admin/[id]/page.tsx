@@ -37,7 +37,7 @@ const page = ({ params }: { params: { id: number } }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get('/api/allPermission');
+        const response = await axios.get('/api/allPermission/admin');
         const message: AssignPermissionType[] = response.data.message;
         setCheckList(message);
       } catch (error) {
@@ -98,7 +98,7 @@ const page = ({ params }: { params: { id: number } }) => {
     event.preventDefault();
     checked.map((item) => {
       const data1 = { admin_id: params.id, permission_id: item , active: true};
-      axios.post('/api/allPermission', data1);
+      axios.post('/api/allPermission/admin', data1);
       setRefresh(!refresh);
     });};
 

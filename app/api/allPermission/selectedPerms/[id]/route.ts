@@ -20,8 +20,7 @@ export async function POST(request: Request) {
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: number } }
-) {
+  { params }: { params: { id: number } }){
   const data = await supabase
     .from('tb_admin_perms')
     .select('*')

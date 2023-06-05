@@ -10,6 +10,7 @@ const item: MenuItemType[] = [
   { id: 3, link: 'doctors', name: ' اعضاء هيئة التدريس' },
   { id: 4, link: 'managers', name: 'موظفين الادارة' },
   { id: 5, link: 'courseReg', name: 'تنزيل المواد' },
+  { id: 6, link: 'facultiesAndMajors', name: ' الكليات و التخصصات' },
 ];
 
 
