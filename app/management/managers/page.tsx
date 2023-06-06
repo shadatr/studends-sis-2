@@ -25,7 +25,7 @@ const Page = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       const response = await axios.get(
-        `/api/allPermission/selectedPerms/${user?.id}`
+        `/api/allPermission/admin/selectedPerms/${user?.id}`
       );
       const message: GetPermissionType[] = response.data.message;
       setPerms(message);

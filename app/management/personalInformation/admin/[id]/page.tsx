@@ -39,6 +39,7 @@ const page = ({ params }: { params: { id: number } }) => {
       try {
         const response = await axios.get('/api/allPermission/admin');
         const message: AssignPermissionType[] = response.data.message;
+        console.log(message);
         setCheckList(message);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -60,7 +61,7 @@ const page = ({ params }: { params: { id: number } }) => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-         const response = await axios.get(`/api/allPermission/selectedPerms/${params.id}`);
+         const response = await axios.get(`/api/admin/allPermission/selectedPerms/${params.id}`);
           const message: GetPermissionType[] = response.data.message;
           setPerms(message); 
           console.log(message);
@@ -141,9 +142,7 @@ const page = ({ params }: { params: { id: number } }) => {
           <tr className="w-1/4 bg-darkBlue text-secondary">{titles}</tr>
         </tbody>
       </table>
-      {perms.map((item, index) =>
-        item.permission_id== 1 && item.active? (
-          <div key={index}>
+          <div >
             <table className="border-collapse mt-8 w-[800px]">
               <thead>
                 <tr className="bg-gray-200">
@@ -217,10 +216,6 @@ const page = ({ params }: { params: { id: number } }) => {
               </button>
             </form>
           </div>
-        ) : (
-          ''
-        )
-      )}
     </div>
   );
 };

@@ -206,6 +206,12 @@ export type GetPermissionType={
   active: boolean;
 }
 
+export type GetPermissionStudentType = {
+  permission_id: number;
+  student_id: number;
+  active: boolean;
+};
+
 export type CheckedType={
   id:number;
   name: string;
