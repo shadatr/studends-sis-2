@@ -30,6 +30,7 @@ const Page = () => {
       const message: GetPermissionType[] = response.data.message;
       setPerms(message);
       console.log(message);
+
     };
 
     fetchPosts();
@@ -93,7 +94,7 @@ const Page = () => {
                         onClick={() => {
                           handleActivate(user.id, !user.active);
                         }}
-                        className={`text-white py-1 px-2 rounded ${
+                        className={`text-white m-5 py-1 px-2 rounded ${
                           user.active
                             ? 'bg-red-500 hover:bg-red-600'
                             : 'bg-green-600 hover:bg-green-700'

@@ -74,11 +74,11 @@ const Page = () => {
       birth_date: (birthDate.getTime() / 1000).toFixed(),
       advisor: "غير محدد"
     };
-
+    
     axios
       .post('/api/register/student', data)
       .then((res) => {
-        console.log(res.data);
+        console.log(res);
         toast.success(res.data.message);
       })
       .catch((err) => {

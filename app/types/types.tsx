@@ -25,11 +25,12 @@ export type MenuItemType = {
 };
 
 export type RegisterStudentType = {
-  name: string;
-  surname: string;
-  birth_date: string;
-  email: string;
-  password: string;
+  id?: number;
+  name?: string;
+  surname?: string;
+  birth_date?: string;
+  email?: string;
+  password?: string;
   major?: string;
   phone?: string;
   address?: string;
@@ -207,9 +208,9 @@ export type GetPermissionType={
 }
 
 export type GetPermissionStudentType = {
-  permission_id: number;
-  student_id: number;
-  active: boolean;
+  permission_id?: number;
+  student_id?: number;
+  active?: boolean;
 };
 
 export type CheckedType={

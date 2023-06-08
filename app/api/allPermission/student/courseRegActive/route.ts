@@ -1,4 +1,3 @@
-import {  MajorRegType } from '@/app/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -7,28 +6,36 @@ const supabase = createClient(
 );
 
 export async function POST(request: Request) {
-  const data: MajorRegType = await request.json();
-
   try {
-    const res = await supabase.from('tb_majors').insert([data]);
-    if (res.error) {
-      throw res.error;
-    }
-    return new Response(JSON.stringify({ message: 'تم تسجيل التخصص بنجاح' }), {
-      headers: { 'content-type': 'application/json' },
-    });
+    const { active } = await request.json();
+    console.log(active);
+
+    await supabase
+      .from('tb_student_perms')
+      .update({ active })
+      .eq('permission_id', 20);
+
+    return new Response(
+      JSON.stringify({ message: 'تم فتح/اغلاق تسجيل المواد بنجاح' }),
+      {
+        headers: { 'content-type': 'application/json' },
+      }
+    );
   } catch (error) {
     console.log(error);
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل التخصص' }),
+      JSON.stringify({ message: 'حدث خطأ أثناء فتح تسجيل المواد' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }
 }
 
 export async function GET() {
+  const data = await supabase
+    .from('tb_student_perms')
+    .select('*')
+    .eq('permission_id', 20);
   try {
-    const data = await supabase.from('tb_majors').select('*, tb_departments!inner(*)');
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,

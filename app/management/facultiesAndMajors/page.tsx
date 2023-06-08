@@ -5,7 +5,6 @@ import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
 
 
 import MyModel from '../../components/dialog';
@@ -162,10 +161,11 @@ const departmetItems = departments.map((deptItem, index) => (
             perms.map((permItem) => {
               if (permItem.permission_id === 7 && permItem.active) {
                 handleDeleteMajor(item.major_name);
-              } 
+              }
             })
           }
         />
+        {item.major_name}
       </td>
       <td className="flex flex-row w-1/5 items-center justify-center pr-2 pl-2">
         {item.tb_departments?.name}
@@ -178,11 +178,14 @@ const departmetItems = departments.map((deptItem, index) => (
   return (
     <div className="absolute flex flex-col w-[80%] items-center justify-center">
       <div className="flex flex-col  items-center justify-center text-sm">
+        <p className="flex text-md bg-lightBlue rounded-md p-4 w-[200px] justify-center m-5 items-center">
+          اقسام
+        </p>
         {perms.map((item, idx) =>
           item.permission_id === 8 && item.active ? (
             <div
               key={idx}
-              className="flex flex-row-reverse items-center justify-center  text-sm mt-10 w-[1000px]"
+              className="flex flex-row-reverse items-center justify-center  text-sm m-10 w-[1000px]"
             >
               <label
                 htmlFor=""
@@ -213,17 +216,19 @@ const departmetItems = departments.map((deptItem, index) => (
           )
         )}
 
-        <p className="mt-[50px] text-lg">اقسام</p>
         <table className="w-[1000px] flex flex-col h-[200px] overflow-y-auto">
           <tbody>{departmetItems}</tbody>
         </table>
       </div>
       <div className="flex flex-col items-center justify-center text-sm p-10">
+        <p className="flex text-md bg-lightBlue rounded-md p-4 w-[200px] justify-center m-5 items-center">
+          تخصصات
+        </p>
         {perms.map((item, idx) =>
           item.permission_id === 7 && item.active ? (
             <div
               key={idx}
-              className="flex flex-row-reverse items-center justify-center  text-sm mt-10 w-[1000px]"
+              className="flex flex-row-reverse items-center justify-center  text-sm m-10 w-[1000px]"
             >
               <label
                 htmlFor=""
@@ -271,7 +276,6 @@ const departmetItems = departments.map((deptItem, index) => (
           )
         )}
 
-        <p className="mt-[50px] text-lg">تخصصات</p>
         <table className="w-[1000px] flex flex-col">
           <tbody>{majorItems}</tbody>
         </table>

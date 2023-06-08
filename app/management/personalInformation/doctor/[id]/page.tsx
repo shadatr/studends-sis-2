@@ -10,7 +10,7 @@ const doctorInfo: PersonalInfoHeaderType[] = [
   { header: 'الاسم' },
   { header: 'اللقب' },
   { header: 'تاريخ الميلاد' },
-  { header: 'التخصص' },
+  { header: 'التخصص' }, 
   { header: 'عنوان السكن' },
   { header: 'رقم الهاتف' },
   { header: 'الايميل' },
