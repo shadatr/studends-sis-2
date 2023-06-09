@@ -59,8 +59,8 @@ const page = () => {
         }}
         className={`text-white py-1 px-2 rounded ${
           active
-            ? 'bg-green-600 hover:bg-green-700'
-            : 'bg-red-600 hover:bg-red-700'
+            ? 'bg-green-600 hover:bg-green-500'
+            : 'bg-red-600 hover:bg-red-500'
         }`}
       >
         {active ? ' فتح تسجيل المواد ' : 'اغلاق تسجيل المواد'}

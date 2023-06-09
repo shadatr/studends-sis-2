@@ -31,7 +31,7 @@ export type RegisterStudentType = {
   birth_date?: string;
   email?: string;
   password?: string;
-  major?: string;
+  major?: number;
   phone?: string;
   address?: string;
   enrollment_date?: string;
@@ -44,7 +44,7 @@ export type RegisterStudent2Type = {
   birth_date: string;
   email: string;
   password: string;
-  major?: string;
+  major?: number;
   phone?: string;
   address?: string;
   enrollment_date?: string;
@@ -102,7 +102,7 @@ export type PersonalInfoType = {
   birth_date: number;
   semester: number;
   enrollment_date?: number;
-  major: string;
+  major: number;
   advisor?: string;
   active?: boolean;
   head_of_deparment_id?: number;
@@ -169,6 +169,7 @@ export type AddCourse2Type = {
   hours?: string;
   credits?: string;
   passing_percentage?: string;
+  pass?: boolean;
 };
 
 export type MajorEnrollmentType = {
@@ -199,6 +200,11 @@ export type AssignPermissionType = {
   id:number;
   name: string;
   active: boolean;
+};
+
+export type AssignCourseType = {
+  id: number;
+  name: string;
 };
 
 export type GetPermissionType={
@@ -245,6 +251,8 @@ export type StudentClassType = {
   class_work?: string;
   midterm: string;
   final?: string;
+  pass?: boolean;
+  result?: number;
   [key: string]: any;
 };
 
@@ -286,6 +294,7 @@ export type CourseType = {
 };
 
 export type PrerequisiteCourseType = {
+  prerequisite_course: any;
   id?: number;
   course_id?: number;
   prerequisite_course_id?: number;

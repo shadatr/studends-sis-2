@@ -15,7 +15,7 @@ declare module "next-auth" {
       email: string;
       enrollment_date: string;
       id: number;
-      major: string | null;
+      major: number | null;
       name: string;
       phone: number | null;
       semester: number | null;

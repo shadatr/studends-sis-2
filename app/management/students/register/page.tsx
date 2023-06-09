@@ -1,11 +1,11 @@
 'use client';
 import { createHash } from 'crypto';
 
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { DatePicker } from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import { RegisterStudentType } from '@/app/types/types';
+import { MajorRegType, RegisterStudentType } from '@/app/types/types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
@@ -43,11 +43,24 @@ const Page = () => {
   const [birthDate, setBirthDate] = useState(new Date());
   const name = useRef<HTMLInputElement>(null);
   const surname = useRef<HTMLInputElement>(null);
-  const major = useRef<HTMLInputElement>(null);
   const phone = useRef<HTMLInputElement>(null);
   const address = useRef<HTMLInputElement>(null);
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
+  const [majors, setMajors] = useState<MajorRegType[]>([]);
+  const [selectedMajor, setSelectedMajor] = useState<MajorRegType>();
+
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      axios.get('/api/major/majorReg').then((resp) => {
+        const message: MajorRegType[] = resp.data.message;
+        setMajors(message);
+      });
+
+    };
+    fetchPosts();
+  }, []);
 
   const handleRegister = () => {
     if (
@@ -66,13 +79,13 @@ const Page = () => {
     const data: RegisterStudentType = {
       name: name.current?.value,
       surname: surname.current?.value,
-      major: major.current?.value,
+      major: selectedMajor?.id,
       phone: phone.current?.value,
       address: address.current?.value,
       email: email.current.value,
       password: passwordHash,
       birth_date: (birthDate.getTime() / 1000).toFixed(),
-      advisor: "غير محدد"
+      advisor: 'غير محدد',
     };
     
     axios
@@ -86,16 +99,31 @@ const Page = () => {
       });
   };
 
-  
+  const handleMajorChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedOption = event.target.value;
+    const major = majors.find((item) => item.major_name === selectedOption);
+    setSelectedMajor(major);
+  };
+
 
   return (
     <div className="flex absolute flex-col  items-center w-[100%] p-10 h-[150px]   text-sm">
-      <div
-        onSubmit={(e) => e.preventDefault}
-      >
+      <div onSubmit={(e) => e.preventDefault}>
         <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
         <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
-        <InputBox label="التخصص" placeholder="محمد" inputRef={major} />
+        <label>اختر التخصص</label>
+        <select
+          value={selectedMajor ? selectedMajor.major_name : ''}
+          id="dep"
+          dir="rtl"
+          className="flex flex-col bg-slate-200 w-[400px] h-[30px] rounded-md p-5"
+          onChange={handleMajorChange}
+        >
+          <option>اختر التخصص</option>
+          {majors.map((item, index) => (
+            <option key={index}>{item.major_name}</option>
+          ))}
+        </select>
         <InputBox
           label="رقم الهاتف"
           placeholder="01000000000"

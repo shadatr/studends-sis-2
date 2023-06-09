@@ -19,7 +19,7 @@ const doctorInfo: PersonalInfoHeaderType[] = [
   { header: 'تاريخ التسجيل' },
 ];
 
-const page = ({ params }: { params: { id: number } }) => {
+const Page = ({ params }: { params: { id: number } }) => {
 
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
@@ -44,9 +44,20 @@ const page = ({ params }: { params: { id: number } }) => {
       } catch (error) {
         console.error('Error fetching data:', error);
       }
+
+      const response = await axios.get(
+        `/api/admin/allPermission/selectedPerms/${params.id}`
+      );
+      const message: GetPermissionType[] = response.data.message;
+      setPerms(message);
+      console.log(message);
+
+      axios.get(`/api/personalInfo/manager/${params.id}`).then((resp) => {
+        const message: PersonalInfoType[] = resp.data.message;
+        useSetMydata(message);});
     };
     fetchPosts();
-  }, [refresh]);
+  }, [params.id, refresh]);
 
   const handleCheck = (item: AssignPermissionType) => {
     const checkedIndex = checked.indexOf(item.id);
@@ -58,17 +69,6 @@ const page = ({ params }: { params: { id: number } }) => {
       setChecked(updatedChecked);
     }
   };
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-         const response = await axios.get(`/api/admin/allPermission/selectedPerms/${params.id}`);
-          const message: GetPermissionType[] = response.data.message;
-          setPerms(message); 
-          console.log(message);
-      };
-      
-    fetchPosts();
-  }, [params.id, refresh]);
 
 
   const selected: AssignPermissionType[] = perms.flatMap((item) =>
@@ -103,16 +103,6 @@ const page = ({ params }: { params: { id: number } }) => {
       setRefresh(!refresh);
     });};
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      axios.get(`/api/personalInfo/manager/${params.id}`).then((resp) => {
-        const message: PersonalInfoType[] = resp.data.message;
-        useSetMydata(message);
-      });
-    };
-
-    fetchPosts();
-  }, [params.id]);
 
 
   const titles = doctorInfo.map((title, index) => (
@@ -220,4 +210,5 @@ const page = ({ params }: { params: { id: number } }) => {
   );
 };
 
-export default page;
+
+export default Page;
