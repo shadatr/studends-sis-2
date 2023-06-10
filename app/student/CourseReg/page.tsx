@@ -21,83 +21,85 @@ const Page = () => {
   const [courses, setCourses] = useState<AddCourse2Type[]>([]);
   const [checkList, setCheckList] = useState<AddCourse2Type[]>([]);
   const [checked, setChecked] = useState<number[]>([]);
-  const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>(
-    []
-  );
+  const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>([]);
   const [sections, setSections] = useState<SectionType[]>([]);
   const [classes, setClasses] = useState<ClassesType[]>([]);
-  const [courseEnrollments, setCourseEnrollments] = useState<
-    StudentClassType[] 
-  >([]);
+  const [courseEnrollments, setCourseEnrollments] = useState<StudentClassType[] >([]);
   const [refresh, setRefresh] = useState(false);
+  const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
+
 
   useEffect(() => {
-    const fetchData = async () => { 
-
-      if(user){
-      try {
-        console.log(user);
-        const response = await axios.get(
-          `/api/course/courseRegistration/${user?.major}`
-        );
-        const message: AddCourse2Type[] = response.data.message;
-        setCourses(message);
-
-        const responseCourseEnroll = await axios.get(
-          `/api/getAll/getAllCourseEnroll/${user?.id}`
-        );
-        const messageCourseEnroll: StudentClassType[] =
-          responseCourseEnroll.data.message;
-        setCourseEnrollments(messageCourseEnroll);
-
-        const prerequisitePromises = message.map(async (course) => {
-          const responseReq = await axios.get(
-            `/api/course/prerequisitesCourses/${course.id}`
+    const fetchData = async () => {
+      if (user) {
+        try {
+          const response = await axios.get(
+            `/api/course/courseRegistration/${user?.major}`
           );
-          const {
-            message: prerequisiteMessage,
-          }: { message: PrerequisiteCourseType[] } = responseReq.data;
-          return prerequisiteMessage;
-        });
+          const message: AddCourse2Type[] = response.data.message;
+          setCourses(message);
 
-        const prerequisiteData = await Promise.all(prerequisitePromises);
-        const prerequisites = prerequisiteData.flat();
-        setPrerequisites(prerequisites);
-
-        const sectionsPromises = message.map(async (course) => {
-          const responseReq = await axios.get(
-            `/api/getAll/getAllSections/${course.id}`
+          const responseCourseEnroll = await axios.get(
+            `/api/getAll/getAllCourseEnroll/${user?.id}`
           );
-          const { message: secMessage }: { message: SectionType[] } =
-            responseReq.data;
-          return secMessage;
-        });
+          const messageCourseEnroll: StudentClassType[] =
+            responseCourseEnroll.data.message;
+          setCourseEnrollments(messageCourseEnroll);
 
-        const sectionData = await Promise.all(sectionsPromises);
-        const sections = sectionData.flat();
-        setSections(sections);
+          const prerequisitePromises = message.map(async (course) => {
+            const responseReq = await axios.get(
+              `/api/course/prerequisitesCourses/${course.id}`
+            );
+            const {
+              message: prerequisiteMessage,
+            }: { message: PrerequisiteCourseType[] } = responseReq.data;
+            return prerequisiteMessage;
+          });
 
-        const classPromises = sections.map(async (section) => {
-          const responseReq = await axios.get(
-            `/api/getAll/getAllClasses/${section.id}`
+          const prerequisiteData = await Promise.all(prerequisitePromises);
+          const prerequisites = prerequisiteData.flat();
+          setPrerequisites(prerequisites);
+
+          const sectionsPromises = message.map(async (course) => {
+            const responseReq = await axios.get(
+              `/api/getAll/getAllSections/${course.id}`
+            );
+            const { message: secMessage }: { message: SectionType[] } =
+              responseReq.data;
+            return secMessage;
+          });
+
+          const sectionData = await Promise.all(sectionsPromises);
+          const sections = sectionData.flat();
+          setSections(sections);
+
+          const classPromises = sections.map(async (section) => {
+            const responseReq = await axios.get(
+              `/api/getAll/getAllClasses/${section.id}`
+            );
+            const { message: classMessage }: { message: ClassesType[] } =
+              responseReq.data;
+            return classMessage;
+          });
+
+          const classData = await Promise.all(classPromises);
+          const classes = classData.flat();
+          setClasses(classes);
+
+          const responsePer = await axios.get(
+            `/api/allPermission/student/selectedPerms/${user?.id}`
           );
-          const { message: classMessage }: { message: ClassesType[] } =
-            responseReq.data;
-          return classMessage;
-        });
-
-        const classData = await Promise.all(classPromises);
-        const classes = classData.flat();
-        setClasses(classes);
-      } catch (error) {  
-        console.error('Error fetching data:', error);
+          const messagePer: GetPermissionStudentType[] =
+            responsePer.data.message;
+          setPerms(messagePer);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
       }
-      
-    }
-  };
+    };
     fetchData();
-  setRefresh(!refresh);
-  }, [ user ]);
+    setRefresh(!refresh);
+  }, [user]);
 useEffect(() => {
   const updatedCheckList: AddCourse2Type[] = [];
   const updatedSections: SectionType[] = [];
@@ -118,8 +120,6 @@ useEffect(() => {
           prereq.max_students > prereq.students_num
       );
         if (prerequisiteSection) {updatedSections2.push(prerequisiteSection);
-
-          console.log(prerequisiteSection);
 
       classes.forEach((classItem) => {
         updatedSections2.forEach((sec) => {
@@ -143,7 +143,7 @@ useEffect(() => {
               !check&&
             !updatedCheckList.find((item) => item.id === course.id)
           ) {
-            console.log(course);
+            // console.log(course);
             updatedCheckList.push(course);
           } else if (
             courseEnroll.student_id === user?.id &&
@@ -200,7 +200,7 @@ useEffect(() => {
   });
 
   setCheckList(updatedCheckList);
-}, [refresh, user, classes, courseEnrollments, prerequisites, sections]);
+}, [ user, classes, courseEnrollments, prerequisites, sections]);
 
   const handleCheck = (item: AddCourse2Type) => {
     const checkedIndex = checked.indexOf(item.id);
@@ -211,6 +211,7 @@ useEffect(() => {
       updatedChecked.splice(checkedIndex, 1);
       setChecked(updatedChecked); 
     }
+    setRefresh(!refresh);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -233,42 +234,71 @@ useEffect(() => {
           }
         });
       });
-
-      const data1 = {
-        student_id: user?.id,
-        class_id: updatedClasses2[0].id,
-      };
-      axios.post('/api/getAll/getAllCourseEnroll/1', data1);}
+      if (updatedClasses2[0]){
+        const data1 = {
+          student_id: user?.id,
+          class_id: updatedClasses2[0].id,
+        };
+      axios.post('/api/courseEnrollment/courseAccept', data1);
+      }}
     });
+    const data2 = {
+      student_id: user?.id,
+      permission_id: 20,
+      active: false,
+    };
+    // console.log(data2);
+    axios.post(`/api/allPermission/student/selectedPerms/${user?.id}`, data2);
+    setRefresh(!refresh);
   };
 
-  return ( 
-    <div className="fixed w-[800px] text-sm right-[464px] top-[140px] ">
-      <form onSubmit={handleSubmit} className="p-10 w-[400px] ">
-        <h1 className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary">
-          اختر الصلاحيات
-        </h1>
-        <div className="p-1 rounded-md">
-          {checkList.map((item, index) => (
-            <div className="bg-lightBlue flex justify-between" key={index}>
-              <input
-                className="p-2 ml-9"
-                value={item.course_name}
-                type="checkbox"
-                onChange={() => handleCheck(item)}
-                checked={checked.includes(item.id)}
-              />
-              <label className="pr-5">{item.course_name}</label>
+  return (
+    <div className="absolute w-[100%] flex text-sm p-10 justify-content items-center ">
+      {perms.map((item, index) =>
+        item.permission_id == 20 && item.active ? (
+          <form
+            key={index}
+            onSubmit={handleSubmit}
+            className=" flex-col w-screen flex justify-content items-center"
+          >
+            <h1 className="flex w-[400px] text-sm justify-center items-center bg-darkBlue text-secondary">
+              اختر المواد
+            </h1>
+            <div className="p-1 rounded-md">
+              {checkList.map((item, index) => (
+                <div
+                  className="bg-lightBlue flex w-[400px] justify-between"
+                  key={index}
+                >
+                  <input
+                    className="p-2 ml-9"
+                    value={item.course_name}
+                    type="checkbox"
+                    onChange={() => handleCheck(item)}
+                    checked={checked.includes(item.id)}
+                  />
+                  <label className="pr-5  ">{item.course_name}</label>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <button
-          type="submit"
-          className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary"
-        >
-          اضافة
-        </button>
-      </form>
+            <button
+              type="submit"
+              className="flex w-[400px]  text-sm justify-center items-center bg-darkBlue text-secondary"
+            >
+              اضافة
+            </button>
+          </form>
+        ) : (
+          <div
+            key={index}
+            className=" flex-col w-screen flex justify-content items-center"
+          >
+            <p className="flex w-[400px]  text-sm justify-center items-center bg-lightBlue p-5 ">
+              لقد تم ارسال المواد الى المشرف بنجاح
+            </p>
+          </div>
+        )
+      )}
     </div>
   );
 };
