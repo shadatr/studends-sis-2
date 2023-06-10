@@ -113,10 +113,13 @@ useEffect(() => {
       !prerequisiteCourse &&
       !updatedCheckList.find((item) => item.id === course.id)
     ) {
-      const prerequisiteSectionIds2 = sections.filter(
-        (prereq) => course.id === prereq.course_id
+      const prerequisiteSection = sections.find(
+        (prereq) => course.id === prereq.course_id&&
+          prereq.max_students > prereq.students_num
       );
-      updatedSections2.push(...prerequisiteSectionIds2);
+        if (prerequisiteSection) {updatedSections2.push(prerequisiteSection);
+
+          console.log(prerequisiteSection);
 
       classes.forEach((classItem) => {
         updatedSections2.forEach((sec) => {
@@ -151,7 +154,7 @@ useEffect(() => {
             updatedCheckList.push(course);
           }
         });
-      });
+      });}
     } else {
         const prerequisiteSectionIds2 = sections.filter(
           (prereq) => course.id === prereq.course_id
@@ -213,12 +216,29 @@ useEffect(() => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     checked.forEach((item) => {
+      const updatedSections2: SectionType[] = [];
+      const updatedClasses2: ClassesType[] = [];
+
+      const prerequisiteSection = sections.find(
+        (prereq) => item === prereq.course_id&&
+          prereq.max_students > prereq.students_num
+      );
+        if (prerequisiteSection) {updatedSections2.push(prerequisiteSection);
+
+
+      classes.forEach((classItem) => {
+        updatedSections2.forEach((sec) => {
+          if (sec.id === classItem.section_id) {
+            updatedClasses2.push(classItem);
+          }
+        });
+      });
+
       const data1 = {
         student_id: user?.id,
-        permission_id: item,
-        active: true,
+        class_id: updatedClasses2[0].id,
       };
-      axios.post('/api/allPermission/admin', data1);
+      axios.post('/api/getAll/getAllCourseEnroll/1', data1);}
     });
   };
 

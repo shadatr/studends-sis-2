@@ -228,7 +228,8 @@ export type SectionType = {
   id?: number;
   name?: string;
   course_id?: number;
-  max_students?: number;
+  max_students: number;
+  students_num: number;
 };
 
 export type ClassesType = {
@@ -254,6 +255,7 @@ export type StudentClassType = {
   pass?: boolean;
   result?: number;
   can_repeat?: boolean;
+  
   [key: string]: any;
 };
 
