@@ -27,12 +27,14 @@ const Page = () => {
   const [sections, setSections] = useState<SectionType[]>([]);
   const [classes, setClasses] = useState<ClassesType[]>([]);
   const [courseEnrollments, setCourseEnrollments] = useState<
-    StudentClassType[]
+    StudentClassType[] 
   >([]);
   const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async () => { 
+
+      if(user){
       try {
         console.log(user);
         const response = await axios.get(
@@ -87,68 +89,115 @@ const Page = () => {
         const classData = await Promise.all(classPromises);
         const classes = classData.flat();
         setClasses(classes);
-      } catch (error) {
+      } catch (error) {  
         console.error('Error fetching data:', error);
       }
-    };
-
+      
+    }
+  };
     fetchData();
-    setRefresh(!refresh);
-  }, [user]);
+  setRefresh(!refresh);
+  }, [ user ]);
+useEffect(() => {
+  const updatedCheckList: AddCourse2Type[] = [];
+  const updatedSections: SectionType[] = [];
+  const updatedClasses: ClassesType[] = [];
+  const updatedSections2: SectionType[] = [];
+  const updatedClasses2: ClassesType[] = [];
 
-  useEffect(() => {
-    const updatedCheckList: AddCourse2Type[] = [];
-    const updatedSections: SectionType[] = [];
-    const updatedClasses: ClassesType[] = [];
-
-    courses.forEach((course) => {
-      const prerequisiteCourse = prerequisites.find(
-        (prereq) => prereq.course_id === course.id
+  courses.forEach((course) => {
+    const prerequisiteCourse = prerequisites.find(
+      (prereq) => prereq.course_id === course.id
+    );
+    if (
+      !prerequisiteCourse &&
+      !updatedCheckList.find((item) => item.id === course.id)
+    ) {
+      const prerequisiteSectionIds2 = sections.filter(
+        (prereq) => course.id === prereq.course_id
       );
-      // console.log(course);
-      if (
-        !prerequisiteCourse &&
-        !updatedCheckList.find((item) => item.id === course.id)
-      ) {
-        updatedCheckList.push(course);
-        console.log(course);
-      } else { 
-        console.log('none');
-      }
+      updatedSections2.push(...prerequisiteSectionIds2);
 
+      classes.forEach((classItem) => {
+        updatedSections2.forEach((sec) => {
+          if (sec.id === classItem.section_id) {
+            updatedClasses2.push(classItem);
+          }
+        });
+      });
 
-        const prerequisiteSectionIds = sections.filter(
-          (prereq) =>
-            prerequisiteCourse?.prerequisite_course_id === prereq.course_id
+      
+      courseEnrollments.forEach((courseEnroll) => {
+        updatedClasses2.forEach((classItem) => {
+        const check = updatedClasses2.find(
+          (classItem) =>
+            courseEnroll.student_id === user?.id &&
+            classItem.id === courseEnroll.class_id &&
+            courseEnroll.pass === true
         );
+          
+          if (
+              !check&&
+            !updatedCheckList.find((item) => item.id === course.id)
+          ) {
+            console.log(course);
+            updatedCheckList.push(course);
+          } else if (
+            courseEnroll.student_id === user?.id &&
+            classItem.id === courseEnroll.class_id &&
+            (courseEnroll.pass === false || courseEnroll.can_repeat === true) &&
+            !updatedCheckList.find((item) => item.id === course.id)
+          ) {
+            updatedCheckList.push(course);
+          }
+        });
+      });
+    } else {
+        const prerequisiteSectionIds2 = sections.filter(
+          (prereq) => course.id === prereq.course_id
+        );
+      updatedSections2.push(...prerequisiteSectionIds2);
+
+      classes.forEach((classItem) => {
+        updatedSections2.forEach((sec) => {
+          if (sec.id === classItem.section_id) {
+            updatedClasses2.push(classItem);
+          }
+        });
+      });
+
+      const prerequisiteSectionIds = sections.filter(
+        (prereq) =>
+          prerequisiteCourse?.prerequisite_course_id === prereq.course_id
+      );
       updatedSections.push(...prerequisiteSectionIds);
 
       classes.forEach((classItem) => {
         updatedSections.forEach((sec) => {
           if (sec.id === classItem.section_id) {
             updatedClasses.push(classItem);
-            console.log(classItem);
-          }
-        }); 
-      });
-
-      courseEnrollments.forEach((courseEnroll) => {
-        updatedClasses.forEach((classItem) => {
-          if (
-            courseEnroll.student_id === user?.id &&
-            classItem.id === courseEnroll.class_id &&
-            courseEnroll.pass === true &&
-            !updatedCheckList.find((item) => item.id === course.id) 
-            
-          ) {
-            updatedCheckList.push(course);
           }
         });
       });
-    });
 
-    setCheckList(updatedCheckList);
-  }, [refresh,user]);
+      courseEnrollments.forEach((courseEnroll) => {
+        updatedClasses.forEach((classItem) => { 
+          
+          if (
+            courseEnroll.student_id === user?.id &&
+            classItem.id === courseEnroll.class_id &&
+            courseEnroll.pass &&
+            !updatedCheckList.find((item) => item.id === course.id)
+          ) {
+              updatedCheckList.push(course);
+          }
+        });
+      });
+    }
+  });
+
+  setCheckList(updatedCheckList);
+}, [refresh, user, classes, courseEnrollments, prerequisites, sections]);
 
   const handleCheck = (item: AddCourse2Type) => {
     const checkedIndex = checked.indexOf(item.id);
@@ -157,7 +206,7 @@ const Page = () => {
     } else {
       const updatedChecked = [...checked];
       updatedChecked.splice(checkedIndex, 1);
-      setChecked(updatedChecked);
+      setChecked(updatedChecked); 
     }
   };
 
@@ -173,7 +222,7 @@ const Page = () => {
     });
   };
 
-  return (
+  return ( 
     <div className="fixed w-[800px] text-sm right-[464px] top-[140px] ">
       <form onSubmit={handleSubmit} className="p-10 w-[400px] ">
         <h1 className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary">

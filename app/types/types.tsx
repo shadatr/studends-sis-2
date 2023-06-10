@@ -253,6 +253,7 @@ export type StudentClassType = {
   final?: string;
   pass?: boolean;
   result?: number;
+  can_repeat?: boolean;
   [key: string]: any;
 };
 
