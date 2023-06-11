@@ -28,3 +28,23 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export async function GET(
+  request: Request,
+  { params }: { params: { id: number } }
+) {
+  try {
+    const data = await supabase
+      .from('tb_students')
+      .select('*')
+      .eq('advisor', params.id);
+
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
+        status: 403,
+      });
+    }
+
+    return new Response(JSON.stringify({ message: data.data }));
+  } catch {}
+}

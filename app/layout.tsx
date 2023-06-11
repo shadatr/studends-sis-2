@@ -18,10 +18,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ar">
-      <SessionProvider session={session}>
-        <body className="h-screen">{children}</body>
+      <head>{/* Add your head content here */}</head>
+      <body className="h-screen">
+        <SessionProvider session={session}>
+          {children}
+        </SessionProvider>
         <ToastContainer position="bottom-right" autoClose={2000} rtl={true} />
-      </SessionProvider>
+      </body>
     </html>
   );
 }

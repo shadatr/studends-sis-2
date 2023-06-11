@@ -11,10 +11,10 @@ export async function POST(request: Request) {
   console.log(req);
   try {
     const deleteReq = await supabase
-      .from('tb_admin_perms')
+      .from('tb_student_perms')
       .delete()
-      .eq('permission_id', req.item_per_id)
-      .eq('admin_id', req.item_admin_id);
+      .eq('permission_id', req.permission_id)
+      .eq('student_id', req.student_id);
        console.log(deleteReq.error?.message);
     return new Response(JSON.stringify({ message: 'تم مسح التخصص بنجاح' }));
   } catch {}

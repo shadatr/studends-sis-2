@@ -48,6 +48,7 @@ export type RegisterStudent2Type = {
   phone?: string;
   address?: string;
   enrollment_date?: string;
+  semester?: number;
   advisor?: number;
 };
 

@@ -68,11 +68,11 @@ const Page = ({
   const handleSubmit = () => {
     console.log(checked);
     checked.map((item) => {
-      const data = {
+      const data = { 
         id: item,
         advisor: params.doctorId,
       };
-      axios.post('/api/advisor/assignAdvisor', data);
+      axios.post('/api/advisor/assignAdvisor/1', data);
       setRefresh(!refresh);
     });
   };
