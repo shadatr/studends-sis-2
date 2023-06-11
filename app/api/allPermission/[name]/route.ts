@@ -34,7 +34,7 @@ export async function GET(request: Request, { params }: { params: { name: string
         throw res.error;
       }
       return new Response(
-        JSON.stringify({ message: 'تم تسجيل الكلية بنجاح' }),
+        JSON.stringify({ message: 'تم تسجيل الصلاحية بنجاح' }),
         {
           headers: { 'content-type': 'application/json' },
         }
@@ -47,4 +47,3 @@ export async function GET(request: Request, { params }: { params: { name: string
       );
     }
   }
-

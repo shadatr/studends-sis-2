@@ -181,7 +181,7 @@ const Tabs = ({ params }: { params: { idSec: number; idClass: number } }) => {
       </div>
       <div className="flex-row w-[500px] flex justify-between">
         <Link
-          href={`/doctor/managementWork/courseStudents/${params.idSec}`}
+          href={`/management/course/managementWork/courseStudents/${params.idSec}`}
           className="p-2  h-[40px] rounded-md text-secondary bg-blue-700 hover:bg-blue-500 text-sm"
         >
           الطلاب و الدرجات

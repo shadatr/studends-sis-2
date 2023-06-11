@@ -200,7 +200,7 @@ useEffect(() => {
   });
 
   setCheckList(updatedCheckList);
-}, [ user, classes, courseEnrollments, prerequisites, sections]);
+}, [user, classes, courseEnrollments, prerequisites, sections, courses]);
 
   const handleCheck = (item: AddCourse2Type) => {
     const checkedIndex = checked.indexOf(item.id);

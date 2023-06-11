@@ -48,7 +48,7 @@ export type RegisterStudent2Type = {
   phone?: string;
   address?: string;
   enrollment_date?: string;
-  advisor?: string;
+  advisor?: number;
 };
 
 export type AnnouncmentsMangType = {
@@ -199,7 +199,7 @@ export type AssignDepartmentType = {
 export type AssignPermissionType = {
   id:number;
   name: string;
-  active: boolean;
+  active?: boolean;
 };
 
 export type AssignCourseType = {
@@ -216,6 +216,12 @@ export type GetPermissionType={
 export type GetPermissionStudentType = {
   permission_id?: number;
   student_id?: number;
+  active?: boolean;
+};
+
+export type GetPermissionDoctorType = {
+  permission_id?: number;
+  doctor_id?: number;
   active?: boolean;
 };
 
@@ -301,4 +307,22 @@ export type PrerequisiteCourseType = {
   id?: number;
   course_id?: number;
   prerequisite_course_id?: number;
+};
+
+export type AssignAdvisorType = {
+  id: number;
+  advisor: number;
+};
+
+export type InfoDoctorType = {
+  id:number;
+  name: string;
+  surname: string;
+  birth_date: string;
+  email: string;
+  password: string;
+  phone?: string;
+  address?: string;
+  enrollment_date?: string;
+  speciality: string;
 };

@@ -1,4 +1,3 @@
-// ! deprecated
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -8,13 +7,13 @@ const supabase = createClient(
 
 export async function GET(
   request: Request,
-  { params }: { params: { name: number } }
+  { params }: { params: { id: number } }
 ) {
   try {
     const data = await supabase
       .from('tb_students')
       .select('*')
-      .eq('major', params.name);
+      .eq('major', params.id);
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
