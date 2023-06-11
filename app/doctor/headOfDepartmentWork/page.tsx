@@ -29,16 +29,18 @@ const Page = () => {
 
   return (
     <div className="flex absolute items-center justify-center w-[80%] mt-10">
+      {user?.head_of_deparment_id? (
       <table className="w-[800px]">
         <th className="p-2 bg-darkBlue text-secondary">اسم التخصص</th>
         {majors.map((major, index) => (
           <tr key={index}>
-            <Link href={`/doctor/managementWork/major/${major.id}`}>
-            <td className="p-2 bg-grey">{major.major_name}</td>
+            <Link href={`/doctor/headOfDepartmentWork/major/${major.id}`}>
+              <td className="p-2 bg-grey flex justify-end">{major.major_name}</td>
             </Link>
           </tr>
         ))}
       </table>
+      ): (<div className='text-sm bg-grey text-red-600 p-3 w-[500px] flex items-center justify-center'>لست عميد لاي كلية</div>)}
     </div>
   );
 };

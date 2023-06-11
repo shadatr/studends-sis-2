@@ -60,7 +60,7 @@ const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
     const selectedCourse = courses.find(
       (course) => params.courseId == course.id
     );
-    const data: SectionType = {
+    const data = {
       name: selectedCourse?.course_name + `(S${section.length + 1})`,
       course_id: selectedCourse?.id,
     };
@@ -100,7 +100,7 @@ const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
       return;
     }
 
-    const data: PrerequisiteCourseType = {
+    const data = {
       course_id: selectedCourse?.id,
       prerequisite_course_id: selectedCoursePer?.id,
     };
@@ -163,7 +163,7 @@ const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
               className="p-3 m-5 bg-lightBlue pl-[80px] pr-[80px] items-center flex justify-center rounded-sm"
             >
               <Link
-                href={`/managementWork/course/${sec.id}/${params.courseId}`}
+                href={`/headOfDepartmentWork/course/${sec.id}/${params.courseId}`}
               >
                 {sec.name}
               </Link>

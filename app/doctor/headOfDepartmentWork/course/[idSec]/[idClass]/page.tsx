@@ -93,7 +93,7 @@ const Tabs = ({ params }: { params: { idSec: number; idClass: number } }) => {
   return (
     <div className="flex absolute flex-col justify-center items-center w-[80%]">
       <Link
-        href={`/doctor/managementWork/courseStudents/${params.idSec}`}
+        href={`/doctor/headOfDepartmentWork/courseStudents/${params.idSec}`}
         className="p-2 rounded-md text-secondary bg-blue-700 hover:bg-blue-500 text-sm"
       >
         الطلاب و الدرجات

@@ -89,7 +89,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                 <td>{item.hours}</td>
                 <td>
                   <Link
-                    href={`/doctor/managementWork/section/${item.id}/${item.major_id}`}
+                    href={`/doctor/headOfDepartmentWork/section/${item.id}/${item.major_id}`}
                   >
                     {item.course_name}
                   </Link>
