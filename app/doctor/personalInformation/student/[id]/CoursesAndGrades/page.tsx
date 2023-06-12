@@ -107,6 +107,7 @@ const Page = ({ params }: { params: { id: number } }) => {
               course_name: studentCourse.course_name,
               course: course,
               section: studentSection,
+              class: studenClass,
             };
             updatedStudentCourses.push(data);
         }
@@ -229,22 +230,60 @@ const Page = ({ params }: { params: { id: number } }) => {
         <thead>
           <th className="border border-gray-300 px-4 py-2 bg-grey">النتيجة</th>
           <th className="border border-gray-300 px-4 py-2 bg-grey">المجموع</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">اعمال السنة</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">الامتحان الانهائي</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">الامتحان النصفي</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">اسم المجموعة</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">اسم المادة</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            اعمال السنة
+          </th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            الامتحان الانهائي
+          </th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            الامتحان النصفي
+          </th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            اسم المجموعة
+          </th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            اسم المادة
+          </th>
         </thead>
         <tbody>
           {studentCourses.map((course, index) => (
             <tr key={index}>
-            <td className="border border-gray-300 px-4 py-2">{course.course.result_publish? (course.course.pass):''}</td>
-              <td className="border border-gray-300 px-4 py-2">{course.course.result_publish? (course.course.result):''}</td>
-              <td className="border border-gray-300 px-4 py-2">{course.course.class_work_publish? (course.course.class_work):''}</td>
-              <td className="border border-gray-300 px-4 py-2">{course.course.final_publish? (course.course.final):''}</td>
-              <td className="border border-gray-300 px-4 py-2">{course.course.mid_publish? (course.course.midterm):''}</td>
-              <td className="border border-gray-300 px-4 py-2">{course.section?.name}</td>
-              <td className="border border-gray-300 px-4 py-2">{course.course_name}</td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.class?.result_publish ? course.course.pass : ''}
+              </td>
+              <td className="border border-gray-300 px-4 py-2  ">
+                {course.class?.result_publish ? course.course.result : ''}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.class?.class_work}%
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.class?.class_work_publish
+                  ? course.course.class_work
+                  : ''}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.class?.final}%
+              </td>
+              <td className="border border-gray-300 px-4 py-2 flex justify-between items-center">
+                {course.class?.final_publish ? course.course.final : ''}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.class?.midterm}%
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.class?.mid_publish ? course.course.midterm : ''}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.section?.name}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.course_name}
+              </td>
             </tr>
           ))}
         </tbody>

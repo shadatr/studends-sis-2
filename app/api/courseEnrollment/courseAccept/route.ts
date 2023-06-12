@@ -1,4 +1,3 @@
-import { StudentClassType } from '@/app/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -24,7 +23,7 @@ export async function POST(request: Request) {
   const data = await request.json();
 
   try {
-    const res = await supabase
+      await supabase
       .from('tb_course_enrollment')
       .update({approved: data.approved})
       .eq('id', data.id)

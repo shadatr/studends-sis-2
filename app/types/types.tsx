@@ -346,11 +346,42 @@ export type StudentCourseType = {
     result?: number;
     can_repeat?: boolean;
     approved?: boolean;
+    [key: string]: any;
+  };
+  section?: {
+    id?: number;
+    name?: string;
+    course_id?: number;
+    max_students: number;
+    students_num: number;
+  };
+  class?: {
+    id?: number;
+    doctor_id?: number;
+    section_id?: number;
+    location?: string;
+    start_time?: number;
+    duration?: number;
+    class_work?: number;
+    midterm?: number;
+    final?: number;
     mid_publish?: boolean;
     final_publish?: boolean;
     class_work_publish?: boolean;
     result_publish?: boolean;
-    [key: string]: any;
+  };
+};
+
+export type StudentCourse2Type = {
+  doctor_name?: string;
+  course?: {
+    id?: number;
+    course_name: string;
+    major_id?: number;
+    credits?: string;
+    hours?: string;
+    passing_percentage?: string;
+    min_semester?: number;
   };
   section?: {
     id?: number;

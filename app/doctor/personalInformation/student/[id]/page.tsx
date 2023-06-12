@@ -119,15 +119,9 @@ const Page = ({ params }: { params: { id: number } }) => {
       <div className=" flex flex-row  ">
         <Link
           className="flex bg-blue-500  hover:bg-blue-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
-          href={`/doctor/personalInformation/student/${params.id}/studentCourses`}
+          href={`/doctor/personalInformation/student/${params.id}/CoursesAndGrades`}
         >
-          مواد الطالب
-        </Link>
-        <Link
-          className="flex bg-blue-500  hover:bg-blue-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
-          href={`/doctor/personalInformation/student/${params.id}/studentGrades`}
-        >
-          درجات الطالب
+          مواد و درجات الطالب
         </Link>
       </div>
       <table className="flex-row flex text-sm w-[800px] border-collapse">

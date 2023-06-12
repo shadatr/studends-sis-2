@@ -1,94 +1,183 @@
+'use client';
+import axios from 'axios';
 import { useSession } from 'next-auth/react';
-import React from 'react';
-
-interface Item {
-  id: number;
-  name: string;
-  mid: string;
-  final: string;
-  passingGrade: string;
-  avrg: string
-  hw: string
-}
-
-const examsData: Item[] = [
-  {
-    id: 1,
-    name: "اسم المادة",
-    mid: "56",
-    final: "78",
-    passingGrade: "76",
-    avrg: "86",
-    hw: "65",
-  },
-  {
-    id: 2,
-    name: "اسم المادة",
-    mid: "56",
-    final: "78",
-    passingGrade: "76",
-    avrg: "86",
-    hw: "65",
-  },
-  {
-    id: 3,
-    name: "اسم المادة",
-    mid: "56",
-    final: "78",
-    passingGrade: "76",
-    avrg: "86",
-    hw: "65",
-  },
-  {
-    id: 4,
-    name: "اسم المادة",
-    mid: "56",
-    final: "78",
-    passingGrade: "76",
-    avrg: "86",
-    hw: "65",
-  },
-  {
-    id: 5,
-    name: "اسم المادة",
-    mid: "56",
-    final: "78",
-    passingGrade: "76",
-    avrg: "86",
-    hw: "65",
-  },
-];
-
-const title: string[] = ["اسم المادة", "الامتحان النصفي", "الامتحان النهائي","اعمال السنة","المعدل","معدل النجاح"];
+import React, { useEffect, useState } from 'react';
+import {
+  AddCourse2Type,
+  ClassesType,
+  SectionType,
+  StudentClassType,
+  StudentCourseType,
+} from '@/app/types/types';
 
 const Page = () => {
-    // handling authentication
-    const session = useSession({ required: true });
-    // if user isn't a student, throw an error
-    if (session.data?.user ? session.data?.user.userType !== 'student' : false) {
-      throw new Error('Unauthorized');
+  const session = useSession({ required: true });
+  if (session.data?.user ? session.data?.user.userType !== 'student' : false) {
+    throw new Error('Unauthorized');
+  }
+
+  const user = session.data?.user;
+
+  const [courses, setCourses] = useState<AddCourse2Type[]>([]);
+  const [studentCourses, setStudentCourses] = useState<StudentCourseType[]>([]);
+  const [sections, setSections] = useState<SectionType[]>([]);
+  const [classes, setClasses] = useState<ClassesType[]>([]);
+  const [courseEnrollments, setCourseEnrollments] = useState<
+    StudentClassType[]
+  >([]);
+  const [refresh, setRefresh] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseCourseEnroll = await axios.get(
+          `/api/getAll/getAllCourseEnroll/${user?.id}`
+        );
+        const messageCourseEnroll: StudentClassType[] =
+          responseCourseEnroll.data.message;
+        setCourseEnrollments(messageCourseEnroll);
+
+        const classPromises = messageCourseEnroll.map(async (Class) => {
+          const responseReq = await axios.get(
+            `/api/getAll/getSpecificClass/${Class.class_id}`
+          );
+          const { message: classMessage }: { message: ClassesType[] } =
+            responseReq.data;
+          return classMessage;
+        });
+
+        const classData = await Promise.all(classPromises);
+        const classes = classData.flat();
+        setClasses(classes);
+
+        const sectionsPromises = classes.map(async (course) => {
+          const responseReq = await axios.get(
+            `/api/getAll/getSpecificSection/${course.section_id}`
+          );
+          const { message: secMessage }: { message: SectionType[] } =
+            responseReq.data;
+          return secMessage;
+        });
+
+        const sectionData = await Promise.all(sectionsPromises);
+        const sections = sectionData.flat();
+        setSections(sections);
+
+        const coursesPromises = sections.map(async (section) => {
+          const responseReq = await axios.get(
+            `/api/getAll/getSpecificCourse/${section.course_id}`
+          );
+          const { message: courseMessage }: { message: AddCourse2Type[] } =
+            responseReq.data;
+          return courseMessage;
+        });
+
+        const courseData = await Promise.all(coursesPromises);
+        const courses = courseData.flat();
+        setCourses(courses);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+      setRefresh(!refresh);
+    };
+
+    fetchData();
+  }, [user, refresh]);
+
+  useEffect(() => {
+    const updatedStudentCourses: StudentCourseType[] = [];
+
+    courseEnrollments.map((course) => {
+      const studenClass = classes.find((Class) => Class.id == course.class_id);
+
+      const studentSection = sections.find(
+        (sec) => sec.id == studenClass?.section_id
+      );
+
+      const studentCourse = courses.find(
+        (course) => course.id == studentSection?.course_id
+      );
+
+      if (studentCourse){ 
+        if(course.approved){{
+            const data = {
+              course_name: studentCourse.course_name,
+              course: course,
+              section: studentSection,
+              class: studenClass,
+            };
+            updatedStudentCourses.push(data);
+        }
     }
+    }});
+    console.log(updatedStudentCourses);
+    setStudentCourses(updatedStudentCourses);
+  }, [refresh]);
 
-    const results = examsData.map((exam) => (
-      <tr key={exam.id}>
-        <td className=" text-sm p-3">{exam.passingGrade}</td>
-        <td className=" text-sm p-3">{exam.avrg}</td>
-        <td className=" text-sm p-3">{exam.hw}</td>
-        <td className=" text-sm p-3">{exam.final}</td>
-        <td className=" text-sm p-3">{exam.mid}</td>
-        <td className=" text-sm p-3">{exam.name}</td>
-      </tr>
-    ));
-
-    const titles = title.map((t, index) => (
-      <th key={index} className=" text-sm p-3">{t} </th>
-    ));
 
   return (
-    <div>
-      <table className="fixed w-[900px] right-[464px] top-[230px]">
-        <tr className="bg-darkBlue text-secondary">{titles}</tr>
-        {results}
+    <div className="absolute w-[85%] flex flex-col text-sm p-10 justify-content items-center ">
+      <table className="m-10 w-[1100px]">
+        <thead>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">النتيجة</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">المجموع</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            اعمال السنة
+          </th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            الامتحان الانهائي
+          </th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            الامتحان النصفي
+          </th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            اسم المجموعة
+          </th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            اسم المادة
+          </th>
+        </thead>
+        <tbody>
+          {studentCourses.map((course, index) => (
+            <tr key={index}>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.class?.result_publish ? course.course.pass : ''}
+              </td>
+              <td className="border border-gray-300 px-4 py-2  ">
+                {course.class?.result_publish ? course.course.result : ''}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.class?.class_work}%
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.class?.class_work_publish
+                  ? course.course.class_work
+                  : ''}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.class?.final}%
+              </td>
+              <td className="border border-gray-300 px-4 py-2 flex justify-between items-center">
+                {course.class?.final_publish ? course.course.final : ''}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.class?.midterm}%
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.class?.mid_publish ? course.course.midterm : ''}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.section?.name}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.course_name}
+              </td>
+            </tr>
+          ))}
+        </tbody>
       </table>
     </div>
   );
