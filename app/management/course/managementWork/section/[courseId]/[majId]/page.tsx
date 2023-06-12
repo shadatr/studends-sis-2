@@ -62,7 +62,7 @@ const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
       return;
     }
 
-    const data: SectionType = {
+    const data= {
       name: selectedCourse?.course_name + `(S${section.length + 1})`,
       course_id: selectedCourse?.id,
       max_students: maxStudents
@@ -105,7 +105,7 @@ const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
           }
 
           
-      const data: PrerequisiteCourseType = {
+      const data= {
         course_id: selectedCourse?.id,
         prerequisite_course_id: selectedCoursePer?.id,
       };

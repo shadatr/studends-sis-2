@@ -391,3 +391,14 @@ export type StudentCourse2Type = {
     students_num: number;
   };
 };
+
+export type DoctorCourse2Type = {
+  course_name?: string;
+  section?: {
+    id?: number;
+    name?: string;
+    course_id?: number;
+    max_students: number;
+    students_num: number;
+  };
+};
