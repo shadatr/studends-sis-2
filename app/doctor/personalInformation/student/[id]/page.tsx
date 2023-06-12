@@ -10,6 +10,8 @@ import {
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
 import { BsXCircleFill } from 'react-icons/bs';
+import Link from 'next/link';
+
 
 const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'الاسم' },
@@ -114,6 +116,20 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   return (
     <div className="absolute flex justify-center items-center w-[80%] flex-col m-10">
+      <div className=" flex flex-row  ">
+        <Link
+          className="flex bg-blue-500  hover:bg-blue-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
+          href={`/doctor/personalInformation/student/${params.id}/studentCourses`}
+        >
+          مواد الطالب
+        </Link>
+        <Link
+          className="flex bg-blue-500  hover:bg-blue-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
+          href={`/doctor/personalInformation/student/${params.id}/studentGrades`}
+        >
+          درجات الطالب
+        </Link>
+      </div>
       <table className="flex-row flex text-sm w-[800px] border-collapse">
         <tbody className="flex flex-col w-full">
           {useMyData.map((item, index) => (

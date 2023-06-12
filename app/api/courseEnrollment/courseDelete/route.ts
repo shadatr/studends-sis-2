@@ -1,4 +1,3 @@
-import { StudentClassType } from '@/app/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -26,11 +25,11 @@ export async function POST(request: Request) {
   try {
     const res = await supabase
       .from('tb_course_enrollment')
-      .update({approved: data.approved})
+      .delete()
       .eq('id', data.id)
       .eq('student_id', data.student_id);
 
-
+      console.log(data);
     return new Response(JSON.stringify({ message: 'تم تسجيل الكلية بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });

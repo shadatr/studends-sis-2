@@ -239,7 +239,7 @@ useEffect(() => {
           student_id: user?.id,
           class_id: updatedClasses2[0].id,
         };
-      axios.post('/api/courseEnrollment/courseAccept', data1);
+      axios.post(`/api/getAll/getAllCourseEnroll/${user?.id}`, data1);
       }}
     });
     const data2 = {

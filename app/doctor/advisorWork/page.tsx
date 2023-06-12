@@ -21,18 +21,21 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await axios.get(
-        `/api/allPermission/admin/selectedPerms/${user?.id}`
-      );
-      const message: GetPermissionType[] = response.data.message;
-      setPerms(message);
-      console.log(message);
+      if(user){
 
-      axios.get(`/api/advisor/assignAdvisor/${user?.id}`).then((resp) => {
-        console.log(resp.data);
-        const message: PersonalInfoType[] = resp.data.message;
-        setStudents(message);
-      });
+        const response = await axios.get(
+          `/api/allPermission/admin/selectedPerms/${user?.id}`
+        );
+        const message: GetPermissionType[] = response.data.message;
+        setPerms(message);
+        console.log(message);
+        axios.get(`/api/advisor/assignAdvisor/${user?.id}`).then((resp) => {
+          console.log(resp.data);
+          const message: PersonalInfoType[] = resp.data.message;
+          setStudents(message);
+        });
+      }
+
     };
 
     fetchPosts();
@@ -47,13 +50,6 @@ const Page = () => {
   };
 
 
-  const noStudents = (
-    <div className="h-full flex justify-center items-center w-full">
-      <h1 className="flex flex-row justify-center items-center text-2xl">
-        لا يوجد طلاب
-      </h1>
-    </div>
-  );
   return (
     <div className="flex absolute flex-col w-[80%]">
       <table className="border-collapse mt-8">
@@ -108,7 +104,11 @@ const Page = () => {
             ))}
           </tbody>
         ) : (
-          noStudents
+          <tbody >
+              <tr className="flex w-full flex-row justify-center items-center text-2xl border border-gray-300 px-4 py-2">
+                لا يوجد طلاب
+              </tr>
+          </tbody>
         )}
       </table>
     </div>
