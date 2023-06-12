@@ -262,7 +262,11 @@ export type StudentClassType = {
   pass?: boolean;
   result?: number;
   can_repeat?: boolean;
-  approved?:boolean;
+  approved?: boolean;
+  mid_publish?: boolean;
+  final_publish?: boolean;
+  class_work_publish?: boolean;
+  result_publish?: boolean;
   [key: string]: any;
 };
 
@@ -326,4 +330,33 @@ export type InfoDoctorType = {
   address?: string;
   enrollment_date?: string;
   speciality: string;
+};
+
+export type StudentCourseType = {
+  course_name: string;
+  course: {
+    id?: number;
+    student_id: number;
+    class_id?: number;
+    semester?: number;
+    class_work?: string;
+    midterm: string;
+    final?: string;
+    pass?: boolean;
+    result?: number;
+    can_repeat?: boolean;
+    approved?: boolean;
+    mid_publish?: boolean;
+    final_publish?: boolean;
+    class_work_publish?: boolean;
+    result_publish?: boolean;
+    [key: string]: any;
+  };
+  section?: {
+    id?: number;
+    name?: string;
+    course_id?: number;
+    max_students: number;
+    students_num: number;
+  };
 };

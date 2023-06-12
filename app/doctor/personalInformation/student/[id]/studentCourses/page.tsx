@@ -5,10 +5,9 @@ import React, { useEffect, useState } from 'react';
 import {
   AddCourse2Type,
   ClassesType,
-  GetPermissionStudentType,
-  PrerequisiteCourseType,
   SectionType,
   StudentClassType,
+  StudentCourseType,
 } from '@/app/types/types';
 
 const Page = ({ params }: { params: { id: number } }) => {
@@ -16,21 +15,15 @@ const Page = ({ params }: { params: { id: number } }) => {
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
     throw new Error('Unauthorized');
   }
-//   const user = session.data?.user;
 
   const [courses, setCourses] = useState<AddCourse2Type[]>([]);
   const [checkList, setCheckList] = useState<AddCourse2Type[]>([]);
   const [checked, setChecked] = useState<number[]>([]);
-  const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>(
-    []
-  );
+    const [studentCourses, setStudentCourses] = useState<StudentCourseType[]>([]);
   const [sections, setSections] = useState<SectionType[]>([]);
   const [classes, setClasses] = useState<ClassesType[]>([]);
-  const [courseEnrollments, setCourseEnrollments] = useState<
-    StudentClassType[]
-  >([]);
+  const [courseEnrollments, setCourseEnrollments] = useState<StudentClassType[]>([]);
   const [refresh, setRefresh] = useState(false);
-  const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,11 +74,6 @@ const Page = ({ params }: { params: { id: number } }) => {
         const courses = courseData.flat();
         setCourses(courses);
 
-        // const responsePer = await axios.get(
-        //   `/api/allPermission/student/selectedPerms/${params.id}`
-        // );
-        // const messagePer: GetPermissionStudentType[] = responsePer.data.message;
-        // setPerms(messagePer);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -98,7 +86,7 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   useEffect(() => {
     const updatedCheckList: AddCourse2Type[] = [];
-
+    const updatedStudentCourses: StudentCourseType[] = [];
 
     courseEnrollments.map((course) => {
       const studenClass = classes.find((Class) => Class.id == course.class_id);
@@ -111,8 +99,21 @@ const Page = ({ params }: { params: { id: number } }) => {
         (course) => course.id == studentSection?.course_id
       );
     
-      if (studentCourse) updatedCheckList.push(studentCourse);
+      if (studentCourse){ 
+        if(!course.approved){
+        updatedCheckList.push(studentCourse); }
+        else{
+            const data = {
+              course_name: studentCourse.course_name,
+              course: course,
+              section: studentSection,
+            };
+            updatedStudentCourses.push(data);
+        }
+    }
     });
+    console.log(updatedStudentCourses);
+    setStudentCourses(updatedStudentCourses);
     setCheckList(updatedCheckList);
   }, [ refresh]);
 
@@ -187,16 +188,20 @@ const Page = ({ params }: { params: { id: number } }) => {
   setRefresh(!refresh);};
 
   return (
-    <div className="absolute w-[100%] flex text-sm p-10 justify-content items-center ">
-          <form
-            onSubmit={handleSubmit}
-            className=" flex-col w-screen flex justify-content items-center"
-          >
-            <h1 className="flex w-[400px] text-sm justify-end p-1 items-center bg-darkBlue text-secondary">
-              :اختر المواد
-            </h1>
-            <div className="p-1 rounded-md">
-              {checkList.map((item, index) => (
+    <div className="absolute w-[100%] flex flex-col text-sm p-10 justify-content items-center ">
+      <form
+        onSubmit={handleSubmit}
+        className=" flex-col w-screen flex justify-content items-center"
+      >
+        <h1 className="flex w-[400px] text-sm justify-end p-1 items-center">
+          :المواد التي اختارها الطالب
+        </h1>
+        <h1 className="flex w-[400px] text-sm justify-end p-1 items-center bg-darkBlue text-secondary">
+          :اختر المواد
+        </h1>
+        <div className="p-1 rounded-md">
+          {checkList
+            ? checkList.map((item, index) => (
                 <div
                   className="bg-lightBlue flex w-[400px] justify-between"
                   key={index}
@@ -210,16 +215,40 @@ const Page = ({ params }: { params: { id: number } }) => {
                   />
                   <label className="pr-5  ">{item.course_name}</label>
                 </div>
-              ))}
-            </div>
-            <button
-              type="submit"
-              className="flex w-[400px]  text-sm justify-center items-center bg-darkBlue text-secondary"
-            >
-              موافقة
-            </button>
-          </form>
-        
+              ))
+            : 'لا يوجد'}
+        </div>
+        <button
+          type="submit"
+          className="flex w-[400px]  text-sm justify-center items-center bg-darkBlue text-secondary"
+        >
+          موافقة
+        </button>
+      </form>
+      <table className='m-10'>
+        <thead>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">النتيجة</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">المجموع</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">اعمال السنة</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">الامتحان الانهائي</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">الامتحان النصفي</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">اسم المجموعة</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">اسم المادة</th>
+        </thead>
+        <tbody>
+          {studentCourses.map((course, index) => (
+            <tr key={index}>
+            <td className="border border-gray-300 px-4 py-2">{course.course.result_publish? (course.course.pass):''}</td>
+              <td className="border border-gray-300 px-4 py-2">{course.course.result_publish? (course.course.result):''}</td>
+              <td className="border border-gray-300 px-4 py-2">{course.course.class_work_publish? (course.course.class_work):''}</td>
+              <td className="border border-gray-300 px-4 py-2">{course.course.final_publish? (course.course.final):''}</td>
+              <td className="border border-gray-300 px-4 py-2">{course.course.mid_publish? (course.course.midterm):''}</td>
+              <td className="border border-gray-300 px-4 py-2">{course.section?.name}</td>
+              <td className="border border-gray-300 px-4 py-2">{course.course_name}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
