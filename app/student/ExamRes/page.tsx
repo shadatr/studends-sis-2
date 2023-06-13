@@ -8,7 +8,7 @@ import {
   SectionType,
   StudentClassType,
   StudentCourseType,
-} from '@/app/types/types';
+} from '@/app/types/types'; 
 
 const Page = () => {
   const session = useSession({ required: true });
@@ -22,9 +22,7 @@ const Page = () => {
   const [studentCourses, setStudentCourses] = useState<StudentCourseType[]>([]);
   const [sections, setSections] = useState<SectionType[]>([]);
   const [classes, setClasses] = useState<ClassesType[]>([]);
-  const [courseEnrollments, setCourseEnrollments] = useState<
-    StudentClassType[]
-  >([]);
+  const [courseEnrollments, setCourseEnrollments] = useState<StudentClassType[]>([]);
   const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {

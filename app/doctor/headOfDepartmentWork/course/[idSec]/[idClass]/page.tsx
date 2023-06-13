@@ -79,7 +79,7 @@ const Tabs = ({ params }: { params: { idSec: number; idClass: number } }) => {
     e.preventDefault();
     if (!selectedDoctor) return;
 
-    const data: ClassesType = {
+    const data ={
       doctor_id: selectedDoctorId,
       section_id: sectionId,
     };

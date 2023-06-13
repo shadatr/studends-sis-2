@@ -1,7 +1,10 @@
 'use client';
 import {
+  AddCourse2Type,
+  ClassesType,
   PersonalInfoType,
-  StudentClassType,
+  SectionType,
+  StudentClassType, 
 } from '@/app/types/types';
 import axios from 'axios';
 import Link from 'next/link';
@@ -15,25 +18,116 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [editMid, setEditMid] = useState(false);
   const [editFinal, setEditFinal] = useState(false);
   const [editHw, setEditHw] = useState(false);
-
+  const [classes, setClasses] = useState<ClassesType[]>([]);
   const [grades, setGrades] = useState<StudentClassType[]>([]);
+  const [cousre, setCourse] = useState<SectionType[]>([]);
+
 
   useEffect(() => {
     const fetchPosts = async () => {
-      try {
-        const response = await axios.get(`/api/exams/examRes/${params.id}/section`);
-        const message: StudentClassType[] = response.data.message;
-        const resp = await axios.get(`/api/getAll/student`);
-        const personalInfoMessage: PersonalInfoType[] = resp.data.message;
-        setStudentsNames(personalInfoMessage);
-        setStudents(message);
-        setGrades(message);
-      } catch (error) {
-        console.error(error);
-      }
+      const response = await axios.get(
+        `/api/exams/examRes/${params.id}/section`
+      );
+      const message: StudentClassType[] = response.data.message;
+      setStudents(message);
+      setGrades(message);
+
+      const sectionResponse = await axios.get(
+        `/api/getAll/getSpecificSection/${params.id}`
+      );
+      const sectionMessage: SectionType[] = sectionResponse.data.message;
+
+      const CourseResponse = await axios.get(
+        `/api/getAll/getSpecificCourse/${sectionMessage[0].course_id}`
+      );
+      const CourseMessage: AddCourse2Type[] = CourseResponse.data.message;
+
+      const classesPromises = message.map(async (course) => {
+        const responseReq = await axios.get(
+          `/api/getAll/getSpecificClass/${course.class_id}`
+        );
+        const { message: classesMessage }: { message: ClassesType[] } =
+          responseReq.data;
+        return classesMessage;
+      });
+
+      const classesData = await Promise.all(classesPromises);
+      const classes = classesData.flat();
+      setClasses(classes);
+
+      const resp = await axios.get(`/api/getAll/student`);
+      const personalInfoMessage: PersonalInfoType[] = resp.data.message;
+      setStudentsNames(personalInfoMessage);
+
+      const updatedGradesResult = message.map((grade) => {
+        const student = personalInfoMessage.find(
+          (student) => student.id === grade.student_id
+        );
+
+        if (grade.student_id == student?.id) {
+          if (grade.midterm && grade.final && grade.class_work) {
+            const Class = classes.find((Class) => Class.id == grade.class_id);
+            if (Class?.midterm && Class?.final && Class?.class_work) {
+              const avrg =
+                (grade.midterm * Class.midterm) / 100 +
+                (grade.final * Class.final) / 100 +
+                (grade.class_work * Class.class_work) / 100;
+
+              return {
+                ...grade,
+                result: avrg,
+              };
+            }
+          }
+        }
+        return grade;
+      });
+      console.log(updatedGradesResult);
+      axios
+        .post(`/api/exams/examRes/${params.id}/result`, updatedGradesResult)
+        .then((res) => console.log(res));
+
+      const updatedGradesPass = message.map((grade) => {
+        const student = personalInfoMessage.find(
+          (student) => student.id === grade.student_id
+        );
+
+        if (grade.student_id == student?.id) {
+          if (grade.midterm && grade.final && grade.class_work) {
+            const Class = classes.find((Class) => Class.id == grade.class_id);
+            if (Class?.midterm && Class?.final && Class?.class_work) {
+              const avrg =
+                (grade.midterm * Class.midterm) / 100 +
+                (grade.final * Class.final) / 100 +
+                (grade.class_work * Class.class_work) / 100;
+
+              if (
+                (CourseMessage[0].passing_percentage &&
+                  CourseMessage[0].passing_percentage > avrg) == true
+              ) {
+                return {
+                  ...grade,
+                  pass: false,
+                };
+              } else {
+                return {
+                  ...grade,
+                  pass: true,
+                };
+              }
+            }
+          }
+        }
+        return grade;
+      });
+
+      console.log(updatedGradesPass);
+      axios
+        .post(`/api/exams/examRes/${params.id}/pass`, updatedGradesPass)
+        .then((res) => console.log(res));
     };
     fetchPosts();
-  }, [edit, params.id]);
+  }, [edit, params.id, editMid, editFinal, editHw]);
 
 
 
@@ -46,7 +140,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       if (gradeObj.student_id == studentId) {
         return {
           ...gradeObj,
-          [exam]: grade,
+          [exam]: parseInt(grade),
         };
       }
       return gradeObj;
@@ -73,7 +167,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   };
 
   return (
-    <div className="flex absolute flex-col w-4/5 justify-center items-center">
+    <div className="flex absolute flex-col w-[90%] justify-center items-center">
       <form onSubmit={(e) => e.preventDefault()}>
         <button
           className="m-10 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px] "
@@ -102,26 +196,41 @@ const Page = ({ params }: { params: { id: number } }) => {
         >
           {editMid ? 'ارسال' : 'تعديل درجات الامتحان النصفي'}
         </button>
-        <table className="border-collapse mt-8 w-[900px]">
+        <table className="border-collapse mt-8 w-[1000px]">
           <thead>
-            <tr className="bg-gray-200">
-              <th className="border border-gray-300 px-4 py-2">
-                المعلومات الشخصية
-              </th>
-              <th className="border border-gray-300 px-4 py-2">اعمال السنة</th>
-              <th className="border border-gray-300 px-4 py-2">
-                الامتحان النهائي
-              </th>
-              <th className="border border-gray-300 px-4 py-2">
-                الامتحان النصفي
-              </th>
-              <th className="border border-gray-300 px-4 py-2">رقم الطالب</th>
-              <th className="border border-gray-300 px-4 py-2">لقب</th>
-              <th className="border border-gray-300 px-4 py-2">اسم</th>
-            </tr>
+          <tr>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+             الملف الشخصي
+          </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">النتيجة</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">المجموع</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            اعمال السنة
+          </th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            الامتحان الانهائي
+          </th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+          
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            الامتحان النصفي
+          </th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+             رقم الطالب
+          </th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            اللقب
+          </th>
+          <th className="border border-gray-300 px-4 py-2 bg-grey">
+            اسم الطالب
+          </th>
+          </tr>
           </thead>
           <tbody>
             {students.map((user, index) => {
+              const Class= classes.find((Class)=> Class.id== user.class_id );
               const student = studentsNames.find(
                 (student) => student.id === user.student_id
               );
@@ -134,6 +243,21 @@ const Page = ({ params }: { params: { id: number } }) => {
                     >
                       الملف الشخصي
                     </Link>
+                  </td>
+                  <td
+                    className={`border border-gray-300 px-4 py-2 ${
+                      user.pass
+                      ? 'text-green-600 hover:text-green-700'
+                        :'text-red-500 hover:text-red-600'
+                    }`}
+                  >
+                    {user.pass == null ? '' : user.pass ? 'ناجح' : 'راسب'}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2  ">
+                    {user.result}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {Class?.class_work}%
                   </td>
                   {editHw ? (
                     <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
@@ -161,6 +285,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                       {user.class_work}
                     </td>
                   )}
+                  <td className="border border-gray-300 px-4 py-2">
+                    {Class?.final}%
+                  </td>
                   {editFinal ? (
                     <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
                       <input
@@ -187,6 +314,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                       {user.final}
                     </td>
                   )}
+                  <td className="border border-gray-300 px-4 py-2">
+                    {Class?.midterm}%
+                  </td>
                   {editMid ? (
                     <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
                       <input

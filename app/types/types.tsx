@@ -169,7 +169,7 @@ export type AddCourse2Type = {
   min_semester?: number;
   hours?: string;
   credits?: string;
-  passing_percentage?: string;
+  passing_percentage?: number;
   pass?: boolean;
 };
 
@@ -244,11 +244,15 @@ export type ClassesType = {
   doctor_id?: number;
   section_id?: number;
   location?: string;
-  start_time?: number;
-  duration?: number;
+  start_time?: string;
+  duration?: string;
   class_work?: number;
   midterm?: number;
   final?: number;
+  mid_publish?: boolean;
+  final_publish?: boolean;
+  class_work_publish?: boolean;
+  result_publish?: boolean;
 };
 
 export type StudentClassType = {
@@ -256,17 +260,13 @@ export type StudentClassType = {
   student_id: number;
   class_id?: number;
   semester?: number;
-  class_work?: string;
-  midterm: string;
-  final?: string;
+  class_work?: number;
+  midterm: number;
+  final?: number;
   pass?: boolean;
   result?: number;
   can_repeat?: boolean;
   approved?: boolean;
-  mid_publish?: boolean;
-  final_publish?: boolean;
-  class_work_publish?: boolean;
-  result_publish?: boolean;
   [key: string]: any;
 };
 
@@ -334,42 +334,9 @@ export type InfoDoctorType = {
 
 export type StudentCourseType = {
   course_name: string;
-  course: {
-    id?: number;
-    student_id: number;
-    class_id?: number;
-    semester?: number;
-    class_work?: string;
-    midterm: string;
-    final?: string;
-    pass?: boolean;
-    result?: number;
-    can_repeat?: boolean;
-    approved?: boolean;
-    [key: string]: any;
-  };
-  section?: {
-    id?: number;
-    name?: string;
-    course_id?: number;
-    max_students: number;
-    students_num: number;
-  };
-  class?: {
-    id?: number;
-    doctor_id?: number;
-    section_id?: number;
-    location?: string;
-    start_time?: number;
-    duration?: number;
-    class_work?: number;
-    midterm?: number;
-    final?: number;
-    mid_publish?: boolean;
-    final_publish?: boolean;
-    class_work_publish?: boolean;
-    result_publish?: boolean;
-  };
+  course: StudentClassType;
+  section?: SectionType;
+  class?: ClassesType;
 };
 
 export type StudentCourse2Type = {
@@ -402,3 +369,4 @@ export type DoctorCourse2Type = {
     students_num: number;
   };
 };
+

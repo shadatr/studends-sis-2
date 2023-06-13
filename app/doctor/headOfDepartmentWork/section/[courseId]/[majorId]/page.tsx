@@ -163,7 +163,7 @@ const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
               className="p-3 m-5 bg-lightBlue pl-[80px] pr-[80px] items-center flex justify-center rounded-sm"
             >
               <Link
-                href={`/headOfDepartmentWork/course/${sec.id}/${params.courseId}`}
+                href={`/doctor/headOfDepartmentWork/course/${sec.id}/${params.courseId}`}
               >
                 {sec.name}
               </Link>

@@ -16,27 +16,27 @@ const item: MenuItemType[] = [
 ];
 
 function DoctorMenu() {
-  const data = item.map((i) => (
-    <tr key={i.id}>
-      <td className="flex p-3 items-center justify-center hover:text-[23px] hover:text-cyan-300">
-        <Link
-          href={`/doctor/${i.link}`}
-          className="flex justify-between items-center p-1   "
-          key={i.id}
-        >
-          {i.name}
-        </Link>
-      </td>
-    </tr>
-  ));
+  
 
   return (
-    <div className="  flex justify-end  text-sm ">
-      <table className=" text-sm flex flex-col mt-[70px] w-[260px] bg-darkBlue text-white ">
-        {data}
+    <div className="flex justify-end items-center h-screen text-sm">
+      <table className="w-[260px] h-[500px] bg-darkBlue text-white">
+        <tbody className="text-sm ">
+          <tr className="flex flex-col">
+            {item.map((item, index) => (
+              <td
+                key={index}
+                className="w-full p-3 flex items-center justify-center hover:text-cyan-300"
+              >
+                <Link href={`/doctor/${item.link}`}>{item.name}</Link>
+              </td>
+            ))}
+          </tr>
+        </tbody>
       </table>
     </div>
   );
+
 }
 
 export default DoctorMenu;

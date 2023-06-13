@@ -1,5 +1,5 @@
 'use client';
-import { SectionType } from '@/app/types/types';
+import { SectionType } from '@/app/types/types'; 
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
