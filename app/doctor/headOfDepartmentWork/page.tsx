@@ -15,13 +15,10 @@ const Page = () => {
 
   const [majors, setMajors] = useState<MajorType[]>([]);
   const [courses, setCourses] = useState<AddCourse2Type[]>([]);
-  const [studentCourses, setStudentCourses] = useState<StudentCourseType[]>([]);
   const [sections, setSections] = useState<SectionType[]>([]);
   const [classes, setClasses] = useState<ClassesType[]>([]);
   const [courseEnrollments, setCourseEnrollments] = useState<StudentClassType[]>([]);
   const [refresh, setRefresh] = useState(false);
-  const [totalGradePoints, setTotalGradePoints] = useState(0);
-  const [totalCredits, setTotalCredits] = useState(0);
   const [students, setStudents] = useState<PersonalInfoType[]>([]);
   const [transcript, setTranscript] = useState<TranscriptType[]>([]);
 
@@ -118,17 +115,19 @@ const Page = () => {
   }, [refresh,user]);
 
 
-  const handleSubmit= () => {
+  const handleSubmit = () => {
+    let allDataSent = true; 
 
     students.forEach((student) => {
-
       let studentTotalGradePoints = 0;
       let studentTotalCredits = 0;
 
       const studenCourseEnrolls = courseEnrollments.filter(
-        (Class) => student.id === Class.student_id&& student.semester== Class.semester
+        (Class) =>
+          student.id === Class.student_id && student.semester == Class.semester
       );
 
+      console.log(studenCourseEnrolls);
 
       studenCourseEnrolls?.map((course: StudentClassType) => {
         const studenClass = classes.find(
@@ -162,9 +161,11 @@ const Page = () => {
       });
 
       if (duplicateFound) {
-        toast.error('هذه المجموع النهائي بالفعل ');
+        
+        allDataSent = false; // Set the flag to false if a duplicate is found
         return;
       }
+
       const data = {
         student_id: student.id,
         semester: student.semester,
@@ -172,13 +173,21 @@ const Page = () => {
           (studentTotalGradePoints / studentTotalCredits).toFixed(2)
         ),
       };
-      if (studentTotalGradePoints && studentTotalCredits){
-        axios.post(` /api/transcript/${1}`, data);
-      console.log(data);}
-    });
-    setRefresh(!refresh);
-  };
 
+      if (studentTotalGradePoints && studentTotalCredits) {
+        axios.post(`/api/transcript/${1}`, data).catch((error) => {
+          allDataSent = false; 
+          console.error('Error sending data:', error);
+        });
+        console.log(data);
+      }
+    });
+
+    if (allDataSent) {
+      setRefresh(!refresh);
+      toast.success('تم إرسال جميع البيانات بنجاح');
+    }else{toast.error(' تم ارسال المجموع النهائي بالفعل من قبل');}
+  };
 
 
 
@@ -186,8 +195,11 @@ const Page = () => {
     <div className="flex absolute items-center justify-center w-[80%] mt-10">
       {user?.head_of_deparment_id ? (
         <div>
-          <button onClick={handleSubmit}>
-            اسال المجموع النهائي في جميع التخصصات
+          <button
+            onClick={handleSubmit}
+            className="bg-green-700 m-4 hover:bg-green-600 px-5 py-2 rounded-md text-white"
+          >
+            ارسال المجموع النهائي في جميع التخصصات
           </button>
           <table className="w-[800px]">
             <thead>
@@ -198,12 +210,22 @@ const Page = () => {
             <tbody>
               {majors.map((major, index) => (
                 <tr key={index}>
-                  <td className="p-2 bg-grey flex justify-end">
-                    <Link
-                      href={`/doctor/headOfDepartmentWork/major/${major.id}`}
-                    >
-                      {major.major_name}
-                    </Link>
+                  <td className=" bg-grey p-1 flex justify-between p-2">
+                    <>
+                      <Link
+                        className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"
+                        href={`/doctor/headOfDepartmentWork/major/${major.id}`}
+                      >
+                        المواد
+                      </Link>
+                      <Link
+                        className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"
+                        href={`/doctor/headOfDepartmentWork/majorStudents/${major.id}`}
+                      >
+                        الطلاب
+                      </Link>
+                    </>
+                    <>{major.major_name}</>
                   </td>
                 </tr>
               ))}
