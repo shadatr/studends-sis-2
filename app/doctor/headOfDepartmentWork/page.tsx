@@ -127,9 +127,8 @@ const Page = () => {
           student.id === Class.student_id && student.semester == Class.semester
       );
 
-      console.log(studenCourseEnrolls);
-
       studenCourseEnrolls?.map((course: StudentClassType) => {
+        let grade= 0;
         const studenClass = classes.find(
           (Class) => Class.id == course.class_id
         );
@@ -141,9 +140,20 @@ const Page = () => {
         const studentCourse = courses.find(
           (course) => course.id == studentSection?.course_id
         );
+
+
         if (studentCourse?.credits && course.result) {
+          if (course.result >= 90) grade = 4.0;
+          else if (course.result >= 80){ grade = 3.0;}
+          else if (course.result >= 70) {grade = 2.0;}
+          else if (course.result >= 60){ grade = 1.0;}
+          else if (course.result < 60) {grade = 0.0;}
+
+          console.log(course);
+          console.log(grade);
+
           studentTotalGradePoints +=
-            (course.result / 100) * studentCourse?.credits;
+            grade * studentCourse?.credits;
           studentTotalCredits += studentCourse?.credits;
         }
       });

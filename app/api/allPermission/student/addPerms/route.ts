@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.log(error);
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الكلية' }),
+      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الصلاحية' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }

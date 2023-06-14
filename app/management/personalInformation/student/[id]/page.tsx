@@ -10,6 +10,9 @@ import {
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
 import { BsXCircleFill } from 'react-icons/bs';
+import Link from 'next/link';
+import Transcript from '@/app/components/transcript';
+
 
 const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'الاسم' },
@@ -30,7 +33,8 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [checked, setChecked] = useState<number[]>([]); // Change to an array
   const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
   const [refresh, setRefresh] = useState(false);
-  const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
+    const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
+
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -113,6 +117,14 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   return (
     <div className="absolute flex justify-center items-center w-[80%] flex-col m-10">
+      <div className=" flex flex-row  ">
+        <Link
+          className="flex bg-blue-500  hover:bg-blue-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
+          href={`/doctor/personalInformation/student/${params.id}/CoursesAndGrades`}
+        >
+          مواد و درجات الطالب
+        </Link>
+      </div>
       <table className="flex-row flex text-sm w-[800px] border-collapse">
         <tbody className="flex flex-col w-full">
           {useMyData.map((item, index) => (
@@ -184,7 +196,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             ))}
           </tbody>
         </table>
-        <form onSubmit={handleSubmit} className="p-10 w-[400px] ">
+        <form onSubmit={handleSubmit} className="p-10 w-[400px] flex justify-center items-center">
           <h1 className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary">
             اختر الصلاحيات
           </h1>
@@ -209,6 +221,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             اضافة
           </button>
         </form>
+        <Transcript user={params.id} />
       </div>
     </div>
   );

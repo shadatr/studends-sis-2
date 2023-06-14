@@ -11,6 +11,7 @@ import {
 import { toast } from 'react-toastify';
 import { BsXCircleFill } from 'react-icons/bs';
 import Link from 'next/link';
+import Transcript from '@/app/components/transcript';
 
 
 const stuInfo: PersonalInfoHeaderType[] = [
@@ -103,6 +104,20 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    let duplicateFound = false;
+
+    selected.forEach((item) => {
+      checked.map((item3) => {
+      if (item.id === item3) {
+        duplicateFound = true;
+        return;
+      }})
+    });
+
+    if (duplicateFound) {
+      toast.error('هذه الصلاحية مسجلة بالفعل');
+      return;
+    }
     checked.map((item) => {
       const data1 = {
         student_id: params.id,
@@ -195,7 +210,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             ))}
           </tbody>
         </table>
-        <form onSubmit={handleSubmit} className="p-10 w-[400px] ">
+        <form onSubmit={handleSubmit} className="p-10 w-full ">
           <h1 className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary">
             اختر الصلاحيات
           </h1>
@@ -220,6 +235,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             اضافة
           </button>
         </form>
+        <Transcript user={params.id} />
       </div>
     </div>
   );

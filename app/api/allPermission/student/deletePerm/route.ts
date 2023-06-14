@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       .eq('permission_id', req.permission_id)
       .eq('student_id', req.student_id);
        console.log(deleteReq.error?.message);
-    return new Response(JSON.stringify({ message: 'تم مسح التخصص بنجاح' }));
+    return new Response(JSON.stringify({ message: 'تم مسح الصلاحية بنجاح' }));
   } catch {}
 }
 
