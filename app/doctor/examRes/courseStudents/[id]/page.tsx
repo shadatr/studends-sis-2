@@ -20,7 +20,6 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [editHw, setEditHw] = useState(false);
   const [classes, setClasses] = useState<ClassesType[]>([]);
   const [grades, setGrades] = useState<StudentClassType[]>([]);
-  const [cousre, setCourse] = useState<SectionType[]>([]);
 
 
   useEffect(() => {

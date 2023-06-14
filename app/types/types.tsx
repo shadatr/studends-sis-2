@@ -168,7 +168,7 @@ export type AddCourse2Type = {
   major_id?: number;
   min_semester?: number;
   hours?: string;
-  credits?: string;
+  credits?: number;
   passing_percentage?: number;
   pass?: boolean;
 };
@@ -345,7 +345,7 @@ export type StudentCourse2Type = {
     id?: number;
     course_name: string;
     major_id?: number;
-    credits?: string;
+    credits?: number;
     hours?: string;
     passing_percentage?: string;
     min_semester?: number;
@@ -370,3 +370,9 @@ export type DoctorCourse2Type = {
   };
 };
 
+export type TranscriptType={
+  id?:number;
+  student_id:number;
+  semester:number;
+  gpa: number;
+}

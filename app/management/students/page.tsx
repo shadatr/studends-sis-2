@@ -42,7 +42,7 @@ const Page = () => {
         className="flex flex-row w-full p-1 items-center justify-end "
         key={index}
       >
-        <Link href={`/management/majorStudents/${item.major_name}`}>
+        <Link href={`/management/majorStudents/${item.id}`}>
           {item.major_name}
         </Link>
       </td>

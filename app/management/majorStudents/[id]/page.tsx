@@ -6,7 +6,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-const Page = ({ params }: { params: { name: string } }) => {
+const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
@@ -42,14 +42,14 @@ const Page = ({ params }: { params: { name: string } }) => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      axios.get(`/api/list/${params.name}/student`).then((resp) => {
+      axios.get(`/api/list/${params.id}/student`).then((resp) => {
         console.log(resp.data);
         const message: PersonalInfoType[] = resp.data.message;
         setStudents(message);
       });
     };
     fetchPosts();
-  }, [params.name, refresh]);
+  }, [params.id, refresh]);
 
 
   const noStudents = (
