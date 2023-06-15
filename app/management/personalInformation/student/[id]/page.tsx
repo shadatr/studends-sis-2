@@ -102,8 +102,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       });
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = () => {
     checked.map((item) => {
       const data1 = {
         student_id: params.id,
@@ -117,30 +116,46 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   return (
     <div className="absolute flex justify-center items-center w-[80%] flex-col m-10">
-      <div className=" flex flex-row  ">
+      <div className="flex flex-row ">
         <Link
-          className="flex bg-blue-500  hover:bg-blue-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
+          className="flex bg-blue-500 hover:bg-blue-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
           href={`/doctor/personalInformation/student/${params.id}/CoursesAndGrades`}
         >
           مواد و درجات الطالب
         </Link>
       </div>
-      <table className="flex-row flex text-sm w-[800px] border-collapse">
-        <tbody className="flex flex-col w-full">
+      <table className="flex-row-reverse flex text-sm  border-collapse">
+        <thead>
+          <tr className="">
+            {stuInfo.map((title, index) => (
+              <th
+                className="flex p-2 justify-end bg-darkBlue text-secondary"
+                key={index}
+              >
+                {title.header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="">
           {useMyData.map((item, index) => (
             <tr key={index}>
-              <td className="flex w-full p-2 justify-end">{item.name}</td>
-              <td className="flex w-full p-2 justify-end">{item.surname}</td>
-              <td className="flex w-full p-2 justify-end">{item.birth_date}</td>
-              <td className="flex w-full p-2 justify-end">{item.major}</td>
-              <td className="flex w-full p-2 justify-end">{item.semester}</td>
-              <td className="flex w-full p-2 justify-end">{item.address}</td>
-              <td className="flex w-full p-2 justify-end">{item.phone}</td>
-              <td className="flex w-full p-2 justify-end">{item.email}</td>
-              <td className="flex w-full p-2 justify-end">
+              <td className="flex w-[700px] p-2 justify-end">{item.name}</td>
+              <td className="flex w-[700px] p-2 justify-end">{item.surname}</td>
+              <td className="flex w-[700px] p-2 justify-end">
+                {item.birth_date}
+              </td>
+              <td className="flex w-[700px] p-2 justify-end">{item.major}</td>
+              <td className="flex w-[700px] p-2 justify-end">
+                {item.semester}
+              </td>
+              <td className="flex w-[700px] p-2 justify-end">{item.address}</td>
+              <td className="flex w-[700px] p-2 justify-end">{item.phone}</td>
+              <td className="flex w-[700px] p-2 justify-end">{item.email}</td>
+              <td className="flex w-[700px] p-2 justify-end">
                 {item.enrollment_date}
               </td>
-              <td className="flex w-full p-2 justify-end">
+              <td className="flex w-[700px] p-2 justify-end">
                 {item.advisor
                   ? doctors.find((doc) => item.advisor == doc.id)?.name
                   : 'لا يوجد'}
@@ -148,21 +163,12 @@ const Page = ({ params }: { params: { id: number } }) => {
             </tr>
           ))}
         </tbody>
-        <thead className="w-1/4 bg-darkBlue text-secondary flex flex-col">
-          <tr className="w-full bg-darkBlue text-secondary">
-            {stuInfo.map((title, index) => (
-              <th className="flex w-full p-2 justify-end" key={index}>
-                {title.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
       </table>
       <div>
         <table className="border-collapse mt-8 w-[800px]">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border border-gray-300 px-4 py-2">حذف </th>
+              <th className="border border-gray-300 px-4 py-2">حذف</th>
               <th className="border border-gray-300 px-4 py-2">ايقاف/تفعيل</th>
               <th className="border border-gray-300 px-4 py-2">اسم الصلاحية</th>
             </tr>
@@ -180,7 +186,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                     onClick={() => {
                       handleActivate(user.id, params.id, !user.active);
                     }}
-                    className={`w-[50px]  text-white py-1 px-2 rounded ${
+                    className={`w-[50px] text-white py-1 px-2 rounded ${
                       user.active
                         ? 'bg-red-500 hover:bg-red-600'
                         : 'bg-green-600 hover:bg-green-700'
@@ -196,31 +202,32 @@ const Page = ({ params }: { params: { id: number } }) => {
             ))}
           </tbody>
         </table>
-        <form onSubmit={handleSubmit} className="p-10 w-[400px] flex justify-center items-center">
-          <h1 className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary">
-            اختر الصلاحيات
-          </h1>
-          <div className="p-1 rounded-md">
+        <table className="border-collapse mt-8 w-[500px]">
+          <tbody>
+            <tr>
+              <td className="text-secondary bg-darkBlue">اختر الصلاحيات</td>
+            </tr>
             {checkList.map((item, index) => (
-              <div className="bg-lightBlue flex justify-between  " key={index}>
-                <input
-                  className="p-2 ml-9"
-                  value={item.name}
-                  type="checkbox"
-                  onChange={() => handleCheck(item)} // Pass the item to handleCheck
-                  checked={checked.includes(item.id)} // Check if the item is in the checked list
-                />
-                <label className="pr-5">{item.name}</label>
-              </div>
+              <tr key={index}>
+                <td className="bg-lightBlue flex justify-between">
+                  <input
+                    className="p-2 ml-9"
+                    value={item.name}
+                    type="checkbox"
+                    onChange={() => handleCheck(item)} // Pass the item to handleCheck
+                    checked={checked.includes(item.id)} // Check if the item is in the checked list
+                  />
+                  <label className="pr-5">{item.name}</label>
+                </td>
+              </tr>
             ))}
-          </div>
-          <button
-            type="submit"
-            className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary"
-          >
-            اضافة
-          </button>
-        </form>
+            <tr>
+              <td className="text-secondary bg-darkBlue flex justify-center items-center">
+                <button onClick={handleSubmit}>اضافة</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <Transcript user={params.id} />
       </div>
     </div>

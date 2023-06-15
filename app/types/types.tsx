@@ -351,7 +351,7 @@ export type StudentCourse2Type = {
     major_id?: number;
     credits?: number;
     hours?: string;
-    passing_percentage?: string;
+    passing_percentage?: number;
     min_semester?: number;
   };
   section?: {

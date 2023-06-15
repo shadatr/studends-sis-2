@@ -2,16 +2,26 @@
 import {
   AddCourse2Type,
   ClassesType,
+  GetPermissionDoctorType,
   PersonalInfoType,
   SectionType,
-  StudentClassType, 
+  StudentClassType,
 } from '@/app/types/types';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 const Page = ({ params }: { params: { id: number } }) => {
+
+  const session = useSession({ required: true });
+  // if user isn't a admin, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
+    throw new Error('Unauthorized');
+  }
+  const user = session.data?.user;
+
   const [students, setStudents] = useState<StudentClassType[]>([]);
   const [studentsNames, setStudentsNames] = useState<PersonalInfoType[]>([]);
   const [edit, setEdit] = useState(false);
@@ -20,10 +30,20 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [editHw, setEditHw] = useState(false);
   const [classes, setClasses] = useState<ClassesType[]>([]);
   const [grades, setGrades] = useState<StudentClassType[]>([]);
+  const [perms, setPerms] = useState<GetPermissionDoctorType[]>([]);
+
 
 
   useEffect(() => {
     const fetchPosts = async () => {
+      if(user){
+
+      const responsePerm = await axios.get(
+        `/api/allPermission/doctor/selectedPerms/${user?.id}`
+      );
+      const messagePerm: GetPermissionDoctorType[] = responsePerm.data.message;
+      setPerms(messagePerm);
+
       const response = await axios.get(
         `/api/exams/examRes/${params.id}/section`
       );
@@ -81,10 +101,9 @@ const Page = ({ params }: { params: { id: number } }) => {
         }
         return grade;
       });
-      console.log(updatedGradesResult);
       axios
-        .post(`/api/exams/examRes/${params.id}/result`, updatedGradesResult)
-        .then((res) => console.log(res));
+        .post(`/api/exams/examRes/${params.id}/result`, updatedGradesResult);
+ 
 
       const updatedGradesPass = message.map((grade) => {
         const student = personalInfoMessage.find(
@@ -120,13 +139,12 @@ const Page = ({ params }: { params: { id: number } }) => {
         return grade;
       });
 
-      console.log(updatedGradesPass);
       axios
-        .post(`/api/exams/examRes/${params.id}/pass`, updatedGradesPass)
-        .then((res) => console.log(res));
+        .post(`/api/exams/examRes/${params.id}/pass`, updatedGradesPass);
+       }
     };
     fetchPosts();
-  }, [edit, params.id, editMid, editFinal, editHw]);
+  }, [edit, params.id, editMid, editFinal, editHw,user]);
 
 
 
@@ -168,33 +186,40 @@ const Page = ({ params }: { params: { id: number } }) => {
   return (
     <div className="flex absolute flex-col w-[90%] justify-center items-center">
       <form onSubmit={(e) => e.preventDefault()}>
-        <button
-          className="m-10 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px] "
-          type="submit"
-          onClick={() =>
-            editHw ? handleSubmit('class_work') : setEditHw(!editHw)
-          }
-        >
-          {editHw ? 'ارسال' : ' تعديل درجات اعمال السنة'}
-        </button>
-        <button
-          className="m-10 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
-          type="submit"
-          onClick={() =>
-            editFinal ? handleSubmit('final') : setEditFinal(!editFinal)
-          }
-        >
-          {editFinal ? 'ارسال' : 'تعديل درجات الامتحان النهائي'}
-        </button>
-        <button
-          className="m-10 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
-          type="submit"
-          onClick={() =>
-            editMid ? handleSubmit('midterm') : setEditMid(!editMid)
-          }
-        >
-          {editMid ? 'ارسال' : 'تعديل درجات الامتحان النصفي'}
-        </button>
+      {perms.map((item, idx) =>
+       {
+        if (item.permission_id === 21 && item.active){
+          return (
+            <>
+              <button
+                className="m-10 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px] "
+                type="submit"
+                onClick={() =>
+                  editHw ? handleSubmit('class_work') : setEditHw(!editHw)
+                }
+              >
+                {editHw ? 'ارسال' : ' تعديل درجات اعمال السنة'}
+              </button>
+              <button
+                className="m-10 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
+                type="submit"
+                onClick={() =>
+                  editFinal ? handleSubmit('final') : setEditFinal(!editFinal)
+                }
+              >
+                {editFinal ? 'ارسال' : 'تعديل درجات الامتحان النهائي'}
+              </button>
+              <button
+                className="m-10 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
+                type="submit"
+                onClick={() =>
+                  editMid ? handleSubmit('midterm') : setEditMid(!editMid)
+                }
+              >
+                {editMid ? 'ارسال' : 'تعديل درجات الامتحان النصفي'}
+              </button>
+            </>
+          );}})}
         <table className="border-collapse mt-8 w-[1000px]">
           <thead>
           <tr>
@@ -228,7 +253,8 @@ const Page = ({ params }: { params: { id: number } }) => {
           </tr>
           </thead>
           <tbody>
-            {students.map((user, index) => {
+            {students.map((user, index) => 
+              perms.map((item, idx) => {
               const Class= classes.find((Class)=> Class.id== user.class_id );
               const student = studentsNames.find(
                 (student) => student.id === user.student_id
@@ -246,8 +272,8 @@ const Page = ({ params }: { params: { id: number } }) => {
                   <td
                     className={`border border-gray-300 px-4 py-2 ${
                       user.pass
-                      ? 'text-green-600 hover:text-green-700'
-                        :'text-red-500 hover:text-red-600'
+                        ? 'text-green-600 hover:text-green-700'
+                        : 'text-red-500 hover:text-red-600'
                     }`}
                   >
                     {user.pass == null ? '' : user.pass ? 'ناجح' : 'راسب'}
@@ -258,7 +284,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   <td className="border border-gray-300 px-4 py-2">
                     {Class?.class_work}%
                   </td>
-                  {editHw ? (
+                  {editHw && item.permission_id == 21 ? (
                     <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
                       <input
                         className="text-right px-4 py-2 bg-lightBlue w-[100px]"
@@ -287,7 +313,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   <td className="border border-gray-300 px-4 py-2">
                     {Class?.final}%
                   </td>
-                  {editFinal ? (
+                  {editFinal && item.permission_id == 21 ? (
                     <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
                       <input
                         className="text-right px-4 py-2 bg-lightBlue w-[120px]"
@@ -316,7 +342,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   <td className="border border-gray-300 px-4 py-2">
                     {Class?.midterm}%
                   </td>
-                  {editMid ? (
+                  {editMid && item.permission_id == 21 ? (
                     <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
                       <input
                         className="text-right px-4 py-2 bg-lightBlue w-[120px]"
@@ -353,7 +379,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   </td>
                 </tr>
               );
-            })}
+            }))}
           </tbody>
         </table>
       </form>

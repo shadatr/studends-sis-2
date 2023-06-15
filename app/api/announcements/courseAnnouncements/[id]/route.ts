@@ -14,7 +14,6 @@ export async function GET(request: Request,
       .from('tb_announcements')
       .select('*')
       .order('created_at', { ascending: true })
-      .eq('general', false)
       .eq('posted_for_class_id', params.id);
 
 
