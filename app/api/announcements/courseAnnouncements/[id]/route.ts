@@ -7,9 +7,15 @@ const supabase = createClient(
 );
 
 
-export async function GET() {
+export async function GET(request: Request,
+  { params }: { params: { id: number }} ) {
   try {
-    const data = await supabase.from('tb_announcements').select('*').order("created_at", {ascending : false}).eq('type', 'course');
+    const data = await supabase
+      .from('tb_announcements')
+      .select('*')
+      .order('created_at', { ascending: true })
+      .eq('general', false)
+      .eq('posted_for_class_id', params.id);
 
 
     if (data.error) {

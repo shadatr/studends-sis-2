@@ -53,6 +53,7 @@ export type RegisterStudent2Type = {
 };
 
 export type AnnouncmentsMangType = {
+  id?: number;
   general: boolean;
   announcement_text: string;
   posted_for_class_id?: number;
@@ -60,10 +61,13 @@ export type AnnouncmentsMangType = {
   admin_id?: number;
 };
 
-export type AnnouncementType = {
+export type AnnouncmentsType = {
   id: number;
-  created_at: string;
-  subject: string;
+  general: boolean;
+  announcement_text: string;
+  posted_for_class_id?: number;
+  doctor_id?: number;
+  admin_id?: number;
 };
 
 export type RegisterdoctorType = {

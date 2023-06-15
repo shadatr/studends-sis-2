@@ -100,6 +100,7 @@ const Page = () => {
     fetchData();
     setRefresh(!refresh);
   }, [user]);
+  
 useEffect(() => {
   const updatedCheckList: AddCourse2Type[] = [];
   const updatedSections: SectionType[] = [];

@@ -108,11 +108,13 @@ const Page = ({ params }: { params: { id: number } }) => {
 
     selected.forEach((item) => {
       checked.map((item3) => {
-      if (item.id === item3) {
-        duplicateFound = true;
-        return;
-      }})
+        if (item.id === item3) {
+          duplicateFound = true;
+          return;
+        }
+      });
     });
+
 
     if (duplicateFound) {
       toast.error('هذه الصلاحية مسجلة بالفعل');

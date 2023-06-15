@@ -1,5 +1,5 @@
 'use client';
-import { AddCourse2Type, ClassesType, MajorType, PersonalInfoType, SectionType, StudentClassType, StudentCourseType, TranscriptType } from '@/app/types/types';
+import { AddCourse2Type, ClassesType, MajorType, PersonalInfoType, SectionType, StudentClassType, TranscriptType } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -220,7 +220,7 @@ const Page = () => {
             <tbody>
               {majors.map((major, index) => (
                 <tr key={index}>
-                  <td className=" bg-grey p-1 flex justify-between p-2">
+                  <td className=" bg-grey  flex justify-between p-2">
                     <>
                       <Link
                         className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"

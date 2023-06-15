@@ -57,7 +57,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     courses: AddCourse2Type[];
     num: number;
     handleDelete: any;
-  }> = ({ perms, courses, num, handleDelete }) => {
+  }> = ({  courses, num, handleDelete }) => {
     return (
       <>
         {courses.map((item, index) => {
@@ -157,7 +157,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       };
       fetchPosts();
     }
-  }, [params.id, user?.id, loadCourses]);
+  }, [params.id, user, loadCourses]);
 
   const handleDelete = (id: number) => {
     const data = { item_name: id };
