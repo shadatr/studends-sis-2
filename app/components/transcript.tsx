@@ -127,7 +127,6 @@ const [transcript, setTranscript] = useState<TranscriptType[]>([]);
         }
       }
     });
-    console.log(updatedStudentCourses);
     setStudentCourses(updatedStudentCourses);
   }, [refresh]);
 

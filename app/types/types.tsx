@@ -44,11 +44,11 @@ export type RegisterStudent2Type = {
   birth_date: string;
   email: string;
   password: string;
-  major?: number;
-  phone?: string;
-  address?: string;
-  enrollment_date?: string;
-  semester?: number;
+  major: number;
+  phone: string;
+  address: string;
+  enrollment_date: string;
+  semester: number;
   advisor?: number;
 };
 

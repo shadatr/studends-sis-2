@@ -25,20 +25,40 @@ const doctorInfo: PersonalInfoHeaderType[] = [
 
 const page = ({ params }: { params: { id: number } }) => {
   const [useMyData, useSetMydata] = useState<PersonalInfoType[]>([]);
+  const [newData, setNewData] = useState<PersonalInfoType[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
   const [checked, setChecked] = useState<number[]>([]); // Change to an array
   const [perms, setPerms] = useState<GetPermissionDoctorType[]>([]);
   const [refresh, setRefresh] = useState(false);
+  const [edit, setEdit] = useState(false);
+
 
   useEffect(() => {
     const fetchPosts = async () => {
-        const response = await axios.get(`/api/allPermission/${"doctor"}`);
-        const message: AssignPermissionType[] = response.data.message;
-        setCheckList(message);
+        const responsePer = await axios.get(`/api/allPermission/${"doctor"}`);
+        const messagePer: AssignPermissionType[] = responsePer.data.message;
+        setCheckList(messagePer);
+        
+        axios.get(`/api/personalInfo/doctor/${params.id}`).then((resp) => {
+          const message: PersonalInfoType[] = resp.data.message;
+          useSetMydata(message);
+          setNewData(message);
+        });
+        axios.get(`/api/personalInfo/doctor/${params.id}`).then((resp) => {
+          console.log(resp.data);
+          const message: PersonalInfoType[] = resp.data.message;
+          useSetMydata(message);
+        });
+
+        const response = await axios.get(
+          `/api/allPermission/doctor/selectedPerms/${params.id}`
+        );
+        const message: GetPermissionDoctorType[] = response.data.message;
+        setPerms(message);
         console.log(message);
     };
     fetchPosts();
-  }, [refresh]);
+  }, [refresh, edit, params.id]);
 
   const handleCheck = (item: AssignPermissionType) => {
     const checkedIndex = checked.indexOf(item.id);
@@ -51,18 +71,6 @@ const page = ({ params }: { params: { id: number } }) => {
     }
   };
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await axios.get(
-        `/api/allPermission/doctor/selectedPerms/${params.id}`
-      );
-      const message: GetPermissionDoctorType[] = response.data.message;
-      setPerms(message);
-      console.log(message);
-    };
-
-    fetchPosts();
-  }, [params.id, refresh]);
 
   const selected: AssignPermissionType[] = perms.flatMap((item) =>
     checkList
@@ -96,141 +104,248 @@ const page = ({ params }: { params: { id: number } }) => {
     });
   };
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      axios.get(`/api/personalInfo/doctor/${params.id}`).then((resp) => {
-        const message: PersonalInfoType[] = resp.data.message;
-        useSetMydata(message);
-      });
-    };
 
-    fetchPosts();
-  }, [params.id]);
+   const handleInputChange = (e: string, field: keyof PersonalInfoType) => {
+     const updatedData = newData.map((data) => {
+       console.log('Submitted gradesssss:', newData);
+       return {
+         ...data,
+         [field]: e,
+       };
+     });
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      axios.get(`/api/personalInfo/doctor/${params.id}`).then((resp) => {
-        console.log(resp.data);
-        const message: PersonalInfoType[] = resp.data.message;
-        useSetMydata(message);
-      });
-    };
+     setNewData(updatedData);
+   };
 
-    fetchPosts();
-  }, [params.id]);
+   const handleSubmitInfo = () => {
+     setEdit(false);
+     console.log('Submitted grades:', newData);
+     axios
+       .post(`/api/personalInfo/edit/${params.id}/editDoctor`, newData)
+       .then(() => {
+         toast.success('تم تحديث البيانات بنجاح');
+       })
+       .catch((error) => {
+         console.error(error);
+         toast.error('حدث خطأ أثناء تحديث البيانات');
+       });
+   };
 
 
   return (
-    <>
-      <div className="flex absolute text-sm w-[80%] justify-center items-center flex-col m-10">
+    <div className="flex absolute text-sm w-[80%] justify-center items-center flex-col m-10">
+      <div>
         <Link
-          className="bg-green-700 hover:bg-green-600 px-5 py-1 rounded-md text-white"
+          className="m-5 bg-green-800 hover:bg-green-600  text-secondary p-3 rounded-md w-[200px]"
           href={`/management/doctors/students/${params.id}`}
-        >الاشراف علي الطلاب</Link>
-        <table className="flex text-sm w-[800px] ">
-          <tbody className="w-full">
-            {useMyData.map((item, index) => (
-              <tr key={index} className="flex flex-col">
-                <td className="p-2">{item.name}</td>
-                <td className="p-2">{item.surname}</td>
-                <td className="p-2">{item.birth_date}</td>
-                <td className="p-2">{item.major}</td>
-                <td className="p-2">{item.address}</td>
-                <td className="p-2">{item.phone}</td>
-                <td className="p-2">{item.email}</td>
-                <td className="p-2">{item.enrollment_date}</td>
-              </tr>
+        >
+          الاشراف علي الطلاب
+        </Link>
+        <button
+          className="m-5 bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
+          type="submit"
+          onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
+        >
+          {edit ? 'ارسال' : 'تعديل'}
+        </button>
+      </div>
+      <table className="flex-row-reverse flex text-sm  border-collapse">
+        <thead>
+          <tr className="">
+            {doctorInfo.map((title, index) => (
+              <th
+                className="flex p-2 justify-end bg-darkBlue text-secondary"
+                key={index}
+              >
+                {title.header}
+              </th>
             ))}
-          </tbody>
-          <thead className="w-1/4 bg-darkBlue text-secondary">
-            <tr>
-              {doctorInfo.map((title, index) => (
-                <td
-                  className="flex justify-center p-2 items-center text-right"
-                  key={index}
-                >
-                  {title.header}
-                </td>
-              ))}
-            </tr>
-          </thead>
-        </table>
-        <div>
-          <table className="border-collapse mt-8 w-[800px]">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="border border-gray-300 px-4 py-2">حذف </th>
-                <th className="border border-gray-300 px-4 py-2">
-                  ايقاف/تفعيل
-                </th>
-                <th className="border border-gray-300 px-4 py-2">
-                  اسم الصلاحية
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {selected.map((user, index) => (
-                <tr
-                  key={index}
-                  className={index % 2 === 0 ? 'bg-gray-100' : ''}
-                >
-                  <td className="border-none h-full px-4 py-2 flex justify-end items-center">
-                    <BsXCircleFill
-                      onClick={() => handleDelete(user.id, params.id)}
-                    />
+          </tr>
+        </thead>
+        <tbody className="">
+          {edit
+            ? newData.map((item2) =>
+                useMyData.map((item, index) => (
+                  <tr key={index}>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.name}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'name')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.surname}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'surname')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.birth_date}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'birth_date')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.major}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'major')
+                        }
+                      />
+                    </td>
+
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.address}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'address')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.phone}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'phone')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.email}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'email')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.enrollment_date}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'enrollment_date')
+                        }
+                      />
+                    </td>
+                  </tr>
+                ))
+              )
+            : useMyData.map((item, index) => (
+                <tr key={index}>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.name}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    <button
-                      onClick={() => {
-                        handleActivate(user.id, params.id, !user.active);
-                      }}
-                      className={`w-[50px]  text-white py-1 px-2 rounded ${
-                        user.active
-                          ? 'bg-red-500 hover:bg-red-600'
-                          : 'bg-green-600 hover:bg-green-700'
-                      }`}
-                    >
-                      {user.active ? 'ايقاف' : 'تفعيل'}
-                    </button>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.surname}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {user.name}
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.birth_date}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.major}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.address}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.phone}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.email}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.enrollment_date}
                   </td>
                 </tr>
               ))}
-            </tbody>
-          </table>
-          <form onSubmit={handleSubmit} className="p-10 w-[400px] ">
-            <h1 className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary">
-              اختر الصلاحيات
-            </h1>
-            <div className="p-1 rounded-md">
-              {checkList.map((item, index) => (
-                <div
-                  className="bg-lightBlue flex justify-between  "
-                  key={index}
-                >
-                  <input
-                    className="p-2 ml-9"
-                    value={item.name}
-                    type="checkbox"
-                    onChange={() => handleCheck(item)} // Pass the item to handleCheck
-                    checked={checked.includes(item.id)} // Check if the item is in the checked list
+        </tbody>
+      </table>
+      <div>
+        <table className="border-collapse mt-8 w-[800px]">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="border border-gray-300 px-4 py-2">حذف </th>
+              <th className="border border-gray-300 px-4 py-2">ايقاف/تفعيل</th>
+              <th className="border border-gray-300 px-4 py-2">اسم الصلاحية</th>
+            </tr>
+          </thead>
+          <tbody>
+            {selected.map((user, index) => (
+              <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
+                <td className="border-none h-full px-4 py-2 flex justify-end items-center">
+                  <BsXCircleFill
+                    onClick={() => handleDelete(user.id, params.id)}
                   />
-                  <label className="pr-5">{item.name}</label>
-                </div>
-              ))}
-            </div>
-            <button
-              type="submit"
-              className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary"
-            >
-              اضافة
-            </button>
-          </form>
-        </div>
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  <button
+                    onClick={() => {
+                      handleActivate(user.id, params.id, !user.active);
+                    }}
+                    className={`w-[50px]  text-white py-1 px-2 rounded ${
+                      user.active
+                        ? 'bg-red-500 hover:bg-red-600'
+                        : 'bg-green-600 hover:bg-green-700'
+                    }`}
+                  >
+                    {user.active ? 'ايقاف' : 'تفعيل'}
+                  </button>
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {user.name}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <form onSubmit={handleSubmit} className="p-10 w-[400px] ">
+          <h1 className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary">
+            اختر الصلاحيات
+          </h1>
+          <div className="p-1 rounded-md">
+            {checkList.map((item, index) => (
+              <div className="bg-lightBlue flex justify-between  " key={index}>
+                <input
+                  className="p-2 ml-9"
+                  value={item.name}
+                  type="checkbox"
+                  onChange={() => handleCheck(item)} // Pass the item to handleCheck
+                  checked={checked.includes(item.id)} // Check if the item is in the checked list
+                />
+                <label className="pr-5">{item.name}</label>
+              </div>
+            ))}
+          </div>
+          <button
+            type="submit"
+            className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary"
+          >
+            اضافة
+          </button>
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 

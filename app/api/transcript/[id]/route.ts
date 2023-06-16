@@ -14,8 +14,7 @@ export async function GET(
       .from('tb_transcript')
       .select('*')
       .eq('student_id', params.id);
-    console.log(data.data);
-    console.log(data.error?.message);
+ 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
@@ -29,9 +28,6 @@ export async function GET(
 export async function POST(request: Request) {
   const data: TranscriptType = await request.json();
 
-    const res = await supabase.from('tb_transcript').insert([data]);
-    
-    console.log(res);
-
-    
+    await supabase.from('tb_transcript').insert([data]);
+      
 }

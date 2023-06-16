@@ -186,7 +186,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   return (
     <div className="flex absolute flex-col w-[90%] justify-center items-center">
       <form onSubmit={(e) => e.preventDefault()}>
-      {perms.map((item, idx) =>
+      {perms.map((item) =>
        {
         if (item.permission_id === 21 && item.active){
           return (
@@ -254,7 +254,7 @@ const Page = ({ params }: { params: { id: number } }) => {
           </thead>
           <tbody>
             {students.map((user, index) => 
-              perms.map((item, idx) => {
+              perms.map((item) => {
               const Class= classes.find((Class)=> Class.id== user.class_id );
               const student = studentsNames.find(
                 (student) => student.id === user.student_id

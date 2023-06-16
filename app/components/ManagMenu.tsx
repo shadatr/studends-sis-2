@@ -3,7 +3,6 @@ import Link from 'next/link';
 
 import { MenuItemType } from '../types/types';
 
-
 const item: MenuItemType[] = [
   { id: 1, link: 'announcements', name: 'الإعلانات' },
   { id: 2, link: 'students', name: 'الطلاب' },
@@ -13,29 +12,25 @@ const item: MenuItemType[] = [
   { id: 6, link: 'facultiesAndMajors', name: ' الكليات و التخصصات' },
 ];
 
-
 function ManagMenu() {
-  const data = item.map((i) => (
-    <tr key={i.id}>
-      <td className="flex p-5 items-center justify-center hover:text-[23px] hover:text-cyan-300">
-        <Link
-          href={`/management/${i.link}`}
-          className="flex justify-between items-center p-1   "
-          key={i.id}
-        >
-          {i.name}
-        </Link>
-      </td>
-    </tr>
-  ));
-
-    return (
-      <div className="  flex justify-end  text-sm ">
-        <table className=" text-sm flex flex-col mt-[150px] w-[260px] bg-darkBlue text-white ">
-          {data}
-        </table>
-      </div>
-    );
+  return (
+    <div className="flex justify-end items-center h-screen text-sm">
+      <table className="w-[260px]  bg-darkBlue text-white">
+        <tbody className="text-sm ">
+          <tr className="flex flex-col">
+            {item.map((item, index) => (
+              <td
+                key={index}
+                className="w-full h-[80px] p-3 flex items-center justify-center hover:text-cyan-300"
+              >
+                <Link href={`/management/${item.link}`}>{item.name}</Link>
+              </td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 export default ManagMenu;

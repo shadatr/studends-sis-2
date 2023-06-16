@@ -13,7 +13,6 @@ import { BsXCircleFill } from 'react-icons/bs';
 import Link from 'next/link';
 import Transcript from '@/app/components/transcript';
 
-
 const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'الاسم' },
   { header: 'اللقب' },
@@ -29,20 +28,21 @@ const stuInfo: PersonalInfoHeaderType[] = [
 
 const Page = ({ params }: { params: { id: number } }) => {
   const [useMyData, setMydata] = useState<RegisterStudent2Type[]>([]);
+  const [newData, setNewData] = useState<RegisterStudent2Type[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
   const [checked, setChecked] = useState<number[]>([]); // Change to an array
   const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
   const [refresh, setRefresh] = useState(false);
-    const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
-
+  const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
+  const [edit, setEdit] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {
+
       try {
         const response = await axios.get('/api/allPermission/student');
         const message: AssignPermissionType[] = response.data.message;
         setCheckList(message);
-        console.log(message);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -52,21 +52,20 @@ const Page = ({ params }: { params: { id: number } }) => {
       );
       const message: GetPermissionStudentType[] = response.data.message;
       setPerms(message);
-      console.log(message);
 
       axios.get(`/api/personalInfo/student/${params.id}`).then((resp) => {
         const message: RegisterStudent2Type[] = resp.data.message;
         setMydata(message);
+        setNewData(message);
       });
 
       axios.get('/api/getAll/getDoctorsHeadOfDep').then((res) => {
-        console.log(res.data);
         const message: InfoDoctorType[] = res.data.message;
         setDoctors(message);
       });
     };
     fetchPosts();
-  }, [refresh, params.id]);
+  }, [refresh, params.id,edit]);
 
   const handleCheck = (item: AssignPermissionType) => {
     const checkedIndex = checked.indexOf(item.id);
@@ -114,6 +113,32 @@ const Page = ({ params }: { params: { id: number } }) => {
     });
   };
 
+  const handleInputChange = (e: string, field: keyof RegisterStudent2Type) => {
+    const updatedData = newData.map((data) => {
+      console.log('Submitted gradesssss:', newData);
+      return {
+        ...data,
+        [field]: e,
+      };
+    });
+
+    setNewData(updatedData);
+  };
+
+  const handleSubmitInfo = () => {
+    setEdit(false);
+    console.log('Submitted grades:', newData);
+    axios
+      .post(`/api/personalInfo/edit/${params.id}/editStudent`, newData)
+      .then(() => {
+        toast.success('تم تحديث البيانات بنجاح');
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error('حدث خطأ أثناء تحديث البيانات');
+      });
+  };
+
   return (
     <div className="absolute flex justify-center items-center w-[80%] flex-col m-10">
       <div className="flex flex-row ">
@@ -123,7 +148,14 @@ const Page = ({ params }: { params: { id: number } }) => {
         >
           مواد و درجات الطالب
         </Link>
-      </div>
+      <button
+        className="m-5  bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
+        type="submit"
+        onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
+        >
+        {edit ? 'ارسال' : 'تعديل'}
+      </button>
+        </div>
       <table className="flex-row-reverse flex text-sm  border-collapse">
         <thead>
           <tr className="">
@@ -138,30 +170,144 @@ const Page = ({ params }: { params: { id: number } }) => {
           </tr>
         </thead>
         <tbody className="">
-          {useMyData.map((item, index) => (
-            <tr key={index}>
-              <td className="flex w-[700px] p-2 justify-end">{item.name}</td>
-              <td className="flex w-[700px] p-2 justify-end">{item.surname}</td>
-              <td className="flex w-[700px] p-2 justify-end">
-                {item.birth_date}
-              </td>
-              <td className="flex w-[700px] p-2 justify-end">{item.major}</td>
-              <td className="flex w-[700px] p-2 justify-end">
-                {item.semester}
-              </td>
-              <td className="flex w-[700px] p-2 justify-end">{item.address}</td>
-              <td className="flex w-[700px] p-2 justify-end">{item.phone}</td>
-              <td className="flex w-[700px] p-2 justify-end">{item.email}</td>
-              <td className="flex w-[700px] p-2 justify-end">
-                {item.enrollment_date}
-              </td>
-              <td className="flex w-[700px] p-2 justify-end">
-                {item.advisor
-                  ? doctors.find((doc) => item.advisor == doc.id)?.name
-                  : 'لا يوجد'}
-              </td>
-            </tr>
-          ))}
+          {edit
+            ? newData.map((item2) =>
+                useMyData.map((item, index) => (
+                  <tr key={index}>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.name}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'name')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.surname}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'surname')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.birth_date}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'birth_date')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.major}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'major')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.semester}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'semester')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.address}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'address')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.phone}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'phone')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.email}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'email')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
+                        type="text"
+                        value={item2.enrollment_date}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'enrollment_date')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      {item.advisor
+                        ? doctors.find((doc) => item.advisor == doc.id)?.name
+                        : 'لا يوجد'}
+                    </td>
+                  </tr>
+                ))
+              )
+            : useMyData.map((item, index) => (
+                <tr key={index}>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.name}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.surname}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.birth_date}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.major}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.semester}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.address}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.phone}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.email}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.enrollment_date}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.advisor
+                      ? doctors.find((doc) => item.advisor == doc.id)?.name
+                      : 'لا يوجد'}
+                  </td>
+                </tr>
+              ))}
         </tbody>
       </table>
       <div>

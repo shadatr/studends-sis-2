@@ -42,7 +42,7 @@ const Page = () => {
   }, []);
 
   return (
-    <div className="w-[80%] flex flex-col fixed justify-end pt-20">
+    <div className="w-[80%] flex flex-col absolute justify-end pt-20">
       {perms.map((item, index) =>
         item.permission_id == 9 && item.active ? (
           <Link
