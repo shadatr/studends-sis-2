@@ -1,5 +1,6 @@
-import { ClassesType } from '@/app/types/types';
-import { createClient } from '@supabase/supabase-js';
+import { ClassesType, Section2Type } from '@/app/types/types';
+import { createClient, PostgrestResponse } from '@supabase/supabase-js';
+
 const supabase = createClient(
   process.env.SUPABASE_URL || '',
   process.env.SUPABASE_KEY || ''
@@ -19,19 +20,43 @@ export async function GET(
     const messageData = parsedData.data;
     const data3: ClassesType[] = messageData;
 
-  const sectionIds = data3.map((item) => item.section_id);
+    const sections: Section2Type[] = [];
 
-  const data2 = await supabase
-  .from('tb_section')
-  .select('*')
-  .in('id', sectionIds);
+    await Promise.all(
+      data3.map(async (item) => {
+        const response: PostgrestResponse<{ [key: string]: any }> =
+          await supabase
+            .from('tb_section')
+            .select('*')
+            .in('id', [item.section_id]);
+
+        const data2: { [key: string]: any }[] = response.data || [];
+
+        data2.forEach((sectionData) => {
+          const section: Section2Type = {
+            class_id: item.id,
+            id: sectionData.id,
+            course_id: sectionData.course_id,
+            name: sectionData.name,
+            max_students: sectionData.max_students,
+            students_num: sectionData.students_num,
+          };
+          sections.push(section);
+        });
+      })
+    );
 
     if (data.error) {
-      return new Response(JSON.stringify({ message: 'an error occured' }), {
+      return new Response(JSON.stringify({ message: 'An error occurred' }), {
         status: 403,
       });
     }
 
-    return new Response(JSON.stringify({ message: data2.data }));
-  } catch {}
+    return new Response(JSON.stringify({ message: sections }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    console.error(error);
+    return new Response(null, { status: 500 });
+  }
 }

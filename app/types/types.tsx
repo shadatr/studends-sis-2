@@ -188,6 +188,7 @@ export type DoctorsWithDepartmentsType = {
   surname: string;
   doctorSince: string;
   email: string;
+  major: string;
   department: {
       created_at: string | null;
       id: number;
@@ -236,6 +237,14 @@ export type CheckedType={
 }
 
 export type SectionType = {
+  id?: number;
+  name?: string;
+  course_id?: number;
+  max_students: number;
+  students_num: number;
+};
+export type Section2Type = {
+  class_id?:number,
   id?: number;
   name?: string;
   course_id?: number;
@@ -371,6 +380,7 @@ export type DoctorCourse2Type = {
     course_id?: number;
     max_students: number;
     students_num: number;
+    class_id?:number;
   };
 };
 
@@ -380,3 +390,15 @@ export type TranscriptType={
   semester:number;
   gpa: number;
 }
+
+export type DayOfWeekType = {
+  name: string;
+  day: string;
+};
+
+export type CourseProgramType = {
+  id?: number;
+  student_id: number;
+  semester: number;
+  gpa: number;
+};

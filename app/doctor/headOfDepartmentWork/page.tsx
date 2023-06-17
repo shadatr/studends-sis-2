@@ -211,6 +211,12 @@ const Page = () => {
           >
             ارسال المجموع النهائي في جميع التخصصات
           </button>
+          <Link
+            className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"
+            href={`/doctor/headOfDepartmentWork/doctors`}
+          >
+            الدكاترة
+          </Link>
           <table className="w-[800px]">
             <thead>
               <tr>
@@ -228,6 +234,7 @@ const Page = () => {
                       >
                         المواد
                       </Link>
+
                       <Link
                         className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"
                         href={`/doctor/headOfDepartmentWork/majorStudents/${major.id}`}

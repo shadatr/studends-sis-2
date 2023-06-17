@@ -23,63 +23,63 @@ const Tabs = ({ params }: { params: { idSec: number; idClass: number } }) => {
   const [selectedDoctor, setSelectedDoctor] = useState<string>();
   const [load, setLoad] = useState(true);
 
-
-
   useEffect(() => {
-    if(typeof window !== 'undefined'){
-    const fetchdata = async () => {
-      const responseClass = await axios.get(
-        `/api/getAll/getAllClasses/${params.idSec}`
-      );
-      const messageClass: ClassesType[] = responseClass.data.message;
-      messageClass.map((item) => {
-        setDoctorId(item.doctor_id);
-      });
-      setClasses(messageClass);
+    if (typeof window !== 'undefined') {
+      const fetchdata = async () => {
+        const responseClass = await axios.get(
+          `/api/getAll/getAllClasses/${params.idSec}`
+        );
+        const messageClass: ClassesType[] = responseClass.data.message;
+        messageClass.map((item) => {
+          setDoctorId(item.doctor_id);
+        });
+        setClasses(messageClass);
 
-      const responseSec = await axios.get(
-        `/api/getAll/getAllSections/${params.idClass}`
-      );
-      const messageSec: SectionType[] = responseSec.data.message;
-      messageSec.map((item) => {
-        if (item.id == params.idSec) setSectionName(item.name);
-        setCourseId(item.course_id);
-        setSectionId(params.idSec);
-      });
+        const responseSec = await axios.get(
+          `/api/getAll/getAllSections/${params.idClass}`
+        );
+        const messageSec: SectionType[] = responseSec.data.message;
+        messageSec.map((item) => {
+          if (item.id == params.idSec) setSectionName(item.name);
+          setCourseId(item.course_id);
+          setSectionId(params.idSec);
+        });
 
-      const responseCourse = await axios.get(
-        `/api/course/courses/courseSection`
-      );
-      const messageCourse: CourseType[] = responseCourse.data.message;
-      setCourses(messageCourse);
-    };
-    fetchdata();}
+        const responseCourse = await axios.get(
+          `/api/course/courses/courseSection`
+        );
+        const messageCourse: CourseType[] = responseCourse.data.message;
+        setCourses(messageCourse);
+      };
+      fetchdata();
+    }
   }, [load, params.idClass, params.idSec]);
 
   useEffect(() => {
-    if(typeof window !== 'undefined'){
-    const fetchPosts = async () => {
-      const responseDoctor = await axios.get(`/api/getAll/doctor`);
-      const messageDoctor: PersonalInfoType[] = responseDoctor.data.message;
-      setDoctors(messageDoctor);
-      messageDoctor.map((item) => {
-        if (item.id == doctorId) {
-          setDoctorName(item.name);
-        }
-        if (item.name == selectedDoctor) {
-          setSelectedDoctorId(item.id);
-        }
-      });
-    };
+    if (typeof window !== 'undefined') {
+      const fetchPosts = async () => {
+        const responseDoctor = await axios.get(`/api/getAll/doctor`);
+        const messageDoctor: PersonalInfoType[] = responseDoctor.data.message;
+        setDoctors(messageDoctor);
+        messageDoctor.map((item) => {
+          if (item.id == doctorId) {
+            setDoctorName(item.name);
+          }
+          if (item.name == selectedDoctor) {
+            setSelectedDoctorId(item.id);
+          }
+        });
+      };
 
-    fetchPosts();}
+      fetchPosts();
+    }
   }, [selectedDoctor, load, doctors, doctorId]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedDoctor) return;
 
-    const data ={
+    const data: ClassesType = {
       doctor_id: selectedDoctorId,
       section_id: sectionId,
     };

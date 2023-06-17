@@ -28,8 +28,9 @@ export async function GET() {
       id: doctor.id,
       name: doctor.name,
       surname: doctor.surname,
-      doctorSince : doctor.enrollment_date,
-      email : doctor.email,
+      doctorSince: doctor.enrollment_date,
+      email: doctor.email,
+      major: doctor.major,
       department: department,
     };
   });
