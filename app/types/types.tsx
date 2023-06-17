@@ -394,6 +394,7 @@ export type DayOfWeekType = {
 };
 
 export type CourseProgramType = {
+  id?: number;
   class_id: number;
   day: string;
   starts_at: number;

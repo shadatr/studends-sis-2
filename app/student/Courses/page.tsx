@@ -6,7 +6,7 @@ import {
   AddCourse2Type,
   ClassesType,
   PersonalInfoType,
-  SectionType,
+  Section2Type,
   StudentClassType,
   StudentCourse2Type,
 } from '@/app/types/types';
@@ -21,7 +21,7 @@ const Page = () => {
 
   const [courses, setCourses] = useState<AddCourse2Type[]>([]);
   const [studentCourses, setStudentCourses] = useState<StudentCourse2Type[]>([]);
-  const [sections, setSections] = useState<SectionType[]>([]);
+  const [sections, setSections] = useState<Section2Type[]>([]);
   const [classes, setClasses] = useState<ClassesType[]>([]);
   const [courseEnrollments, setCourseEnrollments] = useState<StudentClassType[]>([]);
   const [refresh, setRefresh] = useState(false);
@@ -71,7 +71,7 @@ const Page = () => {
           const responseReq = await axios.get(
             `/api/getAll/getSpecificSection/${course.section_id}`
           );
-          const { message: secMessage }: { message: SectionType[] } =
+          const { message: secMessage }: { message: Section2Type[] } =
             responseReq.data;
           return secMessage;
         });

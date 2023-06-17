@@ -148,14 +148,19 @@ const Page = ({ params }: { params: { id: number } }) => {
         >
           مواد و درجات الطالب
         </Link>
-      <button
-        className="m-5  bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
-        type="submit"
-        onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
+        <Link
+          href={`/management/personalInformation/student/${params.id}/courseProg`}
         >
-        {edit ? 'ارسال' : 'تعديل'}
-      </button>
-        </div>
+          جدول المحاضرات
+        </Link>
+        <button
+          className="m-5  bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
+          type="submit"
+          onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
+        >
+          {edit ? 'ارسال' : 'تعديل'}
+        </button>
+      </div>
       <table className="flex-row-reverse flex text-sm  border-collapse">
         <thead>
           <tr className="">
