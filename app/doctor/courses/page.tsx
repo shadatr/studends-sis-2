@@ -7,7 +7,6 @@ import {
   SectionType,
   DoctorCourse2Type,
 } from '@/app/types/types';
-import Link from 'next/link';
 
 const Page = () => {
   const session = useSession({ required: true });
@@ -77,7 +76,7 @@ const Page = () => {
     });
 
     setDoctorCourses(updatedStudentCourses);
-  }, [refresh]);
+  }, [courses, refresh, sections]);
 
   return (
     <div className="absolute w-[80%] flex flex-col text-sm p-10 justify-content items-center ">

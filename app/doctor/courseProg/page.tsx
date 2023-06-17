@@ -6,7 +6,6 @@ import {
   AddCourse2Type,
   Section2Type,
   DoctorCourse2Type,
-  DayOfWeekType,
   CourseProgramType,
   CheckedType,
 } from '@/app/types/types';
@@ -92,7 +91,7 @@ const user = session.data?.user;
     };
 
     fetchData();
-  }, [user]);
+  }, [refresh, user]);
 
   useEffect(() => {
     const updatedStudentCourses: DoctorCourse2Type[] = [];
@@ -112,7 +111,7 @@ const user = session.data?.user;
     });
 
     setDoctorCourses(updatedStudentCourses);
-  }, [refresh]);
+  }, [courses, refresh, sections]);
 
  
 

@@ -115,7 +115,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     };
 
     fetchData();
-  }, [params]);
+  }, [params, refresh]);
 
   useEffect(() => {
     const updatedStudentCourses: DoctorCourse2Type[] = [];
@@ -135,7 +135,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     });
 
     setDoctorCourses(updatedStudentCourses);
-  }, [refresh]);
+  }, [courses, refresh, sections]);
 
   const handleSubmit = () => {
     if (!(selectedDay && selectedCourse && selectedStartHour && selectedEndHour&&location)){

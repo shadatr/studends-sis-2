@@ -3,9 +3,6 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import {
-  AddCourse2Type,
-  DoctorCourse2Type,
-  StudentCourse2Type,
   ClassesType,
   CourseProgramType,
   CheckedType,
@@ -100,7 +97,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     };
 
     fetchData();
-  }, [ user]);
+  }, [params.id, refresh, user]);
  
   
 

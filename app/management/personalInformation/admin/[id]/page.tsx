@@ -6,7 +6,6 @@ import { AssignPermissionType, GetPermissionType, PersonalInfoHeaderType, Person
 import { BsXCircleFill } from 'react-icons/bs';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
 
 
 const doctorInfo: PersonalInfoHeaderType[] = [

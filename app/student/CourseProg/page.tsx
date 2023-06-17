@@ -3,15 +3,10 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import {
-  AddCourse2Type,
-  DoctorCourse2Type,
-  DayOfWeekType,
-  StudentCourse2Type,
   ClassesType,
   CourseProgramType,
   CheckedType,
   StudentClassType,
-  PersonalInfoType,
   Section2Type,
 } from '@/app/types/types';
 
@@ -39,17 +34,10 @@ const Page = () => {
   }
 
   const user = session.data?.user;
-
-  const [courses, setCourses] = useState<AddCourse2Type[]>([]);
-  const [doctorCourses, setDoctorCourses] = useState<DoctorCourse2Type[]>([]);
   const [sections, setSections] = useState<Section2Type[]>([]);
   const [programClass, setProgramClass] = useState<CourseProgramType[]>([]);
   const [classes, setClasses] = useState<ClassesType[]>([]);
-  const [courseEnrollments, setCourseEnrollments] = useState<
-    StudentClassType[]
-  >([]);
   const [refresh, setRefresh] = useState(false);
-  // const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,7 +48,6 @@ const Page = () => {
           );
           const messageCourseEnroll: StudentClassType[] =
             responseCourseEnroll.data.message;
-          setCourseEnrollments(messageCourseEnroll);
 
           const classPromises = messageCourseEnroll.map(async (Class) => {
             const responseReq = await axios.get(
@@ -103,18 +90,6 @@ const Page = () => {
           setProgramClass(programClass);
  
 
-          const coursesPromises = sections.map(async (section) => {
-            const responseReq = await axios.get(
-              `/api/getAll/getSpecificCourse/${section.course_id}`
-            );
-            const { message: courseMessage }: { message: AddCourse2Type[] } =
-              responseReq.data;
-            return courseMessage;
-          });
-
-          const courseData = await Promise.all(coursesPromises);
-          const courses = courseData.flat();
-          setCourses(courses);
         } catch (error) {
           console.error('Error fetching data:', error);
         }
@@ -123,39 +98,9 @@ const Page = () => {
     };
 
     fetchData();
-  }, [user]);
+  }, [refresh, user]);
 
 
-  useEffect(() => {
-    const updatedStudentCourses: StudentCourse2Type[] = [];
-
-    courseEnrollments.map((course) => {
-      const studenClass = classes.find((Class) => Class.id == course.class_id);
-
-      const studentSection = sections.find(
-        (sec) => sec.id == studenClass?.section_id
-      );
-
-
-      const studentCourse = courses.find(
-        (course) => course.id == studentSection?.course_id
-      );
-
-      if (studentCourse) {
-        if (course.approved) {
-          const data = {
-            course: studentCourse,
-            section: studentSection,
-          };
-          updatedStudentCourses.push(data);
-          console.log(updatedStudentCourses);
-        }
-      }
-    });
-
-    
-    setDoctorCourses(updatedStudentCourses);
-  }, [refresh]);
 
   return (
     <div className="absolute w-[80%] flex flex-col text-sm p-10 justify-content items-center">
