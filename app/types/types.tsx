@@ -256,9 +256,6 @@ export type ClassesType = {
   id?: number;
   doctor_id?: number;
   section_id?: number;
-  location?: string;
-  start_time?: string;
-  duration?: string;
   class_work?: number;
   midterm?: number;
   final?: number;
@@ -397,8 +394,9 @@ export type DayOfWeekType = {
 };
 
 export type CourseProgramType = {
-  id?: number;
-  student_id: number;
-  semester: number;
-  gpa: number;
+  class_id: number;
+  day: string;
+  starts_at: number;
+  ends_at: number;
+  location:string;
 };

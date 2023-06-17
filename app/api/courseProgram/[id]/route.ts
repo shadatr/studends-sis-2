@@ -12,8 +12,7 @@ export async function POST(request: Request) {
 
   try {
     const res = await supabase.from('tb_course_program').insert([data]);
- 
-
+    console.log(res.error?.message);
 
     return new Response(JSON.stringify({ message: 'تم تسجيل المحاضرة بنجاح' }), {
       headers: { 'content-type': 'application/json' },
@@ -27,10 +26,10 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request, { params }: { params: { id: number } }) {
   try {
-    const data = await supabase.from('tb_course_program').select('*');
-    console.log(data.data);
+    const data = await supabase.from('tb_course_program').select('*').eq('class_id', params.id);
+    
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
