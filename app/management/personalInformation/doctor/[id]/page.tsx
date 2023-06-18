@@ -141,6 +141,12 @@ const page = ({ params }: { params: { id: number } }) => {
         >
           الاشراف علي الطلاب
         </Link>
+        <Link
+          className="m-5 bg-green-800 hover:bg-green-600  text-secondary p-3 rounded-md w-[200px]"
+          href={`/management/personalInformation/doctor/${params.id}/coursesAndCourseProg`}
+        >
+          المواد و جدول المحاضرات
+        </Link>
         <button
           className="m-5 bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
           type="submit"
