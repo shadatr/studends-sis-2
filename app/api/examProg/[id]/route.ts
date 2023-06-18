@@ -36,7 +36,7 @@ export async function GET(
     const data = await supabase
       .from('tb_exam_program')
       .select('*')
-      .eq('course_id', params.id);
+      .eq('course_id', params.id).order('date', { ascending: true });
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {

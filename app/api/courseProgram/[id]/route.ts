@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request, { params }: { params: { id: number } }) {
   try {
-    const data = await supabase.from('tb_course_program').select('*').eq('class_id', params.id).order('date', { ascending: true });
+    const data = await supabase.from('tb_course_program').select('*').eq('class_id', params.id);
     
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {

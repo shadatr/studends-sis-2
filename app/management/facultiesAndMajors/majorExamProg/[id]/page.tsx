@@ -4,6 +4,7 @@ import React, {useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
   AddCourse2Type,
+  GetPermissionType,
   ExamProgramType,
 } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
@@ -16,12 +17,15 @@ import 'react-clock/dist/Clock.css';
 import { BsXCircleFill } from 'react-icons/bs';
 
 
+
+
 const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });
-  if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
+  if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
     throw new Error('Unauthorized');
   }
   const user = session.data?.user;
+  const [perms, setPerms] = useState<GetPermissionType[]>([]);
   const [courses, setCourses] = useState<AddCourse2Type[]>([]);
   const [examProg, setExamProg] = useState<ExamProgramType[]>([]);
   const [selectedCourse, setSelecetedCourse] = useState<string>();
@@ -51,7 +55,13 @@ const Page = ({ params }: { params: { id: number } }) => {
             const programClass = progClassData.flat();
             setExamProg(programClass);
           });
-        
+        if (user) {
+          const response = await axios.get(
+            `/api/allPermission/doctor/selectedPerms/${user?.id}`
+          );
+          const message: GetPermissionType[] = response.data.message;
+          setPerms(message);
+        }
       };
       fetchPosts();
     }
@@ -142,13 +152,13 @@ console.log(selecetedDay.toLocaleString());
           onChange={(e) => setLocation(e.target.value)}
         />
         <div>
-          <input
-            dir="rtl"
-            placeholder=" الفترة "
-            type="text"
-            className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-            onChange={(e) => setDuration(e.target.value)}
-          />
+        <input
+          dir="rtl"
+          placeholder=" الفترة "
+          type="text"
+          className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+          onChange={(e) => setDuration(e.target.value)}
+        />
         </div>
         <TimePicker
           locale="ar"
@@ -172,7 +182,7 @@ console.log(selecetedDay.toLocaleString());
           className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
           defaultValue=""
         >
-          <option disabled value="">
+          <option disabled  value="">
             المادة
           </option>
           {courses.map((course, index) => (
@@ -203,7 +213,9 @@ console.log(selecetedDay.toLocaleString());
                 <td className="py-2 px-4 border-b">
                   <BsXCircleFill onClick={() => handleDelete(item)} />
                 </td>
-                <td className="py-2 px-4 border-b">{item.location}</td>
+                <td className="py-2 px-4 border-b">
+                  {item.location}
+                </td>
                 <td className="py-2 px-4 border-b">{item.duration}</td>
                 <td className="py-2 px-4 border-b">{item.hour}</td>
                 <td className="py-2 px-4 border-b">

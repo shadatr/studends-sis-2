@@ -37,7 +37,6 @@ const Page = () => {
   const [sections, setSections] = useState<Section2Type[]>([]);
   const [programClass, setProgramClass] = useState<CourseProgramType[]>([]);
   const [classes, setClasses] = useState<ClassesType[]>([]);
-  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,12 +92,11 @@ const Page = () => {
         } catch (error) {
           console.error('Error fetching data:', error);
         }
-        setRefresh(!refresh);
       }
     };
 
     fetchData();
-  }, [refresh, user]);
+  }, [ user]);
 
 
 

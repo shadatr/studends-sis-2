@@ -5,6 +5,7 @@ import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 
 import MyModel from '../../components/dialog';
@@ -151,29 +152,6 @@ const departmetItems = departments.map((deptItem, index) => (
     });
   };
 
-  const majorItems = majors.map((item, index) => (
-    <tr key={index} className="flex flex-row w-full">
-      <td className="flex flex-row w-full p-1 items-center justify-between">
-        <MyModel
-          name={item.major_name}
-          depOrMaj="التخصص"
-          deleteModle={() =>
-            perms.map((permItem) => {
-              if (permItem.permission_id === 7 && permItem.active) {
-                handleDeleteMajor(item.major_name);
-              }
-            })
-          }
-        />
-        {item.major_name}
-      </td>
-      <td className="flex flex-row w-1/5 items-center justify-center pr-2 pl-2">
-        {item.tb_departments?.name}
-      </td>
-      <td className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</td>
-    </tr>
-  ));
-
 
   return (
     <div className="absolute flex flex-col w-[80%] items-center justify-center">
@@ -276,8 +254,47 @@ const departmetItems = departments.map((deptItem, index) => (
           )
         )}
 
-        <table className="w-[1000px] flex flex-col">
-          <tbody>{majorItems}</tbody>
+        <table className="w-[1000px] ">
+          <thead>
+            <tr>
+              <th></th>
+              <th>التخصص</th>
+              <th>الكلية</th>
+            </tr>
+          </thead>
+          <tbody>
+            {majors.map((item, index) => (
+              <tr key={index} className="">
+                <td className="w-1/4 ">
+                  <Link
+                    className="bg-blue-700  hover:bg-blue-600 px-5 py-2 m-1 rounded-md text-white text-[12px]"
+                    href={`/management/facultiesAndMajors/majorStudents/${item.id}`}
+                  >
+                    الطلاب
+                  </Link>
+                  <Link
+                    className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white text-[12px]"
+                    href={`/management/facultiesAndMajors/majorExamProg/${item.id}`}
+                  >
+                    جدول الامتحانات
+                  </Link>
+                  <MyModel
+                    name={item.major_name}
+                    depOrMaj="التخصص"
+                    deleteModle={() =>
+                      perms.map((permItem) => {
+                        if (permItem.permission_id === 7 && permItem.active) {
+                          handleDeleteMajor(item.major_name);
+                        }
+                      })
+                    }
+                  />
+                </td>
+                <td>{item.major_name}</td>
+                <td className=" pr-2 pl-2">{item.tb_departments?.name}</td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </div>
