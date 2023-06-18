@@ -401,3 +401,12 @@ export type CourseProgramType = {
   ends_at: number;
   location:string;
 };
+
+export type ExamProgramType = {
+  id?: number;
+  course_id: number;
+  date: string;
+  hour: number;
+  duration: number;
+  location: string;
+};

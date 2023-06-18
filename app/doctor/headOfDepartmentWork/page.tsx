@@ -196,7 +196,8 @@ const Page = () => {
     if (allDataSent) {
       setRefresh(!refresh);
       toast.success('تم إرسال جميع البيانات بنجاح');
-    }else{toast.error(' تم ارسال المجموع النهائي بالفعل من قبل');}
+    }
+    else{toast.error(' تم ارسال المجموع النهائي بالفعل من قبل');}
   };
 
 
@@ -204,15 +205,15 @@ const Page = () => {
   return (
     <div className="flex absolute items-center justify-center w-[80%] mt-10">
       {user?.head_of_deparment_id ? (
-        <div>
+        <div className="">
           <button
             onClick={handleSubmit}
-            className="bg-green-700 m-4 hover:bg-green-600 px-5 py-2 rounded-md text-white"
+            className="bg-green-700 m-2 hover:bg-green-600 px-5 py-2 rounded-md text-white text-sm"
           >
             ارسال المجموع النهائي في جميع التخصصات
           </button>
           <Link
-            className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"
+            className="bg-blue-700 m-2 hover:bg-blue-600 px-5 py-2 rounded-md text-white text-sm"
             href={`/doctor/headOfDepartmentWork/doctors`}
           >
             الدكاترة
@@ -227,22 +228,26 @@ const Page = () => {
               {majors.map((major, index) => (
                 <tr key={index}>
                   <td className=" bg-grey  flex justify-between p-2">
-                    <>
-                      <Link
-                        className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"
-                        href={`/doctor/headOfDepartmentWork/major/${major.id}`}
-                      >
-                        المواد
-                      </Link>
+                    <Link
+                      className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"
+                      href={`/doctor/headOfDepartmentWork/major/${major.id}`}
+                    >
+                      المواد
+                    </Link>
+                    <Link
+                      className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"
+                      href={`/doctor/headOfDepartmentWork/majorStudents/${major.id}`}
+                    >
+                      الطلاب
+                    </Link>
+                    <Link
+                      className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"
+                      href={`/doctor/headOfDepartmentWork/majorExamProg/${major.id}`}
+                    >
+                      جدول الامتحانات
+                    </Link>
 
-                      <Link
-                        className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"
-                        href={`/doctor/headOfDepartmentWork/majorStudents/${major.id}`}
-                      >
-                        الطلاب
-                      </Link>
-                    </>
-                    <>{major.major_name}</>
+                    <div className="w-1/2">{major.major_name}</div>
                   </td>
                 </tr>
               ))}
