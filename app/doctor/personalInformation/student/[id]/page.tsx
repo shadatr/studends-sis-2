@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import {
   AssignPermissionType,
@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import { BsXCircleFill } from 'react-icons/bs';
 import Link from 'next/link';
 import Transcript from '@/app/components/transcript';
+import { useReactToPrint } from 'react-to-print';
 
 const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'الاسم' },
@@ -35,6 +36,8 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [refresh, setRefresh] = useState(false);
   const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
   const [edit, setEdit] = useState(false);
+    const printableContentRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -138,9 +141,19 @@ const Page = ({ params }: { params: { id: number } }) => {
       });
   };
 
+  const handlePrint = useReactToPrint({
+    content: () => printableContentRef.current,
+  });
+
   return (
     <div className="absolute flex justify-center items-center w-[80%] flex-col m-10">
       <div className="flex flex-row ">
+        <button
+          onClick={handlePrint}
+          className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
+        >
+          طباعة نتائج الطالب
+        </button>
         <Link
           className="flex bg-blue-500 hover:bg-blue-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
           href={`/doctor/personalInformation/student/${params.id}/CoursesAndGrades`}
@@ -373,7 +386,9 @@ const Page = ({ params }: { params: { id: number } }) => {
             </tr>
           </tbody>
         </table>
-        <Transcript user={params.id} />
+        <div ref={printableContentRef}>
+          <Transcript user={params.id} />
+        </div>
       </div>
     </div>
   );

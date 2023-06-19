@@ -1,11 +1,9 @@
 'use client';
 import axios from 'axios';
-import React, {useEffect, useState } from 'react';
+import React, {useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import {
-  AddCourse2Type,
-  ExamProgramType,
-} from '@/app/types/types';
+import { useReactToPrint } from 'react-to-print';
+import { AddCourse2Type, ExamProgramType, MajorType } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
@@ -14,6 +12,7 @@ import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
 import { BsXCircleFill } from 'react-icons/bs';
+
 
 
 const Page = ({ params }: { params: { id: number } }) => {
@@ -30,10 +29,19 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [selecetedDay, setSelecetedDay] = useState(new Date());
   const [Location, setLocation] = useState<string>();
   const [edit, setEdit] = useState(false);
+  const printableContentRef = useRef<HTMLDivElement>(null);
+  const [majors, setMajors] = useState<string>();
+
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const fetchPosts = async () => {
+        const response = await axios.get(
+          `/api/major/getMajors/${params.id}`
+        );
+        const message: MajorType[] = response.data.message;
+          const m = message.find((m) => m.id == params.id);
+        setMajors(m?.major_name);
         axios
           .get(`/api/course/courseRegistration/${params.id}`)
           .then(async (resp) => {
@@ -106,9 +114,19 @@ console.log(selecetedDay.toLocaleString());
         });
       setEdit(!edit);
     };
+const handlePrint = useReactToPrint({
+  content: () => printableContentRef.current,
+});
+
 
   return (
     <div className="flex flex-col absolute w-[80%] mt-7 items-center justify-center ">
+      <button
+        onClick={handlePrint}
+        className="px-4 py-2 bg-green-500 text-white rounded-md text-sm"
+      >
+        طباعة جدول الامتحانات
+      </button>
       <table className="w-[900px] m-10">
         <thead>
           <tr>
@@ -180,41 +198,51 @@ console.log(selecetedDay.toLocaleString());
           ))}
         </select>
       </div>
-      <table className="w-full bg-white shadow-md rounded-md">
-        <thead>
-          <tr>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700"></th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">القاعة</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">
-              مدة الامتحان
-            </th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">الساعة</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">اسم المادة</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">التاريخ</th>
-          </tr>
-        </thead>
-        <tbody>
-          {examProg.map((item, index) => {
-            const selectcourse = courses.find(
-              (course) => course.id == item.course_id
-            );
-            return (
-              <tr key={index}>
-                <td className="py-2 px-4 border-b">
-                  <BsXCircleFill onClick={() => handleDelete(item)} />
-                </td>
-                <td className="py-2 px-4 border-b">{item.location}</td>
-                <td className="py-2 px-4 border-b">{item.duration}</td>
-                <td className="py-2 px-4 border-b">{item.hour}</td>
-                <td className="py-2 px-4 border-b">
-                  {selectcourse?.course_name}
-                </td>
-                <td className="py-2 px-4 border-b">{item.date}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <div
+        className="m-2 flex flex-col justify-center items center"
+        ref={printableContentRef}
+      >
+        <h1 className="m-5 text-[30px] flex justify-center items center">
+          {majors}جدول الامتحانات لتخصص
+        </h1>
+        <table className="w-full bg-white shadow-md rounded-md m-2 text-sm">
+          <thead>
+            <tr>
+              <th className="py-2 px-4 bg-gray-200 text-gray-700"></th>
+              <th className="py-2 px-4 bg-gray-200 text-gray-700">القاعة</th>
+              <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                مدة الامتحان
+              </th>
+              <th className="py-2 px-4 bg-gray-200 text-gray-700">الساعة</th>
+              <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                اسم المادة
+              </th>
+              <th className="py-2 px-4 bg-gray-200 text-gray-700">التاريخ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {examProg.map((item, index) => {
+              const selectcourse = courses.find(
+                (course) => course.id == item.course_id
+              );
+              return (
+                <tr key={index}>
+                  <td className="py-2 px-4 border-b">
+                    <BsXCircleFill onClick={() => handleDelete(item)} />
+                  </td>
+                  <td className="py-2 px-4 border-b">{item.location}</td>
+                  <td className="py-2 px-4 border-b">{item.duration}</td>
+                  <td className="py-2 px-4 border-b">{item.hour}</td>
+                  <td className="py-2 px-4 border-b">
+                    {selectcourse?.course_name}
+                  </td>
+                  <td className="py-2 px-4 border-b">{item.date}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 'use client';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   AddCourse2Type,
   ClassesType,
@@ -9,6 +9,7 @@ import {
   StudentClassType,
   StudentCourseType,
 } from '@/app/types/types';
+import { useReactToPrint } from 'react-to-print';
 
 const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });
@@ -24,6 +25,8 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [classes, setClasses] = useState<ClassesType[]>([]);
   const [courseEnrollments, setCourseEnrollments] = useState<StudentClassType[]>([]);
   const [refresh, setRefresh] = useState(false);
+  const printableContentRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -188,8 +191,18 @@ const Page = ({ params }: { params: { id: number } }) => {
     
   setRefresh(!refresh);};
 
+   const handlePrint = useReactToPrint({
+     content: () => printableContentRef.current,
+   });
+
   return (
     <div className="absolute w-[100%] flex flex-col text-sm p-10 justify-content items-center ">
+      <button
+        onClick={handlePrint}
+        className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
+      >
+        طباعة درجات الطالب
+      </button>
       <form
         onSubmit={handleSubmit}
         className=" flex-col w-screen flex justify-content items-center"
@@ -226,7 +239,9 @@ const Page = ({ params }: { params: { id: number } }) => {
           موافقة
         </button>
       </form>
-      <table className='m-10'>
+      <div>
+
+      <table className="m-10">
         <thead>
           <th className="border border-gray-300 px-4 py-2 bg-grey">النتيجة</th>
           <th className="border border-gray-300 px-4 py-2 bg-grey">المجموع</th>
@@ -288,6 +303,7 @@ const Page = ({ params }: { params: { id: number } }) => {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };

@@ -57,3 +57,11 @@ table ,td, th{
 .courseInfo td{
   padding: 10px;
 }
+
+@media print {
+  body * {
+    
+  }
+  
+
+}

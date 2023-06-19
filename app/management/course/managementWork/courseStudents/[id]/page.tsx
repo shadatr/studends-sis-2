@@ -2,54 +2,49 @@
 import { PersonalInfoType, StudentClassType } from '@/app/types/types';
 import axios from 'axios';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useReactToPrint } from 'react-to-print';
 import { toast } from 'react-toastify';
 
 const Page = ({ params }: { params: { id: number } }) => {
   const [students, setStudents] = useState<StudentClassType[]>([]);
   const [studentsNames, setStudentsNames] = useState<PersonalInfoType[]>([]);
+    const printableContentRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
-    if(typeof window !== 'undefined'){
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get(`/api/exams/examRes/${params.id}/section`);
-        const message: StudentClassType[] = response.data.message;
-        const resp = await axios.get(`/api/getAll/student`);
-        const personalInfoMessage: PersonalInfoType[] = resp.data.message;
-        setStudentsNames(personalInfoMessage);
-        setStudents(message);
-
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchPosts();}
+    if (typeof window !== 'undefined') {
+      const fetchPosts = async () => {
+        try {
+          const response = await axios.get(
+            `/api/exams/examRes/${params.id}/section`
+          );
+          const message: StudentClassType[] = response.data.message;
+          const resp = await axios.get(`/api/getAll/student`);
+          const personalInfoMessage: PersonalInfoType[] = resp.data.message;
+          setStudentsNames(personalInfoMessage);
+          setStudents(message);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      fetchPosts();
+    }
   }, [params.id]);
 
-
-  const handleSubmit = () => {
-    if(typeof window !== 'undefined'){
-    axios
-      .post(`/api/exams/submitGrades/${params.id}`, 'true')
-      .then(() => {
-        toast.success('تم موافقة على الدرجات بنجاح');
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error('حدث خطأ اثناء موافقة على الدرجات');
-      });}
-  };
+    const handlePrint = useReactToPrint({
+      content: () => printableContentRef.current,
+    });
 
   return (
     <div className="flex absolute flex-col w-4/5 justify-center items-center">
-        <button
-          className="m-10 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
-          type="submit"
-          onClick={handleSubmit}
-        >
-          موافقة على الدرجات
-        </button>
+      <button
+        onClick={handlePrint}
+        className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
+      >
+        طباعة درجات
+      </button>
+      <div ref={printableContentRef}>
         <table className="border-collapse mt-8 w-[900px]">
           <thead>
             <tr className="bg-gray-200">
@@ -108,6 +103,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             })}
           </tbody>
         </table>
+      </div>
     </div>
   );
 };

@@ -12,6 +12,8 @@ import {
   SectionType,
 } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
+// import PrintButton from '@/app/components/ComponentToPrint';
+
 
 const Page = () => {
   const session = useSession({ required: true });
@@ -105,9 +107,13 @@ const Page = () => {
 
     setStudentCourses(updatedStudentCourses);
   }, []);
+  const handlePrint = () => {
+    window.print();
+  };
 
   return (
     <div className="flex flex-col absolute w-[80%] mt-7 items-center justify-center ">
+      <button onClick={handlePrint}>print</button>
       <table className="w-full bg-white shadow-md rounded-md">
         <thead>
           <tr>
