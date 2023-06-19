@@ -10,6 +10,10 @@ import { toast } from 'react-toastify';
 const Page = () => {
 
   const session = useSession({ required: true });
+  // if user isn't a admin, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
+    throw new Error('Unauthorized');
+  }
 
   const user = session.data?.user;
 

@@ -9,8 +9,14 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaTrashAlt } from 'react-icons/fa';
+import { useSession } from 'next-auth/react';
 
 const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
+  const session = useSession({ required: true });
+  // if user isn't a admin, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
+    throw new Error('Unauthorized');
+  }
   const [section, setSection] = useState<SectionType[]>([]);
   const [courses, setCourses] = useState<CourseType[]>([]);
   const [load, setLoad] = useState(true);

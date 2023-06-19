@@ -146,9 +146,14 @@ const authOptions: NextAuthOptions = {
       session.user.head_of_deparment_id = token.head_of_deparment_id as any;
       session.user.userType = token.userType as any;
 
-      
-
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      else if (new URL(url).origin === baseUrl) return url;
+
+
+      return baseUrl;
     },
   },
 };

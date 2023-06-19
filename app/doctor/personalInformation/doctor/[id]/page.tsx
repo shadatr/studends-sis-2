@@ -11,6 +11,7 @@ import {
 import { toast } from 'react-toastify';
 import { BsXCircleFill } from 'react-icons/bs';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 const doctorInfo: PersonalInfoHeaderType[] = [
   { header: 'الاسم' },
@@ -24,6 +25,11 @@ const doctorInfo: PersonalInfoHeaderType[] = [
 ];
 
 const page = ({ params }: { params: { id: number } }) => {
+  const session = useSession({ required: true });
+  // if user isn't a admin, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
+    throw new Error('Unauthorized');
+  }
   const [useMyData, useSetMydata] = useState<PersonalInfoType[]>([]);
   const [newData, setNewData] = useState<PersonalInfoType[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);

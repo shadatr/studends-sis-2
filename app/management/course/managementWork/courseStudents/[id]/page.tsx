@@ -1,12 +1,18 @@
 'use client';
 import { PersonalInfoType, StudentClassType } from '@/app/types/types';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { toast } from 'react-toastify';
 
 const Page = ({ params }: { params: { id: number } }) => {
+  const session = useSession({ required: true });
+  // if user isn't a admin, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
+    throw new Error('Unauthorized');
+  }
   const [students, setStudents] = useState<StudentClassType[]>([]);
   const [studentsNames, setStudentsNames] = useState<PersonalInfoType[]>([]);
     const printableContentRef = useRef<HTMLDivElement>(null);

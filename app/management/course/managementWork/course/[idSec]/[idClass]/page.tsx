@@ -6,6 +6,7 @@ import {
   SectionType,
 } from '@/app/types/types';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -36,6 +37,11 @@ const InputBox: FC<{
 
 
 const Tabs = ({ params }: { params: { idSec: number; idClass: number } }) => {
+  const session = useSession({ required: true });
+  // if user isn't a admin, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
+    throw new Error('Unauthorized');
+  }
   const [classes, setClasses] = useState<ClassesType[]>([]);
   const [sectionName, setSectionName] = useState<string>();
   const [courseId, setCourseId] = useState<number>();
@@ -54,6 +60,7 @@ const Tabs = ({ params }: { params: { idSec: number; idClass: number } }) => {
   const final = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    
     if (typeof window !== 'undefined') {
       const fetchdata = async () => {
         const responseClass = await axios.get(
@@ -124,9 +131,6 @@ const Tabs = ({ params }: { params: { idSec: number; idClass: number } }) => {
 
     const data: ClassesType = {
       section_id: params.idSec,
-      location: location.current?.value,
-      start_time: parseInt(startTime.current?.value ?? '0'),
-      duration: parseInt(duration.current?.value ?? '0'),
       class_work: parseInt(classWork.current?.value ?? '0'),
       midterm: parseInt(midterm.current?.value ?? '0'),
       final: parseInt(final.current?.value ?? '0'),

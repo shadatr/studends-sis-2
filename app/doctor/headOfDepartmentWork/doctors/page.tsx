@@ -18,9 +18,7 @@ const Page = () => {
   }
   const user = session.data?.user;
   const [doctors, setDoctors] = useState<DoctorsWithDepartmentsType[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [perms, setPerms] = useState<GetPermissionType[]>([]);
-  const [selectedDoctor, setSelectedDoctor] =useState<DoctorsWithDepartmentsType>();
+
 
   useEffect(() => {
     const fetchPosts = async () => {
