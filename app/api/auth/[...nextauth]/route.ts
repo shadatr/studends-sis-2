@@ -10,66 +10,71 @@ import { Database } from "@/app/types/supabase";
 const supabase = createClient<Database>(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "");
 
 const authOptions: NextAuthOptions = {
-  providers: [CredentialsProvider({
-    name: "admin",
-    id: 'admin',
-    credentials: {
-      email: {
-        label: "البريد الالكتروني",
-        type: "text",
-        placeholder: "email@example.com",
-      },
-      password: {
-        label: "كلمة المرور",
-        type: "password",
-      },
-    },
-    async authorize(credentials) {
-      const { email, password } = credentials as any;
-      const passwordHash = createHash('sha256').update(password).digest('hex');
-
-      const { data, error } = await supabase
-        .from('tb_admins')
-        .select('*')
-        .eq('email', email)
-        .eq('password', passwordHash);
-
-      if (!data && error || data && data.length === 0) {
-
-        return null;
-      } else {
-        const userObj = data[0] as any;
-        userObj.userType = 'admin';
-        return data[0] as any;
-      }
-    },
-  }),
+  providers: [
     CredentialsProvider({
-      name: "professor",
-      id: 'professor',
+      name: 'admin',
+      id: 'admin',
       credentials: {
         email: {
-          label: "البريد الالكتروني",
-          type: "text",
-          placeholder: "email@example.com",
+          label: 'البريد الالكتروني',
+          type: 'text',
+          placeholder: 'email@example.com',
         },
         password: {
-          label: "كلمة المرور",
-          type: "password",
+          label: 'كلمة المرور',
+          type: 'password',
         },
       },
       async authorize(credentials) {
         const { email, password } = credentials as any;
-        const passwordHash = createHash('sha256').update(password).digest('hex');
+        const passwordHash = createHash('sha256')
+          .update(password)
+          .digest('hex');
+
+        const { data, error } = await supabase
+          .from('tb_admins')
+          .select('*')
+          .eq('email', email)
+          .eq('password', passwordHash)
+          .eq('active', true);
+
+        if ((!data && error) || (data && data.length === 0)) {
+          return null;
+        } else {
+          const userObj = data[0] as any;
+          userObj.userType = 'admin';
+          return data[0] as any;
+        }
+      },
+    }),
+    CredentialsProvider({
+      name: 'professor',
+      id: 'professor',
+      credentials: {
+        email: {
+          label: 'البريد الالكتروني',
+          type: 'text',
+          placeholder: 'email@example.com',
+        },
+        password: {
+          label: 'كلمة المرور',
+          type: 'password',
+        },
+      },
+      async authorize(credentials) {
+        const { email, password } = credentials as any;
+        const passwordHash = createHash('sha256')
+          .update(password)
+          .digest('hex');
 
         const { data, error } = await supabase
           .from('tb_doctors')
           .select('*')
           .eq('email', email)
-          .eq('password', passwordHash);
+          .eq('password', passwordHash)
+          .eq('active', true);
 
-        if (!data && error || data && data.length === 0) {
-
+        if ((!data && error) || (data && data.length === 0)) {
           return null;
         } else {
           const userObj = data[0] as any;
@@ -79,32 +84,34 @@ const authOptions: NextAuthOptions = {
       },
     }),
     CredentialsProvider({
-      name: "Student",
+      name: 'Student',
       id: 'student',
 
       credentials: {
         email: {
-          label: "البريد الالكتروني",
-          type: "text",
-          placeholder: "email@example.com",
+          label: 'البريد الالكتروني',
+          type: 'text',
+          placeholder: 'email@example.com',
         },
         password: {
-          label: "كلمة المرور",
-          type: "password",
+          label: 'كلمة المرور',
+          type: 'password',
         },
       },
       async authorize(credentials) {
         const { email, password } = credentials as any;
-        const passwordHash = createHash('sha256').update(password).digest('hex');
+        const passwordHash = createHash('sha256')
+          .update(password)
+          .digest('hex');
 
         const { data, error } = await supabase
           .from('tb_students')
           .select('*')
           .eq('email', email)
-          .eq('password', passwordHash);
+          .eq('password', passwordHash)
+          .eq('active', true);
 
-        if (!data && error || data && data.length === 0) {
-
+        if ((!data && error) || (data && data.length === 0)) {
           return null;
         } else {
           const userObj = data[0] as any;
@@ -119,7 +126,7 @@ const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       return { ...token, ...user };
     },
-    async session({ session, token}) {
+    async session({ session, token }) {
       session.user.token = token;
       session.user.active = token.active as any;
       session.user.address = token.address as any;
@@ -139,10 +146,11 @@ const authOptions: NextAuthOptions = {
       session.user.head_of_deparment_id = token.head_of_deparment_id as any;
       session.user.userType = token.userType as any;
 
+      
+
       return session;
     },
   },
-
 };
 
 const handler = NextAuth(authOptions);
