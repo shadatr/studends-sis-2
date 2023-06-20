@@ -1,8 +1,7 @@
 
 import { createClient } from '@supabase/supabase-js';
-import { Database } from '@/app/types/supabase';
 
-const supabase = createClient<Database>(
+const supabase = createClient(
   process.env.SUPABASE_URL || '',
   process.env.SUPABASE_KEY || ''
 );
@@ -10,13 +9,14 @@ const supabase = createClient<Database>(
 
 export async function POST(request: Request) {
   const req = await request.json();
-  console.log(req);
+  
   try{
   const deleteReq = await supabase
     .from('tb_courses')
-    .delete()
-    .eq('id', req.item_name);
+    .update({active: req.active})
+    .eq('id', req.id);
+    console.log(deleteReq.data);
   console.log(deleteReq.error?.message);
-  return new Response(JSON.stringify({ message: 'تم مسح التخصص بنجاح' }));}
+  return new Response(JSON.stringify({ message: 'تم تغيير حالة المادة بنجاح' }));}
   catch{}
 }

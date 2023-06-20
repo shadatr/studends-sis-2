@@ -7,7 +7,7 @@ const supabase = createClient(
 
 export async function GET(request: Request, { params }: { params: { id: number } }) {
   try {
-    const data = await supabase.from('tb_courses').select('*').eq('major_id', params.id);
+    const data = await supabase.from('tb_courses').select('*').eq('major_id', params.id).eq('active',true);
 
     console.log(data.error?.message);
     if (data.error) {

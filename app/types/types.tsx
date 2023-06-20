@@ -168,6 +168,7 @@ export type AddCourseType = {
   midterm?: number;
   final?: number;
   IsOptional?: boolean;
+  active?: boolean;
 };
 
 export type AddCourse2Type = {
@@ -182,6 +183,7 @@ export type AddCourse2Type = {
   midterm?: number;
   final?: number;
   IsOptional?: boolean;
+  active?: boolean;
 };
 
 export type MajorEnrollmentType = {
@@ -315,6 +317,7 @@ export type CourseType = {
   midterm?: number;
   final?: number;
   IsOptional: boolean;
+  active?: boolean;
   tb_majors?: {
     major_name?: string;
     id?: number;
@@ -369,6 +372,7 @@ export type StudentCourse2Type = {
     midterm?: number;
     final?: number;
     IsOptional?: boolean;
+    active?:boolean;
   };
   section?: {
     id?: number;

@@ -34,7 +34,7 @@ const Page = () => {
       if (user) {
         try {
           const response = await axios.get(
-            `/api/course/courseRegistration/${user?.major}`
+            `/api/course/majorCourses/${user?.major}`
           );
           const message: AddCourse2Type[] = response.data.message;
           setCourses(message);

@@ -128,16 +128,15 @@ const Page = ({ params }: { params: { id: number } }) => {
     }
   }, [params.id, user?.id, loadCourses]);
 
-  const handleDelete = (id: number) => {
-    const data = { item_name: id };
-    if (typeof window !== 'undefined') {
-      axios
-        .post(`/api/course/courseRegDelete/${params.id}`, data)
-        .then((resp) => {
-          toast.success(resp.data.message);
-          setLoadCourse(!loadCourses);
-        });
-    }
+
+
+  const handleActivate = (id: number, active: boolean) => {
+    const data = { id:id, active:active };
+    console.log(data);
+    axios.post('/api/course/courseEditActive', data).then((res) => {
+      toast.success(res.data.message);
+      setLoadCourse(!loadCourses);
+    });
   };
 
   return (
@@ -235,7 +234,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       <table className="w-[1100px]  ">
         <thead className="">
           <tr>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700"></th>
+            <th className="py-2 px-4 bg-gray-200 text-gray-700">ايقاف/تفعيل</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-700">درجة النجاح</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-700">اجباري/اختياري </th>
             <th className="py-2 px-4 bg-gray-200 text-gray-700">نسبة اعمال السنة </th>
@@ -253,12 +252,19 @@ const Page = ({ params }: { params: { id: number } }) => {
                 {perms.map((permItem, permIndex) => {
                   if (permItem.permission_id === 8 && permItem.active) {
                     return (
-                      <MyModel
+                      <button
                         key={permIndex}
-                        depOrMaj="المادة"
-                        name=""
-                        deleteModle={() => handleDelete(item.id)}
-                      />
+                        onClick={() => {
+                          handleActivate(item.id, !item.active);
+                        }}
+                        className={`text-white py-1 px-2 rounded ${
+                          item.active
+                            ? 'bg-red-500 hover:bg-red-600'
+                            : 'bg-green-600 hover:bg-green-700'
+                        }`}
+                      >
+                        {item.active ? 'ايقاف' : 'تفعيل'}
+                      </button>
                     );
                   }
                   return null;
