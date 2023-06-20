@@ -4,15 +4,9 @@ import React, { useEffect, useState } from 'react';
 import {
   AddCourse2Type,
   ExamProgramType,
-  Section2Type,
-  PersonalInfoType,
-  ClassesType,
-  StudentClassType,
-  StudentCourse2Type,
   SectionType,
 } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
-// import PrintButton from '@/app/components/ComponentToPrint';
 
 
 const Page = () => {
@@ -23,16 +17,7 @@ const Page = () => {
   const user = session.data?.user;
 
   const [courses, setCourses] = useState<AddCourse2Type[]>([]);
-  const [studentCourses, setStudentCourses] = useState<StudentCourse2Type[]>(
-    []
-  );
-  const [sections, setSections] = useState<Section2Type[]>([]);
-  const [classes, setClasses] = useState<ClassesType[]>([]);
-  const [courseEnrollments, setCourseEnrollments] = useState<
-    StudentClassType[]
-  >([]);
   const [refresh, setRefresh] = useState(false);
-  const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
   const [examProg, setExamProg] = useState<ExamProgramType[]>([]);
 
   useEffect(() => {
@@ -42,7 +27,6 @@ const Page = () => {
           `/api/course/courses/${user?.id}/doctor`
         );
         const message: SectionType[] = response.data.message;
-        setSections(message);
 
         const coursesPromises = message.map(async (section) => {
           const responseReq = await axios.get(
@@ -76,37 +60,7 @@ const Page = () => {
     fetchData();
   }, [user, refresh]);
 
-  useEffect(() => {
-    const updatedStudentCourses: StudentCourse2Type[] = [];
 
-    courseEnrollments.map((course) => {
-      const studenClass = classes.find((Class) => Class.id == course.class_id);
-
-      const studentSection = sections.find(
-        (sec) => sec.id == studenClass?.section_id
-      );
-
-      const doctor = doctors.find((doc) => studenClass?.doctor_id == doc.id);
-
-      const studentCourse = courses.find(
-        (course) => course.id == studentSection?.course_id
-      );
-
-      if (studentCourse) {
-        if (course.approved) {
-          const data = {
-            course: studentCourse,
-            section: studentSection,
-            doctor_name: doctor?.name,
-          };
-          updatedStudentCourses.push(data);
-          console.log(updatedStudentCourses);
-        }
-      }
-    });
-
-    setStudentCourses(updatedStudentCourses);
-  }, []);
   const handlePrint = () => {
     window.print();
   };

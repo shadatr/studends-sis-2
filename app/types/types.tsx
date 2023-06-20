@@ -164,17 +164,24 @@ export type AddCourseType = {
   hours?: number;
   credits?: number;
   passing_percentage?: number;
+  class_work?: number;
+  midterm?: number;
+  final?: number;
+  IsOptional?: boolean;
 };
 
 export type AddCourse2Type = {
   id: number;
   course_name: string;
   major_id?: number;
-  min_semester?: number;
   hours?: string;
   credits?: number;
   passing_percentage?: number;
   pass?: boolean;
+  class_work?: number;
+  midterm?: number;
+  final?: number;
+  IsOptional?: boolean;
 };
 
 export type MajorEnrollmentType = {
@@ -256,9 +263,6 @@ export type ClassesType = {
   id?: number;
   doctor_id?: number;
   section_id?: number;
-  class_work?: number;
-  midterm?: number;
-  final?: number;
   mid_publish?: boolean;
   final_publish?: boolean;
   class_work_publish?: boolean;
@@ -307,7 +311,10 @@ export type CourseType = {
   credits?: number;
   hours?: number;
   passing_percentage?: number;
-  min_semester?: number;
+  class_work?: number;
+  midterm?: number;
+  final?: number;
+  IsOptional: boolean;
   tb_majors?: {
     major_name?: string;
     id?: number;
@@ -358,7 +365,10 @@ export type StudentCourse2Type = {
     credits?: number;
     hours?: string;
     passing_percentage?: number;
-    min_semester?: number;
+    class_work?: number;
+    midterm?: number;
+    final?: number;
+    IsOptional?: boolean;
   };
   section?: {
     id?: number;

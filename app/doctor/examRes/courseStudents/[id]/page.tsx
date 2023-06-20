@@ -31,13 +31,11 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [classes, setClasses] = useState<ClassesType[]>([]);
   const [grades, setGrades] = useState<StudentClassType[]>([]);
   const [perms, setPerms] = useState<GetPermissionDoctorType[]>([]);
+  const [course, setCourse] = useState<AddCourse2Type[]>([]);
 
-
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      if(user){
-
+useEffect(() => {
+  const fetchPosts = async () => {
+    if (user) {
       const responsePerm = await axios.get(
         `/api/allPermission/doctor/selectedPerms/${user?.id}`
       );
@@ -60,6 +58,8 @@ const Page = ({ params }: { params: { id: number } }) => {
         `/api/getAll/getSpecificCourse/${sectionMessage[0].course_id}`
       );
       const CourseMessage: AddCourse2Type[] = CourseResponse.data.message;
+
+      setCourse(CourseMessage);
 
       const classesPromises = message.map(async (course) => {
         const responseReq = await axios.get(
@@ -85,13 +85,15 @@ const Page = ({ params }: { params: { id: number } }) => {
 
         if (grade.student_id == student?.id) {
           if (grade.midterm && grade.final && grade.class_work) {
-            const Class = classes.find((Class) => Class.id == grade.class_id);
-            if (Class?.midterm && Class?.final && Class?.class_work) {
+            if (
+              CourseMessage[0].midterm &&
+              CourseMessage[0].final &&
+              CourseMessage[0].class_work
+            ) {
               const avrg =
-                (grade.midterm * Class.midterm) / 100 +
-                (grade.final * Class.final) / 100 +
-                (grade.class_work * Class.class_work) / 100;
-
+                (grade.midterm * CourseMessage[0].midterm) / 100 +
+                (grade.final * CourseMessage[0].final) / 100 +
+                (grade.class_work * CourseMessage[0].class_work) / 100;
               return {
                 ...grade,
                 result: avrg,
@@ -101,9 +103,8 @@ const Page = ({ params }: { params: { id: number } }) => {
         }
         return grade;
       });
-      axios
-        .post(`/api/exams/examRes/${params.id}/result`, updatedGradesResult);
- 
+
+      axios.post(`/api/exams/examRes/${params.id}/result`, updatedGradesResult);
 
       const updatedGradesPass = message.map((grade) => {
         const student = personalInfoMessage.find(
@@ -112,16 +113,19 @@ const Page = ({ params }: { params: { id: number } }) => {
 
         if (grade.student_id == student?.id) {
           if (grade.midterm && grade.final && grade.class_work) {
-            const Class = classes.find((Class) => Class.id == grade.class_id);
-            if (Class?.midterm && Class?.final && Class?.class_work) {
+            if (
+              CourseMessage[0].midterm &&
+              CourseMessage[0].final &&
+              CourseMessage[0].class_work
+            ) {
               const avrg =
-                (grade.midterm * Class.midterm) / 100 +
-                (grade.final * Class.final) / 100 +
-                (grade.class_work * Class.class_work) / 100;
+                (grade.midterm * CourseMessage[0].midterm) / 100 +
+                (grade.final * CourseMessage[0].final) / 100 +
+                (grade.class_work * CourseMessage[0].class_work) / 100;
 
               if (
-                (CourseMessage[0].passing_percentage &&
-                  CourseMessage[0].passing_percentage > avrg) == true
+                CourseMessage[0].passing_percentage &&
+                CourseMessage[0].passing_percentage > avrg
               ) {
                 return {
                   ...grade,
@@ -139,12 +143,12 @@ const Page = ({ params }: { params: { id: number } }) => {
         return grade;
       });
 
-      axios
-        .post(`/api/exams/examRes/${params.id}/pass`, updatedGradesPass);
-       }
-    };
-    fetchPosts();
-  }, [edit, params.id, editMid, editFinal, editHw,user]);
+      axios.post(`/api/exams/examRes/${params.id}/pass`, updatedGradesPass);
+    }
+  };
+  fetchPosts();
+}, [edit, params.id, editMid, editFinal, editHw, user]);
+
 
 
 
@@ -255,7 +259,7 @@ const Page = ({ params }: { params: { id: number } }) => {
           <tbody>
             {students.map((user, index) => 
               perms.map((item) => {
-              const Class= classes.find((Class)=> Class.id== user.class_id );
+              const Course= course.find((Class)=> Class.id);
               const student = studentsNames.find(
                 (student) => student.id === user.student_id
               );
@@ -282,7 +286,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                     {user.result}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
-                    {Class?.class_work}%
+                    {Course?.class_work}%
                   </td>
                   {editHw && item.permission_id == 21 ? (
                     <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
@@ -311,7 +315,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                     </td>
                   )}
                   <td className="border border-gray-300 px-4 py-2">
-                    {Class?.final}%
+                    {Course?.final}%
                   </td>
                   {editFinal && item.permission_id == 21 ? (
                     <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
@@ -340,7 +344,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                     </td>
                   )}
                   <td className="border border-gray-300 px-4 py-2">
-                    {Class?.midterm}%
+                    {Course?.midterm}%
                   </td>
                   {editMid && item.permission_id == 21 ? (
                     <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
