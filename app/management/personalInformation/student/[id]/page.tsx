@@ -37,7 +37,6 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [useMyData, setMydata] = useState<RegisterStudent2Type[]>([]);
   const [newData, setNewData] = useState<RegisterStudent2Type[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
-  const [checked, setChecked] = useState<number[]>([]); // Change to an array
   const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
   const [refresh, setRefresh] = useState(false);
   const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
@@ -75,16 +74,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     fetchPosts();
   }, [refresh, params.id,edit]);
 
-  const handleCheck = (item: AssignPermissionType) => {
-    const checkedIndex = checked.indexOf(item.id);
-    if (checkedIndex === -1) {
-      setChecked([...checked, item.id]);
-    } else {
-      const updatedChecked = [...checked];
-      updatedChecked.splice(checkedIndex, 1);
-      setChecked(updatedChecked);
-    }
-  };
+
 
   const selected: AssignPermissionType[] = perms.flatMap((item) =>
     checkList
@@ -109,17 +99,6 @@ const Page = ({ params }: { params: { id: number } }) => {
       });
   };
 
-  const handleSubmit = () => {
-    checked.map((item) => {
-      const data1 = {
-        student_id: params.id,
-        permission_id: item,
-        active: true,
-      };
-      axios.post('/api/allPermission/student/addPerms', data1);
-      setRefresh(!refresh);
-    });
-  };
 
   const handleInputChange = (e: string, field: keyof RegisterStudent2Type) => {
     const updatedData = newData.map((data) => {
@@ -374,32 +353,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             ))}
           </tbody>
         </table>
-        <table className="border-collapse mt-8 w-[500px]">
-          <tbody>
-            <tr>
-              <td className="text-secondary bg-darkBlue">اختر الصلاحيات</td>
-            </tr>
-            {checkList.map((item, index) => (
-              <tr key={index}>
-                <td className="bg-lightBlue flex justify-between">
-                  <input
-                    className="p-2 ml-9"
-                    value={item.name}
-                    type="checkbox"
-                    onChange={() => handleCheck(item)} // Pass the item to handleCheck
-                    checked={checked.includes(item.id)} // Check if the item is in the checked list
-                  />
-                  <label className="pr-5">{item.name}</label>
-                </td>
-              </tr>
-            ))}
-            <tr>
-              <td className="text-secondary bg-darkBlue flex justify-center items-center">
-                <button onClick={handleSubmit}>اضافة</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+       
         <div ref={printableContentRef}>
           <Transcript user={params.id} />
         </div>

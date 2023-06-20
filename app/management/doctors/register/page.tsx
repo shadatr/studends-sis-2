@@ -71,7 +71,7 @@ const Page = () => {
       phone: phone.current?.value,
       address: address.current?.value,
       email: email.current?.value,
-      speciality: speciality.current?.value,
+      major: speciality.current?.value,
       password: passwordHash,
       birth_date: (birthDate.getTime() / 1000).toFixed(),
     };
@@ -87,7 +87,7 @@ const Page = () => {
       });
   };
   return (
-    <div className="flex flex-col items-center h-[150px] pt-5 fixed right-[600px] text-sm ">
+    <div className="flex flex-col items-center absolute justify-center w-[80%] text-sm mt-10">
       <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
       <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
       <InputBox label="رقم الهاتف" placeholder="01000000000" inputRef={phone} />
@@ -115,7 +115,6 @@ const Page = () => {
         inputRef={password}
         type="password"
       />
-
       <button onClick={handleRegister} className="btn_base mt-5 w-[400px] ">
         تسجبل عضو هيئة التدريس
       </button>

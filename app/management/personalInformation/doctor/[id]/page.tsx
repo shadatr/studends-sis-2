@@ -119,12 +119,11 @@ const page = ({ params }: { params: { id: number } }) => {
          [field]: e,
        };
      });
-
      setNewData(updatedData);
    };
 
    const handleSubmitInfo = () => {
-     setEdit(false);
+     setEdit(!edit);
      console.log('Submitted grades:', newData);
      axios
        .post(`/api/personalInfo/edit/${params.id}/editDoctor`, newData)

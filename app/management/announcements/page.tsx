@@ -1,13 +1,10 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import {
-  AnnouncmentsMangType,
-} from '@/app/types/types';
+import { AnnouncmentsMangType } from '@/app/types/types';
 import { FaTrashAlt } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
-
 
 const Page = () => {
   // handling authentication
@@ -19,7 +16,9 @@ const Page = () => {
 
   const [loadAnnouncements, setLoad] = useState(false);
   const [newItem, setNewItem] = useState('');
-  const [announcements, setAnnouncements] = useState<AnnouncmentsMangType[]>([]);
+  const [announcements, setAnnouncements] = useState<AnnouncmentsMangType[]>(
+    []
+  );
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -33,22 +32,13 @@ const Page = () => {
     fetchPosts();
   }, [loadAnnouncements]);
 
-  const handleDelete = (announcement_text: string) => {
-    const data = { item_announcement_text: announcement_text };
+  const handleDelete = (id?: number) => {
+    const data = { item_id: id };
     axios.post('/api/announcements/uniAnnouncements', data).then((resp) => {
       toast.success(resp.data.message);
       setLoad(!loadAnnouncements);
     });
   };
-
-  const data1 = announcements.map((item, index) => (
-    <tr key={index} className='flex w-full flex-row'>
-      <td className="flex items-center w-full justify-between p-2 ">
-        <FaTrashAlt className='w-10' onClick={() => handleDelete(item.announcement_text)} role="button" />
-        {item.announcement_text}
-      </td>
-    </tr>
-  ));
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -66,30 +56,49 @@ const Page = () => {
   };
 
   return (
-    <div className=" absolute text-sm  mt-[70px] ml-[250px]  w-[860px]">
-      <table className=" w-[860px] bg-grey h-[300px] overflow-y-auto flex flex-col">
-        <th className="p-4 bg-darkBlue text-secondary">اعلانات الجامعة</th>
-        {data1.length ? (
-          data1
-        ) : (
-            <td className="flex items-center justify-center p-2 ">
-              لا يوجد اعلانات
-            </td>
-        )}
+    <div className=" absolute text-sm  w-[80%] justify-center items-center mt-10 flex flex-col">
+      <table className=" w-[860px] bg-grey  ">
+        <thead>
+          <tr>
+            <th className="p-4 bg-darkBlue text-secondary"> </th>
+            <th className="p-4 bg-darkBlue text-secondary">اعلانات الجامعة</th>
+          </tr>
+        </thead>
+        <tbody>
+          {announcements.length ? (
+            announcements.map((item, index) => (
+              <tr key={index} className="">
+                <td className="border border-gray-300 px-4 py-2 w-[50px]">
+                  <FaTrashAlt
+                    className="w-10"
+                    onClick={() => handleDelete(item.id)}
+                    role="button"
+                  />
+                </td>
+                <td className="border border-gray-300 px-4 py-2 ">
+                  {item.announcement_text}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td className="flex items-center justify-center p-2 ">
+                لا يوجد اعلانات
+              </td>
+            </tr>
+          )}
+        </tbody>
       </table>
-      <form
-        className="flex flex-col mt-3 border-solid border-black border-2"
-        onSubmit={handleSubmit}
-      >
+      <form className="flex flex-col mt-3 w-[860px]" onSubmit={handleSubmit}>
         <label htmlFor="addItem" className="bg-darkBlue text-secondary  ">
           اضف اعلان
         </label>
         <textarea
-          className="h-[150px] text-right "
+          className="h-[150px] text-right border border-gray-300 px-4 py-2 bg-grey "
           autoFocus
           ref={inputRef}
           id="addItem"
-          placeholder="Add Item"
+          placeholder="اكتب هنا"
           required
           value={newItem}
           onChange={(e) => setNewItem(e.target.value)}

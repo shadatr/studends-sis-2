@@ -1,12 +1,15 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client';
-import { DepartmentRegType, GetPermissionType, MajorRegType } from '@/app/types/types';
+import {
+  DepartmentRegType,
+  GetPermissionType,
+  MajorRegType,
+} from '@/app/types/types';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-
 
 import MyModel from '../../components/dialog';
 
@@ -18,32 +21,44 @@ const page = () => {
   }
   const user = session.data?.user;
 
-  
   const major = useRef<HTMLInputElement>(null);
   const majorDep = useRef<HTMLSelectElement>(null);
   const [majors, setMajors] = useState<MajorRegType[]>([]);
-  const [loadMajor, setLoadMajor] = useState(false);
+  const [load, setLoad] = useState(false);
   const [newItemMajor, setNewItemMajor] = useState('');
   const [newMajorDep, setNewMajorDep] = useState('');
 
   const department = useRef<HTMLInputElement>(null);
   const [departments, setDepartments] = useState<DepartmentRegType[]>([]);
-  const [loadDepartments, setLoadDep] = useState(false);
   const [newItemDep, setNewItemDep] = useState('');
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await axios.get(
-        `/api/allPermission/admin/selectedPerms/${user?.id}`
-      );
-      const message: GetPermissionType[] = response.data.message;
-      setPerms(message);
-      console.log(message);
+      if (user) {
+        const response = await axios.get(
+          `/api/allPermission/admin/selectedPerms/${user?.id}`
+        );
+        const message: GetPermissionType[] = response.data.message;
+        setPerms(message);
+        console.log(message);
+
+        axios.get('/api/department/departmentRegister').then((resp) => {
+          console.log(resp.data);
+          const message: DepartmentRegType[] = resp.data.message;
+          setDepartments(message);
+
+          axios.get('/api/major/majorReg').then((resp) => {
+            console.log(resp.data);
+            const message: MajorRegType[] = resp.data.message;
+            setMajors(message);
+          });
+        });
+      }
     };
 
     fetchPosts();
-  }, [user?.id]);
+  }, [user, user?.id,load]);
 
   const handleRegisterDep = () => {
     if (!newItemDep) {
@@ -56,56 +71,14 @@ const page = () => {
       .then((res) => {
         console.log(res.data);
         toast.success(res.data.message);
-        setLoadDep(!loadDepartments);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
       });
     setNewItemDep('');
+    setLoad(!load);
+
   };
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      axios.get('/api/department/departmentRegister').then((resp) => {
-        console.log(resp.data);
-        const message: DepartmentRegType[] = resp.data.message;
-        setDepartments(message);
-      });
-    };
-    fetchPosts();
-  }, [loadDepartments]);
-  
-
-const departmetItems = departments.map((deptItem, index) => (
-  <tr key={index} className="flex flex-row w-full">
-    <td
-      className="flex flex-row w-full p-1 items-center justify-between"
-      key={index}
-    >
-      {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 8 && permItem.active) {
-          return (
-            <MyModel
-              key={idx}
-              depOrMaj="الكلية"
-              name={deptItem.name}
-              deleteModle={() => handleDeleteMajor(deptItem.name)}
-            />
-          );
-        }
-        return null;
-      })}
-      {deptItem.name}
-    </td>
-    <td className="flex flex-row w-1/7 pr-2 pl-2">{index + 1}</td>
-  </tr>
-));
-
-
-  const departmentOptions = departments.map((item, index) => (
-    <option key={index}>{item.name}</option>
-  ));
-
 
   const selectedDep = departments.filter((item) => item.name == newMajorDep);
   const depId = selectedDep.map((i) => i.id);
@@ -124,34 +97,24 @@ const departmetItems = departments.map((deptItem, index) => (
       .then((res) => {
         console.log(res.data.message);
         toast.success(res.data.message);
-        setLoadMajor(!loadMajor);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
       });
     setNewItemMajor('');
     setNewMajorDep('');
+    setLoad(!load);
   };
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      axios.get('/api/major/majorReg').then((resp) => {
-        console.log(resp.data);
-        const message: MajorRegType[] = resp.data.message;
-        setMajors(message);
-      });
-    };
-    fetchPosts();
-  }, [loadMajor]);
-
+ 
   const handleDeleteMajor = (major_name: string) => {
     const data = { item_name: major_name };
     axios.post('/api/major/majorDelete', data).then((resp) => {
       toast.success(resp.data.message);
-      setLoadMajor(!loadMajor);
+      setLoad(!load);
+
     });
   };
-
 
   return (
     <div className="absolute flex flex-col w-[80%] items-center justify-center">
@@ -159,43 +122,63 @@ const departmetItems = departments.map((deptItem, index) => (
         <p className="flex text-md bg-lightBlue rounded-md p-4 w-[200px] justify-center m-5 items-center">
           اقسام
         </p>
-        {perms.map((item, idx) =>
-          item.permission_id === 8 && item.active ? (
-            <div
-              key={idx}
-              className="flex flex-row-reverse items-center justify-center  text-sm m-10 w-[1000px]"
-            >
-              <label
-                htmlFor=""
-                lang="ar"
-                className="p-3 bg-darkBlue text-secondary w-[200px]"
-              >
-                سجل كلية
-              </label>
-              <input
-                ref={department}
-                dir="rtl"
-                placeholder="ادخل اسم الكلية"
-                type="text"
-                className="w-[600px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
-                value={newItemDep}
-                onChange={(e) => setNewItemDep(e.target.value)}
-              />
-              <button
-                className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
-                type="submit"
-                onClick={handleRegisterDep}
-              >
-                سجل
-              </button>
-            </div>
-          ) : (
-            ' '
-          )
-        )}
+        <div className="flex flex-row-reverse items-center justify-center  text-sm m-10 w-[1000px]">
+          <label
+            htmlFor=""
+            lang="ar"
+            className="p-3 bg-darkBlue text-secondary w-[200px]"
+          >
+            سجل كلية
+          </label>
+          <input
+            ref={department}
+            dir="rtl"
+            placeholder="ادخل اسم الكلية"
+            type="text"
+            className="w-[600px] border border-gray-300 px-4 py-2 rounded-[5px]"
+            value={newItemDep}
+            onChange={(e) => setNewItemDep(e.target.value)}
+          />
+          <button
+            className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
+            type="submit"
+            onClick={handleRegisterDep}
+          >
+            سجل
+          </button>
+        </div>
 
-        <table className="w-[1000px] flex flex-col h-[200px] overflow-y-auto">
-          <tbody>{departmetItems}</tbody>
+        <table className="w-[1000px] ">
+          <tbody>
+            {departments.length ? (
+              departments.map((deptItem, index) => (
+                <tr key={index}>
+                  <td className="border border-gray-300 px-4 py-2" key={index}>
+                    {perms.map((permItem, idx) => {
+                      if (permItem.permission_id === 8 && permItem.active) {
+                        return (
+                          <MyModel
+                            key={idx}
+                            depOrMaj="الكلية"
+                            name={deptItem.name}
+                            deleteModle={() => handleDeleteMajor(deptItem.name)}
+                          />
+                        );
+                      }
+                      return null;
+                    })}
+                    {deptItem.name}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td className="border border-gray-300 px-4 py-2">
+                  لا يوجد اقسام حاليا
+                </td>
+              </tr>
+            )}
+          </tbody>
         </table>
       </div>
       <div className="flex flex-col items-center justify-center text-sm p-10">
@@ -220,7 +203,7 @@ const departmetItems = departments.map((deptItem, index) => (
                 dir="rtl"
                 placeholder="ادخل اسم التخصص"
                 type="text"
-                className="w-[600px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
+                className="w-[600px] border border-gray-300 px-4 py-2 rounded-[5px]"
                 value={newItemMajor}
                 onChange={(e) => setNewItemMajor(e.target.value)}
               />
@@ -238,7 +221,9 @@ const departmetItems = departments.map((deptItem, index) => (
                 <option selected disabled>
                   اختر اسم الكلية
                 </option>
-                {departmentOptions}
+                {departments.map((item, index) => (
+                  <option key={index} >{item.name}</option>
+                ))}
               </select>
 
               <button
@@ -257,43 +242,44 @@ const departmetItems = departments.map((deptItem, index) => (
         <table className="w-[1000px] ">
           <thead>
             <tr>
-              <th></th>
-              <th>التخصص</th>
-              <th>الكلية</th>
+              <th className="py-2 px-4 bg-gray-200 text-gray-700"></th>
+              <th className="py-2 px-4 bg-gray-200 text-gray-700">التخصص</th>
+              <th className="py-2 px-4 bg-gray-200 text-gray-700">الكلية</th>
             </tr>
           </thead>
           <tbody>
-            {majors.map((item, index) => (
-              <tr key={index} className="">
-                <td className="w-1/4 ">
-                  <Link
-                    className="bg-blue-700  hover:bg-blue-600 px-5 py-2 m-1 rounded-md text-white text-[12px]"
-                    href={`/management/facultiesAndMajors/majorStudents/${item.id}`}
-                  >
-                    الطلاب
-                  </Link>
-                  <Link
-                    className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white text-[12px]"
-                    href={`/management/facultiesAndMajors/majorExamProg/${item.id}`}
-                  >
-                    جدول الامتحانات
-                  </Link>
-                  <MyModel
-                    name={item.major_name}
-                    depOrMaj="التخصص"
-                    deleteModle={() =>
-                      perms.map((permItem) => {
-                        if (permItem.permission_id === 7 && permItem.active) {
-                          handleDeleteMajor(item.major_name);
-                        }
-                      })
-                    }
-                  />
+            {majors.length ? (
+              majors.map((item, index) => (
+                <tr key={index} className="">
+                  <td className="border border-gray-300 px-4 py-2 w-1/3">
+                    <Link
+                      className="bg-blue-700  hover:bg-blue-600 px-5 py-2 m-1 rounded-md text-white"
+                      href={`/management/facultiesAndMajors/majorStudents/${item.id}`}
+                    >
+                      الطلاب
+                    </Link>
+                    <Link
+                      className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"
+                      href={`/management/facultiesAndMajors/majorExamProg/${item.id}`}
+                    >
+                      جدول الامتحانات
+                    </Link>
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {item.major_name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 w-1/6">
+                    {item.tb_departments?.name}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td className="border border-gray-300 px-4 py-2">
+                  لا يوجد تخصصات حاليا
                 </td>
-                <td>{item.major_name}</td>
-                <td className=" pr-2 pl-2">{item.tb_departments?.name}</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client';
 import {
-  GetPermissionStudentType,
+  AssignPermissionType,
   MajorRegType,
 } from '@/app/types/types';
 import axios from 'axios';
@@ -21,49 +21,53 @@ const page = () => {
   const [majors, setMajors] = useState<MajorRegType[]>([]);
   const [active, setActive] = useState<boolean>();
 
-
-  const handleActivate = () => {
-    setActive(!active);
-    const data = { active: active };
-    axios
-      .post('/api/allPermission/student/courseRegActive', data)
-      .then((res) => {
-        console.log(res.data);
-        toast.success(res.data.message);
-      });
-  };
-
   useEffect(() => {
     const fetchPosts = async () => {
-      
       axios.get('/api/major/majorReg').then((resp) => {
         const message: MajorRegType[] = resp.data.message;
         setMajors(message);
       });
 
-      const responseActive = await axios.get(
-        `/api/allPermission/student/courseRegActive`
-      );
-      const messageActive: GetPermissionStudentType[] =responseActive.data.message;
+      const responseActive = await axios.get('/api/allPermission/courseRegPer');
+      const messageActive: AssignPermissionType[] = responseActive.data.message;
       setActive(messageActive[0].active);
       console.log(messageActive);
     };
     fetchPosts();
   }, []);
 
+  const handleActivate = () => {
+    setActive(!active);
+    const data = { active: !active };
+    axios
+      .post('/api/allPermission/student/courseRegActive', data)
+      .then((res) => {
+        console.log(res.data);
+        toast.success(res.data.message);
+      });
+      axios
+        .post('/api/allPermission/courseRegPer', data)
+        .then((res) => {
+          console.log(res.data);
+          toast.success(res.data.message);
+        });
+  };
+
+
   return (
     <div className="absolute flex flex-col w-[80%] items-center justify-center">
       <button
         onClick={() => {
+          
           handleActivate();
         }}
         className={`text-white py-1 px-2 rounded ${
           active
-            ? 'bg-green-600 hover:bg-green-500'
-            : 'bg-red-600 hover:bg-red-500'
+          ? 'bg-red-600 hover:bg-red-500'
+            : 'bg-green-600 hover:bg-green-500'
         }`}
       >
-        {active ? ' فتح تسجيل المواد ' : 'اغلاق تسجيل المواد'}
+        {active ? 'اغلاق تسجيل المواد' : ' فتح تسجيل المواد '}
       </button>
       <p className="flex text-md bg-lightBlue rounded-md p-4 w-[200px] justify-center m-5 items-center">
         تخصصات

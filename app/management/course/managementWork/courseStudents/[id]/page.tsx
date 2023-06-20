@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import { toast } from 'react-toastify';
 
 const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });

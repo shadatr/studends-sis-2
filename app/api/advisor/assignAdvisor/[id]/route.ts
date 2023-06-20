@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     console.log(res);
     
     return new Response(
-      JSON.stringify({ message: 'تم تسجيل الصلاحية بنجاح' }),
+      JSON.stringify({ message: 'تم تعيين الدكتور بنجاح ' }),
       {
         headers: { 'content-type': 'application/json' },
       }
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.log(error);
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الكلية' }),
+      JSON.stringify({ message: 'حدث خطأ اثناء  تعيين الدكتور ' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }

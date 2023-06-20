@@ -1,4 +1,5 @@
 'use client';
+
 import { createHash } from 'crypto';
 
 import React, { FC, useEffect, useRef, useState } from 'react';
@@ -48,16 +49,19 @@ const Page = () => {
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
   const [majors, setMajors] = useState<MajorRegType[]>([]);
-  const [selectedMajor, setSelectedMajor] = useState<MajorRegType>();
-
+  const [selectedMajor, setSelectedMajor] = useState<
+    MajorRegType | undefined
+  >();
 
   useEffect(() => {
     const fetchPosts = async () => {
-      axios.get('/api/major/majorReg').then((resp) => {
+      try {
+        const resp = await axios.get('/api/major/majorReg');
         const message: MajorRegType[] = resp.data.message;
         setMajors(message);
-      });
-
+      } catch (error) {
+        console.log(error);
+      }
     };
     fetchPosts();
   }, []);
@@ -72,6 +76,7 @@ const Page = () => {
       toast.error('يجب ملئ جميع الحقول');
       return;
     }
+
     const passwordHash = createHash('sha256')
       .update(password.current?.value)
       .digest('hex');
@@ -82,19 +87,18 @@ const Page = () => {
       major: selectedMajor?.id,
       phone: phone.current?.value,
       address: address.current?.value,
-      email: email.current.value,
+      email: email.current?.value,
       password: passwordHash,
-      birth_date: (birthDate.getTime() / 1000).toFixed(),
-      advisor: 'غير محدد',
+      birth_date: Math.floor(birthDate.getTime() / 1000).toString(),
     };
-    
+
     axios
       .post('/api/register/student', data)
       .then((res) => {
-        console.log(res);
         toast.success(res.data.message);
       })
       .catch((err) => {
+        console.log(err.message);
         toast.error(err.response.data.message);
       });
   };
@@ -105,23 +109,24 @@ const Page = () => {
     setSelectedMajor(major);
   };
 
-
   return (
-    <div className="flex absolute flex-col  items-center w-[100%] p-10 h-[150px]   text-sm">
-      <div onSubmit={(e) => e.preventDefault}>
+    <div className="flex absolute flex-col items-center w-[100%] p-10 h-[150px] text-sm">
+      <div>
         <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
         <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
         <label>اختر التخصص</label>
         <select
-          value={selectedMajor ? selectedMajor.major_name : ''}
           id="dep"
           dir="rtl"
-          className="flex flex-col bg-slate-200 w-[400px] h-[30px] rounded-md p-5"
+          className="flex flex-col bg-slate-200 w-[400px] h-[50px] rounded-md p-2"
           onChange={handleMajorChange}
+          value={selectedMajor?.major_name || ''}
         >
-          <option>اختر التخصص</option>
+          <option disabled>اختر التخصص</option>
           {majors.map((item, index) => (
-            <option key={index}>{item.major_name}</option>
+            <option key={index} value={item.major_name}>
+              {item.major_name}
+            </option>
           ))}
         </select>
         <InputBox
@@ -136,8 +141,8 @@ const Page = () => {
           </label>
           <DatePicker
             locale="ar"
-            className={'bg-slate-200 w-[400px] h-[40px] rounded-md border-none'}
-            onChange={(val) => setBirthDate(val as any)}
+            className="bg-slate-200 w-[400px] h-[40px] rounded-md border-none"
+            onChange={(val) => setBirthDate(val as Date)}
             value={birthDate}
           />
         </div>
@@ -153,7 +158,7 @@ const Page = () => {
           type="password"
         />
         <button onClick={handleRegister} className="btn_base mt-5 w-[400px]">
-          تسجبل الطالب
+          تسجيل الطالب
         </button>
       </div>
     </div>

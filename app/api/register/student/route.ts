@@ -9,38 +9,29 @@ const supabase = createClient(
 export async function POST(request: Request) {
   // TODO: Maybe add some validation for security here
 
-  const data: RegisterStudentType = await request.json();
-  if (data.address === '') {
-    data.address = undefined;
-  }
-  if (data.phone === '') {
-    data.phone = undefined;
-  }
+  const data = await request.json();
+
 
   try {
     const res = await supabase.from('tb_students').insert([data]);
-    const { data: students, error } = await supabase
+    const students = await supabase
       .from('tb_students')
       .select('*')
       .eq('name', data.name)
       .eq('surname', data.surname);
 
-    if (error) {
-      throw error;
-    }
+      console.log(res.error?.message);
 
-    if (!students || students.length === 0) {
-      throw new Error('No matching student found.');
-    }
 
-    const student = students[0];
-    const data1: GetPermissionStudentType = {
-      permission_id: 20,
-      student_id: student.id,
-    };
+      const student = students.data;
+      if (student){
+      const data1= {
+        permission_id: 20,
+        student_id: student[0].id,
+      };
+      const res2 = await supabase.from('tb_student_perms').insert([data1]);
+      console.log(res2);}
 
-     await supabase.from('tb_student_perms').insert([data1]);
-    console.log(res.error?.message);
 
     return new Response(JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }), {
       headers: { 'content-type': 'application/json' },

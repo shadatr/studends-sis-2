@@ -31,7 +31,7 @@ export async function POST(request : Request) {
   const deleteReq = await supabase
     .from('tb_announcements')
     .delete()
-    .eq('announcement_text', req.item_id);
+    .eq('id', req.item_id);
   console.log(deleteReq.error);
   return new Response(JSON.stringify({message : "تم حذف الاعلان بنجاح"}));
 }

@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 const Page = ({
   params,
@@ -72,7 +73,12 @@ const Page = ({
         id: item,
         advisor: params.doctorId,
       };
-      axios.post('/api/advisor/assignAdvisor/1', data);
+      axios
+        .post('/api/advisor/assignAdvisor/1', data)
+        .then((res) => toast.success(res.data.message))
+        .catch((err) => {
+          toast.error(err.response.data.message);
+        });
       setRefresh(!refresh);
     });
   };

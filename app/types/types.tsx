@@ -79,7 +79,7 @@ export type RegisterdoctorType = {
   phone?: string;
   address?: string;
   enrollment_date?: string;
-  speciality: string;
+  major: string;
 };
 
 export type RegisterManagerType = {
@@ -146,7 +146,6 @@ export type AdminStaffType = {
   id: number;
   name: string;
   surname: string;
-  admin: boolean;
   createdAt: string | null;
   active: boolean;
 };
@@ -377,7 +376,7 @@ export type StudentCourse2Type = {
   section?: {
     id?: number;
     name?: string;
-    course_id?: number;
+    class_id?: number;
     max_students: number;
     students_num: number;
   };

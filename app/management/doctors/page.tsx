@@ -1,5 +1,8 @@
 'use client';
-import { DoctorsWithDepartmentsType, GetPermissionType } from '@/app/types/types';
+import {
+  DoctorsWithDepartmentsType,
+  GetPermissionType,
+} from '@/app/types/types';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -17,47 +20,37 @@ const Page = () => {
   const [doctors, setDoctors] = useState<DoctorsWithDepartmentsType[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
+  const [selectedDoctor, setSelectedDoctor] =
+    useState<DoctorsWithDepartmentsType>();
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await axios.get(
-        `/api/allPermission/admin/selectedPerms/${user?.id}`
-      );
-      const message: GetPermissionType[] = response.data.message;
-      setPerms(message);
-      console.log(message);
+      //   const response = await axios.get(
+      //     `/api/allPermission/admin/selectedPerms/${user?.id}`
+      //   );
+      //   const message: GetPermissionType[] = response.data.message;
+      //   setPerms(message);
+      //   console.log(message);
+      // };
+      axios.get('/api/getAll/getDoctorsHeadOfDep').then((res) => {
+        console.log(res.data);
+        const message: DoctorsWithDepartmentsType[] = res.data.message;
+        setDoctors(message);
+      });
     };
-
     fetchPosts();
-  }, [user?.id]);
-  
-  const [selectedDoctor, setSelectedDoctor] =
-    useState<DoctorsWithDepartmentsType>();
-  useEffect(() => {
-    axios.get('/api/getAll/getDoctorsHeadOfDep').then((res) => {
-      console.log(res.data);
-      const message: DoctorsWithDepartmentsType[] = res.data.message;
-      setDoctors(message);
-    });
   }, []);
 
   return (
-    <div className="w-[80%] flex flex-col absolute justify-end pt-20">
-      {perms.map((item, index) =>
-        item.permission_id == 9 && item.active ? (
-          <Link
-            key={index}
-            className="btn_base w-[200px] mb-3"
-            href={'/management/doctors/register'}
-          >
-            اضافة عضو
-          </Link>
-        ) : (
-          ''
-        )
-      )}
+    <div className="flex absolute flex-col w-[80%] justify-center items-center mt-10">
+      <Link
+        className="btn_base w-[200px] mb-3"
+        href={'/management/doctors/register'}
+      >
+        اضافة عضو
+      </Link>
       <SearchBar />
-      <table className="border-collapse w-full">
+      <table className="border-collapse w-[1100px]">
         <thead>
           <tr className="bg-gray-200">
             <th className="border border-gray-300 px-4 py-2">
@@ -88,22 +81,17 @@ const Page = () => {
                 </Link>
               </td>
               <td className="border border-gray-300 px-4 py-2 flex justify-between">
-                {perms.map((item, index) =>
-                  item.permission_id == 12 && item.active ? (
-                    <button
-                      key={index}
-                      className="bg-green-500 hover:bg-green-600 px-5 py-1 rounded-md text-white"
-                      onClick={() => {
-                        setSelectedDoctor(user);
-                        setIsModalOpen(true);
-                      }}
-                    >
-                      تعين
-                    </button>
-                  ) : (
-                    ' '
-                  )
-                )}
+                <button
+                  key={index}
+                  className="bg-green-500 hover:bg-green-600 px-5 py-1 rounded-md text-white"
+                  onClick={() => {
+                    setSelectedDoctor(user);
+                    setIsModalOpen(true);
+                  }}
+                >
+                  تعين
+                </button>
+
                 {user.department ? (
                   <p>{user.department.name}</p>
                 ) : (

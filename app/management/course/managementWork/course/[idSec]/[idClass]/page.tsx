@@ -52,7 +52,7 @@ const Tabs = ({ params }: { params: { idSec: number; idClass: number } }) => {
   const [courses, setCourses] = useState<CourseType[]>([]);
   const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
   const [selectedDoctor, setSelectedDoctor] = useState<string>();
-  const [load, setLoad] = useState(true);
+  const [load, setLoad] = useState(false);
   const [courseProg, setCourseProg] = useState<CourseProgramType[]>([]);
 
 
@@ -97,13 +97,12 @@ const Tabs = ({ params }: { params: { idSec: number; idClass: number } }) => {
       };
       fetchdata();
     
-  }, [load]);
+  }, [load, params.idClass, params.idSec]);
 
  
 
 const handleSubmit = () => {
-  setLoad(!load);
-  console.log(selectedDoctor);
+
 
   const doc=doctors.find((item) => item.name== selectedDoctor );
 
@@ -113,8 +112,8 @@ const handleSubmit = () => {
   };
   axios.post('/api/course/assignCourseDoctor', data).then((resp) => {
     toast.success(resp.data.message);
+      setLoad(!load);
   });
-  setLoad(!load);
 };
 
   return (
@@ -232,7 +231,7 @@ const handleSubmit = () => {
           onClick={handleSubmit}
           className="bg-blue-500 text-white px-4 py-2 mt-2"
         >
-          Submit
+          اضافة
         </button>
       </form>
     </div>
