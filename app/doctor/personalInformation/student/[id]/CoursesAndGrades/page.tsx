@@ -10,10 +10,12 @@ import {
   StudentCourseType,
 } from '@/app/types/types';
 import { useReactToPrint } from 'react-to-print';
+import { toast } from 'react-toastify';
 
 const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });
-  if (session.data?.user ?  !== 'doctor' : false) {
+  // if user isn't a admin, throw an error
+  if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
     throw new Error('Unauthorized');
   }
 
@@ -137,7 +139,6 @@ const Page = ({ params }: { params: { id: number } }) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     checked.forEach((item) => {
-
         const studentCourse = courses.find(
         (course) => course.id == item
       );
@@ -146,22 +147,32 @@ const Page = ({ params }: { params: { id: number } }) => {
         (sec) => sec.course_id == studentCourse?.id
       );
 
-      const studentClass = classes.find(
-        (sec) => sec.section_id == studentSection?.id
-      );
+      if (
+        studentSection&& studentSection?.students_num >=
+        studentSection?.max_students
+      ) {
+        return toast.error("لقد تخطت هذه المادة الحد الاقصى من الطلاب");
+      }
+        const studentClass = classes.find(
+          (sec) => sec.section_id == studentSection?.id
+        );
 
       const studenCourseEnroll = courseEnrollments.find(
         (Class) => Class.class_id == studentClass?.id
       );
-
+        if(studentSection){
         const data1 = {
           student_id: params.id,
           id: studenCourseEnroll?.id,
           approved: true,
+          section_id: studentSection?.id,
+          students_num: studentSection?.students_num+1
         };
-        axios.post('/api/courseEnrollment/courseAccept', data1);
-
+        axios.post('/api/courseEnrollment/courseAccept', data1).then((res)=>
+        toast.success(res.data.message));}
     });
+
+
       const filteredList = checkList.filter((item) => !checked.includes(item.id));
     filteredList.forEach((item) => {
 
@@ -295,11 +306,11 @@ const Page = ({ params }: { params: { id: number } }) => {
                       : 'راسب'
                     : ''}
                 </td>
-                <td className="border border-gray-300 px-4 py-2  ">
+                <td className="border border-gray-300 px-4 py-2 ">
                   {course.class?.result_publish ? course.course.result : ''}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  {course.class?.class_work}%
+                  {course.course.class_work}%
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {course.class?.class_work_publish
@@ -307,13 +318,13 @@ const Page = ({ params }: { params: { id: number } }) => {
                     : ''}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  {course.class?.final}%
+                  {course.course.final}%
                 </td>
                 <td className="border border-gray-300 px-4 py-2 ">
                   {course.class?.final_publish ? course.course.final : ' '}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  {course.class?.midterm}%
+                  {course.course.midterm}%
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {course.class?.mid_publish ? course.course.midterm : ''}

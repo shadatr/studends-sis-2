@@ -1,6 +1,6 @@
 'use client';
 import axios from 'axios';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 // import { toast } from 'react-toastify';
 import { PersonalInfoType } from '@/app/types/types';
 import Link from 'next/link';
@@ -33,8 +33,9 @@ const SearchBar = () => {
           className=""
           name="نوع"
           id="searchType"
+          defaultValue=""
         >
-          <option selected disabled value="">
+          <option disabled value="">
             اختر النوع
           </option>
           <option value="students">طالب</option>
@@ -50,25 +51,34 @@ const SearchBar = () => {
         />
       </div>
       <table className="w-[500px] m-5">
-        {searchedStudent == null || undefined || searchedStudent.length == 0 ? (
-          <p>لا يوجد</p>
-        ) : (
-          searchedStudent.map((student, index) => (
-            <tr key={index}>
-              <td className="border border-gray-300 px-4 py-2">
-                {student.name}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                <Link
-                  href={`/management/personalInformation/student/${student.id}`}
-                  className="bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-md justify-center items-center"
-                >
-                  الملف الشخصي
-                </Link>
-              </td>
+        <tbody>
+          {searchedStudent == null ||
+          undefined ||
+          searchedStudent.length == 0 ? (
+            <tr>
+              <td>لا يوجد</td>
             </tr>
-          ))
-        )}
+          ) : (
+            searchedStudent.map((student, index) => (
+              <tr key={index}>
+                <td className="border border-gray-300 px-4 py-2">
+                  <Link
+                    href={`/management/personalInformation/student/${student.id}`}
+                    className="bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-md justify-center items-center"
+                  >
+                    الملف الشخصي
+                  </Link>
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {student.surname}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {student.name}
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
       </table>
     </div>
   );

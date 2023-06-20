@@ -29,13 +29,17 @@ export async function POST(request: Request) {
       .eq('id', data.id)
       .eq('student_id', data.student_id);
 
+      await supabase
+        .from('tb_section')
+        .update({ students_num: data.students_num })
+        .eq('id', data.section_id);
 
-    return new Response(JSON.stringify({ message: 'تم تسجيل الكلية بنجاح' }), {
+    return new Response(JSON.stringify({ message: 'تم الموافقة على المواد بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });
   } catch (error) {
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الكلية' }),
+      JSON.stringify({ message: 'حدث خطأ اثناء الموافقة على المواد' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }
