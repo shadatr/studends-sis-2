@@ -78,7 +78,6 @@ const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
       .post('/api/course/sectionRegistration', data)
       .then((res) => {
         setLoad(!load);
-        console.log(res.data);
         toast.success(res.data.message);
       })
       .catch((err) => {

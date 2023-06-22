@@ -8,7 +8,7 @@ import {
   SectionType,
   StudentClassType,
   StudentCourseType,
-} from '@/app/types/types'; 
+} from '@/app/types/types';
 
 const Page = () => {
   const session = useSession({ required: true });
@@ -22,14 +22,16 @@ const Page = () => {
   const [studentCourses, setStudentCourses] = useState<StudentCourseType[]>([]);
   const [sections, setSections] = useState<SectionType[]>([]);
   const [classes, setClasses] = useState<ClassesType[]>([]);
-  const [courseEnrollments, setCourseEnrollments] = useState<StudentClassType[]>([]);
+  const [courseEnrollments, setCourseEnrollments] = useState<
+    StudentClassType[]
+  >([]);
   const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const responseCourseEnroll = await axios.get(
-          `/api/getAll/getAllCourseEnroll/${user?.id}`
+          `/api/getAll/getCourseEnrollStudent/${user?.id}`
         );
         const messageCourseEnroll: StudentClassType[] =
           responseCourseEnroll.data.message;
@@ -96,22 +98,19 @@ const Page = () => {
         (course) => course.id == studentSection?.course_id
       );
 
-      if (studentCourse){ 
-        if(course.approved){{
-            const data = {
-              course_name: studentCourse.course_name,
-              course: course,
-              section: studentSection,
-              class: studenClass,
-            };
-            updatedStudentCourses.push(data);
-        }
-    }
-    }});
+      if (studentCourse) {
+        const data = {
+          course_name: studentCourse.course_name,
+          course: course,
+          section: studentSection,
+          class: studenClass,
+        };
+        updatedStudentCourses.push(data);
+      }
+    });
     console.log(updatedStudentCourses);
     setStudentCourses(updatedStudentCourses);
   }, [refresh]);
-
 
   return (
     <div className="absolute w-[85%] flex flex-col text-sm p-10 justify-content items-center ">
@@ -148,7 +147,7 @@ const Page = () => {
                 {course.class?.result_publish ? course.course.result : ''}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {course.class?.class_work}%
+                {course.course.class_work}%
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {course.class?.class_work_publish
@@ -156,13 +155,13 @@ const Page = () => {
                   : ''}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {course.class?.final}%
+                {course.course.final}%
               </td>
               <td className="border border-gray-300 px-4 py-2 flex justify-between items-center">
                 {course.class?.final_publish ? course.course.final : ''}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {course.class?.midterm}%
+                {course.course.midterm}%
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {course.class?.mid_publish ? course.course.midterm : ''}

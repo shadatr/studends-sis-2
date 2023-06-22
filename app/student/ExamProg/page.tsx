@@ -34,7 +34,7 @@ const Page = () => {
     const fetchData = async () => {
       try {
         const responseCourseEnroll = await axios.get(
-          `/api/getAll/getAllCourseEnroll/${user?.id}`
+          `/api/getAll/getCourseEnrollStudent/${user?.id}`
         );
         const messageCourseEnroll: StudentClassType[] =
           responseCourseEnroll.data.message;
@@ -129,7 +129,6 @@ const Page = () => {
       );
 
       if (studentCourse) {
-        if (course.approved) {
           const data = {
             course: studentCourse,
             section: studentSection,
@@ -137,7 +136,6 @@ const Page = () => {
           };
           updatedStudentCourses.push(data);
           console.log(updatedStudentCourses);
-        }
       }
     });
 

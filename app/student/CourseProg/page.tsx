@@ -43,7 +43,7 @@ const Page = () => {
       if (user) {
         try {
           const responseCourseEnroll = await axios.get(
-            `/api/getAll/getAllCourseEnroll/${user?.id}`
+            `/api/getAll/getCourseEnrollStudent/${user?.id}`
           );
           const messageCourseEnroll: StudentClassType[] =
             responseCourseEnroll.data.message;

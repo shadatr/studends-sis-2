@@ -37,12 +37,12 @@ export async function POST(request: Request) {
       console.log(res.error);
       throw res.error;
     }
-    return new Response(JSON.stringify({ message: 'تم تسجيل الكلية بنجاح' }), {
+    return new Response(JSON.stringify({ message: 'تم ارسال المواد بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });
   } catch (error) {
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الكلية' }),
+      JSON.stringify({ message: 'حدث خطأ اثناء ارسال المواد' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }

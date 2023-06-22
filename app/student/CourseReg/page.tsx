@@ -1,6 +1,7 @@
 'use client';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
+import { toast } from 'react-toastify';
 import React, { useEffect, useState } from 'react';
 import {
   AddCourse2Type,
@@ -250,7 +251,7 @@ const Page = () => {
             student_id: user?.id,
             class_id: updatedClasses2[0].id,
           };
-          axios.post(`/api/getAll/getAllCourseEnroll/${user?.id}`, data1);
+          axios.post(`/api/getAll/getAllCourseEnroll/${user?.id}`, data1).then((res)=> toast.success(res.data.message));
         }
       }
     });
@@ -362,7 +363,7 @@ const Page = () => {
               </tbody>
             </table>
             <button
-              onClick={() => handleSubmit}
+              onClick={handleSubmit}
               className="flex p-3 text-sm  bg-darkBlue text-secondary m-3 rounded-md"
             >
               اضافة

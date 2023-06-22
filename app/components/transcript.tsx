@@ -46,7 +46,7 @@ const [transcript, setTranscript] = useState<TranscriptType[]>([]);
 
 
         const responseCourseEnroll = await axios.get(
-          `/api/getAll/getAllCourseEnroll/${user}`
+          `/api/getAll/getCourseEnrollStudent/${user}`
         );
         const messageCourseEnroll: StudentClassType[] =
           responseCourseEnroll.data.message;
