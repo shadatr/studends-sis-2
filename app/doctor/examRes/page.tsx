@@ -1,5 +1,5 @@
 'use client';
-import { SectionType } from '@/app/types/types'; 
+import { SectionType } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -15,8 +15,7 @@ const Page = () => {
   const user = session.data?.user;
   const [sections, setSections] = useState<SectionType[]>([]);
 
-
-    useEffect(() => {
+  useEffect(() => {
     const fetchPosts = async () => {
       const response = await axios.get(
         `/api/course/courses/${user?.id}/doctor`
@@ -30,19 +29,22 @@ const Page = () => {
   return (
     <div className=" w-[80%] justify-center items-center flex p-10 absolute">
       <table className=" w-[800px] border-collapse">
-        <th className="border px-4 py-2 bg-darkBlue text-secondary">
-          اسم المادة
-        </th>
+        <thead>
+          <tr>
+            <th className="border px-4 py-2 bg-darkBlue text-secondary">
+              اسم المادة
+            </th>
+          </tr>
+        </thead>
         <tbody>
           {sections.map((item, index) => (
-            <Link
-              key={index}
-              href={`/doctor/examRes/courseStudents/${item.id}`}
-            >
-              <tr className="w-full flex">
-                <td className="border px-4 py-2 w-full bg-lightBlue">{item.name}</td>
-              </tr>
-            </Link>
+            <tr key={index}>
+              <td className="border px-4 py-2 bg-lightBlue">
+                <Link href={`/doctor/examRes/courseStudents/${item.id}`}>
+                  {item.name}
+                </Link>
+              </td>
+            </tr>
           ))}
         </tbody>
       </table>

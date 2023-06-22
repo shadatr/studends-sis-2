@@ -7,6 +7,7 @@ import {
   PersonalInfoHeaderType,
   RegisterStudent2Type,
   InfoDoctorType,
+  MajorRegType,
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
 import { BsXCircleFill } from 'react-icons/bs';
@@ -38,8 +39,9 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [newData, setNewData] = useState<RegisterStudent2Type[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
   const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
+  const [major, setMajor] = useState<string>();
   const [refresh, setRefresh] = useState(false);
-  const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
+  const [doctors, setDoctors] = useState<string>();
   const [edit, setEdit] = useState(false);
   const printableContentRef = useRef<HTMLDivElement>(null);
 
@@ -60,20 +62,26 @@ const Page = ({ params }: { params: { id: number } }) => {
       const message: GetPermissionStudentType[] = response.data.message;
       setPerms(message);
 
-      axios.get(`/api/personalInfo/student/${params.id}`).then((resp) => {
-        const message: RegisterStudent2Type[] = resp.data.message;
-        setMydata(message);
-        setNewData(message);
-      });
+      const responseStudent = await axios.get(
+        `/api/personalInfo/student/${params.id}`
+      );
+      const messageStudent: RegisterStudent2Type[] = responseStudent.data.message;
+      setMydata(messageStudent);
+        setNewData(messageStudent);
 
-      axios.get('/api/getAll/getDoctorsHeadOfDep').then((res) => {
+      const responseMaj = await axios.get(
+        `/api/majorEnrollment/${messageStudent[0].major}`
+      );
+      const messageMaj: MajorRegType[] = responseMaj.data.message;
+      setMajor(messageMaj[0].major_name);
+
+      axios.get(`/api/personalInfo/doctor/${messageStudent[0].advisor}`).then((res) => {
         const message: InfoDoctorType[] = res.data.message;
-        setDoctors(message);
-      });
-    };
+        setDoctors(message[0].name);
+      });};
+    
     fetchPosts();
   }, [refresh, params.id,edit]);
-
 
 
   const selected: AssignPermissionType[] = perms.flatMap((item) =>
@@ -102,7 +110,6 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   const handleInputChange = (e: string, field: keyof RegisterStudent2Type) => {
     const updatedData = newData.map((data) => {
-      console.log('Submitted gradesssss:', newData);
       return {
         ...data,
         [field]: e,
@@ -159,9 +166,7 @@ const Page = ({ params }: { params: { id: number } }) => {
           {edit ? 'ارسال' : 'تعديل'}
         </button>
       </div>
-      <table
-        className="flex-row-reverse flex text-sm  border-collapse"
-      >
+      <table className="flex-row-reverse flex text-sm  border-collapse">
         <thead>
           <tr className="">
             {stuInfo.map((title, index) => (
@@ -270,9 +275,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                       />
                     </td>
                     <td className="flex w-[700px] p-2 justify-end">
-                      {item.advisor
-                        ? doctors.find((doc) => item.advisor == doc.id)?.name
-                        : 'لا يوجد'}
+                      {doctors ? doctors : 'لا يوجد'}
                     </td>
                   </tr>
                 ))
@@ -288,9 +291,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   <td className="flex w-[700px] p-2 justify-end">
                     {item.birth_date}
                   </td>
-                  <td className="flex w-[700px] p-2 justify-end">
-                    {item.major}
-                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">{major}</td>
                   <td className="flex w-[700px] p-2 justify-end">
                     {item.semester}
                   </td>
@@ -307,9 +308,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                     {item.enrollment_date}
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
-                    {item.advisor
-                      ? doctors.find((doc) => item.advisor == doc.id)?.name
-                      : 'لا يوجد'}
+                    {doctors ? doctors : 'لا يوجد'}
                   </td>
                 </tr>
               ))}
@@ -353,7 +352,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             ))}
           </tbody>
         </table>
-       
+
         <div ref={printableContentRef}>
           <Transcript user={params.id} />
         </div>

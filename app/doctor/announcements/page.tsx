@@ -104,34 +104,45 @@ const AnnoPage = () => {
   };
 
   return (
-    <div className=" flex w-[860px] right-[464px]  flex-col absolute  top-[180px] text-sm  ">
+    <div className=" flex w-[80%] justify-center items-center flex-col absolute mt-20">
+      <div>
       <table className="w-[860px] overflow-y-auto ">
         <thead>
           <tr>
-            <th className="bg-darkBlue   text-secondary   w-full flex items-center justify-end p-1">
+            <th className="bg-darkBlue   text-secondary px-4 py-2 ">
               اعلانات الجامعة
             </th>
           </tr>
         </thead>
         <tbody>
-          {Announcements.map((item, index) => (
-            <tr key={index}>
-              <td
-                className=" p-1 w-full flex items-center justify-end "
-                key={index}
-              >
-                {item.announcement_text}
+          {Announcements.length ? (
+            Announcements.map((item, index) => (
+              <tr key={index}>
+                <td className="px-4 py-2">{item.announcement_text}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td className=" p-1 w-full flex items-center justify-end ">
+                لا يوجد اعلانات
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
+      </div>
+            <div>
 
       <table className="w-[860px] bg-grey max-h-[300px] mt-4 overflow-y-auto ">
         <thead>
           <tr>
-            <th className="p-1 bg-darkBlue text-secondary">اعلانات المواد</th>
-            <th className="p-1 bg-darkBlue text-secondary w-1/5">اسم المادة</th>
+            <th className="p-1 bg-darkBlue text-secondary px-4 py-2 "></th>
+            <th className="p-1 bg-darkBlue text-secondary px-4 py-2">
+              اعلانات المواد
+            </th>
+            <th className="p-1 bg-darkBlue text-secondary w-1/5 px-4 py-2">
+              اسم المادة
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -142,16 +153,15 @@ const AnnoPage = () => {
               );
               const sec = sections.find((sec) => sec.id === clas?.section_id);
               return (
-                <tr key={index} className="">
-                  <td className="w-full flex items-center justify-between p-1">
+                <tr key={index}>
+                  <td className="w-1/9">
                     <FaTrashAlt
-                      className="w-10"
                       onClick={() => handleDelete(item.id)}
                       role="button"
-                      />
-                    {item.announcement_text}
+                    />
                   </td>
-                      <td>{sec?.name}</td>
+                  <td className="px-4 py-2">{item.announcement_text}</td>
+                  <td className="px-4 py-2 w-1/5">{sec?.name}</td>
                 </tr>
               );
             })
@@ -164,6 +174,7 @@ const AnnoPage = () => {
           )}
         </tbody>
       </table>
+            </div>
 
       <form
         className="flex flex-col mt-3 border-solid w-[860px] border-black border-2"
@@ -177,7 +188,7 @@ const AnnoPage = () => {
             id="dep"
             dir="rtl"
             onChange={(e) => setSelectedSections(e.target.value)}
-            className=" text-sm bg-darkBlue border border-gray-300 px-4 py-2 "
+            className="text-sm bg-darkBlue border border-gray-300 px-4 py-2"
             defaultValue=""
           >
             <option disabled value="">
@@ -187,10 +198,10 @@ const AnnoPage = () => {
               <option key={index}>{section.name}</option>
             ))}
           </select>
-          <h1> اضف اعلان للمواد</h1>
+          <h1>اضف اعلان للمواد</h1>
         </label>
         <textarea
-          className="h-[150px] text-right "
+          className="h-[150px] text-right"
           autoFocus
           ref={inputRef}
           id="addItem"

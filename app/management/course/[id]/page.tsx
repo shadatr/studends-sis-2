@@ -30,6 +30,32 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [newItemCourse, setNewItemCourse] = useState('');
   const [passingGrade, setPassingGrade] = useState('');
 
+
+   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const fetchPosts = async () => {
+        if (user) {
+          axios
+            .get(`/api/course/courseRegistration/${params.id}`)
+            .then((resp) => {
+              const message: AddCourse2Type[] = resp.data.message;
+              setCourses(message);
+              console.log(message);
+            });
+
+          const response = await axios.get(
+            `/api/allPermission/admin/selectedPerms/${user?.id}`
+          );
+          const message: GetPermissionType[] = response.data.message;
+          setPerms(message);
+        }
+      };
+      fetchPosts();
+    }
+  }, [params.id, user?.id, loadCourses]);
+
+  
+
   const selection = numbers.map((num, index) => (
     <option key={index}>{num}</option>
   ));
@@ -102,28 +128,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       });
   };
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const fetchPosts = async () => {
-        if (user) {
-          axios
-            .get(`/api/course/courseRegistration/${params.id}`)
-            .then((resp) => {
-              const message: AddCourse2Type[] = resp.data.message;
-              setCourses(message);
-              console.log(message);
-            });
 
-          const response = await axios.get(
-            `/api/allPermission/admin/selectedPerms/${user?.id}`
-          );
-          const message: GetPermissionType[] = response.data.message;
-          setPerms(message);
-        }
-      };
-      fetchPosts();
-    }
-  }, [params.id, user?.id, loadCourses]);
 
   const handleActivate = (id: number, active: boolean) => {
     const data = { id: id, active: active };

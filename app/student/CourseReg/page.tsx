@@ -21,13 +21,17 @@ const Page = () => {
   const [courses, setCourses] = useState<AddCourse2Type[]>([]);
   const [checkList, setCheckList] = useState<AddCourse2Type[]>([]);
   const [checked, setChecked] = useState<number[]>([]);
-  const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>([]);
+  const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>(
+    []
+  );
   const [sections, setSections] = useState<SectionType[]>([]);
   const [classes, setClasses] = useState<ClassesType[]>([]);
-  const [courseEnrollments, setCourseEnrollments] = useState<StudentClassType[] >([]);
+  const [courseEnrollments, setCourseEnrollments] = useState<
+    StudentClassType[]
+  >([]);
   const [refresh, setRefresh] = useState(false);
   const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
-
+  const [unableCourses, setUnableCourses] = useState<AddCourse2Type[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,108 +104,115 @@ const Page = () => {
     fetchData();
     setRefresh(!refresh);
   }, [user]);
-  
-useEffect(() => {
-  const updatedCheckList: AddCourse2Type[] = [];
-  const updatedSections: SectionType[] = [];
-  const updatedClasses: ClassesType[] = [];
-  const updatedSections2: SectionType[] = [];
-  const updatedClasses2: ClassesType[] = [];
 
-  courses.forEach((course) => {
-    const prerequisiteCourse = prerequisites.find(
-      (prereq) => prereq.course_id === course.id
-    );
-    if (
-      !prerequisiteCourse &&
-      !updatedCheckList.find((item) => item.id === course.id)
-    ) {
-      const prerequisiteSection = sections.find(
-        (prereq) => course.id === prereq.course_id&&
-          prereq.max_students > prereq.students_num
+  useEffect(() => {
+    const updatedCheckList: AddCourse2Type[] = [];
+    const updatedCheckList2: AddCourse2Type[] = [];
+    const updatedSections: SectionType[] = [];
+    const updatedClasses: ClassesType[] = [];
+
+    courses.forEach((course) => {
+      const prerequisiteCourse = prerequisites.filter(
+        (prereq) => prereq.course_id === course.id
       );
-        if (prerequisiteSection) {updatedSections2.push(prerequisiteSection);
-
-      classes.forEach((classItem) => {
-        updatedSections2.forEach((sec) => {
-          if (sec.id === classItem.section_id) {
-            updatedClasses2.push(classItem);
-          }
-        });
-      });
-
-      
-      courseEnrollments.forEach((courseEnroll) => {
-        updatedClasses2.forEach((classItem) => {
-        const check = updatedClasses2.find(
-          (classItem) =>
-            courseEnroll.student_id === user?.id &&
-            classItem.id === courseEnroll.class_id &&
-            courseEnroll.pass === true
+      if (
+        !prerequisiteCourse.length &&
+        !updatedCheckList.find((item) => item.id === course.id)
+      ) {
+        const prerequisiteSection = sections.find(
+          (prereq) =>
+            course.id === prereq.course_id &&
+            prereq.max_students > prereq.students_num
         );
-          
-          if (
-              !check&&
-            !updatedCheckList.find((item) => item.id === course.id)
-          ) {
-            // console.log(course);
-            updatedCheckList.push(course);
-          } else if (
-            courseEnroll.student_id === user?.id &&
-            classItem.id === courseEnroll.class_id &&
-            (courseEnroll.pass === false || courseEnroll.can_repeat === true) &&
-            !updatedCheckList.find((item) => item.id === course.id)
-          ) {
-            updatedCheckList.push(course);
+        if (prerequisiteSection) {
+          updatedSections.push(prerequisiteSection);
+        }
+
+        classes.forEach((classItem) => {
+          updatedSections.forEach((sec) => {
+            if (sec.id === classItem.section_id) {
+              updatedClasses.push(classItem);
+            }
+          });
+        });
+
+        if (courseEnrollments.length) {
+          courseEnrollments.forEach((courseEnroll) => {
+            const passed = updatedClasses.map((classItem) => {
+              if (
+                courseEnroll.student_id === user?.id &&
+                classItem.id === courseEnroll.class_id &&
+                courseEnroll.pass === true &&
+                courseEnroll.can_repeat === false
+              ) {
+                const index = updatedCheckList.indexOf(course);
+                if (index !== -1) {
+                  updatedCheckList.splice(index, 1);
+                }
+              } else if (
+                !updatedCheckList.find((item) => item.id === course.id)
+              ) {
+                updatedCheckList.push(course);
+              }
+            });
+          });
+        } else {
+          updatedCheckList.push(course);
+        }
+      } else {
+        prerequisiteCourse.map((preCourse) => {
+          const updatedClasses2: ClassesType[] = [];
+          const prerequisiteSectionIds2 = sections.filter(
+            (prereq) => preCourse.prerequisite_course_id === prereq.course_id
+          );
+
+          classes.forEach((classItem) => {
+            prerequisiteSectionIds2.forEach((sec) => {
+              if (sec.id === classItem.section_id) {
+                updatedClasses2.push(classItem);
+              }
+            });
+          });
+
+          if (courseEnrollments.length) {
+            courseEnrollments.forEach((courseEnroll) => {
+              updatedClasses2.map((classItem) => {
+                const passed = courseEnrollments.find(
+                  (classItem) =>
+                    courseEnroll.student_id === user?.id &&
+                    classItem.id === courseEnroll.class_id &&
+                    courseEnroll
+                );
+
+                if (
+                  passed?.pass === true &&
+                  !updatedCheckList.find((item) => item.id === course.id)
+                ) {
+                  updatedCheckList.push(course);
+                  console.log(course);
+                } else {
+                  if (
+                    !updatedCheckList2.find((item) => item.id === course.id)
+                  ) {
+                    updatedCheckList2.push(course);
+                  }
+                  const index = updatedCheckList.indexOf(course);
+                  if (index !== -1) {
+                    updatedCheckList.splice(index, 1);
+                  }
+                }
+              });
+            });
+          } else if (!updatedCheckList2.find((item) => item.id === course.id)) {
+            updatedCheckList2.push(course);
           }
         });
-      });}
-    } else {
-        const prerequisiteSectionIds2 = sections.filter(
-          (prereq) => course.id === prereq.course_id
-        );
-      updatedSections2.push(...prerequisiteSectionIds2);
+      }
+    });
 
-      classes.forEach((classItem) => {
-        updatedSections2.forEach((sec) => {
-          if (sec.id === classItem.section_id) {
-            updatedClasses2.push(classItem);
-          }
-        });
-      });
-
-      const prerequisiteSectionIds = sections.filter(
-        (prereq) =>
-          prerequisiteCourse?.prerequisite_course_id === prereq.course_id
-      );
-      updatedSections.push(...prerequisiteSectionIds);
-
-      classes.forEach((classItem) => {
-        updatedSections.forEach((sec) => {
-          if (sec.id === classItem.section_id) {
-            updatedClasses.push(classItem);
-          }
-        });
-      });
-
-      courseEnrollments.forEach((courseEnroll) => {
-        updatedClasses.forEach((classItem) => { 
-          
-          if (
-            courseEnroll.student_id === user?.id &&
-            classItem.id === courseEnroll.class_id &&
-            courseEnroll.pass &&
-            !updatedCheckList.find((item) => item.id === course.id)
-          ) {
-              updatedCheckList.push(course);
-          }
-        });
-      });
-    }
-  });
-
-  setCheckList(updatedCheckList);
-}, [user, classes, courseEnrollments, prerequisites, sections, courses]);
+    setUnableCourses(updatedCheckList2);
+    setCheckList(updatedCheckList);
+  }, [user, classes, courseEnrollments, prerequisites, sections, courses]);
 
   const handleCheck = (item: AddCourse2Type) => {
     const checkedIndex = checked.indexOf(item.id);
@@ -210,38 +221,38 @@ useEffect(() => {
     } else {
       const updatedChecked = [...checked];
       updatedChecked.splice(checkedIndex, 1);
-      setChecked(updatedChecked); 
+      setChecked(updatedChecked);
     }
     setRefresh(!refresh);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = () => {
     checked.forEach((item) => {
       const updatedSections2: SectionType[] = [];
       const updatedClasses2: ClassesType[] = [];
 
       const prerequisiteSection = sections.find(
-        (prereq) => item === prereq.course_id&&
-          prereq.max_students > prereq.students_num
+        (prereq) =>
+          item === prereq.course_id && prereq.max_students > prereq.students_num
       );
-        if (prerequisiteSection) {updatedSections2.push(prerequisiteSection);
+      if (prerequisiteSection) {
+        updatedSections2.push(prerequisiteSection);
 
-
-      classes.forEach((classItem) => {
-        updatedSections2.forEach((sec) => {
-          if (sec.id === classItem.section_id) {
-            updatedClasses2.push(classItem);
-          }
+        classes.forEach((classItem) => {
+          updatedSections2.forEach((sec) => {
+            if (sec.id === classItem.section_id) {
+              updatedClasses2.push(classItem);
+            }
+          });
         });
-      });
-      if (updatedClasses2[0]){
-        const data1 = {
-          student_id: user?.id,
-          class_id: updatedClasses2[0].id,
-        };
-      axios.post(`/api/getAll/getAllCourseEnroll/${user?.id}`, data1);
-      }}
+        if (updatedClasses2[0]) {
+          const data1 = {
+            student_id: user?.id,
+            class_id: updatedClasses2[0].id,
+          };
+          axios.post(`/api/getAll/getAllCourseEnroll/${user?.id}`, data1);
+        }
+      }
     });
     const data2 = {
       student_id: user?.id,
@@ -254,41 +265,109 @@ useEffect(() => {
   };
 
   return (
-    <div className="absolute w-[100%] flex text-sm p-10 justify-content items-center ">
+    <div className="absolute w-[80%] flex text-sm p-10 justify-center flex-col items-center ">
       {perms.map((item, index) =>
         item.permission_id == 20 && item.active ? (
-          <form
-            key={index}
-            onSubmit={handleSubmit}
-            className=" flex-col w-screen flex justify-content items-center"
-          >
-            <h1 className="flex w-[400px] text-sm justify-center items-center bg-darkBlue text-secondary">
-              اختر المواد
-            </h1>
-            <div className="p-1 rounded-md">
-              {checkList.map((item, index) => (
-                <div
-                  className="bg-lightBlue flex w-[400px] justify-between"
-                  key={index}
-                >
-                  <input
-                    className="p-2 ml-9"
-                    value={item.course_name}
-                    type="checkbox"
-                    onChange={() => handleCheck(item)}
-                    checked={checked.includes(item.id)}
-                  />
-                  <label className="pr-5  ">{item.course_name}</label>
-                </div>
-              ))}
-            </div>
+          <>
+            <h1> اختر المواد</h1>
+            <table className="w-[1100px] ">
+              <thead>
+                <tr>
+                  <th className="border border-gray-300 px-4 py-2 bg-grey"></th>
+                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                    المواد المشروطة
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                    الكريدت
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                    درجة النجاح
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                    الساعات
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                    اجباري/اختياري
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                    اسم المادة
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {checkList.map((item, index) => (
+                  <tr key={index}>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <input
+                        value={item.course_name}
+                        type="checkbox"
+                        onChange={() => handleCheck(item)}
+                        checked={checked.includes(item.id)}
+                      />
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2"></td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {item.credits}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {item.passing_percentage}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {item.hours}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {item.IsOptional ? 'اجباري' : 'اختياري'}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {item.course_name}
+                    </td>
+                  </tr>
+                ))}
+                {unableCourses.map((item, index) => {
+                  const updatedCheckList: AddCourse2Type[] = [];
+                  const pre = prerequisites.filter(
+                    (i) => i.course_id === item.id
+                  );
+                  pre.map((i) =>
+                    courses.map((c) => {
+                      if (i.prerequisite_course_id == c.id) {
+                        updatedCheckList.push(c);
+                      }
+                    })
+                  );
+                  return (
+                    <tr className="text-red-500" key={index}>
+                      <td className="border border-gray-300 px-4 py-2"></td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {updatedCheckList.map((c) => `${c.course_name} - `)}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {item.credits}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {item.passing_percentage}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {item.hours}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {item.IsOptional ? 'اجباري' : 'اختياري'}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {item.course_name}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
             <button
-              type="submit"
-              className="flex w-[400px]  text-sm justify-center items-center bg-darkBlue text-secondary"
+              onClick={() => handleSubmit}
+              className="flex p-3 text-sm  bg-darkBlue text-secondary m-3 rounded-md"
             >
               اضافة
             </button>
-          </form>
+          </>
         ) : (
           <div
             key={index}

@@ -1,7 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import axios from 'axios';
+import { InfoDoctorType, MajorRegType } from '@/app/types/types';
 
 const stuInfo = [
   'الاسم',
@@ -25,38 +27,59 @@ const Page = () => {
     throw new Error('Unauthorized');
   }
 
+  const [major, setMajor] = useState<string>();
+  const [advisor, setAdvisor] = useState<string>();
+
   const user = session.data?.user;
 
-  const titles = stuInfo.map((title, index) => (
-    <td className="flex justify-center p-2 items-center text-right" key={index}>
-      {title}
-    </td>
-  ));
+  useEffect(() => {
+    const fetchPosts = async () => {
+      const responseMaj = await axios.get(
+        `/api/majorEnrollment/${user?.major}`
+      );
+      const messageMaj: MajorRegType[] = responseMaj.data.message;
+      setMajor(messageMaj[0].major_name);
+
+
+      axios.get(`/api/personalInfo/doctor/${user?.advisor}`).then((res) => {
+        const message: InfoDoctorType[] = res.data.message;
+        setAdvisor(message[0].name);
+      });};
+  
+    fetchPosts();
+  }, [user]);
+
 
 
   return (
-    <table className="fixed flex text-sm w-[800px] top-[200px] right-[500px]">
-      <tr className="w-full">
-        <tr key={1} className="flex flex-col">
-          <td className="p-2">{user?.name ? user?.name : 'غير محدد'}</td>
-          <td className="p-2">{user?.surname ? user?.surname : 'غير محدد'}</td>
-          <td className="p-2">{user?.id ? user?.id : 'غير محدد'}</td>
-          <td className="p-2">
-            {user?.birth_date ? user?.birth_date : 'غير محدد'}
-          </td>
-          <td className="p-2">to be integrated</td>
-          <td className="p-2">{user?.semester ? user.semester : 'غير محدد'}</td>
-          <td className="p-2">{user?.address ? user?.address : 'غير محدد'}</td>
-          <td className="p-2">{user?.phone ? user?.phone : 'غير محدد'}</td>
-          <td className="p-2">{user?.email ? user?.email : 'غير محدد'}</td>
-          <td className="p-2">
-            {user?.enrollment_date ? user?.enrollment_date : 'غير محدد'}
-          </td>
-          <td className="p-2">to be integrated</td>
-        </tr>
-      </tr>
-      <tr className="w-1/4 bg-darkBlue text-secondary">{titles}</tr>
-    </table>
+    <div className="flex w-[80%] absolute justify-center items-center mt-20">
+    <table className=" text-sm  flex flex-row-reverse border border-gray-300 ">
+        <thead>
+          <tr className="flex flex-col bg-darkBlue text-secondary">
+            {stuInfo.map((title, index) => (
+              <th className="border border-gray-300 px-4 py-2" key={index}>
+                {title}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          <tr className="flex flex-col border border-gray-300 w-[600px] ">
+            <td className="border border-gray-300 px-4 py-2 ">{user?.name}</td>
+            <td className="border border-gray-300 px-4 py-2">{user?.surname}</td>
+            <td className="border border-gray-300 px-4 py-2">{user?.id}</td>
+            <td className="border border-gray-300 px-4 py-2">{user?.birth_date}</td>
+            <td className="border border-gray-300 px-4 py-2">{major ? major : 'غير محدد'}</td>
+            <td className="border border-gray-300 px-4 py-2">{user?.semester}</td>
+            <td className="border border-gray-300 px-4 py-2">{user?.address}</td>
+            <td className="border border-gray-300 px-4 py-2">{user?.phone}</td>
+            <td className="border border-gray-300 px-4 py-2">{user?.email}</td>
+            <td className="border border-gray-300 px-4 py-2">{user?.enrollment_date}</td>
+            <td className="border border-gray-300 px-4 py-2">{advisor ? advisor : 'غير محدد'}</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
   );
 };
 

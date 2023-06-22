@@ -13,7 +13,7 @@ export async function GET(request: Request,
     const data = await supabase
       .from('tb_announcements')
       .select('*')
-      .order('created_at', { ascending: true })
+      .order('id', { ascending: true })
       .eq('posted_for_class_id', params.id);
 
 

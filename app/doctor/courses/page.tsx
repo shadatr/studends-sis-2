@@ -53,7 +53,7 @@ const Page = () => {
     };
 
     fetchData();
-  }, [user, refresh]);
+  }, [user]);
 
   useEffect(() => {
     const updatedStudentCourses: DoctorCourse2Type[] = [];
@@ -76,12 +76,13 @@ const Page = () => {
     });
 
     setDoctorCourses(updatedStudentCourses);
-  }, [courses, refresh, sections]);
+  }, [ refresh]);
 
   return (
     <div className="absolute w-[80%] flex flex-col text-sm p-10 justify-content items-center ">
       <table className="w-[900px] m-10">
         <thead>
+          <tr>
           <th className="border border-gray-300 px-4 py-2 bg-grey">
             عدد الطلاب
           </th>
@@ -91,6 +92,7 @@ const Page = () => {
           <th className="border border-gray-300 px-4 py-2 bg-grey">
             اسم المادة
           </th>
+          </tr>
         </thead>
         <tbody>
           {doctorCourses.map((course, index) => (
