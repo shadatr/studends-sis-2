@@ -107,8 +107,8 @@ const Page = ({ params }: { params: { id: number } }) => {
         updatedCheckList.push(studentCourse); }
         else{
             const data = {
-              course_name: studentCourse.course_name,
-              course: course,
+              course: studentCourse,
+              courseEnroll: course,
               section: studentSection,
               class: studenClass,
             };
@@ -240,69 +240,74 @@ const Page = ({ params }: { params: { id: number } }) => {
         </button>
       </form>
       <div>
-
-      <table className="m-10">
-        <thead>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">النتيجة</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">المجموع</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">
-            اعمال السنة
-          </th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">
-            الامتحان الانهائي
-          </th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">
-            الامتحان النصفي
-          </th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">
-            اسم المجموعة
-          </th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">
-            اسم المادة
-          </th>
-        </thead>
-        <tbody>
-          {studentCourses.map((course, index) => (
-            <tr key={index}>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.class?.result_publish ? course.course.pass : ''}
-              </td>
-              <td className="border border-gray-300 px-4 py-2  ">
-                {course.class?.result_publish ? course.course.result : ''}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.class?.class_work}%
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.class?.class_work_publish
-                  ? course.course.class_work
-                  : ''}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.class?.final}%
-              </td>
-              <td className="border border-gray-300 px-4 py-2 flex justify-between items-center">
-                {course.class?.final_publish ? course.course.final : ''}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.class?.midterm}%
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.class?.mid_publish ? course.course.midterm : ''}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.section?.name}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.course_name}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <table className="m-10">
+          <thead>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              النتيجة
+            </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              المجموع
+            </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              اعمال السنة
+            </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              الامتحان الانهائي
+            </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              الامتحان النصفي
+            </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              اسم المجموعة
+            </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              اسم المادة
+            </th>
+          </thead>
+          <tbody>
+            {studentCourses.map((course, index) => (
+              <tr key={index}>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.class?.result_publish ? course.courseEnroll.pass? 'ناجح' : 'راسب' : ''}
+                </td>
+                <td className="border border-gray-300 px-4 py-2  ">
+                  {course.class?.result_publish
+                    ? course.courseEnroll.result
+                    : ''}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.course.class_work}%
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.class?.class_work_publish
+                    ? course.course.class_work
+                    : ''}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.course.final}%
+                </td>
+                <td className="border border-gray-300 px-4 py-2 flex justify-between items-center">
+                  {course.class?.final_publish ? course.courseEnroll.final : ''}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.course.midterm}%
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.class?.mid_publish ? course.courseEnroll.midterm : ''}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.section?.name}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.course.course_name}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

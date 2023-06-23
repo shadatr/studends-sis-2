@@ -84,26 +84,27 @@ useEffect(() => {
         );
 
         if (grade.student_id == student?.id) {
-          if (grade.midterm && grade.final && grade.class_work) {
+          if (grade.midterm&& grade.final&& grade.class_work ) {
             if (
-              CourseMessage[0].midterm &&
-              CourseMessage[0].final &&
-              CourseMessage[0].class_work
+              CourseMessage[0].midterm != undefined &&
+              CourseMessage[0].final !== undefined &&
+              CourseMessage[0].class_work !== undefined
             ) {
+              
               const avrg =
                 (grade.midterm * CourseMessage[0].midterm) / 100 +
                 (grade.final * CourseMessage[0].final) / 100 +
                 (grade.class_work * CourseMessage[0].class_work) / 100;
               return {
                 ...grade,
-                result: avrg,
+                result: parseFloat(avrg.toFixed(2)),
               };
             }
           }
         }
         return grade;
       });
-
+      console.log(updatedGradesResult);
       axios.post(`/api/exams/examRes/${params.id}/result`, updatedGradesResult);
 
       const updatedGradesPass = message.map((grade) => {
@@ -112,11 +113,12 @@ useEffect(() => {
         );
 
         if (grade.student_id == student?.id) {
-          if (grade.midterm && grade.final && grade.class_work) {
+          if (grade.midterm  && grade.final&& grade.class_work) {
+            
             if (
-              CourseMessage[0].midterm &&
-              CourseMessage[0].final &&
-              CourseMessage[0].class_work
+              CourseMessage[0].midterm != undefined &&
+              CourseMessage[0].final !== undefined &&
+              CourseMessage[0].class_work !== undefined
             ) {
               const avrg =
                 (grade.midterm * CourseMessage[0].midterm) / 100 +
@@ -188,7 +190,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="flex absolute flex-col w-[90%] justify-center items-center">
+    <div className="flex absolute flex-col w-[80%] justify-center items-center">
       <form onSubmit={(e) => e.preventDefault()}>
       {perms.map((item) =>
        {
@@ -224,7 +226,7 @@ useEffect(() => {
               </button>
             </>
           );}})}
-        <table className="border-collapse mt-8 w-[1000px]">
+        <table className="border-collapse mt-8 w-[1100px]">
           <thead>
           <tr>
             <th className="border border-gray-300 px-4 py-2 bg-grey">
@@ -291,7 +293,7 @@ useEffect(() => {
                   {editHw && item.permission_id == 21 ? (
                     <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
                       <input
-                        className="text-right px-4 py-2 bg-lightBlue w-[100px]"
+                        className="text-right px-4 py-2 bg-lightBlue w-[60px]"
                         key={user.student_id}
                         value={
                           grades.find(
@@ -320,7 +322,7 @@ useEffect(() => {
                   {editFinal && item.permission_id == 21 ? (
                     <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
                       <input
-                        className="text-right px-4 py-2 bg-lightBlue w-[120px]"
+                        className="text-right px-4 py-2 bg-lightBlue w-[60px]"
                         key={user.student_id}
                         value={
                           grades.find(
@@ -349,7 +351,7 @@ useEffect(() => {
                   {editMid && item.permission_id == 21 ? (
                     <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
                       <input
-                        className="text-right px-4 py-2 bg-lightBlue w-[120px]"
+                        className="text-right px-4 py-2 bg-lightBlue w-[60px]"
                         key={user.student_id}
                         value={
                           grades.find(

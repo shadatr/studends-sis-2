@@ -17,14 +17,15 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
+      if(user){
       const response = await axios.get(
         `/api/course/courses/${user?.id}/doctor`
       );
       const message: SectionType[] = response.data.message;
       setSections(message);
-    };
+    }};
     fetchPosts();
-  }, [user?.id]);
+  }, [user]);
 
   return (
     <div className=" w-[80%] justify-center items-center flex p-10 absolute">

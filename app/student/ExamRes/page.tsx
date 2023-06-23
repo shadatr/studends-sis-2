@@ -100,8 +100,8 @@ const Page = () => {
 
       if (studentCourse) {
         const data = {
-          course_name: studentCourse.course_name,
-          course: course,
+          course: studentCourse,
+          courseEnroll: course,
           section: studentSection,
           class: studenClass,
         };
@@ -116,6 +116,7 @@ const Page = () => {
     <div className="absolute w-[85%] flex flex-col text-sm p-10 justify-content items-center ">
       <table className="m-10 w-[1100px]">
         <thead>
+          <tr>
           <th className="border border-gray-300 px-4 py-2 bg-grey">النتيجة</th>
           <th className="border border-gray-300 px-4 py-2 bg-grey">المجموع</th>
           <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
@@ -136,15 +137,16 @@ const Page = () => {
           <th className="border border-gray-300 px-4 py-2 bg-grey">
             اسم المادة
           </th>
+          </tr>
         </thead>
         <tbody>
           {studentCourses.map((course, index) => (
             <tr key={index}>
               <td className="border border-gray-300 px-4 py-2">
-                {course.class?.result_publish ? course.course.pass : ''}
+                {course.class?.result_publish ? course.courseEnroll.pass? 'ناجح' : 'راسب': ''}
               </td>
               <td className="border border-gray-300 px-4 py-2  ">
-                {course.class?.result_publish ? course.course.result : ''}
+                {course.class?.result_publish ? course.courseEnroll.result : ''}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {course.course.class_work}%
@@ -157,20 +159,20 @@ const Page = () => {
               <td className="border border-gray-300 px-4 py-2">
                 {course.course.final}%
               </td>
-              <td className="border border-gray-300 px-4 py-2 flex justify-between items-center">
-                {course.class?.final_publish ? course.course.final : ''}
+              <td className="border border-gray-300 px-4 py-2 ">
+                {course.class?.final_publish ? course.courseEnroll.final : ''}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {course.course.midterm}%
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {course.class?.mid_publish ? course.course.midterm : ''}
+                {course.class?.mid_publish ? course.courseEnroll.midterm : ''}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {course.section?.name}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {course.course_name}
+                {course.course.course_name}
               </td>
             </tr>
           ))}

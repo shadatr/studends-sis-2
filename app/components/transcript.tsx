@@ -46,7 +46,7 @@ const [transcript, setTranscript] = useState<TranscriptType[]>([]);
 
 
         const responseCourseEnroll = await axios.get(
-          `/api/getAll/getCourseEnrollStudent/${user}`
+          `/api/getAll/getCourseEnrollStudentGpa/${user}`
         );
         const messageCourseEnroll: StudentClassType[] =
           responseCourseEnroll.data.message;
@@ -117,8 +117,8 @@ const [transcript, setTranscript] = useState<TranscriptType[]>([]);
         if (course.approved) {
           {
             const data = {
-              course_name: studentCourse.course_name,
-              course: course,
+              course: studentCourse,
+              courseEnroll: course,
               section: studentSection,
               class: studenClass,
             };
@@ -157,7 +157,7 @@ const [transcript, setTranscript] = useState<TranscriptType[]>([]);
 
             <tbody>
               {studentCourses.map((course, courseIndex) => {
-                if (course?.course.semester === index + 1) {
+                if (course?.courseEnroll.semester === index + 1) {
                   return (
                     <tr className="flex flex-row w-full" key={courseIndex}>
                       <td
@@ -168,18 +168,18 @@ const [transcript, setTranscript] = useState<TranscriptType[]>([]);
                         }`}
                       >
                         {course.class?.result_publish
-                          ? course.course.pass
+                          ? course.courseEnroll.pass
                             ? 'ناجح'
                             : 'راسب'
                           : ''}
                       </td>
                       <td className="border border-gray-300 px-4 py-2 flex flex-row w-full items-center justify-center">
                         {course.class?.result_publish
-                          ? course.course.result
+                          ? course.courseEnroll.result
                           : ''}
                       </td>
                       <td className="border border-gray-300 px-4 py-2 flex flex-row w-full items-center justify-center">
-                        {course.course_name}
+                        {course.course.course_name}
                       </td>
                     </tr>
                   );

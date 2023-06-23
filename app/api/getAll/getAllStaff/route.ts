@@ -18,7 +18,6 @@ export async function GET() {
       id: result.data[i].id,
       name: result.data[i].name,
       surname: result.data[i].surname,
-      admin: result.data[i].admin,
       createdAt: result.data[i].enrollment_date,
       active : result.data[i].active
     });

@@ -21,8 +21,7 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      if(user){
-
+      if (user) {
         const response = await axios.get(
           `/api/allPermission/admin/selectedPerms/${user?.id}`
         );
@@ -35,11 +34,10 @@ const Page = () => {
           setStudents(message);
         });
       }
-
     };
 
     fetchPosts();
-  }, [user?.id]);
+  }, [user?.id, refresh]);
 
   const handleActivate = (studentId: number, active: boolean) => {
     const data = { studentId, active };

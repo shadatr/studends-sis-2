@@ -14,7 +14,7 @@ export async function GET(
     const data = await supabase
       .from('tb_course_enrollment')
       .select('*')
-      .eq('student_id', params.id);
+      .eq('student_id', params.id).eq('active', true);
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {

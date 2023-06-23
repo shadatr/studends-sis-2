@@ -5,14 +5,13 @@ import React, { useEffect, useState } from 'react';
 import {
   AddCourse2Type,
   Section2Type,
-  DoctorCourse2Type,
+  StudentCourse2Type,
   DayOfWeekType,
   CourseProgramType,
   CheckedType,
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
 import { BsXCircleFill } from 'react-icons/bs';
-
 
 const hours: string[] = [
   '8:00',
@@ -61,7 +60,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   }
 
   const [courses, setCourses] = useState<AddCourse2Type[]>([]);
-  const [doctorCourses, setDoctorCourses] = useState<DoctorCourse2Type[]>([]);
+  const [doctorCourses, setDoctorCourses] = useState<StudentCourse2Type[]>([]);
   const [sections, setSections] = useState<Section2Type[]>([]);
   const [selectedCourse, setSelecetedCourse] = useState<string>();
   const [selectedStartHour, setSelecetedStartHour] = useState<string>();
@@ -70,7 +69,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [Location, setLocation] = useState<string>();
   const [programClass, setProgramClass] = useState<CourseProgramType[]>([]);
   const [refresh, setRefresh] = useState(false);
-
+  const [edit, setEdit] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -115,10 +114,10 @@ const Page = ({ params }: { params: { id: number } }) => {
     };
 
     fetchData();
-  }, [params, refresh]);
+  }, [params, edit]);
 
   useEffect(() => {
-    const updatedStudentCourses: DoctorCourse2Type[] = [];
+    const updatedStudentCourses: StudentCourse2Type[] = [];
 
     sections.map((sec) => {
       const studentCourse = courses.find(
@@ -127,7 +126,7 @@ const Page = ({ params }: { params: { id: number } }) => {
 
       if (studentCourse) {
         const data = {
-          course_name: studentCourse.course_name,
+          course: studentCourse,
           section: sec,
         };
         updatedStudentCourses.push(data);
@@ -138,11 +137,19 @@ const Page = ({ params }: { params: { id: number } }) => {
   }, [courses, refresh, sections]);
 
   const handleSubmit = () => {
-    if (!(selectedDay && selectedCourse && selectedStartHour && selectedEndHour&&location)){
-        toast.error('يجب ملئ جميع البيانات');
-        return;
+    if (
+      !(
+        selectedDay &&
+        selectedCourse &&
+        selectedStartHour &&
+        selectedEndHour &&
+        location
+      )
+    ) {
+      toast.error('يجب ملئ جميع البيانات');
+      return;
     }
-      const findDay = days.find((day) => day.name == selectedDay);
+    const findDay = days.find((day) => day.name == selectedDay);
     const findClass = doctorCourses.find(
       (course) => course.section?.name == selectedCourse
     );
@@ -167,10 +174,10 @@ const Page = ({ params }: { params: { id: number } }) => {
       .catch((err) => {
         toast.error(err.response.data.message);
       });
+    setEdit(!edit);
   };
 
-
-  const handleDelete=(item:CourseProgramType)=>{
+  const handleDelete = (item: CourseProgramType) => {
     axios
       .post('/api/courseProgram/1/deleteCourseProg', item)
       .then((res) => {
@@ -179,8 +186,8 @@ const Page = ({ params }: { params: { id: number } }) => {
       .catch((err) => {
         toast.error(err.response.data.message);
       });
+    setEdit(!edit);
   };
-  
 
   return (
     <div className="absolute w-[80%] flex flex-col text-sm p-10 justify-content items-center">
@@ -196,11 +203,17 @@ const Page = ({ params }: { params: { id: number } }) => {
             <th className="border border-gray-300 px-4 py-2 bg-grey">
               اسم المادة
             </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              عدد الساعات
+            </th>
           </tr>
         </thead>
         <tbody>
           {doctorCourses.map((course, index) => (
             <tr key={index}>
+              <td className="border border-gray-300 px-4 py-2">
+                {course.course?.hours}
+              </td>
               <td className="border border-gray-300 px-4 py-2">
                 {course.section?.students_num}
               </td>
@@ -208,7 +221,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                 {course.section?.name}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {course.course_name}
+                {course.course?.course_name}
               </td>
             </tr>
           ))}

@@ -66,18 +66,11 @@ const Page = ({ params }: { params: { id: number } }) => {
           طباعة درجات
         </button>
         <button
-          className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-1 rounded-md w-[250px]"
+          className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
           type="submit"
-          onClick={() => handleSubmit('mid_publish')}
+          onClick={() => handleSubmit('result_publish')}
         >
-          موافقة على درجات الامتحان النصفي
-        </button>
-        <button
-          className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-1 rounded-md w-[250px]"
-          type="submit"
-          onClick={() => handleSubmit('final_publish')}
-        >
-          موافقة على درجات الامتحان النهائي
+          موافقة النتيجة النهائية
         </button>
         <button
           className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-1 rounded-md w-[200px]"
@@ -87,11 +80,18 @@ const Page = ({ params }: { params: { id: number } }) => {
           موافقة على درجات اعمال السنة
         </button>
         <button
-          className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
+          className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-1 rounded-md w-[250px]"
           type="submit"
-          onClick={() => handleSubmit('result_publish')}
+          onClick={() => handleSubmit('final_publish')}
         >
-          موافقة النتيجة النهائية
+          موافقة على درجات الامتحان النهائي
+        </button>
+        <button
+          className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-1 rounded-md w-[250px]"
+          type="submit"
+          onClick={() => handleSubmit('mid_publish')}
+        >
+          موافقة على درجات الامتحان النصفي
         </button>
       </div>
       <div ref={printableContentRef}>

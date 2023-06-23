@@ -17,7 +17,6 @@ const Page = () => {
   const user = session.data?.user;
 
   const [courses, setCourses] = useState<AddCourse2Type[]>([]);
-  const [refresh, setRefresh] = useState(false);
   const [examProg, setExamProg] = useState<ExamProgramType[]>([]);
 
   useEffect(() => {
@@ -54,11 +53,10 @@ const Page = () => {
       } catch (error) {
         console.error('Error fetching data:', error);
       }
-      setRefresh(!refresh);
     };
 
     fetchData();
-  }, [user, refresh]);
+  }, [user]);
 
 
   const handlePrint = () => {

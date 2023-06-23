@@ -109,8 +109,8 @@ const Page = ({ params }: { params: { id: number } }) => {
         updatedCheckList.push(studentCourse); }
         else{
             const data = {
-              course_name: studentCourse.course_name,
-              course: course,
+              course: studentCourse,
+              courseEnroll: course,
               section: studentSection,
               class: studenClass,
             };
@@ -307,7 +307,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                     : ''}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 ">
-                  {course.class?.result_publish ? course.course.result : ''}
+                  {course.class?.result_publish
+                    ? course.courseEnroll.result
+                    : ''}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {course.course.class_work}%
@@ -321,19 +323,21 @@ const Page = ({ params }: { params: { id: number } }) => {
                   {course.course.final}%
                 </td>
                 <td className="border border-gray-300 px-4 py-2 ">
-                  {course.class?.final_publish ? course.course.final : ' '}
+                  {course.class?.final_publish
+                    ? course.courseEnroll.final
+                    : ' '}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {course.course.midterm}%
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  {course.class?.mid_publish ? course.course.midterm : ''}
+                  {course.class?.mid_publish ? course.courseEnroll.midterm : ''}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {course.section?.name}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  {course.course_name}
+                  {course.course.course_name}
                 </td>
               </tr>
             ))}

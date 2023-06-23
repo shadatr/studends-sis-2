@@ -118,6 +118,12 @@ const handleSubmit = () => {
 
   return (
     <div className="flex absolute flex-col justify-center items-center w-[80%] ">
+      <Link
+        href={`/management/course/managementWork/courseStudents/${params.idSec}`}
+        className="p-2 rounded-md text-secondary bg-blue-700 hover:bg-blue-500 text-sm"
+      >
+        الطلاب و الدرجات
+      </Link>
       {classes.map((item, index) => {
         const selectedCourse = courses.find((course) => courseId === course.id);
         const selectedStartHour = courseProg.map((item) => {

@@ -352,8 +352,8 @@ export type InfoDoctorType = {
 };
 
 export type StudentCourseType = {
-  course_name: string;
-  course: StudentClassType;
+  course: AddCourse2Type;
+  courseEnroll: StudentClassType;
   section?: SectionType;
   class?: ClassesType;
 };

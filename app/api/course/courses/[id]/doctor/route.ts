@@ -20,31 +20,28 @@ export async function GET(
     const messageData = parsedData.data;
     const data3: ClassesType[] = messageData;
 
-    const sections: Section2Type[] = [];
+    const prerequisitePromises = data3.map(async (item) => {
+      const response: PostgrestResponse<{ [key: string]: any }> = await supabase
+        .from('tb_section')
+        .select('*')
+        .in('id', [item.section_id]);
 
-    await Promise.all(
-      data3.map(async (item) => {
-        const response: PostgrestResponse<{ [key: string]: any }> =
-          await supabase
-            .from('tb_section')
-            .select('*')
-            .in('id', [item.section_id]);
+      const data2: { [key: string]: any }[] = response.data || [];
 
-        const data2: { [key: string]: any }[] = response.data || [];
+      return data2.map((sectionData) => ({
+        class_id: item.id,
+        id: sectionData.id,
+        course_id: sectionData.course_id,
+        name: sectionData.name,
+        max_students: sectionData.max_students,
+        students_num: sectionData.students_num,
+      }));
+    });
 
-        data2.forEach((sectionData) => {
-          const section: Section2Type = {
-            class_id: item.id,
-            id: sectionData.id,
-            course_id: sectionData.course_id,
-            name: sectionData.name,
-            max_students: sectionData.max_students,
-            students_num: sectionData.students_num,
-          };
-          sections.push(section);
-        });
-      })
-    );
+    const prerequisiteData = await Promise.all(prerequisitePromises);
+    const prerequisites: Section2Type[] = prerequisiteData.flat();
+
+    console.log(data3);
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'An error occurred' }), {
@@ -52,7 +49,9 @@ export async function GET(
       });
     }
 
-    return new Response(JSON.stringify({ message: sections }), {
+    console.log(prerequisites);
+
+    return new Response(JSON.stringify({ message: prerequisites }), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {

@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import { FaTrashAlt } from 'react-icons/fa';
 import { useSession } from 'next-auth/react';
 
-const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
+const Page = ({ params }: { params: { courseId: number; majorId: number } }) => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
@@ -44,7 +44,7 @@ const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
         setSection(message);
 
         const responseCourse = await axios.get(
-          `/api/course/majorCourses/${params.majId}`
+          `/api/course/majorCourses/${params.majorId}`
         );
         const messageCourse: CourseType[] = responseCourse.data.message;
         console.log(messageCourse);
@@ -60,14 +60,14 @@ const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
       };
       fetchPosts();
     }
-  }, [params.courseId, load, params.majId]);
+  }, [params.courseId, load, params.majorId]);
 
   const handleRegisterSection = () => {
     const selectedCourse = courses.find(
       (course) => params.courseId == course.id
     );
     const data = {
-      name: selectedCourse?.course_name + `(S${section.length + 1})`,
+      name: selectedCourse?.course_name + `(مجموعة${section.length + 1})`,
       course_id: selectedCourse?.id,
     };
     console.log(data);

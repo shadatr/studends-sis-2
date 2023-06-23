@@ -31,6 +31,7 @@ const Page = () => {
     StudentClassType[]
   >([]);
   const [refresh, setRefresh] = useState(false);
+  const [submit, setSubmit] = useState(false);
   const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
   const [unableCourses, setUnableCourses] = useState<AddCourse2Type[]>([]);
 
@@ -45,7 +46,7 @@ const Page = () => {
           setCourses(message);
 
           const responseCourseEnroll = await axios.get(
-            `/api/getAll/getAllCourseEnroll/${user?.id}`
+            `/api/getAll/getAllCourseEnrollGpa/${user?.id}`
           );
           const messageCourseEnroll: StudentClassType[] =
             responseCourseEnroll.data.message;
@@ -102,9 +103,9 @@ const Page = () => {
         }
       }
     };
-    fetchData();
     setRefresh(!refresh);
-  }, [user]);
+    fetchData();
+  }, [user, submit]);
 
   useEffect(() => {
     const updatedCheckList: AddCourse2Type[] = [];
@@ -213,7 +214,7 @@ const Page = () => {
 
     setUnableCourses(updatedCheckList2);
     setCheckList(updatedCheckList);
-  }, [user, classes, courseEnrollments, prerequisites, sections, courses]);
+  }, [user, refresh, courses, prerequisites, sections, classes, courseEnrollments]);
 
   const handleCheck = (item: AddCourse2Type) => {
     const checkedIndex = checked.indexOf(item.id);
@@ -251,7 +252,7 @@ const Page = () => {
             student_id: user?.id,
             class_id: updatedClasses2[0].id,
           };
-          axios.post(`/api/getAll/getAllCourseEnroll/${user?.id}`, data1).then((res)=> toast.success(res.data.message));
+          axios.post(`/api/getAll/getAllCourseEnroll/${user?.id}`, data1);
         }
       }
     });
@@ -260,9 +261,8 @@ const Page = () => {
       permission_id: 20,
       active: false,
     };
-    // console.log(data2);
     axios.post(`/api/allPermission/student/selectedPerms/${user?.id}`, data2);
-    setRefresh(!refresh);
+    setSubmit(!submit);
   };
 
   return (

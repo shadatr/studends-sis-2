@@ -1,12 +1,10 @@
 'use client';
 import {
   DoctorsWithDepartmentsType,
-  GetPermissionType,
 } from '@/app/types/types';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import AssignDepartment from '@/app/components/asignDepartment';
 import { useSession } from 'next-auth/react';
 import SearchBar from '@/app/components/searchBar';
 

@@ -13,5 +13,5 @@ export async function POST(request: Request) {
     .delete()
     .eq('id', req.id);
   console.log(deleteReq.error);
-  return new Response(JSON.stringify({ message: 'تم حذف المحاضرة بنجاح' }));
+  return new Response(JSON.stringify({ message: 'تم حذف الامتحان بنجاح' }));
 }

@@ -116,12 +116,11 @@ const page = ({ params }: { params: { id: number } }) => {
         [field]: e,
       };
     });
-
     setNewData(updatedData);
   };
 
   const handleSubmitInfo = () => {
-    setEdit(false);
+    setEdit(!edit);
     console.log('Submitted grades:', newData);
     axios
       .post(`/api/personalInfo/edit/${params.id}/editDoctor`, newData)
@@ -139,15 +138,15 @@ const page = ({ params }: { params: { id: number } }) => {
       <div>
         <Link
           className="m-5 bg-green-800 hover:bg-green-600  text-secondary p-3 rounded-md w-[200px]"
-          href={`/doctor/headOfDepartmentWork/doctors/courseProg/${params.id}`}
-        >
-          المواد و جدول المواد
-        </Link>
-        <Link
-          className="m-5 bg-green-800 hover:bg-green-600  text-secondary p-3 rounded-md w-[200px]"
           href={`/doctor/headOfDepartmentWork/doctors/students/${params.id}`}
         >
           الاشراف علي الطلاب
+        </Link>
+        <Link
+          className="m-5 bg-green-800 hover:bg-green-600  text-secondary p-3 rounded-md w-[200px]"
+          href={`doctor/headOfDepartmentWork/doctors/courseProg/${params.id}`}
+        >
+          المواد و جدول المحاضرات
         </Link>
         <button
           className="m-5 bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
