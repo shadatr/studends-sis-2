@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   AddCourse2Type,
   ClassesType,
+  LetterGradesType,
   SectionType,
   StudentClassType,
   StudentCourseType,
@@ -28,11 +29,17 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [courseEnrollments, setCourseEnrollments] = useState<StudentClassType[]>([]);
   const [refresh, setRefresh] = useState(false);
   const printableContentRef = useRef<HTMLDivElement>(null);
+  const [courseLetter, setCourseLetter] = useState<LetterGradesType[]>([]);
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const responseCourseLetter = await axios.get(`/api/exams/letterGrades`);
+        const messageCourseLetter: LetterGradesType[] =
+          responseCourseLetter.data.message;
+        setCourseLetter(messageCourseLetter);
+        
         const responseCourseEnroll = await axios.get(
           `/api/getAll/getAllCourseEnroll/${params.id}`
         );
@@ -144,12 +151,11 @@ const Page = ({ params }: { params: { id: number } }) => {
       );
 
       const studentSection = sections.find(
-        (sec) => sec.course_id == studentCourse?.id
-      );
+        (sec) => sec.course_id == studentCourse?.id && (sec.students_num <=
+        sec.max_students));
 
       if (
-        studentSection&& studentSection?.students_num >=
-        studentSection?.max_students
+        studentSection== undefined
       ) {
         return toast.error("لقد تخطت هذه المادة الحد الاقصى من الطلاب");
       }
@@ -162,16 +168,16 @@ const Page = ({ params }: { params: { id: number } }) => {
       );
         if(studentSection){
         const data1 = {
+          course:{
           student_id: params.id,
           id: studenCourseEnroll?.id,
           approved: true,
           section_id: studentSection?.id,
-          students_num: studentSection?.students_num+1
+          students_num: studentSection?.students_num+1},
+          grade:{course_enrollment_id: studenCourseEnroll?.id,}
         };
         axios.post('/api/courseEnrollment/courseAccept', data1).then((res)=>
-        toast.success(res.data.message));}
-    });
-
+        toast.success(res.data.message));}});
 
       const filteredList = checkList.filter((item) => !checked.includes(item.id));
     filteredList.forEach((item) => {
@@ -291,56 +297,62 @@ const Page = ({ params }: { params: { id: number } }) => {
             </tr>
           </thead>
           <tbody>
-            {studentCourses.map((course, index) => (
-              <tr key={index}>
-                <td
-                  className={`border border-gray-300 px-4 py-2 ${
-                    course.course.pass
-                      ? 'text-green-600 hover:text-green-700'
-                      : 'text-red-500 hover:text-red-600'
-                  }`}
-                >
-                  {course.class?.result_publish
-                    ? course.course.pass
-                      ? 'ناجح'
-                      : 'راسب'
-                    : ''}
-                </td>
-                <td className="border border-gray-300 px-4 py-2 ">
-                  {course.class?.result_publish
-                    ? course.courseEnroll.result
-                    : ''}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {course.course.class_work}%
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {course.class?.class_work_publish
-                    ? course.course.class_work
-                    : ''}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {course.course.final}%
-                </td>
-                <td className="border border-gray-300 px-4 py-2 ">
-                  {course.class?.final_publish
-                    ? course.courseEnroll.final
-                    : ' '}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {course.course.midterm}%
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {course.class?.mid_publish ? course.courseEnroll.midterm : ''}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {course.section?.name}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {course.course.course_name}
-                </td>
-              </tr>
-            ))}
+            {studentCourses.map((course, index) =>{ 
+              const letter = courseLetter.find(
+                (item) => item.course_enrollment_id == course.courseEnroll.id
+              );
+              return (
+                <tr key={index}>
+                  <td
+                    className={`border border-gray-300 px-4 py-2 ${
+                      course.courseEnroll.pass
+                        ? 'text-green-600 hover:text-green-700'
+                        : 'text-red-500 hover:text-red-600'
+                    }`}
+                  >
+                    {course.class?.result_publish
+                      ? course.courseEnroll.pass
+                        ? `${letter?.letter_grade} ناجح`
+                        : `${letter?.letter_grade} راسب`
+                      : ''}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 ">
+                    {course.class?.result_publish
+                      ? course.courseEnroll.result
+                      : ''}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {course.course.class_work}%
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {course.class?.class_work_publish
+                      ? course.course.class_work
+                      : ''}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {course.course.final}%
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 ">
+                    {course.class?.final_publish
+                      ? course.courseEnroll.final
+                      : ' '}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {course.course.midterm}%
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {course.class?.mid_publish
+                      ? course.courseEnroll.midterm
+                      : ''}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {course.section?.name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {course.course.course_name}
+                  </td>
+                </tr>
+              );})}
           </tbody>
         </table>
       </div>

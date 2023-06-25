@@ -23,16 +23,19 @@ export async function POST(request: Request) {
   const data = await request.json();
 
   try {
-      await supabase
-      .from('tb_course_enrollment')
-      .update({approved: data.approved})
-      .eq('id', data.id)
-      .eq('student_id', data.student_id);
+      const res1=await supabase
+        .from('tb_course_enrollment')
+        .update({ approved: data.course.approved })
+        .eq('id', data.course.id);
 
-      await supabase
+      const res2= await supabase
         .from('tb_section')
-        .update({ students_num: data.students_num })
-        .eq('id', data.section_id);
+        .update({ students_num: data.course.students_num })
+        .eq('id', data.course.section_id);
+
+        const res = await supabase.from('tb_grades').insert([data.grade]);
+        console.log(data.course.approved);
+
 
     return new Response(JSON.stringify({ message: 'تم الموافقة على المواد بنجاح' }), {
       headers: { 'content-type': 'application/json' },

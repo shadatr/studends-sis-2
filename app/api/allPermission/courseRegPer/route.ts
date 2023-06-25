@@ -27,25 +27,15 @@ export async function POST(request: Request) {
   const data: AssignPermissionType = await request.json();
 
   try {
-    const { error } = await supabase
+    await supabase
       .from('tb_all_permissions')
       .update({ active: data.active })
       .eq('id', 22);
 
       console.log(data);
-    if (error) {
-      console.log(error.message);
-      return new Response(
-        JSON.stringify({ message: 'حدث خطأ أثناء التحديث' }),
-        {
-          headers: { 'content-type': 'application/json' },
-          status: 500,
-        }
-      );
-    }
 
     return new Response(
-      JSON.stringify({ message: 'تم تحديث الصلاحية بنجاح' }),
+      JSON.stringify({ message: 'تم فتح/اغلاق تسجيل المواد بنجاح' }),
       {
         headers: { 'content-type': 'application/json' },
       }

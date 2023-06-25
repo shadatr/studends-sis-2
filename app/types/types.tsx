@@ -423,3 +423,23 @@ export type ExamProgramType = {
   duration: number;
   location: string;
 };
+
+export type LetterGradesType = {
+  id?: number;
+  course_enrollment_id?: number;
+  letter_grade?: string;
+  points?:number;
+};
+
+export type LettersType = {
+    id?: number;
+    AA: number;
+    BA: number;
+    BB: number;
+    CB: number;
+    CC: number;
+    DC: number;
+    DD: number;
+    FD: number;
+    FF: number;
+};

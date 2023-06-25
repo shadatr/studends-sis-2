@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   AddCourse2Type,
   ClassesType,
+  LetterGradesType,
   SectionType,
   StudentClassType,
   StudentCourseType,
@@ -13,7 +14,7 @@ import { useReactToPrint } from 'react-to-print';
 
 const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });
-  if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
+  if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
     throw new Error('Unauthorized');
   }
 
@@ -26,11 +27,17 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [courseEnrollments, setCourseEnrollments] = useState<StudentClassType[]>([]);
   const [refresh, setRefresh] = useState(false);
   const printableContentRef = useRef<HTMLDivElement>(null);
+  const [courseLetter, setCourseLetter] = useState<LetterGradesType[]>([]);
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const responseCourseLetter = await axios.get(`/api/exams/letterGrades`);
+        const messageCourseLetter: LetterGradesType[] =
+          responseCourseLetter.data.message;
+        setCourseLetter(messageCourseLetter);
+
         const responseCourseEnroll = await axios.get(
           `/api/getAll/getAllCourseEnroll/${params.id}`
         );
@@ -196,7 +203,7 @@ const Page = ({ params }: { params: { id: number } }) => {
    });
 
   return (
-    <div className="absolute w-[100%] flex flex-col text-sm p-10 justify-content items-center ">
+    <div className="absolute w-[80%] flex flex-col text-sm p-10 justify-content items-center ">
       <button
         onClick={handlePrint}
         className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
@@ -240,7 +247,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         </button>
       </form>
       <div>
-        <table className="m-10">
+        <table className="m-10 w-[1100px]">
           <thead>
             <th className="border border-gray-300 px-4 py-2 bg-grey">
               النتيجة
@@ -268,10 +275,22 @@ const Page = ({ params }: { params: { id: number } }) => {
             </th>
           </thead>
           <tbody>
-            {studentCourses.map((course, index) => (
+            {studentCourses.map((course, index) =>{const letter = courseLetter.find(
+                  (item) => item.course_enrollment_id == course.courseEnroll.id
+                ); {return(
               <tr key={index}>
-                <td className="border border-gray-300 px-4 py-2">
-                  {course.class?.result_publish ? course.courseEnroll.pass? 'ناجح' : 'راسب' : ''}
+                <td
+                  className={`border border-gray-300 px-4 py-2 ${
+                    course.courseEnroll.pass
+                      ? 'text-green-600 hover:text-green-700'
+                      : 'text-red-500 hover:text-red-600'
+                  }`}
+                >
+                  {course.class?.result_publish
+                    ? course.courseEnroll.pass
+                      ? `${letter?.letter_grade} ناجح`
+                      : `${letter?.letter_grade} راسب`
+                    : ''}
                 </td>
                 <td className="border border-gray-300 px-4 py-2  ">
                   {course.class?.result_publish
@@ -289,7 +308,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                 <td className="border border-gray-300 px-4 py-2">
                   {course.course.final}%
                 </td>
-                <td className="border border-gray-300 px-4 py-2 flex justify-between items-center">
+                <td className="border border-gray-300 px-4 py-2 ">
                   {course.class?.final_publish ? course.courseEnroll.final : ''}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
@@ -305,7 +324,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   {course.course.course_name}
                 </td>
               </tr>
-            ))}
+            );}})}
           </tbody>
         </table>
       </div>

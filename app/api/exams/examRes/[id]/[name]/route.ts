@@ -56,7 +56,7 @@ export async function POST(
 
 
   const data1 = await request.json();
-  console.log(data1);
+  
   await Promise.all(
     data1.map(async (item: StudentClassType) => {
 
@@ -65,7 +65,6 @@ export async function POST(
         .update([{ [params.name]: item[params.name] }])
         .eq('student_id', item.student_id)
         .eq('class_id', data3[0].id);
-      console.log(data.error?.message);
       return data;
     })
   );

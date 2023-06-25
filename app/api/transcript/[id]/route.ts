@@ -14,6 +14,7 @@ export async function GET(
       .from('tb_transcript')
       .select('*')
       .eq('student_id', params.id);
+
  
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
@@ -28,6 +29,23 @@ export async function GET(
 export async function POST(request: Request) {
   const data: TranscriptType = await request.json();
 
-    await supabase.from('tb_transcript').insert([data]);
-      
+    const data1=await supabase.from('tb_transcript').insert([data]);
+
+    const data2 = await supabase
+      .from('tb_students')
+      .update({
+        semester: data.semester+1,
+      })
+      .eq('id', data.student_id);
+
+      const data3 = await supabase
+        .from('tb_course_enrollment')
+        .update({
+          active: false,
+        })
+        .eq('student_id', data.student_id);
+
+      console.log(data1.error?.message);
+      console.log(data2.error?.message);
+      console.log(data3.error?.message);
 }

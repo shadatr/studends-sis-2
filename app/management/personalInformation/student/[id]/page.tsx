@@ -148,7 +148,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         </button>
         <Link
           className="flex bg-blue-500 hover:bg-blue-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
-          href={`/doctor/personalInformation/student/${params.id}/CoursesAndGrades`}
+          href={`/management/personalInformation/student/${params.id}/CoursesAndGrades`}
         >
           مواد و درجات الطالب
         </Link>

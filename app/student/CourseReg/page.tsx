@@ -46,7 +46,7 @@ const Page = () => {
           setCourses(message);
 
           const responseCourseEnroll = await axios.get(
-            `/api/getAll/getAllCourseEnrollGpa/${user?.id}`
+            `/api/getAll/getCourseEnrollStudentGpa/${user?.id}`
           );
           const messageCourseEnroll: StudentClassType[] =
             responseCourseEnroll.data.message;
@@ -250,6 +250,7 @@ const Page = () => {
         if (updatedClasses2[0]) {
           const data1 = {
             student_id: user?.id,
+            semester: user?.semester,
             class_id: updatedClasses2[0].id,
           };
           axios.post(`/api/getAll/getAllCourseEnroll/${user?.id}`, data1);

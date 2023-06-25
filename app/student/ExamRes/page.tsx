@@ -82,7 +82,7 @@ const Page = () => {
     };
 
     fetchData();
-  }, [user, refresh]);
+  }, [user]);
 
   useEffect(() => {
     const updatedStudentCourses: StudentCourseType[] = [];
@@ -108,7 +108,6 @@ const Page = () => {
         updatedStudentCourses.push(data);
       }
     });
-    console.log(updatedStudentCourses);
     setStudentCourses(updatedStudentCourses);
   }, [refresh]);
 
@@ -117,33 +116,47 @@ const Page = () => {
       <table className="m-10 w-[1100px]">
         <thead>
           <tr>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">النتيجة</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">المجموع</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">
-            اعمال السنة
-          </th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">
-            الامتحان الانهائي
-          </th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">
-            الامتحان النصفي
-          </th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">
-            اسم المجموعة
-          </th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">
-            اسم المادة
-          </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              النتيجة
+            </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              المجموع
+            </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              اعمال السنة
+            </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              الامتحان الانهائي
+            </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">النسبة</th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              الامتحان النصفي
+            </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              اسم المجموعة
+            </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              اسم المادة
+            </th>
           </tr>
         </thead>
         <tbody>
           {studentCourses.map((course, index) => (
             <tr key={index}>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.class?.result_publish ? course.courseEnroll.pass? 'ناجح' : 'راسب': ''}
+              <td
+                className={`border border-gray-300 px-4 py-2 ${
+                  course.courseEnroll.pass
+                    ? 'text-green-600 hover:text-green-700'
+                    : 'text-red-500 hover:text-red-600'
+                }`}
+              >
+                {course.class?.result_publish
+                  ? course.courseEnroll.pass
+                    ? 'ناجح'
+                    : 'راسب'
+                  : ''}
               </td>
               <td className="border border-gray-300 px-4 py-2  ">
                 {course.class?.result_publish ? course.courseEnroll.result : ''}

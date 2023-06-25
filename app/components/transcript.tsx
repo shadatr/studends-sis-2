@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { AddCourse2Type, ClassesType, RegisterStudent2Type, SectionType, StudentClassType, StudentCourseType, TranscriptType } from '@/app/types/types';
+import { AddCourse2Type, ClassesType, LetterGradesType, RegisterStudent2Type, SectionType, StudentClassType, StudentCourseType, TranscriptType } from '@/app/types/types';
 import axios from 'axios';
 
 const semesters: string[] = [
@@ -23,19 +23,24 @@ const Transcript = ({ user }: { user: number }) => {
   const [courseEnrollments, setCourseEnrollments] = useState<StudentClassType[]>([]);
   const [refresh, setRefresh] = useState(false);
   const [semester, setSemester] = useState<number>();
-const [transcript, setTranscript] = useState<TranscriptType[]>([]);
+  const [transcript, setTranscript] = useState<TranscriptType[]>([]);
+  const [courseLetter, setCourseLetter] = useState<LetterGradesType[]>([]);
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const responseCourseLetter = await axios.get(`/api/exams/letterGrades`);
+        const messageCourseLetter: LetterGradesType[] =
+          responseCourseLetter.data.message;
+        setCourseLetter(messageCourseLetter);
+
         const responseStudent = await axios.get(
           `/api/personalInfo/student/${user}`
         );
         const messageStudent: RegisterStudent2Type[] =
           responseStudent.data.message;
         setSemester(messageStudent[0].semester);
-
 
         const responseTranscript = await axios.get(
           `/api/transcript/${user}`
@@ -97,7 +102,7 @@ const [transcript, setTranscript] = useState<TranscriptType[]>([]);
     };
 
     fetchData();
-  }, [user, refresh]);
+  }, [user]);
 
   useEffect(() => {
     const updatedStudentCourses: StudentCourseType[] = [];
@@ -127,8 +132,9 @@ const [transcript, setTranscript] = useState<TranscriptType[]>([]);
         }
       }
     });
+    console.log(updatedStudentCourses);
     setStudentCourses(updatedStudentCourses);
-  }, [refresh]);
+  }, [refresh, classes, courseEnrollments, courses, sections]);
 
   return (
     <div className="absolute w-[85%] flex flex-col p-10 justify-content items-center">
@@ -146,9 +152,7 @@ const [transcript, setTranscript] = useState<TranscriptType[]>([]);
                 <th className="border border-gray-300 px-4 py-2 bg-grey flex flex-row w-full items-center justify-center">
                   النتيجة
                 </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey flex flex-row w-full items-center justify-center">
-                  المجموع
-                </th>
+                
                 <th className="border border-gray-300 px-4 py-2 bg-grey flex flex-row w-full items-center justify-center">
                   اسم المادة
                 </th>
@@ -157,27 +161,26 @@ const [transcript, setTranscript] = useState<TranscriptType[]>([]);
 
             <tbody>
               {studentCourses.map((course, courseIndex) => {
+                const letter = courseLetter.find(
+                  (item) => item.course_enrollment_id == course.courseEnroll.id
+                );
                 if (course?.courseEnroll.semester === index + 1) {
                   return (
                     <tr className="flex flex-row w-full" key={courseIndex}>
                       <td
                         className={`border border-gray-300 px-4 py-2 flex flex-row w-full items-center justify-center ${
-                          course.course.pass
+                          course.courseEnroll.pass
                             ? 'text-green-600 hover:text-green-700'
                             : 'text-red-500 hover:text-red-600'
                         }`}
                       >
                         {course.class?.result_publish
                           ? course.courseEnroll.pass
-                            ? 'ناجح'
-                            : 'راسب'
+                            ? `${letter?.letter_grade} `
+                            : `${letter?.letter_grade} `
                           : ''}
                       </td>
-                      <td className="border border-gray-300 px-4 py-2 flex flex-row w-full items-center justify-center">
-                        {course.class?.result_publish
-                          ? course.courseEnroll.result
-                          : ''}
-                      </td>
+                      
                       <td className="border border-gray-300 px-4 py-2 flex flex-row w-full items-center justify-center">
                         {course.course.course_name}
                       </td>

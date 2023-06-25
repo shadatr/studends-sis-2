@@ -153,8 +153,7 @@ const Page = () => {
           else if (course.result >= 60){ grade = 1.0;}
           else if (course.result < 60) {grade = 0.0;}
 
-          console.log(course);
-          console.log(grade);
+          
 
           studentTotalGradePoints +=
             grade * studentCourse?.credits;
@@ -209,7 +208,7 @@ const Page = () => {
   return (
     <div className="flex absolute items-center justify-center w-[80%] mt-10">
       {user?.head_of_deparment_id ? (
-        <div className="">
+        <div >
           <button
             onClick={handleSubmit}
             className="bg-green-700 m-2 hover:bg-green-600 px-5 py-2 rounded-md text-white text-sm"
