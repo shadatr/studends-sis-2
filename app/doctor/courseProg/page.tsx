@@ -9,6 +9,7 @@ import {
   CourseProgramType,
   CheckedType,
 } from '@/app/types/types';
+import { redirect } from 'next/navigation';
 
 
 const hoursNames: CheckedType[] = [
@@ -33,7 +34,7 @@ const daysOfWeek = ['friday', 'thursday', 'wednesday', 'tuesday', 'monday'];
 const Page = () => {
   const session = useSession({ required: true });
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
 
 const user = session.data?.user;

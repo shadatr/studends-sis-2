@@ -17,14 +17,14 @@ import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
+import { redirect } from 'next/navigation';
 
 const page = () => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
-  const user = session.data?.user;
 
   const [edit, setEdit] = useState(false);
   const [majors, setMajors] = useState<MajorRegType[]>([]);

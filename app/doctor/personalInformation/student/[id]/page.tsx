@@ -14,6 +14,7 @@ import Link from 'next/link';
 import Transcript from '@/app/components/transcript';
 import { useReactToPrint } from 'react-to-print';
 import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'الاسم' },
@@ -32,7 +33,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
   const [useMyData, setMydata] = useState<RegisterStudent2Type[]>([]);
   const [newData, setNewData] = useState<RegisterStudent2Type[]>([]);

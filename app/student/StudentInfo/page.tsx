@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
 import { InfoDoctorType, MajorRegType } from '@/app/types/types';
+import { redirect } from 'next/navigation';
 
 const stuInfo = [
   'الاسم',
@@ -24,7 +25,7 @@ const Page = () => {
   const session = useSession({ required: true });
   // if user isn't a student, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'student' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
 
   const [major, setMajor] = useState<string>();

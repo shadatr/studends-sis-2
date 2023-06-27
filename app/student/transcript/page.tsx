@@ -3,12 +3,13 @@
 import React from 'react';
 import Transcript from '@/app/components/transcript';
 import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 const Page = () => {
   const session = useSession({ required: true });
   // if the user isn't an admin, throw an error
   if (session.data?.user ? session.data?.user?.userType !== 'student' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
 
   const user = session.data?.user;

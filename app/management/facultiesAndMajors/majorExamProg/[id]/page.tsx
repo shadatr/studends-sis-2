@@ -15,6 +15,7 @@ import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
 import { BsXCircleFill } from 'react-icons/bs';
+import { redirect } from 'next/navigation';
 
 
 
@@ -22,7 +23,7 @@ import { BsXCircleFill } from 'react-icons/bs';
 const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
   const user = session.data?.user;
   const [perms, setPerms] = useState<GetPermissionType[]>([]);

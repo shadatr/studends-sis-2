@@ -9,6 +9,7 @@ import {
   StudentClassType,
   Section2Type,
 } from '@/app/types/types';
+import { redirect } from 'next/navigation';
 
 const hoursNames: CheckedType[] = [
   { id: 8, name: '8:00' },
@@ -30,7 +31,7 @@ const daysOfWeek = ['friday', 'thursday', 'wednesday', 'tuesday', 'monday'];
 const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
 
   const user = session.data?.user;

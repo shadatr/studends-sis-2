@@ -9,14 +9,15 @@ import Link from 'next/link';
 import AssignDepartment from '@/app/components/asignDepartment';
 import { useSession } from 'next-auth/react';
 import SearchBar from '@/app/components/searchBar';
+import { redirect } from 'next/navigation';
 
 const Page = () => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
-  const user = session.data?.user;
+
   const [doctors, setDoctors] = useState<DoctorsWithDepartmentsType[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);

@@ -10,6 +10,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 import MyModel from '../../components/dialog';
 
@@ -17,7 +18,7 @@ const page = () => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
   const user = session.data?.user;
 

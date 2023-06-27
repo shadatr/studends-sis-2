@@ -12,6 +12,7 @@ import {
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
 import { BsXCircleFill } from 'react-icons/bs';
+import { redirect } from 'next/navigation';
 
 const hours: string[] = [
   '8:00',
@@ -56,7 +57,7 @@ const daysOfWeek = ['friday', 'thursday', 'wednesday', 'tuesday', 'monday'];
 const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
 
   const [courses, setCourses] = useState<AddCourse2Type[]>([]);

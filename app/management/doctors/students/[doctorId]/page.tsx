@@ -10,6 +10,7 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import SearchBar from '@/app/components/searchBar';
+import { redirect } from 'next/navigation';
 
 
 
@@ -19,7 +20,7 @@ const Page = ({ params }: { params: { doctorId: number } }) => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
 
   const [majors, setMajors] = useState<MajorReg2Type[]>([]);

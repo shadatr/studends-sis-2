@@ -7,6 +7,7 @@ import {
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 const Page = ({
@@ -17,7 +18,7 @@ const Page = ({
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
 
   const user = session.data?.user;

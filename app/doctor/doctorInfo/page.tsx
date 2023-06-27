@@ -1,6 +1,7 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 const stuInfo = [
   'الاسم',
@@ -17,7 +18,7 @@ const Page = () => {
   const session = useSession({ required: true });
   // TODO if user isn't a doctor, throw an error, can be simplified mostly
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
 
   const user = session.data?.user;

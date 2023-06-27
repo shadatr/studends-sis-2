@@ -7,11 +7,12 @@ import {
   SectionType,
   DoctorCourse2Type,
 } from '@/app/types/types';
+import { redirect } from 'next/navigation';
 
 const Page = () => {
   const session = useSession({ required: true });
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
 
   const user = session.data?.user;

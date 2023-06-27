@@ -5,13 +5,14 @@ import { FaTrashAlt } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 const Page = () => {
   // handling authentication
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
 
   const [loadAnnouncements, setLoad] = useState(false);

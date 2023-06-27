@@ -2,17 +2,17 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import MyModel from '@/app/components/dialog';
 import { AddCourse2Type, GetPermissionType } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 const numbers: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
   const user = session.data?.user;
   const [perms, setPerms] = useState<GetPermissionType[]>([]);

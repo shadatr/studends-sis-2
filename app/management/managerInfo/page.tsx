@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 
 
@@ -18,7 +19,7 @@ const Page = () => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
 
   const user = session.data?.user;

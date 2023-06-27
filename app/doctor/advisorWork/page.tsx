@@ -5,12 +5,13 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { redirect } from 'next/navigation';
 
 const Page = () => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
 
   const user = session.data?.user;
@@ -37,7 +38,7 @@ const Page = () => {
     };
 
     fetchPosts();
-  }, [user?.id, refresh]);
+  }, [user, refresh]);
 
   const handleActivate = (studentId: number, active: boolean) => {
     const data = { studentId, active };

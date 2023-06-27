@@ -10,12 +10,13 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaTrashAlt } from 'react-icons/fa';
 import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 const Page = ({ params }: { params: { courseId: number; majorId: number } }) => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
   const [section, setSection] = useState<SectionType[]>([]);
   const [courses, setCourses] = useState<CourseType[]>([]);

@@ -9,6 +9,7 @@ import { RegisterdoctorType } from '@/app/types/types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 const InputBox: FC<{
   label: string;
@@ -37,7 +38,7 @@ const Page = () => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
-    throw new Error('Unauthorized');
+    redirect('/');
   }
 
   const [birthDate, setBirthDate] = useState(new Date());
