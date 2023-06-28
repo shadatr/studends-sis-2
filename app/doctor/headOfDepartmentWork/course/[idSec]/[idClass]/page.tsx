@@ -185,6 +185,7 @@ const Tabs = ({ params }: { params: { idSec: number; idClass: number } }) => {
           </div>
         );
       })}
+      
       <form onSubmit={(e) => e.preventDefault()} className="my-4">
         <p className="bg-lightBlue px-4 py-2 mt-2">اختر الدكتور لهذه المادة</p>
         <table className="border border-gray-300 rounded-lg my-2 w-[600px]">

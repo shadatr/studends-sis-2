@@ -2,12 +2,16 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { AssignPermissionType, GetPermissionType, PersonalInfoHeaderType, PersonalInfoType } from '@/app/types/types';
+import {
+  AssignPermissionType,
+  GetPermissionType,
+  PersonalInfoHeaderType,
+  PersonalInfoType,
+} from '@/app/types/types';
 import { BsXCircleFill } from 'react-icons/bs';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
-
 
 const doctorInfo: PersonalInfoHeaderType[] = [
   { header: 'الاسم' },
@@ -20,20 +24,21 @@ const doctorInfo: PersonalInfoHeaderType[] = [
 ];
 
 const Page = ({ params }: { params: { id: number } }) => {
-
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
     redirect('/');
   }
+   const user = session.data?.user;
+   
   const [useMyData, useSetMydata] = useState<PersonalInfoType[]>([]);
   const [newData, setNewData] = useState<PersonalInfoType[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
   const [checked, setChecked] = useState<number[]>([]); // Change to an array
-  const [perms, setPerms] = useState<GetPermissionType[]>([]); 
+  const [perms, setPerms] = useState<GetPermissionType[]>([]);
   const [refresh, setRefresh] = useState(false);
   const [edit, setEdit] = useState(false);
-
+ 
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -47,7 +52,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       }
 
       const response = await axios.get(
-        `/api/allPermission/admin/selectedPerms/${params.id}`
+        `/api/allPermission/admin/selectedPerms/${user?.id}`
       );
       const message: GetPermissionType[] = response.data.message;
       setPerms(message);
@@ -56,10 +61,11 @@ const Page = ({ params }: { params: { id: number } }) => {
       axios.get(`/api/personalInfo/manager/${params.id}`).then((resp) => {
         const message: PersonalInfoType[] = resp.data.message;
         useSetMydata(message);
-      setNewData(message);});
+        setNewData(message);
+      });
     };
     fetchPosts();
-  }, [params.id, refresh,edit]);
+  }, [params.id, refresh, edit,user]);
 
   const handleCheck = (item: AssignPermissionType) => {
     const checkedIndex = checked.indexOf(item.id);
@@ -72,12 +78,11 @@ const Page = ({ params }: { params: { id: number } }) => {
     }
   };
 
-
   const selected: AssignPermissionType[] = perms.flatMap((item) =>
-  checkList
-    .filter((item2) => item.permission_id == item2.id)
-    .map((item2) => ({ name: item2.name, id: item2.id, active: item.active }))
-);
+    checkList
+      .filter((item2) => item.permission_id == item2.id)
+      .map((item2) => ({ name: item2.name, id: item2.id, active: item.active }))
+  );
   const handleDelete = (per_id: number, admin_id: number) => {
     const data = { item_per_id: per_id, item_admin_id: admin_id };
     axios.post('/api/allPermission/deletePerm', data).then((resp) => {
@@ -86,8 +91,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     });
   };
 
-
-  const handleActivate = (id: number, parmId:number, active: boolean) => {
+  const handleActivate = (id: number, parmId: number, active: boolean) => {
     const data = { id, parmId, active };
     axios
       .post(`/api/allPermission/admin/selectedPerms/${params.id}`, data)
@@ -100,11 +104,11 @@ const Page = ({ params }: { params: { id: number } }) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     checked.map((item) => {
-      const data1 = { admin_id: params.id, permission_id: item , active: true};
+      const data1 = { admin_id: params.id, permission_id: item, active: true };
       axios.post('/api/allPermission/admin', data1);
       setRefresh(!refresh);
-    });};
-
+    });
+  };
 
   const handleInputChange = (e: string, field: keyof PersonalInfoType) => {
     const updatedData = newData.map((data) => {
@@ -134,15 +138,22 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   return (
     <div className="flex absolute text-sm w-[80%] justify-center items-center flex-col m-10">
-      <div>
-        <button
-          className="m-5 bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
-          type="submit"
-          onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
-        >
-          {edit ? 'ارسال' : 'تعديل'}
-        </button>
-      </div>
+      {perms.map((permItem, idx) => {
+        if (permItem.permission_id === 3 && permItem.active) {
+          return (
+            <div key={idx}>
+              <button
+                className="m-5 bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
+                type="submit"
+                onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
+              >
+                {edit ? 'ارسال' : 'تعديل'}
+              </button>
+            </div>
+          );
+        }
+        return null;
+      })}
       <table className="flex-row-reverse flex text-sm  border-collapse">
         <thead>
           <tr className="">
@@ -261,73 +272,89 @@ const Page = ({ params }: { params: { id: number } }) => {
               ))}
         </tbody>
       </table>
-      <div>
-        <table className="border-collapse mt-8 w-[800px]">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border border-gray-300 px-4 py-2">حذف </th>
-              <th className="border border-gray-300 px-4 py-2">ايقاف/تفعيل</th>
-              <th className="border border-gray-300 px-4 py-2">اسم الصلاحية</th>
-            </tr>
-          </thead>
-          <tbody>
-            {selected.map((user, index) => (
-              <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
-                <td className="border-none h-full px-4 py-2 flex justify-end items-center">
-                  <BsXCircleFill
-                    onClick={() => handleDelete(user.id, params.id)}
-                  />
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  <button
-                    onClick={() => {
-                      handleActivate(user.id, params.id, !user.active);
-                    }}
-                    className={`w-[50px]  text-white py-1 px-2 rounded ${
-                      user.active
-                        ? 'bg-red-500 hover:bg-red-600'
-                        : 'bg-green-600 hover:bg-green-700'
-                    }`}
-                  >
-                    {user.active ? 'ايقاف' : 'تفعيل'}
-                  </button>
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {user.name}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <form onSubmit={handleSubmit} className="p-10 w-[400px] ">
-          <h1 className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary">
-            اختر الصلاحيات
-          </h1>
-          <div className="p-1 rounded-md">
-            {checkList.map((item, index) => (
-              <div className="bg-lightBlue flex justify-between  " key={index}>
-                <input
-                  className="p-2 ml-9"
-                  value={item.name}
-                  type="checkbox"
-                  onChange={() => handleCheck(item)} // Pass the item to handleCheck
-                  checked={checked.includes(item.id)} // Check if the item is in the checked list
-                />
-                <label className="pr-5">{item.name}</label>
-              </div>
-            ))}
-          </div>
-          <button
-            type="submit"
-            className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary"
-          >
-            اضافة
-          </button>
-        </form>
-      </div>
+      {perms.map((permItem, idx) => {
+        if (permItem.permission_id === 1 && permItem.active) {
+          return (
+            <div key={idx}>
+              <table className="border-collapse mt-8 w-[800px]">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="border border-gray-300 px-4 py-2">حذف </th>
+                    <th className="border border-gray-300 px-4 py-2">
+                      ايقاف/تفعيل
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2">
+                      اسم الصلاحية
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selected.map((user, index) => (
+                    <tr
+                      key={index}
+                      className={index % 2 === 0 ? 'bg-gray-100' : ''}
+                    >
+                      <td className="border-none h-full px-4 py-2 flex justify-end items-center">
+                        <BsXCircleFill
+                          onClick={() => handleDelete(user.id, params.id)}
+                        />
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <button
+                          onClick={() => {
+                            handleActivate(user.id, params.id, !user.active);
+                          }}
+                          className={`w-[50px]  text-white py-1 px-2 rounded ${
+                            user.active
+                              ? 'bg-red-500 hover:bg-red-600'
+                              : 'bg-green-600 hover:bg-green-700'
+                          }`}
+                        >
+                          {user.active ? 'ايقاف' : 'تفعيل'}
+                        </button>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {user.name}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <form onSubmit={handleSubmit} className="p-10 w-[400px] ">
+                <h1 className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary">
+                  اختر الصلاحيات
+                </h1>
+                <div className="p-1 rounded-md">
+                  {checkList.map((item, index) => (
+                    <div
+                      className="bg-lightBlue flex justify-between  "
+                      key={index}
+                    >
+                      <input
+                        className="p-2 ml-9"
+                        value={item.name}
+                        type="checkbox"
+                        onChange={() => handleCheck(item)} // Pass the item to handleCheck
+                        checked={checked.includes(item.id)} // Check if the item is in the checked list
+                      />
+                      <label className="pr-5">{item.name}</label>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="submit"
+                  className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary"
+                >
+                  اضافة
+                </button>
+              </form>
+            </div>
+          );
+        }
+        return null;
+      })}
     </div>
   );
 };
-
 
 export default Page;

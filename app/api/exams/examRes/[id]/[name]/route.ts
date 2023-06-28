@@ -22,7 +22,7 @@ export async function GET(
     const data2 = await supabase
       .from('tb_course_enrollment')
       .select('*')
-      .eq('class_id', data3[0].id)
+      .eq('class_id', data3[0].id).eq('active', true)
       .order('id');
 
     console.log(data2.error?.message);

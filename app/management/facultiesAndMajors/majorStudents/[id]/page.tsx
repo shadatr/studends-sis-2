@@ -22,12 +22,11 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      // const response = await axios.get(
-      //   `/api/allPermission/admin/selectedPerms/${user?.id}`
-      // );
-      // const message: GetPermissionType[] = response.data.message;
-      // setPerms(message);
-      // console.log(message);
+      const response = await axios.get(
+        `/api/allPermission/admin/selectedPerms/${user?.id}`
+      );
+      const message: GetPermissionType[] = response.data.message;
+      setPerms(message);
 
       axios.get(`/api/list/${params.id}/student`).then((resp) => {
         console.log(resp.data);
@@ -47,13 +46,19 @@ const Page = ({ params }: { params: { id: number } }) => {
     });
   };
 
-
   return (
     <div className="flex absolute flex-col justify-center items-center w-[80%]">
       <table className="border-collapse mt-8 w-[1100px]">
         <thead>
           <tr className="bg-gray-200">
-            <th className="border border-gray-300 px-4 py-2">ايقاف/تفعيل</th>
+            {perms.map((permItem, idx) => {
+              if (permItem.permission_id === 5 && permItem.active) {
+                return (
+                  <th key={idx} className="border border-gray-300 px-4 py-2">ايقاف/تفعيل</th>
+                );
+              }
+              return null;
+            })}
             <th className="border border-gray-300 px-4 py-2">
               المعلومات الشخصية
             </th>
@@ -66,21 +71,30 @@ const Page = ({ params }: { params: { id: number } }) => {
           {students ? (
             students.map((user, index) => (
               <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
-                <td className="border border-gray-300 px-4 py-2">
-                  <button
-                    onClick={() => {
-                      handleActivate(user.id, !user.active);
-                    }}
-                    className={`text-white py-1 px-2 rounded ${
-                      user.active
-                        ? 'bg-red-500 hover:bg-red-600'
-                        : 'bg-green-600 hover:bg-green-700'
-                    }`}
-                  >
-                    {user.active ? 'ايقاف' : 'تفعيل'}
-                  </button>
-                </td>
-
+                {perms.map((permItem, idx) => {
+                  if (permItem.permission_id === 5 && permItem.active) {
+                    return (
+                      <td
+                        className="border border-gray-300 px-4 py-2"
+                        key={idx}
+                      >
+                        <button
+                          onClick={() => {
+                            handleActivate(user.id, !user.active);
+                          }}
+                          className={`text-white py-1 px-2 rounded ${
+                            user.active
+                              ? 'bg-red-500 hover:bg-red-600'
+                              : 'bg-green-600 hover:bg-green-700'
+                          }`}
+                        >
+                          {user.active ? 'ايقاف' : 'تفعيل'}
+                        </button>
+                      </td>
+                    );
+                  }
+                  return null;
+                })}
                 <td className="border border-gray-300 px-4 py-2">
                   <Link
                     href={`/management/personalInformation/student/${user.id}`}
@@ -102,9 +116,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             ))
           ) : (
             <tr>
-              <td className="border border-gray-300 px-4 py-2">
-                لا يوجد طلاب
-              </td>
+              <td className="border border-gray-300 px-4 py-2">لا يوجد طلاب</td>
             </tr>
           )}
         </tbody>

@@ -59,7 +59,7 @@ const page = () => {
     };
 
     fetchPosts();
-  }, [user, user?.id,load]);
+  }, [user, user?.id, load]);
 
   const handleRegisterDep = () => {
     if (!newItemDep) {
@@ -78,7 +78,6 @@ const page = () => {
       });
     setNewItemDep('');
     setLoad(!load);
-
   };
 
   const selectedDep = departments.filter((item) => item.name == newMajorDep);
@@ -107,13 +106,11 @@ const page = () => {
     setLoad(!load);
   };
 
- 
   const handleDeleteMajor = (major_name: string) => {
     const data = { item_name: major_name };
     axios.post('/api/major/majorDelete', data).then((resp) => {
       toast.success(resp.data.message);
       setLoad(!load);
-
     });
   };
 
@@ -123,51 +120,45 @@ const page = () => {
         <p className="flex text-md bg-lightBlue rounded-md p-4 w-[200px] justify-center m-5 items-center">
           اقسام
         </p>
-        <div className="flex flex-row-reverse items-center justify-center  text-sm m-10 w-[1000px]">
-          <label
-            htmlFor=""
-            lang="ar"
-            className="p-3 bg-darkBlue text-secondary w-[200px]"
-          >
-            سجل كلية
-          </label>
-          <input
-            ref={department}
-            dir="rtl"
-            placeholder="ادخل اسم الكلية"
-            type="text"
-            className="w-[600px] border border-gray-300 px-4 py-2 rounded-[5px]"
-            value={newItemDep}
-            onChange={(e) => setNewItemDep(e.target.value)}
-          />
-          <button
-            className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
-            type="submit"
-            onClick={handleRegisterDep}
-          >
-            سجل
-          </button>
-        </div>
+        {perms.map((permItem, idx) => {
+          if (permItem.permission_id === 7 && permItem.active) {
+            return (
+              <div key={idx} className="flex flex-row-reverse items-center justify-center  text-sm m-10 w-[1000px]">
+                <label
+                  htmlFor=""
+                  lang="ar"
+                  className="p-3 bg-darkBlue text-secondary w-[200px]"
+                >
+                  سجل كلية
+                </label>
+                <input
+                  ref={department}
+                  dir="rtl"
+                  placeholder="ادخل اسم الكلية"
+                  type="text"
+                  className="w-[600px] border border-gray-300 px-4 py-2 rounded-[5px]"
+                  value={newItemDep}
+                  onChange={(e) => setNewItemDep(e.target.value)}
+                />
+                <button
+                  className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
+                  type="submit"
+                  onClick={handleRegisterDep}
+                >
+                  سجل
+                </button>
+              </div>
+            );
+          }
+          return null;
+        })}
 
         <table className="w-[1000px] ">
           <tbody>
             {departments.length ? (
               departments.map((deptItem, index) => (
                 <tr key={index}>
-                  <td className="border border-gray-300 px-4 py-2" key={index}>
-                    {perms.map((permItem, idx) => {
-                      if (permItem.permission_id === 8 && permItem.active) {
-                        return (
-                          <MyModel
-                            key={idx}
-                            depOrMaj="الكلية"
-                            name={deptItem.name}
-                            deleteModle={() => handleDeleteMajor(deptItem.name)}
-                          />
-                        );
-                      }
-                      return null;
-                    })}
+                  <td className="border border-gray-300 px-4 py-2 ">
                     {deptItem.name}
                   </td>
                 </tr>
@@ -223,7 +214,7 @@ const page = () => {
                   اختر اسم الكلية
                 </option>
                 {departments.map((item, index) => (
-                  <option key={index} >{item.name}</option>
+                  <option key={index}>{item.name}</option>
                 ))}
               </select>
 

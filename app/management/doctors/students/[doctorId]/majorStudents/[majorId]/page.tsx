@@ -23,6 +23,7 @@ const Page = ({
   }
 
   const user = session.data?.user;
+  
   const [refresh, setRefresh] = useState(false);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
   const [checked, setChecked] = useState<number[]>([]);
@@ -43,7 +44,6 @@ const Page = ({
         axios.get(`/api/list/${params.majorId}/student`).then((resp) => {
           const message: RegisterStudent2Type[] = resp.data.message;
           setStudents(message);
-          
         });
 
         axios.get('/api/getAll/getDoctorsHeadOfDep').then((res) => {
@@ -70,7 +70,7 @@ const Page = ({
   const handleSubmit = () => {
     console.log(checked);
     checked.map((item) => {
-      const data = { 
+      const data = {
         id: item,
         advisor: params.doctorId,
       };
@@ -86,12 +86,20 @@ const Page = ({
 
   return (
     <div className="flex absolute flex-col w-[80%]">
-      <button
-        onClick={handleSubmit}
-        className="w-[200px] text-sm bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-md flex justify-center items-center m-5"
-      >
-        عين الدكتور كمشرف
-      </button>
+      {perms.map((permItem, idx) => {
+        if (permItem.permission_id === 9 && permItem.active) {
+          return (
+            <button
+              key={idx}
+              onClick={handleSubmit}
+              className="w-[200px] text-sm bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-md flex justify-center items-center m-5"
+            >
+              عين الدكتور كمشرف
+            </button>
+          );
+        }
+        return null;
+      })}
       <table className="border-collapse mt-8">
         <thead>
           <tr className="bg-gray-200">

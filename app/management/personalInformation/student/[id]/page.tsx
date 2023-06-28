@@ -8,6 +8,7 @@ import {
   RegisterStudent2Type,
   InfoDoctorType,
   MajorRegType,
+  GetPermissionType,
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
 import { BsXCircleFill } from 'react-icons/bs';
@@ -36,10 +37,14 @@ const Page = ({ params }: { params: { id: number } }) => {
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
     redirect('/');
   }
+
+  const user = session.data?.user;
+
   const [useMyData, setMydata] = useState<RegisterStudent2Type[]>([]);
   const [newData, setNewData] = useState<RegisterStudent2Type[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
   const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
+  const [permsAdmin, setPermsAdmin] = useState<GetPermissionType[]>([]);
   const [major, setMajor] = useState<string>();
   const [refresh, setRefresh] = useState(false);
   const [doctors, setDoctors] = useState<string>();
@@ -48,7 +53,6 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-
       try {
         const response = await axios.get('/api/allPermission/student');
         const message: AssignPermissionType[] = response.data.message;
@@ -56,6 +60,12 @@ const Page = ({ params }: { params: { id: number } }) => {
       } catch (error) {
         console.error('Error fetching data:', error);
       }
+
+      const responsePer = await axios.get(
+        `/api/allPermission/admin/selectedPerms/${user?.id}`
+      );
+      const messagePer: GetPermissionType[] = responsePer.data.message;
+      setPermsAdmin(messagePer);
 
       const response = await axios.get(
         `/api/allPermission/student/selectedPerms/${params.id}`
@@ -66,9 +76,10 @@ const Page = ({ params }: { params: { id: number } }) => {
       const responseStudent = await axios.get(
         `/api/personalInfo/student/${params.id}`
       );
-      const messageStudent: RegisterStudent2Type[] = responseStudent.data.message;
+      const messageStudent: RegisterStudent2Type[] =
+        responseStudent.data.message;
       setMydata(messageStudent);
-        setNewData(messageStudent);
+      setNewData(messageStudent);
 
       const responseMaj = await axios.get(
         `/api/majorEnrollment/${messageStudent[0].major}`
@@ -76,14 +87,16 @@ const Page = ({ params }: { params: { id: number } }) => {
       const messageMaj: MajorRegType[] = responseMaj.data.message;
       setMajor(messageMaj[0].major_name);
 
-      axios.get(`/api/personalInfo/doctor/${messageStudent[0].advisor}`).then((res) => {
-        const message: InfoDoctorType[] = res.data.message;
-        setDoctors(message[0].name);
-      });};
-    
-    fetchPosts();
-  }, [refresh, params.id,edit]);
+      axios
+        .get(`/api/personalInfo/doctor/${messageStudent[0].advisor}`)
+        .then((res) => {
+          const message: InfoDoctorType[] = res.data.message;
+          setDoctors(message[0].name);
+        });
+    };
 
+    fetchPosts();
+  }, [refresh, params, edit, user]);
 
   const selected: AssignPermissionType[] = perms.flatMap((item) =>
     checkList
@@ -107,7 +120,6 @@ const Page = ({ params }: { params: { id: number } }) => {
         setRefresh(!refresh);
       });
   };
-
 
   const handleInputChange = (e: string, field: keyof RegisterStudent2Type) => {
     const updatedData = newData.map((data) => {
@@ -139,7 +151,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   });
 
   return (
-    <div className="absolute flex justify-center items-center w-[80%] flex-col m-10">
+    <div className="absolute flex  justify-center items-center w-[80%] flex-col m-10">
       <div className="flex flex-row ">
         <button
           onClick={handlePrint}
@@ -159,13 +171,21 @@ const Page = ({ params }: { params: { id: number } }) => {
         >
           جدول المحاضرات
         </Link>
-        <button
-          className="m-5  bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
-          type="submit"
-          onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
-        >
-          {edit ? 'ارسال' : 'تعديل'}
-        </button>
+        {permsAdmin.map((permItem, idx) => {
+          if (permItem.permission_id === 5 && permItem.active) {
+            return (
+              <button
+                key={idx}
+                className="m-5  bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
+                type="submit"
+                onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
+              >
+                {edit ? 'ارسال' : 'تعديل'}
+              </button>
+            );
+          }
+          return null;
+        })}
       </div>
       <table className="flex-row-reverse flex text-sm  border-collapse">
         <thead>
@@ -316,43 +336,57 @@ const Page = ({ params }: { params: { id: number } }) => {
         </tbody>
       </table>
       <div>
-        <table className="border-collapse mt-8 w-[800px]">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border border-gray-300 px-4 py-2">حذف</th>
-              <th className="border border-gray-300 px-4 py-2">ايقاف/تفعيل</th>
-              <th className="border border-gray-300 px-4 py-2">اسم الصلاحية</th>
-            </tr>
-          </thead>
-          <tbody>
-            {selected.map((user, index) => (
-              <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
-                <td className="border-none h-full px-4 py-2 flex justify-end items-center">
-                  <BsXCircleFill
-                    onClick={() => handleDelete(user.id, params.id)}
-                  />
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  <button
-                    onClick={() => {
-                      handleActivate(user.id, params.id, !user.active);
-                    }}
-                    className={`w-[50px] text-white py-1 px-2 rounded ${
-                      user.active
-                        ? 'bg-red-500 hover:bg-red-600'
-                        : 'bg-green-600 hover:bg-green-700'
-                    }`}
-                  >
-                    {user.active ? 'ايقاف' : 'تفعيل'}
-                  </button>
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {user.name}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {permsAdmin.map((permItem, idx) => {
+          if (permItem.permission_id === 5 && !permItem.active) {
+            return (
+              <table className="border-collapse mt-8 w-[800px]" key={idx}>
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="border border-gray-300 px-4 py-2">حذف</th>
+                    <th className="border border-gray-300 px-4 py-2">
+                      ايقاف/تفعيل
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2">
+                      اسم الصلاحية
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selected.map((user, index) => (
+                    <tr
+                      key={index}
+                      className={index % 2 === 0 ? 'bg-gray-100' : ''}
+                    >
+                      <td className="border-none h-full px-4 py-2 flex justify-end items-center">
+                        <BsXCircleFill
+                          onClick={() => handleDelete(user.id, params.id)}
+                        />
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <button
+                          onClick={() => {
+                            handleActivate(user.id, params.id, !user.active);
+                          }}
+                          className={`w-[50px] text-white py-1 px-2 rounded ${
+                            user.active
+                              ? 'bg-red-500 hover:bg-red-600'
+                              : 'bg-green-600 hover:bg-green-700'
+                          }`}
+                        >
+                          {user.active ? 'ايقاف' : 'تفعيل'}
+                        </button>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {user.name}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            );
+          }
+          return null;
+        })}
 
         <div ref={printableContentRef}>
           <Transcript user={params.id} />

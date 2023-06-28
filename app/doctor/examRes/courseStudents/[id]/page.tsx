@@ -290,7 +290,7 @@ useEffect(() => {
       <form onSubmit={(e) => e.preventDefault()}>
       {perms.map((item) =>
        {
-        if (item.permission_id === 21 && item.active){
+        if (item.permission_id === 21 && !item.active){
           return (
             <>
               <button

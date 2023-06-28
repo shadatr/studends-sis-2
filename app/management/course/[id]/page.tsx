@@ -2,7 +2,6 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import MyModel from '@/app/components/dialog';
 import { AddCourse2Type, GetPermissionType } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -31,8 +30,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [newItemCourse, setNewItemCourse] = useState('');
   const [passingGrade, setPassingGrade] = useState('');
 
-
-   useEffect(() => {
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       const fetchPosts = async () => {
         if (user) {
@@ -54,8 +52,6 @@ const Page = ({ params }: { params: { id: number } }) => {
       fetchPosts();
     }
   }, [params.id, user?.id, loadCourses]);
-
-  
 
   const selection = numbers.map((num, index) => (
     <option key={index}>{num}</option>
@@ -129,8 +125,6 @@ const Page = ({ params }: { params: { id: number } }) => {
       });
   };
 
-
-
   const handleActivate = (id: number, active: boolean) => {
     const data = { id: id, active: active };
     console.log(data);
@@ -142,90 +136,109 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   return (
     <div className="flex flex-col absolute w-[80%] mt-10 items-center justify-center text-[16px]">
-      <div className="flex flex-row-reverse items-center justify-center  w-[100%] mb-10 ">
-        <input
-          ref={course}
-          dir="rtl"
-          placeholder="ادخل اسم المادة"
-          type="text"
-          className="w-[700px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
-          onChange={(e) => setNewItemCourse(e.target.value)}
-        />
-        <select
-          id="dep"
-          dir="rtl"
-          onChange={(e) => setCredits(e.target.value)}
-          className="p-4 bg-lightBlue "
-          defaultValue=""
-        >
-          <option disabled>الكريدت</option>
-          {selection}
-        </select>
-        <select
-          id="dep"
-          dir="rtl"
-          onChange={(e) => setHours(e.target.value)}
-          className="p-4 bg-lightBlue "
-          defaultValue=""
-        >
-          <option disabled>الساعات</option>
-          {selection}
-        </select>
-        <select
-          id="dep"
-          dir="rtl"
-          onChange={(e) => SetIsOptional(e.target.value)}
-          className="p-4  bg-lightBlue "
-        >
-          <option>اختياري </option>
-          <option> اجباري</option>
-        </select>
-        <input
-          ref={course}
-          dir="rtl"
-          placeholder="نسبة الامتحان النصفي  "
-          type="text"
-          className="w-[150px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
-          onChange={(e) => setMid(e.target.value)}
-        />
-        <input
-          ref={course}
-          dir="rtl"
-          placeholder="نسبة الامتحان النهائي  "
-          type="text"
-          className="w-[150px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
-          onChange={(e) => setFinal(e.target.value)}
-        />
-        <input
-          ref={course}
-          dir="rtl"
-          placeholder=" نسبة اعمال السنة "
-          type="text"
-          className="w-[150px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
-          onChange={(e) => setClassWork(e.target.value)}
-        />
+      {perms.map((permItem, idx) => {
+        if (permItem.permission_id === 6 && permItem.active) {
+          return (
+            <div
+              className="flex flex-row-reverse items-center justify-center  w-[100%] mb-10 "
+              key={idx}
+            >
+              <input
+                ref={course}
+                dir="rtl"
+                placeholder="ادخل اسم المادة"
+                type="text"
+                className="w-[700px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
+                onChange={(e) => setNewItemCourse(e.target.value)}
+              />
+              <select
+                id="dep"
+                dir="rtl"
+                onChange={(e) => setCredits(e.target.value)}
+                className="p-4 bg-lightBlue "
+                defaultValue=""
+              >
+                <option disabled>الكريدت</option>
+                {selection}
+              </select>
+              <select
+                id="dep"
+                dir="rtl"
+                onChange={(e) => setHours(e.target.value)}
+                className="p-4 bg-lightBlue "
+                defaultValue=""
+              >
+                <option disabled>الساعات</option>
+                {selection}
+              </select>
+              <select
+                id="dep"
+                dir="rtl"
+                onChange={(e) => SetIsOptional(e.target.value)}
+                className="p-4  bg-lightBlue "
+              >
+                <option>اختياري </option>
+                <option> اجباري</option>
+              </select>
+              <input
+                ref={course}
+                dir="rtl"
+                placeholder="نسبة الامتحان النصفي  "
+                type="text"
+                className="w-[150px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
+                onChange={(e) => setMid(e.target.value)}
+              />
+              <input
+                ref={course}
+                dir="rtl"
+                placeholder="نسبة الامتحان النهائي  "
+                type="text"
+                className="w-[150px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
+                onChange={(e) => setFinal(e.target.value)}
+              />
+              <input
+                ref={course}
+                dir="rtl"
+                placeholder=" نسبة اعمال السنة "
+                type="text"
+                className="w-[150px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
+                onChange={(e) => setClassWork(e.target.value)}
+              />
 
-        <input
-          ref={course}
-          dir="rtl"
-          placeholder="درجة النجاح"
-          type="text"
-          className="w-[150px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
-          onChange={(e) => setPassingGrade(e.target.value)}
-        />
-        <button
-          className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
-          type="submit"
-          onClick={handleRegisterCourse}
-        >
-          سجل
-        </button>
-      </div>
+              <input
+                ref={course}
+                dir="rtl"
+                placeholder="درجة النجاح"
+                type="text"
+                className="w-[150px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
+                onChange={(e) => setPassingGrade(e.target.value)}
+              />
+              <button
+                className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
+                type="submit"
+                onClick={handleRegisterCourse}
+              >
+                سجل
+              </button>
+            </div>
+          );
+        }
+        return null;
+      })}
 
       <table className="w-[1100px]  ">
         <thead className="">
           <tr>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">ايقاف/تفعيل</th>
+            {perms.map((permItem, idx) => {
+              if (permItem.permission_id === 6 && permItem.active) {
+                return (
+                  <th key={idx} className="py-2 px-4 bg-gray-200 text-gray-700">
+                    ايقاف/تفعيل
+                  </th>
+                );
+              }
+              return null;
+            })}
             <th className="py-2 px-4 bg-gray-200 text-gray-700">درجة النجاح</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-700">
               اجباري/اختياري{' '}
@@ -247,20 +260,27 @@ const Page = ({ params }: { params: { id: number } }) => {
         <tbody>
           {courses.map((item, index) => (
             <tr key={index}>
-              <td className="border border-gray-300 px-4 py-2">
-                <button
-                  onClick={() => {
-                    handleActivate(item.id, !item.active);
-                  }}
-                  className={`text-white py-1 px-2 rounded ${
-                    item.active
-                      ? 'bg-red-500 hover:bg-red-600'
-                      : 'bg-green-600 hover:bg-green-700'
-                  }`}
-                >
-                  {item.active ? 'ايقاف' : 'تفعيل'}
-                </button>
-              </td>
+              {perms.map((permItem, idx) => {
+                if (permItem.permission_id === 6 && permItem.active) {
+                  return (
+                    <td className="border border-gray-300 px-4 py-2" key={idx}>
+                      <button
+                        onClick={() => {
+                          handleActivate(item.id, !item.active);
+                        }}
+                        className={`text-white py-1 px-2 rounded ${
+                          item.active
+                            ? 'bg-red-500 hover:bg-red-600'
+                            : 'bg-green-600 hover:bg-green-700'
+                        }`}
+                      >
+                        {item.active ? 'ايقاف' : 'تفعيل'}
+                      </button>
+                    </td>
+                  );
+                }
+                return null;
+              })}
               <td className="border border-gray-300 px-4 py-2">
                 {item.passing_percentage}
               </td>

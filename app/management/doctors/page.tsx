@@ -18,6 +18,8 @@ const Page = () => {
     redirect('/');
   }
 
+  const user = session.data?.user;
+
   const [doctors, setDoctors] = useState<DoctorsWithDepartmentsType[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
@@ -26,13 +28,13 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      //   const response = await axios.get(
-      //     `/api/allPermission/admin/selectedPerms/${user?.id}`
-      //   );
-      //   const message: GetPermissionType[] = response.data.message;
-      //   setPerms(message);
-      //   console.log(message);
-      // };
+      const response = await axios.get(
+        `/api/allPermission/admin/selectedPerms/${user?.id}`
+      );
+      const message: GetPermissionType[] = response.data.message;
+      setPerms(message);
+      console.log(message);
+
       axios.get('/api/getAll/getDoctorsHeadOfDep').then((res) => {
         console.log(res.data);
         const message: DoctorsWithDepartmentsType[] = res.data.message;
@@ -44,12 +46,20 @@ const Page = () => {
 
   return (
     <div className="flex absolute flex-col w-[80%] justify-center items-center mt-10">
-      <Link
-        className="btn_base w-[200px] mb-3"
-        href={'/management/doctors/register'}
-      >
-        اضافة عضو
-      </Link>
+      {perms.map((permItem, idx) => {
+        if (permItem.permission_id === 9 && permItem.active) {
+          return (
+            <Link
+              key={idx}
+              className="btn_base w-[200px] mb-3"
+              href={'/management/doctors/register'}
+            >
+              اضافة عضو
+            </Link>
+          );
+        }
+        return null;
+      })}
       <SearchBar />
       <table className="border-collapse w-[1100px]">
         <thead>
@@ -82,16 +92,23 @@ const Page = () => {
                 </Link>
               </td>
               <td className="border border-gray-300 px-4 py-2 flex justify-between">
-                <button
-                  key={index}
-                  className="bg-green-500 hover:bg-green-600 px-5 py-1 rounded-md text-white"
-                  onClick={() => {
-                    setSelectedDoctor(user);
-                    setIsModalOpen(true);
-                  }}
-                >
-                  تعين
-                </button>
+                {perms.map((permItem) => {
+                  if (permItem.permission_id === 9 && permItem.active) {
+                    return (
+                      <button
+                        key={index}
+                        className="bg-green-500 hover:bg-green-600 px-5 py-1 rounded-md text-white"
+                        onClick={() => {
+                          setSelectedDoctor(user);
+                          setIsModalOpen(true);
+                        }}
+                      >
+                        تعين
+                      </button>
+                    );
+                  }
+                  return null;
+                })}
 
                 {user.department ? (
                   <p>{user.department.name}</p>

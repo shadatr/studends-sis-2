@@ -7,6 +7,7 @@ import {
   CourseProgramType,
   CheckedType,
   DayOfWeekType,
+  GetPermissionType,
 } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
@@ -38,40 +39,47 @@ const days: DayOfWeekType[] = [
   { name: 'الاثنين', day: 'monday' },
 ];
 
-
 const Tabs = ({ params }: { params: { idSec: number; idClass: number } }) => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
     redirect('/');
   }
+  const user = session.data?.user;
+
   const [classes, setClasses] = useState<ClassesType[]>([]);
   const [sectionName, setSectionName] = useState<string>();
   const [courseId, setCourseId] = useState<number>();
- 
+
   const [doctorName, setDoctorName] = useState<string>();
   const [courses, setCourses] = useState<CourseType[]>([]);
   const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
   const [selectedDoctor, setSelectedDoctor] = useState<string>();
   const [load, setLoad] = useState(false);
   const [courseProg, setCourseProg] = useState<CourseProgramType[]>([]);
-
+  const [perms, setPerms] = useState<GetPermissionType[]>([]);
 
   useEffect(() => {
-          const fetchdata = async () => {
-        const responseClass = await axios.get(
+    const fetchdata = async () => {
+      const responsePer = await axios.get(
+        `/api/allPermission/admin/selectedPerms/${user?.id}`
+      );
+
+      const messagePer: GetPermissionType[] = responsePer.data.message;
+      setPerms(messagePer);
+      const responseClass = await axios.get(
         `/api/getAll/getAllClasses/${params.idSec}`
       );
       const messageClass: ClassesType[] = responseClass.data.message;
-          setClasses(messageClass);
-          console.log(params.idSec);
+      setClasses(messageClass);
+      console.log(params.idSec);
 
-        const responseCourseProg = await axios.get(
-          `/api/courseProgram/${messageClass[0].id}`
-        );
-        const messageCourseProg: CourseProgramType[] =
-          responseCourseProg.data.message;
-        setCourseProg(messageCourseProg);
+      const responseCourseProg = await axios.get(
+        `/api/courseProgram/${messageClass[0].id}`
+      );
+      const messageCourseProg: CourseProgramType[] =
+        responseCourseProg.data.message;
+      setCourseProg(messageCourseProg);
       const responseDoctor = await axios.get(`/api/getAll/doctor`);
       const messageDoctor: PersonalInfoType[] = responseDoctor.data.message;
       setDoctors(messageDoctor);
@@ -80,42 +88,36 @@ const Tabs = ({ params }: { params: { idSec: number; idClass: number } }) => {
       );
       setDoctorName(d?.name);
 
-          
-        const responseSec = await axios.get(
-          `/api/getAll/getAllSections/${params.idClass}`
-        );
-        const messageSec: SectionType[] = responseSec.data.message;
-        messageSec.map((item) => {
-          if (item.id == params.idSec) setSectionName(item.name);
-          setCourseId(item.course_id);
-        });
+      const responseSec = await axios.get(
+        `/api/getAll/getAllSections/${params.idClass}`
+      );
+      const messageSec: SectionType[] = responseSec.data.message;
+      messageSec.map((item) => {
+        if (item.id == params.idSec) setSectionName(item.name);
+        setCourseId(item.course_id);
+      });
 
-        const responseCourse = await axios.get(
-          `/api/course/courses/courseSection`
-        );
-        const messageCourse: CourseType[] = responseCourse.data.message;
-        setCourses(messageCourse);
-      };
-      fetchdata();
-    
-  }, [load, params.idClass, params.idSec]);
+      const responseCourse = await axios.get(
+        `/api/course/courses/courseSection`
+      );
+      const messageCourse: CourseType[] = responseCourse.data.message;
+      setCourses(messageCourse);
+    };
+    fetchdata();
+  }, [load, params.idClass, params.idSec, user]);
 
- 
+  const handleSubmit = () => {
+    const doc = doctors.find((item) => item.name == selectedDoctor);
 
-const handleSubmit = () => {
-
-
-  const doc=doctors.find((item) => item.name== selectedDoctor );
-
-  const data: ClassesType = {
-    doctor_id: doc?.id,
-    section_id: params.idSec,
-  };
-  axios.post('/api/course/assignCourseDoctor', data).then((resp) => {
-    toast.success(resp.data.message);
+    const data: ClassesType = {
+      doctor_id: doc?.id,
+      section_id: params.idSec,
+    };
+    axios.post('/api/course/assignCourseDoctor', data).then((resp) => {
+      toast.success(resp.data.message);
       setLoad(!load);
-  });
-};
+    });
+  };
 
   return (
     <div className="flex absolute flex-col justify-center items-center w-[80%] ">
@@ -193,54 +195,69 @@ const handleSubmit = () => {
           </div>
         );
       })}
-      <form onSubmit={(e) => e.preventDefault()} className="my-4">
-        <p className="bg-lightBlue px-4 py-2 mt-2">اختر الدكتور لهذه المادة</p>
-        <table className="border border-gray-300 rounded-lg my-2 w-[600px]">
-          <thead>
-            <tr>
-              <th></th>
-              <th>المعلومات الشخصية</th>
-              <th>التخصص</th>
-              <th>الاسم</th>
-            </tr>
-          </thead>
-          <tbody>
-            {doctors.map((doctor, index) => (
-              <tr key={index}>
-                <td>
-                  <input
-                    className="mx-2"
-                    type="checkbox"
-                    value={doctor.name}
-                    checked={selectedDoctor === doctor.name}
-                    onChange={(event) => setSelectedDoctor(event.target.value)}
-                  />
-                </td>
-                <td>
-                  <Link
-                    href={`/management/personalInformation/doctor/${doctor.id}`}
-                    className="bg-blue-500 hover:bg-blue-600 p-1 m-1 text-white rounded-md inline-block"
-                  >
-                    الملف الشخصي
-                  </Link>
-                </td>
-                <td className="px-2 py-1">
-                  <label>{doctor.major}</label>
-                </td>
-                <td className="px-2 py-1">
-                  <label>{doctor.name}</label>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <button
-          onClick={handleSubmit}
-          className="bg-blue-500 text-white px-4 py-2 mt-2"
-        >
-          اضافة
-        </button>
-      </form>
+      {perms.map((permItem, idx) => {
+        if (permItem.permission_id === 6 && permItem.active) {
+          return (
+            <form
+              key={idx}
+              onSubmit={(e) => e.preventDefault()}
+              className="my-4"
+            >
+              <p className="bg-lightBlue px-4 py-2 mt-2">
+                اختر الدكتور لهذه المادة
+              </p>
+              <table className="border border-gray-300 rounded-lg my-2 w-[600px]">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>المعلومات الشخصية</th>
+                    <th>التخصص</th>
+                    <th>الاسم</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {doctors.map((doctor, index) => (
+                    <tr key={index}>
+                      <td>
+                        <input
+                          className="mx-2"
+                          type="checkbox"
+                          value={doctor.name}
+                          checked={selectedDoctor === doctor.name}
+                          onChange={(event) =>
+                            setSelectedDoctor(event.target.value)
+                          }
+                        />
+                      </td>
+                      <td>
+                        <Link
+                          href={`/management/personalInformation/doctor/${doctor.id}`}
+                          className="bg-blue-500 hover:bg-blue-600 p-1 m-1 text-white rounded-md inline-block"
+                        >
+                          الملف الشخصي
+                        </Link>
+                      </td>
+                      <td className="px-2 py-1">
+                        <label>{doctor.major}</label>
+                      </td>
+                      <td className="px-2 py-1">
+                        <label>{doctor.name}</label>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <button
+                onClick={handleSubmit}
+                className="bg-blue-500 text-white px-4 py-2 mt-2"
+              >
+                اضافة
+              </button>
+            </form>
+          );
+        }
+        return null;
+      })}
     </div>
   );
 };

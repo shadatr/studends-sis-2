@@ -1,5 +1,10 @@
 'use client';
-import { CourseType, PrerequisiteCourseType, SectionType } from '@/app/types/types';
+import {
+  CourseType,
+  GetPermissionType,
+  PrerequisiteCourseType,
+  SectionType,
+} from '@/app/types/types';
 import axios from 'axios';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
@@ -8,8 +13,7 @@ import { FaTrashAlt } from 'react-icons/fa';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 
-
-const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
+const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
@@ -20,20 +24,32 @@ const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
   const [load, setLoad] = useState(true);
   const [activeTab, setActiveTab] = useState<string>('Tab 1');
   const [selectedCourseName, setSelectedCourseName] = useState('');
-  const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>([]);
+  const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>(
+    []
+  );
   const [maxStudents, setMaxStudents] = useState<number>();
+  const [perms, setPerms] = useState<GetPermissionType[]>([]);
 
-  const handleCourseChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCourseName(event.target.value);
-  };
+  const user = session.data?.user;
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
   };
 
+  const handleCourseChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCourseName(event.target.value);
+  };
+
+
   useEffect(() => {
-    if(typeof window !== 'undefined'){
     const fetchPosts = async () => {
+      const responsePer = await axios.get(
+        `/api/allPermission/admin/selectedPerms/${user?.id}`
+      );
+
+      const messagePer: GetPermissionType[] = responsePer.data.message;
+      setPerms(messagePer);
+
       const response = await axios.get(
         `/api/getAll/getAllSections/${params.courseId}`
       );
@@ -55,24 +71,23 @@ const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
       console.log(messageCourse);
       setPrerequisites(messagePerCourse);
     };
-    fetchPosts();}
-  }, [params.courseId, load, params.majId]);
+    fetchPosts();
+  }, [params.courseId, load, params.majId, user]);
 
   const handleRegisterSection = () => {
-    
     const selectedCourse = courses.find(
       (course) => params.courseId == course.id
     );
 
-    if (!maxStudents){
+    if (!maxStudents) {
       toast.error('يجب ادخال الحد الاقصى لطلاب');
       return;
     }
 
-    const data= {
+    const data = {
       name: selectedCourse?.course_name + `(مجموعة${section.length + 1})`,
       course_id: selectedCourse?.id,
-      max_students: maxStudents
+      max_students: maxStudents,
     };
     console.log(data);
     axios
@@ -86,55 +101,53 @@ const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
       });
   };
 
-    const handleRegisterCourPre = () => {
-      const selectedCourse = courses.find(
-        (course) => params.courseId == course.id
-        );
+  const handleRegisterCourPre = () => {
+    const selectedCourse = courses.find(
+      (course) => params.courseId == course.id
+    );
 
-        const selectedCoursePer = courses.find(
-          (course) =>selectedCourseName == course.course_name
-          );
+    const selectedCoursePer = courses.find(
+      (course) => selectedCourseName == course.course_name
+    );
 
+    let duplicateFound = false;
 
-          let duplicateFound = false;
-    
-          prerequisites.forEach((item) => {
-            if (item.prerequisite_course_id === selectedCoursePer?.id) {
-              duplicateFound = true;
-              return;
-            }
-          });
-    
-          if (duplicateFound) {
-            toast.error('هذه المادة مسجلة بالفعل');
-            return;
-          }
+    prerequisites.forEach((item) => {
+      if (item.prerequisite_course_id === selectedCoursePer?.id) {
+        duplicateFound = true;
+        return;
+      }
+    });
 
-          
-      const data= {
-        course_id: selectedCourse?.id,
-        prerequisite_course_id: selectedCoursePer?.id,
-      };
-      console.log(data);
-      axios
-        .post(`/api/course/prerequisitesCourses/${params.courseId}`, data)
-        .then((res) => {
-          setLoad(!load);
-          console.log(res.data);
-          toast.success(res.data.message);
-        })
-        .catch((err) => {
-          toast.error(err.response.data.message);
-        });
+    if (duplicateFound) {
+      toast.error('هذه المادة مسجلة بالفعل');
+      return;
+    }
+
+    const data = {
+      course_id: selectedCourse?.id,
+      prerequisite_course_id: selectedCoursePer?.id,
     };
+    console.log(data);
+    axios
+      .post(`/api/course/prerequisitesCourses/${params.courseId}`, data)
+      .then((res) => {
+        setLoad(!load);
+        console.log(res.data);
+        toast.success(res.data.message);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      });
+  };
 
-      const handleDelete = (course_id?: number) => {
-        const data = { item_course_id: course_id };
-        axios.post('/api/course/prerequisitesCourses/delete', data).then((resp) => {
-          toast.success(resp.data.message);
-          setLoad(!load);
-        });
-      };
+  const handleDelete = (course_id?: number) => {
+    const data = { item_course_id: course_id };
+    axios.post('/api/course/prerequisitesCourses/delete', data).then((resp) => {
+      toast.success(resp.data.message);
+      setLoad(!load);
+    });
+  };
 
   return (
     <div className="flex absolute flex-col w-screen justify-center items-center  text-sm">
@@ -162,17 +175,29 @@ const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
       </div>
       {activeTab === 'Tab 1' && (
         <>
-          <button
-            onClick={handleRegisterSection}
-            className="p-3 m-5 bg-blue-900 hover:bg-blue-700 text-secondary rounded-md pl-[80px] pr-[80px] items-center flex justify-center "
-          >
-            اضاف مجموعة
-          </button>
-          <input
-            placeholder="الحد الاقصى لطلاب"
-            onChange={(event) => setMaxStudents(parseInt(event.target.value))}
-            className="border border-gray-300 px-4 py-2 flex items-right"
-          />
+          {perms.map((permItem, idx) => {
+            if (permItem.permission_id === 6 && permItem.active) {
+              return (
+                <>
+                  <button
+                    key={idx}
+                    onClick={handleRegisterSection}
+                    className="p-3 m-5 bg-blue-900 hover:bg-blue-700 text-secondary rounded-md pl-[80px] pr-[80px] items-center flex justify-center "
+                  >
+                    اضاف مجموعة
+                  </button>
+                  <input
+                    placeholder="الحد الاقصى لطلاب"
+                    onChange={(event) =>
+                      setMaxStudents(parseInt(event.target.value))
+                    }
+                    className="border border-gray-300 px-4 py-2 flex items-right"
+                  />
+                </>
+              );
+            }
+            return null;
+          })}
           {section.map((sec, index) => (
             <div
               key={index}
@@ -189,30 +214,39 @@ const Page = ({ params }: { params: { courseId: number,majId: number } }) => {
       )}
       {activeTab === 'Tab 2' && (
         <div className="flex flex-col m-10 max-w-[600px] w-screen justify-center items-center ">
-          <select
-            value={selectedCourseName}
-            onChange={handleCourseChange}
-            className="w-[350px] bg-lightBlue p-2 rounded-md"
-          >
-            <option disabled value="">
-              اختر مادة
-            </option>
-            {courses.map((course, index) => (
-              <option
-                key={index}
-                value={course.course_name}
-                className="items-right flex h-[50px]"
-              >
-                {course.course_name}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={handleRegisterCourPre}
-            className="rounded-md bg-blue-800 hover:bg-blue-600 text-secondary p-2 w-[200px] m-5"
-          >
-            اضافة
-          </button>
+          {perms.map((permItem) => {
+            if (permItem.permission_id === 6 && permItem.active) {
+              return (
+                <>
+                  <select
+                    value={selectedCourseName}
+                    onChange={handleCourseChange}
+                    className="w-[350px] bg-lightBlue p-2 rounded-md"
+                  >
+                    <option disabled value="">
+                      اختر مادة
+                    </option>
+                    {courses.map((course, index) => (
+                      <option
+                        key={index}
+                        value={course.course_name}
+                        className="items-right flex h-[50px]"
+                      >
+                        {course.course_name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={handleRegisterCourPre}
+                    className="rounded-md bg-blue-800 hover:bg-blue-600 text-secondary p-2 w-[200px] m-5"
+                  >
+                    اضافة
+                  </button>
+                </>
+              );
+            }
+            return null;
+          })}
           <table className="m-10 w-[600px]">
             <thead>
               <tr>

@@ -9,6 +9,7 @@ import {
   DayOfWeekType,
   CourseProgramType,
   CheckedType,
+  GetPermissionType,
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
 import { BsXCircleFill } from 'react-icons/bs';
@@ -60,6 +61,8 @@ const Page = ({ params }: { params: { id: number } }) => {
     redirect('/');
   }
 
+  const user = session.data?.user;
+
   const [courses, setCourses] = useState<AddCourse2Type[]>([]);
   const [doctorCourses, setDoctorCourses] = useState<StudentCourse2Type[]>([]);
   const [sections, setSections] = useState<Section2Type[]>([]);
@@ -71,10 +74,18 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [programClass, setProgramClass] = useState<CourseProgramType[]>([]);
   const [refresh, setRefresh] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [perms, setPerms] = useState<GetPermissionType[]>([]);
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const responsePer = await axios.get(
+          `/api/allPermission/admin/selectedPerms/${user?.id}`
+        );
+        const messagePer: GetPermissionType[] = responsePer.data.message;
+        setPerms(messagePer);
+
         const response = await axios.get(
           `/api/course/courses/${params.id}/doctor`
         );
@@ -115,7 +126,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     };
 
     fetchData();
-  }, [params, edit]);
+  }, [params, edit,user]);
 
   useEffect(() => {
     const updatedStudentCourses: StudentCourse2Type[] = [];
@@ -228,7 +239,11 @@ const Page = ({ params }: { params: { id: number } }) => {
           ))}
         </tbody>
       </table>
-      <div className="border-2 border-grey m-4 rounded-5 p-5 flex justify-center items-center rounded-md">
+      {perms.map((permItem, idx) => {
+        if (permItem.permission_id === 9 && permItem.active) {
+          return (
+            
+      <div className="border-2 border-grey m-4 rounded-5 p-5 flex justify-center items-center rounded-md" key={idx}>
         <button
           onClick={handleSubmit}
           className="px-4 py-2 bg-blue-500 text-white rounded-md"
@@ -299,6 +314,10 @@ const Page = ({ params }: { params: { id: number } }) => {
           ))}
         </select>
       </div>
+          );
+        }
+        return null;
+      })}
 
       <table className="w-full bg-white shadow-md rounded-md">
         <thead>
