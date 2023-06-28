@@ -19,19 +19,7 @@ export default function Home() {
   }, [router, user?.userType]);
 
   return (
-    <div className="flex justify-center items-center h-full flex-col">
-      <h1 className="text-3xl">Welcome {session.data?.user.name}</h1>
-      <p className="text-lg">This page should be private</p>
-      <Link href={'/student/announcements'}>student</Link>
-      <Link href={'/doctor/announcements'}>doctor</Link>
-      <Link href={'/management/announcements'}>admin</Link>
-      <p
-        className="text-red-600 text-sm hover:cursor-pointer"
-        onClick={() => signOut()}
-      >
-        logout
-      </p>
-    </div>
+    <div></div>
   );
 }
 
