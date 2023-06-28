@@ -24,7 +24,7 @@ export async function GET(
       const response: PostgrestResponse<{ [key: string]: any }> = await supabase
         .from('tb_section')
         .select('*')
-        .in('id', [item.section_id]);
+        .in('id', [item.section_id]); 
 
       const data2: { [key: string]: any }[] = response.data || [];
 
