@@ -248,8 +248,8 @@ export type SectionType = {
   id?: number;
   name?: string;
   course_id?: number;
-  max_students?: number;
-  students_num?: number;
+  max_students: number;
+  students_num: number;
 };
 export type Section2Type = {
   class_id?:number,

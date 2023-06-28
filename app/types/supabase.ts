@@ -1,10 +1,10 @@
-export type Json =
+export type JsonType =
   | string
   | number
   | boolean
   | null
-  | { [key: string]: Json }
-  | Json[]
+  | { [key: string]: JsonType }
+  | JsonType[];
 
 export interface Database {
   public: {
