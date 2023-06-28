@@ -1,4 +1,4 @@
-import { AddCourseType, SectionType } from '@/app/types/types';
+import { AddCourseType } from '@/app/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
