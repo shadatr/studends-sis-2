@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import {
-  AddCourse2Type,
+  AddCourseType,
   Section2Type,
   StudentCourse2Type,
   DayOfWeekType,
@@ -63,7 +63,7 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   const user = session.data?.user;
 
-  const [courses, setCourses] = useState<AddCourse2Type[]>([]);
+  const [courses, setCourses] = useState<AddCourseType[]>([]);
   const [doctorCourses, setDoctorCourses] = useState<StudentCourse2Type[]>([]);
   const [sections, setSections] = useState<Section2Type[]>([]);
   const [selectedCourse, setSelecetedCourse] = useState<string>();
@@ -111,10 +111,12 @@ const Page = ({ params }: { params: { id: number } }) => {
           const responseReq = await axios.get(
             `/api/getAll/getSpecificCourse/${section.course_id}`
           );
-          const { message: courseMessage }: { message: AddCourse2Type[] } =
+          const { message: courseMessage }: { message: AddCourseType[] } =
             responseReq.data;
           return courseMessage;
         });
+
+        
 
         const courseData = await Promise.all(coursesPromises);
         const courses = courseData.flat();

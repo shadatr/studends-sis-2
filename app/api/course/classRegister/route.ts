@@ -11,9 +11,8 @@ export async function POST(request: Request) {
 
   try {
     const res = await supabase.from('tb_classes').insert([data]);
-    if (res.error) {
-      throw res.error;
-    }
+    console.log(res.error?.message);
+    
     return new Response(JSON.stringify({ message: 'تم تسجيل المحاضرة بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });

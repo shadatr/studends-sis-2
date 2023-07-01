@@ -121,9 +121,8 @@ const Page = () => {
           dir="rtl"
           className="flex flex-col bg-slate-200 w-[400px] h-[50px] rounded-md p-2"
           onChange={handleMajorChange}
-          value={selectedMajor?.major_name || ''}
         >
-          <option disabled>اختر التخصص</option>
+          <option disabled selected>اختر التخصص</option>
           {majors.map((item, index) => (
             <option key={index} value={item.major_name}>
               {item.major_name}

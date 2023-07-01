@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   const data: AddCourseType = await request.json();
 
   try {
-    const res = await supabase.from('tb_courses').insert([data]);
+    await supabase.from('tb_courses').insert([data]);
 
    
     return new Response(JSON.stringify({ message: 'تم تسجيل المادة بنجاح' }), {
@@ -24,15 +24,11 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: number } }
-) {
+export async function GET() {
   try {
     const data = await supabase
       .from('tb_courses')
-      .select('*')
-      .eq('major_id', params.id);
+      .select('*');
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {

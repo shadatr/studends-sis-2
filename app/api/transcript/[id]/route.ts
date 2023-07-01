@@ -29,23 +29,23 @@ export async function GET(
 export async function POST(request: Request) {
   const data: TranscriptType = await request.json();
 
-    const data1=await supabase.from('tb_transcript').insert([data]);
+  console.log(data);
+
+    const data1=await supabase.from('tb_transcript').insert([{gpa: data.gpa, semester: data.semester, student_id: data.student_id}]);
 
     const data2 = await supabase
       .from('tb_students')
       .update({
-        semester: data.semester+1,
+        semester: data.studentSemester+1,
       })
       .eq('id', data.student_id);
 
-      const data3 = await supabase
-        .from('tb_course_enrollment')
-        .update({
-          active: false,
-        })
-        .eq('student_id', data.student_id);
 
-      console.log(data1.error?.message);
-      console.log(data2.error?.message);
-      console.log(data3.error?.message);
+          const data5 = await supabase
+            .from('tb_classes')
+            .update({ active: false })
+            .eq('semester', data.semester);
+
+
+      console.log(data5.error?.message);
 }

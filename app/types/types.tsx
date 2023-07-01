@@ -155,25 +155,12 @@ export type SearchIntityType = {
   searchBy: string;
 };
 
-export type AddCourseType = {
-  id?: number;
-  course_name: string;
-  major_id?: number;
-  min_semester?: number;
-  hours?: number;
-  credits?: number;
-  passing_percentage?: number;
-  class_work?: number;
-  midterm?: number;
-  final?: number;
-  IsOptional?: boolean;
-  active?: boolean;
-};
 
-export type AddCourse2Type = {
+
+export type AddCourseType = {
   id: number;
+  course_number: string;
   course_name: string;
-  major_id?: number;
   hours?: string;
   credits?: number;
   passing_percentage?: number;
@@ -181,8 +168,13 @@ export type AddCourse2Type = {
   class_work?: number;
   midterm?: number;
   final?: number;
-  IsOptional?: boolean;
-  active?: boolean;
+};
+
+export type MajorCourseType = {
+  id: number;
+  major_id: number;
+  course_id: number;
+  isOptional: boolean
 };
 
 export type MajorEnrollmentType = {
@@ -248,15 +240,14 @@ export type SectionType = {
   id?: number;
   name?: string;
   course_id?: number;
-  max_students: number;
   students_num: number;
 };
+
 export type Section2Type = {
   class_id?:number,
   id?: number;
   name?: string;
   course_id?: number;
-  max_students: number;
   students_num: number;
 };
 
@@ -268,6 +259,61 @@ export type ClassesType = {
   final_publish?: boolean;
   class_work_publish?: boolean;
   result_publish?: boolean;
+  semester: string;
+  day: string;
+  starts_at: number;
+  ends_at: number;
+  location: string;
+};
+
+export type ClassesInfoType = {
+  class: {
+    id?: number;
+    doctor_id?: number;
+    section_id?: number;
+    mid_publish?: boolean;
+    final_publish?: boolean;
+    class_work_publish?: boolean;
+    result_publish?: boolean;
+    semester: string;
+    day: string;
+    starts_at: number;
+    ends_at: number;
+    location: string;
+  };
+  section: {
+    id?: number;
+    name?: string;
+    course_id?: number;
+    students_num: number;
+  };
+  course: {
+    id: number;
+    course_number: string;
+    course_name: string;
+    hours?: string;
+    credits?: number;
+    passing_percentage?: number;
+    pass?: boolean;
+    class_work?: number;
+    midterm?: number;
+    final?: number;
+  };
+  doctor: {
+    id: number;
+    name: string;
+    surname: string;
+    address: string;
+    phone: number;
+    email: string;
+    birth_date: number;
+    semester: number;
+    enrollment_date?: number;
+    major: number;
+    advisor?: string;
+    active?: boolean;
+    head_of_deparment_id?: number;
+  };
 };
 
 export type StudentClassType = {
@@ -306,17 +352,16 @@ export type TabType = {
 };
 
 export type CourseType = {
-  id?: number;
+  id: number;
+  course_number: string;
   course_name: string;
-  major_id?: number;
+  hours?: string;
   credits?: number;
-  hours?: number;
   passing_percentage?: number;
+  pass?: boolean;
   class_work?: number;
   midterm?: number;
   final?: number;
-  IsOptional: boolean;
-  active?: boolean;
   tb_majors?: {
     major_name?: string;
     id?: number;
@@ -352,7 +397,7 @@ export type InfoDoctorType = {
 };
 
 export type StudentCourseType = {
-  course: AddCourse2Type;
+  course: AddCourseType;
   courseEnroll: StudentClassType;
   section?: SectionType;
   class?: ClassesType;
@@ -361,17 +406,16 @@ export type StudentCourseType = {
 export type StudentCourse2Type = {
   doctor_name?: string;
   course?: {
-    id?: number;
+    id: number;
+    course_number: string;
     course_name: string;
-    major_id?: number;
-    credits?: number;
     hours?: string;
+    credits?: number;
     passing_percentage?: number;
+    pass?: boolean;
     class_work?: number;
     midterm?: number;
     final?: number;
-    IsOptional?: boolean;
-    active?:boolean;
   };
   section?: {
     id?: number;
@@ -388,32 +432,24 @@ export type DoctorCourse2Type = {
     id?: number;
     name?: string;
     course_id?: number;
-    max_students: number;
     students_num: number;
     class_id?:number;
   };
 };
 
-export type TranscriptType={
-  id?:number;
-  student_id:number;
-  semester:number;
+export type TranscriptType = {
+  id?: number;
+  student_id: number;
+  semester: string;
+  studentSemester: number;
   gpa: number;
-}
+};
 
 export type DayOfWeekType = {
   name: string;
   day: string;
 };
 
-export type CourseProgramType = {
-  id?: number;
-  class_id: number;
-  day: string;
-  starts_at: number;
-  ends_at: number;
-  location:string;
-};
 
 export type ExamProgramType = {
   id?: number;

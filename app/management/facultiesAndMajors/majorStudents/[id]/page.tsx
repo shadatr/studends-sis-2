@@ -29,14 +29,14 @@ const Page = ({ params }: { params: { id: number } }) => {
       setPerms(message);
 
       axios.get(`/api/list/${params.id}/student`).then((resp) => {
-        console.log(resp.data);
         const message: PersonalInfoType[] = resp.data.message;
         setStudents(message);
+        console.log(message);
       });
     };
 
     fetchPosts();
-  }, [user?.id, refresh]);
+  }, [user, refresh,params]);
 
   const handleActivate = (studentId: number, active: boolean) => {
     const data = { studentId, active };

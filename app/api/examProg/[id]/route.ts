@@ -1,4 +1,3 @@
-import { CourseProgramType } from '@/app/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -7,7 +6,7 @@ const supabase = createClient(
 );
 
 export async function POST(request: Request) {
-  const data: CourseProgramType = await request.json();
+  const data = await request.json();
 
   try {
     const res = await supabase.from('tb_exam_program').insert([data]);

@@ -42,7 +42,7 @@ const Page = () => {
       });
     };
     fetchPosts();
-  }, []);
+  }, [user?.id]);
 
   return (
     <div className="flex absolute flex-col w-[80%] justify-center items-center mt-10">

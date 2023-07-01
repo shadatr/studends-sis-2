@@ -3,11 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import {
-  ClassesType,
-  SectionType,
-  AnnouncmentsType,
-} from '@/app/types/types';
+import { ClassesType, SectionType, AnnouncmentsType } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 
@@ -28,50 +24,49 @@ const AnnoPage = () => {
   const [SelecetdSections, setSelectedSections] = useState<string>();
   const [classes, setClasses] = useState<ClassesType[]>([]);
 
-
   useEffect(() => {
     const fetchPosts = async () => {
-    if(user){
+      if (user) {
         axios.get('/api/announcements/uniAnnouncements').then((resp) => {
           const message: AnnouncmentsType[] = resp.data.message;
           setAnnouncements(message);
         });
-  
+
         const response = await axios.get(
           `/api/course/courses/${user?.id}/doctor`
         );
         const message: SectionType[] = response.data.message;
         setSections(message);
-  
-          const classPromises = message.map(async (section) => {
-            const responseReq = await axios.get(
-              `/api/getAll/getAllClasses/${section.id}`
-            );
-            const { message: classMessage }: { message: ClassesType[] } =
-              responseReq.data;
-            return classMessage;
-          });
 
-          const classData = await Promise.all(classPromises);
-          const classes = classData.flat();
-          setClasses(classes);
+        const classPromises = message.map(async (section) => {
+          const responseReq = await axios.get(
+            `/api/getAll/getAllClasses/${section.id}`
+          );
+          const { message: classMessage }: { message: ClassesType[] } =
+            responseReq.data;
+          return classMessage;
+        });
 
-          const announcementsPromises = classes.map(async (announ) => {
-            const responseReq = await axios.get(
-              `/api/announcements/courseAnnouncements/${announ.id}`
-            );
-            const { message: secMessage }: { message: AnnouncmentsType[] } =
-              responseReq.data;
-            return secMessage;
-          });
-  
-          const annoncementsData = await Promise.all(announcementsPromises);
-          const annoncements = annoncementsData.flat();
-          setAnnouncements2(annoncements);        
+        const classData = await Promise.all(classPromises);
+        const classes = classData.flat();
+        setClasses(classes);
+
+        const announcementsPromises = classes.map(async (announ) => {
+          const responseReq = await axios.get(
+            `/api/announcements/courseAnnouncements/${announ.id}`
+          );
+          const { message: secMessage }: { message: AnnouncmentsType[] } =
+            responseReq.data;
+          return secMessage;
+        });
+
+        const annoncementsData = await Promise.all(announcementsPromises);
+        const annoncements = annoncementsData.flat();
+        setAnnouncements2(annoncements);
       }
     };
     fetchPosts();
-  }, [loadAnnouncements,user]);
+  }, [loadAnnouncements, user]);
 
   const handleDelete = (id: number) => {
     const data = { item_id: id };
@@ -83,18 +78,19 @@ const AnnoPage = () => {
 
   const handleSubmit = () => {
     if (!newItem) return;
-    if (!SelecetdSections){ 
-    toast.error('يجب اختيار المادة');
-    return;}
+    if (!SelecetdSections) {
+      toast.error('يجب اختيار المادة');
+      return;
+    }
 
-    const section=sections.find((sec)=> sec.name== SelecetdSections);
+    const section = sections.find((sec) => sec.name == SelecetdSections);
 
     const selectedClass = classes.find((cla) => cla.section_id == section?.id);
-    
+
     const data = {
       announcement_text: newItem,
       general: false,
-      posted_for_class_id: selectedClass?.id
+      posted_for_class_id: selectedClass?.id,
     };
     console.log(data);
     axios.post('/api/announcements/newUniAnnouncement', data).then((resp) => {
@@ -106,76 +102,75 @@ const AnnoPage = () => {
 
   return (
     <div className=" flex w-[80%] justify-center items-center flex-col absolute mt-20">
-      <div>
-      <table className="w-[860px] overflow-y-auto ">
-        <thead>
-          <tr>
-            <th className="bg-darkBlue   text-secondary px-4 py-2 ">
-              اعلانات الجامعة
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {Announcements.length ? (
-            Announcements.map((item, index) => (
-              <tr key={index}>
-                <td className="px-4 py-2">{item.announcement_text}</td>
-              </tr>
-            ))
-          ) : (
+      <>
+        <table className="w-[860px] overflow-y-auto ">
+          <thead>
             <tr>
-              <td className=" p-1 w-full flex items-center justify-end ">
-                لا يوجد اعلانات
-              </td>
+              <th className="bg-darkBlue   text-secondary px-4 py-2 ">
+                اعلانات الجامعة
+              </th>
             </tr>
-          )}
-        </tbody>
-      </table>
-      </div>
-            <div>
-
-      <table className="w-[860px] bg-grey max-h-[300px] mt-4 overflow-y-auto ">
-        <thead>
-          <tr>
-            <th className="p-1 bg-darkBlue text-secondary px-4 py-2 "></th>
-            <th className="p-1 bg-darkBlue text-secondary px-4 py-2">
-              اعلانات المواد
-            </th>
-            <th className="p-1 bg-darkBlue text-secondary w-1/5 px-4 py-2">
-              اسم المادة
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {announcements2.length ? (
-            announcements2.map((item, index) => {
-              const clas = classes.find(
-                (Class) => Class.id === item.posted_for_class_id
-              );
-              const sec = sections.find((sec) => sec.id === clas?.section_id);
-              return (
+          </thead>
+          <tbody>
+            {Announcements.length ? (
+              Announcements.map((item, index) => (
                 <tr key={index}>
-                  <td className="w-1/9">
-                    <FaTrashAlt
-                      onClick={() => handleDelete(item.id)}
-                      role="button"
-                    />
-                  </td>
                   <td className="px-4 py-2">{item.announcement_text}</td>
-                  <td className="px-4 py-2 w-1/5">{sec?.name}</td>
                 </tr>
-              );
-            })
-          ) : (
+              ))
+            ) : (
+              <tr>
+                <td className=" p-1 w-full flex items-center justify-end ">
+                  لا يوجد اعلانات
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </>
+      <>
+        <table className="w-[860px] bg-grey max-h-[300px] mt-4 overflow-y-auto ">
+          <thead>
             <tr>
-              <td className="items-center justify-center p-2">
-                لا يوجد اعلانات
-              </td>
+              <th className="p-1 bg-darkBlue text-secondary px-4 py-2 "></th>
+              <th className="p-1 bg-darkBlue text-secondary px-4 py-2">
+                اعلانات المواد
+              </th>
+              <th className="p-1 bg-darkBlue text-secondary w-1/5 px-4 py-2">
+                اسم المادة
+              </th>
             </tr>
-          )}
-        </tbody>
-      </table>
-            </div>
+          </thead>
+          <tbody>
+            {announcements2.length ? (
+              announcements2.map((item, index) => {
+                const clas = classes.find(
+                  (Class) => Class.id === item.posted_for_class_id
+                );
+                const sec = sections.find((sec) => sec.id === clas?.section_id);
+                return (
+                  <tr key={index}>
+                    <td className="w-1/9">
+                      <FaTrashAlt
+                        onClick={() => handleDelete(item.id)}
+                        role="button"
+                      />
+                    </td>
+                    <td className="px-4 py-2">{item.announcement_text}</td>
+                    <td className="px-4 py-2 w-1/5">{sec?.name}</td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td className="items-center justify-center p-2">
+                  لا يوجد اعلانات
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </>
 
       <form
         className="flex flex-col mt-3 border-solid w-[860px] border-black border-2"

@@ -15,7 +15,7 @@ export async function GET(
       .from('tb_course_enrollment')
       .select('*')
       .eq('student_id', params.id)
-      .eq('approved', true).eq('active', true);
+      .eq('approved', true);
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {

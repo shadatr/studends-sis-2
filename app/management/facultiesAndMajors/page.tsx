@@ -12,7 +12,6 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
-import MyModel from '../../components/dialog';
 
 const page = () => {
   const session = useSession({ required: true });
@@ -102,17 +101,9 @@ const page = () => {
         toast.error(err.response.data.message);
       });
     setNewItemMajor('');
-    setNewMajorDep('');
     setLoad(!load);
   };
 
-  const handleDeleteMajor = (major_name: string) => {
-    const data = { item_name: major_name };
-    axios.post('/api/major/majorDelete', data).then((resp) => {
-      toast.success(resp.data.message);
-      setLoad(!load);
-    });
-  };
 
   return (
     <div className="absolute flex flex-col w-[80%] items-center justify-center">
@@ -123,7 +114,10 @@ const page = () => {
         {perms.map((permItem, idx) => {
           if (permItem.permission_id === 7 && permItem.active) {
             return (
-              <div key={idx} className="flex flex-row-reverse items-center justify-center  text-sm m-10 w-[1000px]">
+              <div
+                key={idx}
+                className="flex flex-row-reverse items-center justify-center  text-sm m-10 w-[1000px]"
+              >
                 <label
                   htmlFor=""
                   lang="ar"
@@ -177,6 +171,12 @@ const page = () => {
         <p className="flex text-md bg-lightBlue rounded-md p-4 w-[200px] justify-center m-5 items-center">
           تخصصات
         </p>
+        <Link
+          className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"
+          href={`/management/facultiesAndMajors/majorExamProg`}
+        >
+          جدول الامتحانات لجميع المواد
+        </Link>
         {perms.map((item, idx) =>
           item.permission_id === 7 && item.active ? (
             <div
@@ -254,7 +254,7 @@ const page = () => {
                       className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"
                       href={`/management/facultiesAndMajors/majorExamProg/${item.id}`}
                     >
-                      جدول الامتحانات
+                      جدول الامتحانات 
                     </Link>
                   </td>
                   <td className="border border-gray-300 px-4 py-2">

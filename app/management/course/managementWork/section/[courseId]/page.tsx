@@ -13,12 +13,14 @@ import { FaTrashAlt } from 'react-icons/fa';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 
-const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
+const Page = ({ params }: { params: { courseId: number } }) => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
     redirect('/');
   }
+  const user = session.data?.user;
+
   const [section, setSection] = useState<SectionType[]>([]);
   const [courses, setCourses] = useState<CourseType[]>([]);
   const [load, setLoad] = useState(true);
@@ -27,28 +29,22 @@ const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
   const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>(
     []
   );
-  const [maxStudents, setMaxStudents] = useState<number>();
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
-
-  const user = session.data?.user;
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
   };
 
-  const handleCourseChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCourseName(event.target.value);
-  };
-
-
   useEffect(() => {
     const fetchPosts = async () => {
-      const responsePer = await axios.get(
-        `/api/allPermission/admin/selectedPerms/${user?.id}`
-      );
+      if(user){
+        const responsePer = await axios.get(
+          `/api/allPermission/admin/selectedPerms/${user?.id}`
+        );
+        const messagePer: GetPermissionType[] = responsePer.data.message;
+        setPerms(messagePer);
+      }
 
-      const messagePer: GetPermissionType[] = responsePer.data.message;
-      setPerms(messagePer);
 
       const response = await axios.get(
         `/api/getAll/getAllSections/${params.courseId}`
@@ -56,9 +52,7 @@ const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
       const message: SectionType[] = response.data.message;
       setSection(message);
 
-      const responseCourse = await axios.get(
-        `/api/course/majorCourses/${params.majId}`
-      );
+      const responseCourse = await axios.get(`/api/course/courseRegistration`);
       const messageCourse: CourseType[] = responseCourse.data.message;
       console.log(messageCourse);
       setCourses(messageCourse);
@@ -72,22 +66,16 @@ const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
       setPrerequisites(messagePerCourse);
     };
     fetchPosts();
-  }, [params.courseId, load, params.majId, user]);
+  }, [params.courseId, load, user]);
 
   const handleRegisterSection = () => {
     const selectedCourse = courses.find(
       (course) => params.courseId == course.id
     );
 
-    if (!maxStudents) {
-      toast.error('يجب ادخال الحد الاقصى لطلاب');
-      return;
-    }
-
     const data = {
       name: selectedCourse?.course_name + `(مجموعة${section.length + 1})`,
       course_id: selectedCourse?.id,
-      max_students: maxStudents,
     };
     console.log(data);
     axios
@@ -186,47 +174,48 @@ const Page = ({ params }: { params: { courseId: number; majId: number } }) => {
                   >
                     اضاف مجموعة
                   </button>
-                  <input
-                    placeholder="الحد الاقصى لطلاب"
-                    onChange={(event) =>
-                      setMaxStudents(parseInt(event.target.value))
-                    }
-                    className="border border-gray-300 px-4 py-2 flex items-right"
-                  />
                 </>
               );
             }
             return null;
           })}
-          {section.map((sec, index) => (
-            <div
-              key={index}
-              className="p-3 m-5 bg-lightBlue pl-[80px] pr-[80px] items-center flex justify-center rounded-sm"
-            >
-              <Link
-                href={`/management/course/managementWork/course/${sec.id}/${params.courseId}`}
+          {section.map((sec) => (
+            <Link
+              key={sec.id}
+              href={`/management/course/managementWork/class/${sec.id}`}>
+              <div
+                className="p-3 m-5 bg-lightBlue pl-[80px] pr-[80px] items-center flex justify-center rounded-sm"
               >
                 {sec.name}
-              </Link>
-            </div>
+              </div>
+            </Link>
           ))}
         </>
       )}
       {activeTab === 'Tab 2' && (
         <div className="flex flex-col m-10 max-w-[600px] w-screen justify-center items-center ">
           {perms.map((permItem) => {
+            const prereqCourse = courses.filter((item2) =>
+              prerequisites.map(
+                (item3) => item2.id != item3.prerequisite_course_id
+              )
+            );
+            const selectedCourses = prereqCourse.filter(
+              (item) => item.id != params.courseId
+            );
+
             if (permItem.permission_id === 6 && permItem.active) {
               return (
                 <>
                   <select
-                    value={selectedCourseName}
-                    onChange={handleCourseChange}
                     className="w-[350px] bg-lightBlue p-2 rounded-md"
+                    defaultValue=""
+                    onChange={(e) => setSelectedCourseName(e.target.value)}
                   >
                     <option disabled value="">
                       اختر مادة
                     </option>
-                    {courses.map((course, index) => (
+                    {selectedCourses.map((course, index) => (
                       <option
                         key={index}
                         value={course.course_name}
