@@ -1,22 +1,22 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const supabaseUrl = process.env.SUPABASE_URL || '';
+const supabaseKey = process.env.SUPABASE_KEY || '';
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function GET(
   request: Request,
   { params }: { params: { id: number } }
 ) {
-  try {
-    console.log(params.id);
-    const data = await supabase
-      .from('tb_section')
-      .select('*')
-      .eq('course_id', params.id);
 
-    if (data.error) {
+  try{
+  const data= await supabase
+    .from('tb_classes')
+    .select('*')
+    .eq('doctor_id', params.id);
+
+  if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
       });

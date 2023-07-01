@@ -371,6 +371,125 @@ export type CourseType = {
   };
 };
 
+export type CourseInfo2Type = {
+  prerequisites: {
+    id?: number;
+    course_id: number;
+    prerequisite_course_id: number;
+  }[];
+  class: {
+    id?: number;
+    doctor_id?: number;
+    section_id?: number;
+    mid_publish?: boolean;
+    final_publish?: boolean;
+    class_work_publish?: boolean;
+    result_publish?: boolean;
+    semester: string;
+    day: string;
+    starts_at: number;
+    ends_at: number;
+    location: string;
+  }[];
+  course: {
+    id: number;
+    course_number: string;
+    course_name: string;
+    hours?: string;
+    credits?: number;
+    passing_percentage?: number;
+    pass?: boolean;
+    class_work?: number;
+    midterm?: number;
+    final?: number;
+  };
+  courseEnrollements: {
+    id?: number;
+    student_id: number;
+    class_id?: number;
+    semester?: number;
+    class_work?: number;
+    midterm: number;
+    final?: number;
+    pass?: boolean;
+    result?: number;
+    can_repeat?: boolean;
+    approved?: boolean;
+  }[];
+  section: {
+    id?: number;
+    name?: string;
+    course_id?: number;
+    students_num: number;
+  }[];
+  majorCourse: {
+    id: number;
+    major_id: number;
+    course_id: number;
+    isOptional: boolean;
+  };
+};
+
+export type CourseInfoType = {
+  class: {
+    id?: number;
+    doctor_id?: number;
+    section_id?: number;
+    mid_publish?: boolean;
+    final_publish?: boolean;
+    class_work_publish?: boolean;
+    result_publish?: boolean;
+    semester: string;
+    day: string;
+    starts_at: number;
+    ends_at: number;
+    location: string;
+  }[];
+  course: {
+    id: number;
+    course_number: string;
+    course_name: string;
+    hours?: string;
+    credits?: number;
+    passing_percentage?: number;
+    pass?: boolean;
+    class_work?: number;
+    midterm?: number;
+    final?: number;
+  };
+  courseEnrollements: {
+    id?: number;
+    student_id: number;
+    class_id?: number;
+    semester?: number;
+    class_work?: number;
+    midterm: number;
+    final?: number;
+    pass?: boolean;
+    result?: number;
+    can_repeat?: boolean;
+    approved?: boolean;
+  }[];
+  section: {
+    id?: number;
+    name?: string;
+    course_id?: number;
+    students_num: number;
+  }[];
+  prerequisites: {
+    id: number;
+    course_id: number;
+    prerequisite_course_id: number;
+  }[];
+  majorCourse: {
+    id: number;
+    major_id: number;
+    course_id: number;
+    isOptional: boolean;
+  };
+};
+
+
 export type PrerequisiteCourseType = {
   prerequisite_course: any;
   id?: number;
@@ -421,7 +540,6 @@ export type StudentCourse2Type = {
     id?: number;
     name?: string;
     class_id?: number;
-    max_students: number;
     students_num: number;
   };
 };

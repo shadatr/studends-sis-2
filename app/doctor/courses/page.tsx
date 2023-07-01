@@ -2,11 +2,7 @@
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
-import {
-  AddCourse2Type,
-  SectionType,
-  DoctorCourse2Type,
-} from '@/app/types/types';
+import { ClassesInfoType, ClassesType } from '@/app/types/types';
 import { redirect } from 'next/navigation';
 
 const Page = () => {
@@ -17,67 +13,39 @@ const Page = () => {
 
   const user = session.data?.user;
 
-  const [courses, setCourses] = useState<AddCourse2Type[]>([]);
-  const [doctorCourses, setDoctorCourses] = useState<DoctorCourse2Type[]>(
-    []
-  );
-  const [sections, setSections] = useState<SectionType[]>([]);
+    const [classes, setClasses] = useState<ClassesInfoType[]>([]);
 
-  const [refresh, setRefresh] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
+useEffect(() => {
+  const fetchData = async () => {
+    if (user) {
       try {
         const response = await axios.get(
-          `/api/course/courses/${user?.id}/doctor`
+          `/api/course/doctorCourses/${user?.id}`
         );
-        const message: SectionType[] = response.data.message;
-        setSections(message);
+        const message: ClassesType[] = response.data.message;
 
-        const coursesPromises = message.map(async (section) => {
+        const classPromises = message.map(async (section) => {
           const responseReq = await axios.get(
-            `/api/getAll/getSpecificCourse/${section.course_id}`
+            `/api/getAll/getAllClassInfo/${section.section_id}`
           );
-          const { message: courseMessage }: { message: AddCourse2Type[] } =
+          const { message: classMessage }: { message: ClassesInfoType[] } =
             responseReq.data;
-          return courseMessage;
+          console.log(classMessage);
+          return classMessage;
         });
-
-        const courseData = await Promise.all(coursesPromises);
-        const courses = courseData.flat();
-        setCourses(courses);
-
+        const classData = await Promise.all(classPromises);
+        const classes = classData.flat();
+        setClasses(classes);
+        console.log(classes);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
-      setRefresh(!refresh);
-    };
+    }
+  };
 
-    fetchData();
-  }, [user]);
+  fetchData();
+}, [user]);
 
-  useEffect(() => {
-    const updatedStudentCourses: DoctorCourse2Type[] = [];
-
-    sections.map((sec) => {
-
-      const studentCourse = courses.find(
-        (course) => course.id == sec.course_id
-      );
-
-      if (studentCourse) {
-          const data = {
-            course_name: studentCourse.course_name,
-            section: sec,
-          };
-          updatedStudentCourses.push(data);
-          console.log(updatedStudentCourses);
-        }
-      
-    });
-
-    setDoctorCourses(updatedStudentCourses);
-  }, [ refresh]);
 
   return (
     <div className="absolute w-[80%] flex flex-col text-sm p-10 justify-content items-center ">
@@ -96,7 +64,7 @@ const Page = () => {
           </tr>
         </thead>
         <tbody>
-          {doctorCourses.map((course, index) => (
+          {classes.map((course, index) => (
             <tr key={index}>
               <td className="border border-gray-300 px-4 py-2">
                 {course.section?.students_num}
@@ -105,7 +73,7 @@ const Page = () => {
                 {course.section?.name}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {course.course_name}
+                {course.course.course_name}
               </td>
             </tr>
           ))}

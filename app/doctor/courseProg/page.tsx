@@ -2,15 +2,8 @@
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
-import {
-  AddCourse2Type,
-  Section2Type,
-  DoctorCourse2Type,
-  CourseProgramType,
-  CheckedType,
-} from '@/app/types/types';
+import { ClassesInfoType, ClassesType, CheckedType } from '@/app/types/types';
 import { redirect } from 'next/navigation';
-
 
 const hoursNames: CheckedType[] = [
   { id: 8, name: '8:00' },
@@ -27,8 +20,6 @@ const hoursNames: CheckedType[] = [
   { id: 19, name: '7:00' },
 ];
 
-
-
 const daysOfWeek = ['friday', 'thursday', 'wednesday', 'tuesday', 'monday'];
 
 const Page = () => {
@@ -37,88 +28,43 @@ const Page = () => {
     redirect('/');
   }
 
-const user = session.data?.user;
+  const user = session.data?.user;
 
-
-  const [courses, setCourses] = useState<AddCourse2Type[]>([]);
-  const [doctorCourses, setDoctorCourses] = useState<DoctorCourse2Type[]>([]);
-  const [sections, setSections] = useState<Section2Type[]>([]);
-  const [programClass, setProgramClass] = useState<CourseProgramType[]>([]);
-  const [refresh, setRefresh] = useState(false);
+  const [classes, setClasses] = useState<ClassesInfoType[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-        if(user){
-      try {
+      if (user) {
+        try {
+          const response = await axios.get(
+            `/api/course/doctorCourses/${user?.id}`
+          );
+          const message: ClassesType[] = response.data.message;
 
-            const response = await axios.get(
-              `/api/course/courses/${user?.id}/doctor`
+          const classPromises = message.map(async (section) => {
+            const responseReq = await axios.get(
+              `/api/getAll/getAllClassInfo/${section.section_id}`
             );
-            const message: Section2Type[] = response.data.message;
-            setSections(message);
-    
-            const progClassPromises = message.map(async (section) => {
-              const responseReq = await axios.get(
-                `/api/courseProgram/${section.class_id}`
-              );
-              const { message: courseMessage }: { message: CourseProgramType[] } =
-                responseReq.data;
-              return courseMessage;
-            });
-    
-            const progClassData = await Promise.all(progClassPromises);
-            const programClass = progClassData.flat();
-            setProgramClass(programClass);
-    
-            console.log(programClass);
-    
-            const coursesPromises = message.map(async (section) => {
-              const responseReq = await axios.get(
-                `/api/getAll/getSpecificCourse/${section.course_id}`
-              );
-              const { message: courseMessage }: { message: AddCourse2Type[] } =
-                responseReq.data;
-              return courseMessage;
-            });
-    
-            const courseData = await Promise.all(coursesPromises);
-            const courses = courseData.flat();
-            setCourses(courses);
-          } catch (error) {
-            console.error('Error fetching data:', error);
-          }
-          setRefresh(!refresh);
+            const { message: classMessage }: { message: ClassesInfoType[] } =
+              responseReq.data;
+            console.log(classMessage);
+            return classMessage;
+          });
+          const classData = await Promise.all(classPromises);
+          const classes = classData.flat();
+          setClasses(classes);
+          console.log(classes);
+        } catch (error) {
+          console.error('Error fetching data:', error);
         }
+      }
     };
 
     fetchData();
-  }, [refresh, user]);
-
-  useEffect(() => {
-    const updatedStudentCourses: DoctorCourse2Type[] = [];
-
-    sections.map((sec) => {
-      const studentCourse = courses.find(
-        (course) => course.id == sec.course_id
-      );
-
-      if (studentCourse) {
-        const data = {
-          course_name: studentCourse.course_name,
-          section: sec,
-        };
-        updatedStudentCourses.push(data);
-      }
-    });
-
-    setDoctorCourses(updatedStudentCourses);
-  }, [courses, refresh, sections]);
-
- 
+  }, [user]);
 
   return (
     <div className="absolute w-[80%] flex flex-col text-sm p-10 justify-content items-center">
-
       <table className="w-full bg-white shadow-md rounded-md">
         <thead>
           <tr>
@@ -134,36 +80,26 @@ const user = session.data?.user;
           {hoursNames.map((hour, hourIndex) => (
             <tr key={hourIndex}>
               {daysOfWeek.map((day) => {
-                const matchingClasses = programClass.filter((Class) => {
-                  const classStart = Class.starts_at;
-                  const classEnd = Class.ends_at;
+                const matchingClasses = classes.filter((Class) => {
+                  const classStart = Class.class.starts_at;
+                  const classEnd = Class.class.ends_at;
                   const hourId = hour.id;
                   return (
-                    Class.day === day &&
+                    Class.class.day === day &&
                     (classStart === hourId ||
                       (classStart < hourId && classEnd >= hourId + 1))
                   );
                 });
 
-                if (matchingClasses.length > 0) {
-                  return matchingClasses.map((matchingClass, index) => {
-                    const className = doctorCourses.find(
-                      (course) =>
-                        course.section?.class_id === matchingClass.class_id
-                    );
-                    return (
-                      <td
-                        key={`${day}-${matchingClass.class_id}-${index}`}
-                        className="py-2 px-4 border-b"
-                      >
-                        
-                        {className?.section?.name} - {matchingClass.location}
-                      </td>
-                    );
-                  });
-                }
-
-                return <td key={day} className="py-2 px-4 border-b"></td>;
+                return (
+                  <td key={day} className="py-2 px-4 border-b">
+                    {matchingClasses.map((cls, idx) => (
+                      <div key={idx}>
+                        {cls?.section?.name} - {cls.class.location}
+                      </div>
+                    ))}
+                  </td>
+                );
               })}
               <td className="py-2 px-4 border-b">{hour.name}</td>
             </tr>

@@ -1,7 +1,6 @@
 'use client';
 import {
   InfoDoctorType,
-  GetPermissionType,
   RegisterStudent2Type,
 } from '@/app/types/types';
 import axios from 'axios';
@@ -9,6 +8,8 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+
 
 const Page = ({
   params,
@@ -23,34 +24,21 @@ const Page = ({
 
   const user = session.data?.user;
   const [refresh, setRefresh] = useState(false);
-  const [perms, setPerms] = useState<GetPermissionType[]>([]);
   const [checked, setChecked] = useState<number[]>([]);
   const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
   const [students, setStudents] = useState<RegisterStudent2Type[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      if (user) {
-        console.log(user);
+      axios.get(`/api/list/${params.majorId}/student`).then((resp) => {
+        const message: RegisterStudent2Type[] = resp.data.message;
+        setStudents(message);
+      });
 
-        const response = await axios.get(
-          `/api/allPermission/admin/selectedPerms/${user?.id}`
-        );
-        const message: GetPermissionType[] = response.data.message;
-        setPerms(message);
-
-        axios.get(`/api/list/${params.majorId}/student`).then((resp) => {
-          const message: RegisterStudent2Type[] = resp.data.message;
-          setStudents(message);
-          
-        });
-
-        axios.get('/api/getAll/getDoctorsHeadOfDep').then((res) => {
-          console.log(res.data);
-          const message: InfoDoctorType[] = res.data.message;
-          setDoctors(message);
-        });
-      }
+      axios.get('/api/getAll/getDoctorsHeadOfDep').then((res) => {
+        const message: InfoDoctorType[] = res.data.message;
+        setDoctors(message);
+      });
     };
     fetchPosts();
   }, [user, refresh, params.majorId]);
@@ -67,13 +55,24 @@ const Page = ({
   };
 
   const handleSubmit = () => {
-    console.log(checked);
+    if(!checked){
+      return;
+    }
+
     checked.map((item) => {
-      const data = { 
+      const data = {
         id: item,
         advisor: params.doctorId,
       };
-      axios.post('/api/advisor/assignAdvisor/1', data);
+      axios
+        .post('/api/advisor/assignAdvisor/1', data)
+        .then((res) => {
+          toast.success(res.data.message);
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message);
+        });
+
       setRefresh(!refresh);
     });
   };
