@@ -10,7 +10,6 @@ import {
   PersonalInfoType,
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
-import { BsXCircleFill } from 'react-icons/bs';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';

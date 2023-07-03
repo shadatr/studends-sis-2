@@ -1,5 +1,5 @@
 'use client';
-import { GetPermissionType, PersonalInfoType } from '@/app/types/types';
+import { PersonalInfoType } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';

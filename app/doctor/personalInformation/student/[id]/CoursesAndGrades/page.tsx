@@ -282,42 +282,54 @@ const Page = ({ params }: { params: { id: number } }) => {
         </thead>
         <tbody>
           {studentCourses.map((item, index) => {
-            const findDay = days.find((day) => day.day === item.class.day);
-            const findStartTime = hoursNames.find(
-              (hour) => hour.id === item.class.starts_at
-            );
-            const findEndTime = hoursNames.find(
-              (hour) => hour.id === item.class.ends_at
-            );
+            if (
+              item.class &&
+              item.course &&
+              item.section &&
+              item.courseEnrollements
+            ) {
+              const findDay = days.find((day) => day.day === item.class.day);
+              const findStartTime = hoursNames.find(
+                (hour) => hour.id === item.class.starts_at
+              );
+              const findEndTime = hoursNames.find(
+                (hour) => hour.id === item.class.ends_at
+              );
 
-            return (
-              <tr key={index}>
-                <td className="border border-gray-300 px-4 py-2">
-                  {item.course.credits}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {item.course.passing_percentage}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {item.course.hours}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {findDay?.name}/{findStartTime?.name}-{findEndTime?.name}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {item.doctor?.name} {item.doctor?.surname}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {item.section.name}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {item.course.course_name}{' '}
-                </td>
-              </tr>
-            );
+              return (
+                <tr key={index}>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {item.course.credits}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {item.course.passing_percentage}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {item.course.hours}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {findDay?.name}/{findStartTime?.name}-{findEndTime?.name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {item.doctor?.name} {item.doctor?.surname}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {item.section.name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {item.course.course_name}{' '}
+                  </td>
+                </tr>
+              );
+            } else {
+              <tr>
+                <td className="border border-gray-300 px-4 py-2 ">لا يوجد</td>
+              </tr>;
+            }
           })}
         </tbody>
       </table>
+      <h1 className="text-sm bg-lightBlue rounded-md p-3 px-12 m-3">الدرجات</h1>
       <div ref={printableContentRef}>
         <table className="m-10 w-[1100px]">
           <thead>
@@ -356,62 +368,73 @@ const Page = ({ params }: { params: { id: number } }) => {
           </thead>
           <tbody>
             {studentCourses.map((course, index) => {
-              const letter = courseLetter.find(
-                (item) =>
-                  item.course_enrollment_id == course.courseEnrollements.id
-              );
-              return (
-                <tr key={index}>
-                  <td
-                    className={`border border-gray-300 px-4 py-2 ${
-                      course.courseEnrollements.pass
-                        ? 'text-green-600 hover:text-green-700'
-                        : 'text-red-500 hover:text-red-600'
-                    }`}
-                  >
-                    {course.class?.result_publish
-                      ? course.courseEnrollements.pass
-                        ? `${letter?.letter_grade} ناجح`
-                        : `${letter?.letter_grade} راسب`
-                      : ''}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 ">
-                    {course.class?.result_publish
-                      ? course.courseEnrollements.result
-                      : ''}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {course.course.class_work}%
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {course.class?.class_work_publish
-                      ? course.course.class_work
-                      : ''}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {course.course.final}%
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 ">
-                    {course.class?.final_publish
-                      ? course.courseEnrollements.final
-                      : ' '}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {course.course.midterm}%
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {course.class?.mid_publish
-                      ? course.courseEnrollements.midterm
-                      : ''}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {course.section?.name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {course.course.course_name}
-                  </td>
-                </tr>
-              );
+              if (
+                course.class &&
+                course.course &&
+                course.section &&
+                course.courseEnrollements
+              ) {
+                const letter = courseLetter.find(
+                  (item) =>
+                    item.course_enrollment_id == course.courseEnrollements.id
+                );
+                return (
+                  <tr key={index}>
+                    <td
+                      className={`border border-gray-300 px-4 py-2 ${
+                        course.courseEnrollements.pass
+                          ? 'text-green-600 hover:text-green-700'
+                          : 'text-red-500 hover:text-red-600'
+                      }`}
+                    >
+                      {course.class?.result_publish
+                        ? course.courseEnrollements.pass
+                          ? `${letter?.letter_grade} ناجح`
+                          : `${letter?.letter_grade} راسب`
+                        : ''}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2 ">
+                      {course.class?.result_publish
+                        ? course.courseEnrollements.result
+                        : ''}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {course.course.class_work}%
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {course.class?.class_work_publish
+                        ? course.course.class_work
+                        : ''}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {course.course.final}%
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2 ">
+                      {course.class?.final_publish
+                        ? course.courseEnrollements.final
+                        : ' '}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {course.course.midterm}%
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {course.class?.mid_publish
+                        ? course.courseEnrollements.midterm
+                        : ''}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {course.section?.name}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {course.course.course_name}
+                    </td>
+                  </tr>
+                );
+              } else {
+                <tr>
+                  <td className="border border-gray-300 px-4 py-2 ">لا يوجد</td>
+                </tr>;
+              }
             })}
           </tbody>
         </table>

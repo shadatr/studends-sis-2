@@ -28,7 +28,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       const message: GetPermissionType[] = response.data.message;
       setPerms(message);
 
-      axios.get(`/api/list/${params.id}/student`).then((resp) => {
+      axios.get(`/api/major/majorStudents/${params.id}`).then((resp) => {
         const message: PersonalInfoType[] = resp.data.message;
         setStudents(message);
         console.log(message);

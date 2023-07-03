@@ -15,7 +15,6 @@ export async function GET(
       .select('*')
       .eq('student_id', params.id);
 
- 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
@@ -31,21 +30,23 @@ export async function POST(request: Request) {
 
   console.log(data);
 
-    const data1=await supabase.from('tb_transcript').insert([{gpa: data.gpa, semester: data.semester, student_id: data.student_id}]);
+  await supabase
+    .from('tb_transcript')
+    .insert([
+      { gpa: data.gpa, semester: data.semester, student_id: data.student_id },
+    ]);
 
-    const data2 = await supabase
-      .from('tb_students')
-      .update({
-        semester: data.studentSemester+1,
-      })
-      .eq('id', data.student_id);
+  await supabase
+    .from('tb_students')
+    .update({
+      semester: data.studentSemester + 1,
+    })
+    .eq('id', data.student_id);
 
+  const data5 = await supabase
+    .from('tb_classes')
+    .update({ active: false })
+    .eq('semester', data.semester);
 
-          const data5 = await supabase
-            .from('tb_classes')
-            .update({ active: false })
-            .eq('semester', data.semester);
-
-
-      console.log(data5.error?.message);
+  console.log(data5.error?.message);
 }

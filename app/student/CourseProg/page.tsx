@@ -86,7 +86,7 @@ const Page = () => {
                 });
 
                 if (matchingClasses.length > 0) {
-                  return matchingClasses.map((matchingClass, index) => (
+                  return matchingClasses.map((matchingClass) => (
                     <td key={hourIndex} className="py-2 px-4 border-b">
                       {matchingClass.section.name} -{' '}
                       {matchingClass.class.location}

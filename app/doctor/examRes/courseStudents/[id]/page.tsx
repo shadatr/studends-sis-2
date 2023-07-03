@@ -2,7 +2,6 @@
 import {
   GetPermissionDoctorType,
   PersonalInfoType,
-  StudentClassType,
   LettersType,
   LetterGradesType,
   ClassEnrollmentsType,

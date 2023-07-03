@@ -3,25 +3,22 @@
 import {
   AddCourseType,
   AssignPermissionType,
-  ClassesType,
   LetterGradesType,
   LettersType,
   MajorRegType,
   PersonalInfoType,
-  SectionType,
-  StudentClassType,
+  StudenCourseType,
   TranscriptType,
   GetPermissionType,
 } from '@/app/types/types';
 import axios from 'axios';
-import React, { useEffect, useState,useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { redirect } from 'next/navigation';
 
 const numbers: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
 
 const page = () => {
   const session = useSession({ required: true });
@@ -36,12 +33,7 @@ const page = () => {
   const [majors, setMajors] = useState<MajorRegType[]>([]);
   const [active, setActive] = useState<boolean>();
   const [allCourses, setAllCourses] = useState<AddCourseType[]>([]);
-  const [courses, setCourses] = useState<AddCourseType[]>([]);
-  const [sections, setSections] = useState<SectionType[]>([]);
-  const [classes, setClasses] = useState<ClassesType[]>([]);
-  const [courseEnrollments, setCourseEnrollments] = useState<
-    StudentClassType[]
-  >([]);
+  const [courses, setCourses] = useState<StudenCourseType[]>([]);
   const [refresh, setRefresh] = useState(false);
   const [students, setStudents] = useState<PersonalInfoType[]>([]);
   const [transcript, setTranscript] = useState<TranscriptType[]>([]);
@@ -65,7 +57,6 @@ const page = () => {
   const [year, setYear] = useState<string>();
   const [semester, setSemester] = useState<string>();
 
-
   useEffect(() => {
     const fetchPosts = async () => {
       const resp = await axios.get('/api/major/majorReg');
@@ -75,7 +66,6 @@ const page = () => {
       axios.get(`/api/course/courseRegistration`).then((resp) => {
         const message: AddCourseType[] = resp.data.message;
         setAllCourses(message);
-        console.log(message);
       });
 
       const response = await axios.get(
@@ -99,16 +89,9 @@ const page = () => {
         responseCourseLetter.data.message;
       setCourseLetter(messageCourseLetter);
 
-      const studentsPromises = message.map(async (Class) => {
-        const responseReq = axios.get(`/api/list/${Class.id}/student`);
-        const { message: messagestudents }: { message: PersonalInfoType[] } = (
-          await responseReq
-        ).data;
-        return messagestudents;
-      });
-      const studentData = await Promise.all(studentsPromises);
-      const students = studentData.flat();
-      setStudents(students);
+      const responseReq = await axios.get(`/api/getAll/student`);
+      const messagestudents: PersonalInfoType[] = responseReq.data.message;
+      setStudents(messagestudents);
 
       const transccriptPromises = students.map(async (Class) => {
         const responseReq = axios.get(`/api/transcript/${Class.id}`);
@@ -122,51 +105,11 @@ const page = () => {
       const transcript = tansData.flat();
       setTranscript(transcript);
 
-      const courseEnrollPromises = students.map(async (Class) => {
+      const coursesPromises = students.map(async (student) => {
         const responseReq = await axios.get(
-          `/api/getAll/getAllCourseEnroll/${Class.id}`
+          `/api/getAll/studentCoursesApprove/${student.id}`
         );
-        const {
-          message: courseEnrollMessage,
-        }: { message: StudentClassType[] } = responseReq.data;
-        return courseEnrollMessage;
-      });
-
-      const ccourseEnrollData = await Promise.all(courseEnrollPromises);
-      const courseEnrollments = ccourseEnrollData.flat();
-      setCourseEnrollments(courseEnrollments);
-
-      const classPromises = courseEnrollments.map(async (Class) => {
-        const responseReq = await axios.get(
-          `/api/getAll/getSpecificClass/${Class.class_id}`
-        );
-        const { message: classMessage }: { message: ClassesType[] } =
-          responseReq.data;
-        return classMessage;
-      });
-
-      const classData = await Promise.all(classPromises);
-      const classes = classData.flat();
-      setClasses(classes);
-
-      const sectionsPromises = classes.map(async (course) => {
-        const responseReq = await axios.get(
-          `/api/getAll/getSpecificSection/${course.section_id}`
-        );
-        const { message: secMessage }: { message: SectionType[] } =
-          responseReq.data;
-        return secMessage;
-      });
-
-      const sectionData = await Promise.all(sectionsPromises);
-      const sections = sectionData.flat();
-      setSections(sections);
-
-      const coursesPromises = sections.map(async (section) => {
-        const responseReq = await axios.get(
-          `/api/getAll/getSpecificCourse/${section.course_id}`
-        );
-        const { message: courseMessage }: { message: AddCourseType[] } =
+        const { message: courseMessage }: { message: StudenCourseType[] } =
           responseReq.data;
         return courseMessage;
       });
@@ -178,7 +121,6 @@ const page = () => {
       const responseActive = await axios.get('/api/allPermission/courseRegPer');
       const messageActive: AssignPermissionType[] = responseActive.data.message;
       setActive(messageActive[0].active);
-      console.log(messageActive);
     };
     fetchPosts();
   }, [active, edit, refresh, user, loadCourses]);
@@ -189,7 +131,6 @@ const page = () => {
     axios.post('/api/allPermission/student/courseRegActive', data);
 
     axios.post('/api/allPermission/courseRegPer', data).then((res) => {
-      console.log(data);
       toast.success(res.data.message);
     });
   };
@@ -197,57 +138,45 @@ const page = () => {
   const handleSubmit = () => {
     let allDataSent = true;
 
-    students.forEach((student) => {
+    console.log(students);
+
+    students.map((student) => {
       let studentTotalGradePoints = 0;
       let studentTotalCredits = 0;
 
-      const studenCourseEnrolls = courseEnrollments.filter(
-        (Class) =>
-          student.id === Class.student_id && student.semester == Class.semester
+      const selectedCourses = courses.filter(
+        (co) => co.courseEnrollements.student_id === student.id
       );
 
-      studenCourseEnrolls?.map((course: StudentClassType) => {
-        const studenClass = classes.find(
-          (Class) => Class.id == course.class_id
-        );
-
-        const studentSection = sections.find(
-          (sec) => sec.id == studenClass?.section_id
-        );
-
-        const studentCourse = courses.find(
-          (course) => course.id == studentSection?.course_id
-        );
-
+      selectedCourses.map((selectedCourse) => {
         const studentResult = courseLetter.find(
-          (item) => item.course_enrollment_id == studentCourse?.id
+          (item) =>
+            item.course_enrollment_id === selectedCourse?.courseEnrollements.id
         );
 
-        if (studentCourse?.credits && studentResult?.points) {
-          studentTotalGradePoints +=
-            studentResult?.points * studentCourse?.credits;
-          studentTotalCredits += studentCourse?.credits;
-        }
-      });
-
-      let duplicateFound = false;
-
-      transcript.forEach((item) => {
+        let duplicateFound = false;
         if (
-          item.semester === `${semester}-${year}`
+          selectedCourse?.course.credits &&
+          studentResult?.points &&
+          selectedCourse.class.semester === `${semester}-${year}`
         ) {
-          duplicateFound = true;
-          return;
+          studentTotalGradePoints +=
+            studentResult?.points * selectedCourse?.course.credits;
+          studentTotalCredits += selectedCourse?.course.credits;
         }
+
+        transcript.forEach((item) => {
+          if (item.semester === `${semester}-${year}`) {
+            duplicateFound = true;
+            return;
+          }
+
+          if (duplicateFound) {
+            allDataSent = false;
+          }
+        });
       });
-
-      if (duplicateFound) {
-        allDataSent = false; 
-        return;
-      }
-
-
-      const data = {
+      const data2 = {
         student_id: student.id,
         semester: `${semester}-${year}`,
         studentSemester: student.semester,
@@ -256,15 +185,15 @@ const page = () => {
         ),
       };
 
+      console.log(data2);
 
       if (studentTotalGradePoints && studentTotalCredits) {
-        axios.post(`/api/transcript/${1}`, data).catch((error) => {
+        axios.post(`/api/transcript/${1}`, data2).catch((error) => {
           allDataSent = false;
           console.error('Error sending data:', error);
         });
       }
     });
-
     if (allDataSent) {
       setRefresh(!refresh);
       toast.success('تم إرسال جميع البيانات بنجاح');
@@ -295,8 +224,6 @@ const page = () => {
 
   const handleSubmit2 = () => {
     setEdit(!edit);
-
-    console.log(letters2);
 
     axios.post(`/api/exams/grading/1`, points2);
     axios
@@ -338,14 +265,14 @@ const page = () => {
     let duplicateFound = false;
 
     allCourses.forEach((item) => {
-      if (item.course_name == newItemCourse || item.course_number==courseNumber) {
+      if (
+        item.course_name == newItemCourse ||
+        item.course_number == courseNumber
+      ) {
         duplicateFound = true;
         return;
       }
     });
-
-    console.log(allCourses);
-    console.log(newItemCourse);
 
     if (duplicateFound) {
       toast.error('هذه المادة مسجلة بالفعل');
@@ -363,8 +290,6 @@ const page = () => {
       passing_percentage: parseInt(passingGrade),
     };
 
-    console.log(data);
-
     axios
       .post(`/api/course/courseRegistration`, data)
       .then((res) => {
@@ -379,7 +304,6 @@ const page = () => {
   const selection = numbers.map((num, index) => (
     <option key={index}>{num}</option>
   ));
-
 
   return (
     <div className="absolute flex flex-col w-[80%] items-center justify-center">
@@ -414,7 +338,6 @@ const page = () => {
         >
           تنزيل المواد و الدرجات
         </button>
-
       </div>
       {activeTab === 'Tab 1' && (
         <>
@@ -579,53 +502,54 @@ const page = () => {
                   className="w-[100px] flex justify-center items-center flex-col"
                 >
                   <div className="flex flex-col w-[500px] m-3">
-                    <div className='flex flex-row'>
-                    <button
-                      onClick={handleSubmit}
-                      className="bg-green-700 m-2 hover:bg-green-600 p-3 rounded-md text-white w-[300px]"
-                    >
-                      ارسال المجموع النهائي في جميع التخصصات
-                    </button>
-                    <input
-                      dir="rtl"
-                      placeholder=" السنة"
-                      type="text"
-                      className="w-20 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                      onChange={(e) => setYear(e.target.value)}
-                    />
-                    <select
-                      id="dep"
-                      dir="rtl"
-                      onChange={(e) => setSemester(e.target.value)}
-                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                      defaultValue="الفصل"
-                    >
-                      <option disabled>الفصل</option>
-                      <option>خريف</option>
-                      <option>ربيع</option>
-                    </select>
+                    <div className="flex flex-row">
+                      <button
+                        onClick={handleSubmit}
+                        className="bg-green-700 m-2 hover:bg-green-600 p-3 rounded-md text-white w-[300px]"
+                      >
+                        ارسال المجموع النهائي في جميع التخصصات
+                      </button>
+                      <input
+                        dir="rtl"
+                        placeholder=" السنة"
+                        type="text"
+                        className="w-20 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                        onChange={(e) => setYear(e.target.value)}
+                      />
+                      <select
+                        id="dep"
+                        dir="rtl"
+                        onChange={(e) => setSemester(e.target.value)}
+                        className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                        defaultValue="الفصل"
+                      >
+                        <option disabled>الفصل</option>
+                        <option>خريف</option>
+                        <option>ربيع</option>
+                      </select>
                     </div>
-                    <div className='flex flex-row'>
-                    <button
-                      className="m-2 bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
-                      type="submit"
-                      onClick={() => (edit ? handleSubmit2() : setEdit(!edit))}
-                    >
-                      {edit ? 'ارسال' : 'تعديل'}
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleActivate();
-                      }}
-                      className={`p-3 rounded-md m-2 text-white ${
-                        active
-                          ? 'bg-red-600 hover:bg-red-500'
-                          : 'bg-green-600 hover:bg-green-500'
-                      }`}
-                    >
-                      {active ? 'اغلاق تسجيل المواد' : ' فتح تسجيل المواد '}
-                    </button>
-
+                    <div className="flex flex-row">
+                      <button
+                        className="m-2 bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
+                        type="submit"
+                        onClick={() =>
+                          edit ? handleSubmit2() : setEdit(!edit)
+                        }
+                      >
+                        {edit ? 'ارسال' : 'تعديل'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleActivate();
+                        }}
+                        className={`p-3 rounded-md m-2 text-white ${
+                          active
+                            ? 'bg-red-600 hover:bg-red-500'
+                            : 'bg-green-600 hover:bg-green-500'
+                        }`}
+                      >
+                        {active ? 'اغلاق تسجيل المواد' : ' فتح تسجيل المواد '}
+                      </button>
                     </div>
                   </div>
                   <table className="w-[300px] h-[600px]">

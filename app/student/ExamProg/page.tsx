@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import {
   StudenCourseType,
   ExamProgramType,
-  StudentCourse2Type,
 } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';

@@ -1,10 +1,9 @@
 'use client';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StudenCourseType,
-  LetterGradesType,
   DayOfWeekType,
   CheckedType,
 } from '@/app/types/types';

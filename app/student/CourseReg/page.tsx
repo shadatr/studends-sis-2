@@ -45,7 +45,9 @@ const Page = () => {
   const [courses, setCourses] = useState<CourseInfoType[]>([]);
   const [repeat, setRepeat] = useState<CourseInfoType[]>([]);
   const [checkList, setCheckList] = useState<CourseInfoType[]>([]);
-  const [courseEnrollements, setCourseEnrollements] = useState<StudentClassType[]>([]);
+  const [courseEnrollements, setCourseEnrollements] = useState<
+    StudentClassType[]
+  >([]);
   const [checked, setChecked] = useState<number[]>([]);
   const [refresh, setRefresh] = useState(false);
   const [submit, setSubmit] = useState(false);
@@ -91,7 +93,6 @@ const Page = () => {
     const updatedCheckList2: CourseInfoType[] = [];
     const repeatList: CourseInfoType[] = [];
 
-
     courses.forEach((course) => {
       if (course.prerequisites.length === 0) {
         if (course?.courseEnrollements?.length != 0) {
@@ -112,12 +113,10 @@ const Page = () => {
                   (item) => item.course.id === course.course.id
                 )
               ) {
-                
                 updatedCheckList.push(course);
-                if (
-                  courseEnroll.can_repeat === true
-                ){
-                  repeatList.push(course);}
+                if (courseEnroll.can_repeat === true) {
+                  repeatList.push(course);
+                }
               }
             });
           });
@@ -137,7 +136,7 @@ const Page = () => {
                 classItem.id === courseEnroll.class_id &&
                 courseEnroll
             );
-            
+
             if (
               passed?.pass === true &&
               !updatedCheckList.find(
@@ -150,7 +149,11 @@ const Page = () => {
                 updatedCheckList2.splice(index, 1);
               }
             } else {
-              if (!updatedCheckList2.find((item) => item.course.id === course.course.id)) {
+              if (
+                !updatedCheckList2.find(
+                  (item) => item.course.id === course.course.id
+                )
+              ) {
                 updatedCheckList2.push(course);
               }
               const index = updatedCheckList.indexOf(course);
@@ -186,13 +189,12 @@ const Page = () => {
     }
   };
 
-
   const handleSubmit = async () => {
     if (submitting) {
       return;
     }
 
-    setSubmitting(true); 
+    setSubmitting(true);
 
     for (const item of checked) {
       const registeredBefore = courseEnrollements.find(
@@ -225,7 +227,6 @@ const Page = () => {
     setSubmitting(false); // Re-enable the submit button
     setSubmit(!submit); // Trigger any necessary state updates
   };
-
 
   return (
     <div className="absolute w-[80%] flex p-10 justify-center flex-col items-center ">

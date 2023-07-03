@@ -82,59 +82,60 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [Location, setLocation] = useState<string>();
 
   useEffect(() => {
-      const fetchPosts = async () => {
-        if (user) {
-          axios.get(`/api/getAll/doctor`).then((resp) => {
-            const message: PersonalInfoType[] = resp.data.message;
-            setDoctors(message);
-          });
+    const fetchPosts = async () => {
+      if (user) {
+        axios.get(`/api/getAll/doctor`).then((resp) => {
+          const message: PersonalInfoType[] = resp.data.message;
+          setDoctors(message);
+        });
 
-          const res = await axios.get(`/api/course/courseRegistration`);
-          const messageCour: AddCourseType[] = await res.data.message;
-          setCourses(messageCour);
+        const res = await axios.get(`/api/course/courseRegistration`);
+        const messageCour: AddCourseType[] = await res.data.message;
+        setCourses(messageCour);
 
-          axios.get(`/api/course/courseMajorReg/${params.id}`).then(async (resp) => {
+        axios
+          .get(`/api/course/courseMajorReg/${params.id}`)
+          .then(async (resp) => {
             const message: MajorCourseType[] = resp.data.message;
             setMajorCourses(message);
           });
 
-          const sectionsPromises = messageCour.map(async (course) => {
-            const responseReq = await axios.get(
-              `/api/getAll/getAllSections/${course.id}`
-            );
-            const { message: secMessage }: { message: SectionType[] } =
-              responseReq.data;
-            return secMessage;
-          });
-
-          const sectionData = await Promise.all(sectionsPromises);
-          const sections = sectionData.flat();
-          setSections(sections);
-
-          const classPromises = sections.map(async (section) => {
-            const responseReq = await axios.get(
-              `/api/getAll/getAllClassInfo/${section.id}`
-            );
-            const { message: classMessage }: { message: ClassesInfoType[] } =
-              responseReq.data;
-            console.log(classMessage);
-            return classMessage;
-          });
-
-          const classData = await Promise.all(classPromises);
-          const classes = classData.flat();
-
-          setClasses(classes);
-
-          const response = await axios.get(
-            `/api/allPermission/admin/selectedPerms/${user?.id}`
+        const sectionsPromises = messageCour.map(async (course) => {
+          const responseReq = await axios.get(
+            `/api/getAll/getAllSections/${course.id}`
           );
-          const message: GetPermissionType[] = response.data.message;
-          setPerms(message);
-        }
-      };
-      fetchPosts();
-    
+          const { message: secMessage }: { message: SectionType[] } =
+            responseReq.data;
+          return secMessage;
+        });
+
+        const sectionData = await Promise.all(sectionsPromises);
+        const sections = sectionData.flat();
+        setSections(sections);
+
+        const classPromises = sections.map(async (section) => {
+          const responseReq = await axios.get(
+            `/api/getAll/getAllClassInfo/${section.id}`
+          );
+          const { message: classMessage }: { message: ClassesInfoType[] } =
+            responseReq.data;
+          console.log(classMessage);
+          return classMessage;
+        });
+
+        const classData = await Promise.all(classPromises);
+        const classes = classData.flat();
+
+        setClasses(classes);
+
+        const response = await axios.get(
+          `/api/allPermission/admin/selectedPerms/${user?.id}`
+        );
+        const message: GetPermissionType[] = response.data.message;
+        setPerms(message);
+      }
+    };
+    fetchPosts();
   }, [params, user, loadCourses, edit]);
 
   const handleRegisterCourse = () => {
@@ -200,33 +201,49 @@ const Page = ({ params }: { params: { id: number } }) => {
       return;
     }
     const findDay = days.find((day) => day.name === selectedDay);
-const findStartTime = hoursNames.find((hour) => hour.name === selectedStartHour);
-const findEndTime = hoursNames.find((hour) => hour.name === selectedEndHour);
+    const findStartTime = hoursNames.find(
+      (hour) => hour.name === selectedStartHour
+    );
+    const findEndTime = hoursNames.find(
+      (hour) => hour.name === selectedEndHour
+    );
 
-const doctorId = doctors.find((item) => item.name === doctor);
+    const doctorId = doctors.find((item) => item.name === doctor);
 
-const sectionId = sections.find((item) => item.name === section);
+    const sectionId = sections.find((item) => item.name === section);
 
-const hasConflictingClass = classes.some(
-  (cls) =>
-    cls.class.doctor_id === doctorId?.id &&
-     findEndTime &&
-      findStartTime &&
-    cls.class.day === findDay?.day &&
-    (
-      (cls.class.starts_at <= findStartTime.id &&
-        cls.class.ends_at > findStartTime.id) ||
-      (cls.class.starts_at <= findEndTime.id &&
-        cls.class.ends_at >= findEndTime.id) ||
-      (cls.class.starts_at >= findStartTime.id &&
-        cls.class.ends_at <= findEndTime.id)
-    )
-);
+    const hasConflictingClass = classes.some(
+      (cls) =>
+        cls.class.doctor_id === doctorId?.id &&
+        findEndTime &&
+        findStartTime &&
+        cls.class.day === findDay?.day &&
+        ((cls.class.starts_at <= findStartTime.id &&
+          cls.class.ends_at > findStartTime.id) ||
+          (cls.class.starts_at <= findEndTime.id &&
+            cls.class.ends_at >= findEndTime.id) ||
+          (cls.class.starts_at >= findStartTime.id &&
+            cls.class.ends_at <= findEndTime.id))
+    );
 
-if (hasConflictingClass) {
-  toast.error('يوجد محاضرة أخرى لدى الدكتور في الوقت المحدد');
-  return;
-}
+    if (hasConflictingClass) {
+      toast.error('يوجد محاضرة أخرى لدى الدكتور في الوقت المحدد');
+      return;
+    }
+
+    let duplicateFound = false;
+
+    classes.forEach((item) => {
+      if (item.section.id == sectionId?.id) {
+        duplicateFound = true;
+        return;
+      }
+    });
+
+    if (duplicateFound) {
+      toast.error('محاضرة هذه المجموعة مسجلة بالفعل');
+      return;
+    }
     const data = {
       doctor_id: doctorId?.id,
       section_id: sectionId?.id,

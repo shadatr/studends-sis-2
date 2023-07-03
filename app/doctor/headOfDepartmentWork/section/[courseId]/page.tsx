@@ -12,61 +12,54 @@ import { FaTrashAlt } from 'react-icons/fa';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 
-const Page = ({ params }: { params: { courseId: number; majorId: number } }) => {
+const Page = ({ params }: { params: { courseId: number } }) => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
     redirect('/');
   }
+  const user = session.data?.user;
+
   const [section, setSection] = useState<SectionType[]>([]);
   const [courses, setCourses] = useState<CourseType[]>([]);
   const [load, setLoad] = useState(true);
   const [activeTab, setActiveTab] = useState<string>('Tab 1');
   const [selectedCourseName, setSelectedCourseName] = useState('');
-  const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>(
-    []
-  );
-
-  const handleCourseChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCourseName(event.target.value);
-  };
+  const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>([]);
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const fetchPosts = async () => {
-        const response = await axios.get(
-          `/api/getAll/getAllSections/${params.courseId}`
-        );
-        const message: SectionType[] = response.data.message;
-        setSection(message);
+    const fetchPosts = async () => {
+      const response = await axios.get(
+        `/api/getAll/getAllSections/${params.courseId}`
+      );
+      const message: SectionType[] = response.data.message;
+      setSection(message);
 
-        const responseCourse = await axios.get(
-          `/api/course/majorCourses/${params.majorId}`
-        );
-        const messageCourse: CourseType[] = responseCourse.data.message;
-        console.log(messageCourse);
-        setCourses(messageCourse);
+      const responseCourse = await axios.get(`/api/course/courseRegistration`);
+      const messageCourse: CourseType[] = responseCourse.data.message;
+      console.log(messageCourse);
+      setCourses(messageCourse);
 
-        const responsePerCourse = await axios.get(
-          `/api/course/prerequisitesCourses/${params.courseId}`
-        );
-        const messagePerCourse: PrerequisiteCourseType[] =
-          responsePerCourse.data.message;
-        console.log(messageCourse);
-        setPrerequisites(messagePerCourse);
-      };
-      fetchPosts();
-    }
-  }, [params.courseId, load, params.majorId]);
+      const responsePerCourse = await axios.get(
+        `/api/course/prerequisitesCourses/${params.courseId}`
+      );
+      const messagePerCourse: PrerequisiteCourseType[] =
+        responsePerCourse.data.message;
+      console.log(messageCourse);
+      setPrerequisites(messagePerCourse);
+    };
+    fetchPosts();
+  }, [params.courseId, load, user]);
 
   const handleRegisterSection = () => {
     const selectedCourse = courses.find(
       (course) => params.courseId == course.id
     );
+
     const data = {
       name: selectedCourse?.course_name + `(مجموعة${section.length + 1})`,
       course_id: selectedCourse?.id,
@@ -76,7 +69,6 @@ const Page = ({ params }: { params: { courseId: number; majorId: number } }) => 
       .post('/api/course/sectionRegistration', data)
       .then((res) => {
         setLoad(!load);
-        console.log(res.data);
         toast.success(res.data.message);
       })
       .catch((err) => {
@@ -164,73 +156,88 @@ const Page = ({ params }: { params: { courseId: number; majorId: number } }) => 
           >
             اضاف مجموعة
           </button>
-          {section.map((sec, index) => (
-            <div
-              key={index}
-              className="p-3 m-5 bg-lightBlue pl-[80px] pr-[80px] items-center flex justify-center rounded-sm"
+          {section.map((sec) => (
+            <Link
+              key={sec.id}
+              href={`/doctor/headOfDepartmentWork/class/${sec.id}`}
             >
-              <Link
-                href={`/doctor/headOfDepartmentWork/course/${sec.id}/${params.courseId}`}
-              >
+              <div className="p-3 m-5 bg-lightBlue pl-[80px] pr-[80px] items-center flex justify-center rounded-sm">
                 {sec.name}
-              </Link>
-            </div>
+              </div>
+            </Link>
           ))}
         </>
       )}
       {activeTab === 'Tab 2' && (
-        <div className="flex flex-col m-10 max-w-[600px] w-screen justify-center items-center ">
-          <select
-            value={selectedCourseName}
-            onChange={handleCourseChange}
-            className="w-[350px] bg-lightBlue p-2 rounded-md"
-          >
-            <option disabled value="">
-              اختر مادة
-            </option>
-            {courses.map((course, index) => (
-              <option
-                key={index}
-                value={course.course_name}
-                className="items-right flex h-[50px]"
-              >
-                {course.course_name}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={handleRegisterCourPre}
-            className="rounded-md bg-blue-800 hover:bg-blue-600 text-secondary p-2 w-[200px] m-5"
-          >
-            اضافة
-          </button>
-          <table className="m-10 w-[600px]">
-            <thead>
-              <tr>
-                <th className="bg-darkBlue text-secondary p-2">
-                  المواد المشروطة
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {prerequisites.map((preCourse, index) => {
-                const selectedPreCourse = courses.find(
-                  (course) => course.id == preCourse.prerequisite_course_id
-                );
-                return (
-                  <tr key={index}>
-                    <td className="p-2 items-center flex justify-between">
-                      <FaTrashAlt
-                        className="cursor-pointer"
-                        onClick={() => handleDelete(preCourse.id)}
-                      />
-                      {selectedPreCourse?.course_name}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="flex flex-col m-10 max-w-[600px] w-screen justify-center items-center">
+          {(() => {
+            const prereqCourse = courses.filter((item2) =>
+              prerequisites.map(
+                (item3) => item2.id !== item3.prerequisite_course_id
+              )
+            );
+            const selectedCourses = prereqCourse.filter(
+              (item) => item.id !== params.courseId
+            );
+
+            return (
+              <>
+                <select
+                  className="w-[350px] bg-lightBlue p-2 rounded-md"
+                  defaultValue=""
+                  onChange={(e) => setSelectedCourseName(e.target.value)}
+                >
+                  <option disabled value="">
+                    اختر مادة
+                  </option>
+                  {selectedCourses.map((course, index) => (
+                    <option
+                      key={index}
+                      value={course.course_name}
+                      className="items-right flex h-[50px]"
+                    >
+                      {course.course_name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={handleRegisterCourPre}
+                  className="rounded-md bg-blue-800 hover:bg-blue-600 text-secondary p-2 w-[200px] m-5"
+                >
+                  اضافة
+                </button>
+
+                <table className="m-10 w-[600px]">
+                  <thead>
+                    <tr>
+                      <th className="bg-darkBlue text-secondary p-2">
+                        المواد المشروطة
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {prerequisites.map((preCourse, index) => {
+                      const selectedPreCourse = courses.find(
+                        (course) =>
+                          course.id === preCourse.prerequisite_course_id
+                      );
+                      return (
+                        <tr key={index}>
+                          <td className="p-2 items-center flex justify-between">
+                            <FaTrashAlt
+                              className="cursor-pointer"
+                              onClick={() => handleDelete(preCourse.id)}
+                            />
+                            {selectedPreCourse?.course_name}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </>
+            );
+          })()}
         </div>
       )}
     </div>

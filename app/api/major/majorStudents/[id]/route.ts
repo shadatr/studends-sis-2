@@ -15,6 +15,8 @@ export async function GET(
       .select('*')
       .eq('major', params.id);
 
+      console.log(data.data);
+
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
