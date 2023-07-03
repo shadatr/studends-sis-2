@@ -2,117 +2,44 @@
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
-import {
-  AddCourse2Type,
-  ClassesType,
-  SectionType,
-  StudentClassType,
-  StudentCourseType,
-} from '@/app/types/types';
+import { StudenCourseType, LetterGradesType } from '@/app/types/types';
 import { redirect } from 'next/navigation';
 
 const Page = () => {
   const session = useSession({ required: true });
+  // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'student' : false) {
-    redirect('/');}
+    redirect('/');
+  }
+
+  const [studentCourses, setStudentCourses] = useState<StudenCourseType[]>([]);
+  const [courseLetter, setCourseLetter] = useState<LetterGradesType[]>([]);
 
   const user = session.data?.user;
 
-  const [courses, setCourses] = useState<AddCourse2Type[]>([]);
-  const [studentCourses, setStudentCourses] = useState<StudentCourseType[]>([]);
-  const [sections, setSections] = useState<SectionType[]>([]);
-  const [classes, setClasses] = useState<ClassesType[]>([]);
-  const [courseEnrollments, setCourseEnrollments] = useState<
-    StudentClassType[]
-  >([]);
-  const [refresh, setRefresh] = useState(false);
-
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const responseCourseEnroll = await axios.get(
-          `/api/getAll/getCourseEnrollStudent/${user?.id}`
+      if (user) {
+        const responseCourseLetter = await axios.get(`/api/exams/letterGrades`);
+        const messageCourseLetter: LetterGradesType[] =
+          responseCourseLetter.data.message;
+        setCourseLetter(messageCourseLetter);
+
+        const responseStudentCourse = await axios.get(
+          `/api/getAll/studentCoursesApprove/${user?.id}`
         );
-        const messageCourseEnroll: StudentClassType[] =
-          responseCourseEnroll.data.message;
-        setCourseEnrollments(messageCourseEnroll);
 
-        const classPromises = messageCourseEnroll.map(async (Class) => {
-          const responseReq = await axios.get(
-            `/api/getAll/getSpecificClass/${Class.class_id}`
-          );
-          const { message: classMessage }: { message: ClassesType[] } =
-            responseReq.data;
-          return classMessage;
-        });
-
-        const classData = await Promise.all(classPromises);
-        const classes = classData.flat();
-        setClasses(classes);
-
-        const sectionsPromises = classes.map(async (course) => {
-          const responseReq = await axios.get(
-            `/api/getAll/getSpecificSection/${course.section_id}`
-          );
-          const { message: secMessage }: { message: SectionType[] } =
-            responseReq.data;
-          return secMessage;
-        });
-
-        const sectionData = await Promise.all(sectionsPromises);
-        const sections = sectionData.flat();
-        setSections(sections);
-
-        const coursesPromises = sections.map(async (section) => {
-          const responseReq = await axios.get(
-            `/api/getAll/getSpecificCourse/${section.course_id}`
-          );
-          const { message: courseMessage }: { message: AddCourse2Type[] } =
-            responseReq.data;
-          return courseMessage;
-        });
-
-        const courseData = await Promise.all(coursesPromises);
-        const courses = courseData.flat();
-        setCourses(courses);
-      } catch (error) {
-        console.error('Error fetching data:', error);
+        const messageStudentCourse: StudenCourseType[] =
+          responseStudentCourse.data.message;
+        setStudentCourses(messageStudentCourse);
       }
-      setRefresh(!refresh);
     };
 
     fetchData();
   }, [user]);
 
-  useEffect(() => {
-    const updatedStudentCourses: StudentCourseType[] = [];
-
-    courseEnrollments.map((course) => {
-      const studenClass = classes.find((Class) => Class.id == course.class_id);
-
-      const studentSection = sections.find(
-        (sec) => sec.id == studenClass?.section_id
-      );
-
-      const studentCourse = courses.find(
-        (course) => course.id == studentSection?.course_id
-      );
-
-      if (studentCourse) {
-        const data = {
-          course: studentCourse,
-          courseEnroll: course,
-          section: studentSection,
-          class: studenClass,
-        };
-        updatedStudentCourses.push(data);
-      }
-    });
-    setStudentCourses(updatedStudentCourses);
-  }, [refresh]);
-
   return (
-    <div className="absolute w-[85%] flex flex-col text-sm p-10 justify-content items-center ">
+    <div className="absolute w-[80%] flex flex-col p-10 justify-content items-center ">
       <table className="m-10 w-[1100px]">
         <thead>
           <tr>
@@ -143,52 +70,64 @@ const Page = () => {
           </tr>
         </thead>
         <tbody>
-          {studentCourses.map((course, index) => (
-            <tr key={index}>
-              <td
-                className={`border border-gray-300 px-4 py-2 ${
-                  course.courseEnroll.pass
-                    ? 'text-green-600 hover:text-green-700'
-                    : 'text-red-500 hover:text-red-600'
-                }`}
-              >
-                {course.class?.result_publish
-                  ? course.courseEnroll.pass
-                    ? 'ناجح'
-                    : 'راسب'
-                  : ''}
-              </td>
-              <td className="border border-gray-300 px-4 py-2  ">
-                {course.class?.result_publish ? course.courseEnroll.result : ''}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.course.class_work}%
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.class?.class_work_publish
-                  ? course.course.class_work
-                  : ''}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.course.final}%
-              </td>
-              <td className="border border-gray-300 px-4 py-2 ">
-                {course.class?.final_publish ? course.courseEnroll.final : ''}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.course.midterm}%
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.class?.mid_publish ? course.courseEnroll.midterm : ''}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.section?.name}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.course.course_name}
-              </td>
-            </tr>
-          ))}
+          {studentCourses.map((course, index) => {
+            const letter = courseLetter.find(
+              (item) =>
+                item.course_enrollment_id == course.courseEnrollements.id
+            );
+            return (
+              <tr key={index}>
+                <td
+                  className={`border border-gray-300 px-4 py-2 ${
+                    course.courseEnrollements.pass
+                      ? 'text-green-600 hover:text-green-700'
+                      : 'text-red-500 hover:text-red-600'
+                  }`}
+                >
+                  {course.class?.result_publish
+                    ? course.courseEnrollements.pass
+                      ? `${letter?.letter_grade} ناجح`
+                      : `${letter?.letter_grade} راسب`
+                    : ''}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 ">
+                  {course.class?.result_publish
+                    ? course.courseEnrollements.result
+                    : ''}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.course.class_work}%
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.class?.class_work_publish
+                    ? course.course.class_work
+                    : ''}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.course.final}%
+                </td>
+                <td className="border border-gray-300 px-4 py-2 ">
+                  {course.class?.final_publish
+                    ? course.courseEnrollements.final
+                    : ' '}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.course.midterm}%
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.class?.mid_publish
+                    ? course.courseEnrollements.midterm
+                    : ''}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.section?.name}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {course.course.course_name}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

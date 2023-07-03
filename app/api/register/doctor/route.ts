@@ -1,4 +1,3 @@
-import { RegisterStudentType } from '@/app/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -9,20 +8,32 @@ const supabase = createClient(
 export async function POST(request: Request) {
   // TODO: Maybe add some validation for security here
 
-  const data: RegisterStudentType = await request.json();
-
+  const data = await request.json();
 
   try {
-    const res = await supabase.from('tb_doctors').insert([data]);
-    if (res.error) {
-      console.log(res.error);
-      throw res.error;
+    await supabase.from('tb_doctors').insert([data]);
+
+    const doctors = await supabase
+      .from('tb_doctors')
+      .select('*')
+      .eq('name', data.name)
+      .eq('surname', data.surname);
+
+
+    const doctor = doctors.data;
+    if (doctor) {
+      const data1 = {
+        permission_id: 21,
+        doctor_id: doctor[0].id,
+      };
+      await supabase.from('tb_doctor_perms').insert([data1]);
     }
+
     return new Response(JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });
   } catch (error) {
-    // send a 400 response with an error happened during registration in arabic
+    // send a 400 response with an error happened during registration in Arabic
     return new Response(
       JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الحساب' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
@@ -32,9 +43,7 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const data = await supabase
-      .from('tb_doctors')
-      .select('*');
+    const data = await supabase.from('tb_doctors').select('*');
     console.log(data.data);
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
@@ -45,4 +54,3 @@ export async function GET() {
     return new Response(JSON.stringify({ message: data.data }));
   } catch {}
 }
-

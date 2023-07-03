@@ -23,17 +23,17 @@ export async function POST(request: Request) {
   const data = await request.json();
 
   try {
-      const res1=await supabase
+      await supabase
         .from('tb_course_enrollment')
         .update({ approved: data.course.approved })
         .eq('id', data.course.id);
 
-      const res2= await supabase
+      await supabase
         .from('tb_section')
         .update({ students_num: data.course.students_num })
         .eq('id', data.course.section_id);
 
-        const res = await supabase.from('tb_grades').insert([data.grade]);
+      await supabase.from('tb_grades').insert([data.grade]);
         console.log(data.course.approved);
 
 

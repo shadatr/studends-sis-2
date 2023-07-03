@@ -24,18 +24,17 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-       const responsePer = await axios.get(
-         `/api/allPermission/admin/selectedPerms/${user?.id}`
-       );
-       const messagePer: GetPermissionType[] = responsePer.data.message;
-       setPerms(messagePer);
+      const responsePer = await axios.get(
+        `/api/allPermission/admin/selectedPerms/${user?.id}`
+      );
+      const messagePer: GetPermissionType[] = responsePer.data.message;
+      setPerms(messagePer);
 
       axios.get('/api/major/majorReg').then((resp) => {
         console.log(resp.data);
         const message: MajorReg2Type[] = resp.data.message;
         setMajors(message);
       });
-      
     };
     fetchPosts();
   }, [user]);
@@ -44,15 +43,18 @@ const Page = () => {
     <div className="flex absolute flex-col justify-center items-center w-[80%] mt-10">
       {perms.map((permItem, idx) => {
         if (permItem.permission_id === 5 && permItem.active) {
-          return (              
-      <div className="flex flex-row items-center justify-between w-[900px] text-sm" key={idx}>
-        <Link
-          className="bg-green-700 hover:bg-green-600 px-5 py-1 rounded-md text-white"
-          href={'/management/students/register'}
-        >
-          سجل طالب جديد
-        </Link>
-      </div>
+          return (
+            <div
+              className="flex flex-row items-center justify-between w-[900px] text-sm"
+              key={idx}
+            >
+              <Link
+                className="bg-green-700 hover:bg-green-600 px-5 py-1 rounded-md text-white"
+                href={'/management/students/register'}
+              >
+                سجل طالب جديد
+              </Link>
+            </div>
           );
         }
         return null;

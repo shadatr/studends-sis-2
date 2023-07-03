@@ -1,4 +1,3 @@
-import { CourseInfoType } from '@/app/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -23,8 +22,12 @@ export async function GET(
     const dataClasses = await supabase.from('tb_classes').select('*');
 
     const dataCourseEnroll = await supabase
-      .from('tb_course_enrollments')
+      .from('tb_course_enrollment')
       .select('*');
+
+      const dataDoctor = await supabase
+        .from('tb_doctors')
+        .select('*');
 
     const dataCoursePrerequisties = await supabase
       .from('tb_prerequisites_courses')
@@ -37,6 +40,7 @@ export async function GET(
       courseResponse,
       coursePrerequistiesResoponse,
       majorCourseResponse,
+      doctorResopnse,
     ] = await Promise.all([
       dataClasses,
       dataCourseEnroll,
@@ -44,6 +48,7 @@ export async function GET(
       dataCourse,
       dataCoursePrerequisties,
       dataMajorCourse,
+      dataDoctor
     ]);
 
     const classes = classResponse.data;
@@ -52,6 +57,7 @@ export async function GET(
     const courses = courseResponse.data;
     const coursePrerequisties = coursePrerequistiesResoponse.data;
     const majorCourses = majorCourseResponse.data;
+    const doctors = doctorResopnse.data;
 
     const data = majorCourses?.map((course) => {
       const coPre = coursePrerequisties?.filter(
@@ -66,10 +72,13 @@ export async function GET(
       const coEnroll = courseEnrollements?.filter((co) =>
         clas?.some((cl) => co.class_id === cl.id)
       );
+
+      const doc = doctors?.filter((co) =>
+        clas?.map((cl) => co.id === cl.doctor_id)
+      );
       const cour = courses?.find((c) => course.course_id === c.id);
 
-      console.log(clas);
-      console.log(secInfo);
+      console.log(courseEnrollements);
 
       return {
         class: clas,
@@ -78,6 +87,7 @@ export async function GET(
         section: secInfo,
         prerequisites: coPre,
         majorCourse: course,
+        doctor: doc,
       };
     });
 

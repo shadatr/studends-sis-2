@@ -539,14 +539,14 @@ const Page = ({ params }: { params: { id: number } }) => {
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
                       <Link
-                        href={`/management/course/managementWork/class/${Class.class.section_id}`}
+                        href={`/doctor/headOfDepartmentWork/class/${Class.class.section_id}`}
                       >
                         {Class.section?.name}
                       </Link>
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
                       <Link
-                        href={`/management/course/managementWork/class/${Class.class.section_id}`}
+                        href={`/doctor/headOfDepartmentWork/class/${Class.class.section_id}`}
                       >
                         {Class.course?.course_name}
                       </Link>

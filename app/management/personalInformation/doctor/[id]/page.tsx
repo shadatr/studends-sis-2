@@ -37,7 +37,6 @@ const page = ({ params }: { params: { id: number } }) => {
   const [useMyData, useSetMydata] = useState<PersonalInfoType[]>([]);
   const [newData, setNewData] = useState<PersonalInfoType[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
-  const [checked, setChecked] = useState<number[]>([]); // Change to an array
   const [perms, setPerms] = useState<GetPermissionDoctorType[]>([]);
   const [permsAdmin, setPermsAdmin] = useState<GetPermissionType[]>([]);
   const [refresh, setRefresh] = useState(false);
@@ -75,29 +74,12 @@ const page = ({ params }: { params: { id: number } }) => {
     fetchPosts();
   }, [refresh, edit, params.id, user?.id]);
 
-  const handleCheck = (item: AssignPermissionType) => {
-    const checkedIndex = checked.indexOf(item.id);
-    if (checkedIndex === -1) {
-      setChecked([...checked, item.id]);
-    } else {
-      const updatedChecked = [...checked];
-      updatedChecked.splice(checkedIndex, 1);
-      setChecked(updatedChecked);
-    }
-  };
 
   const selected: AssignPermissionType[] = perms.flatMap((item) =>
     checkList
       .filter((item2) => item.permission_id == item2.id)
       .map((item2) => ({ name: item2.name, id: item2.id, active: item.active }))
   );
-  const handleDelete = (per_id: number, admin_id: number) => {
-    const data = { item_per_id: per_id, item_admin_id: admin_id };
-    axios.post('/api/allPermission/doctor/deletePerm', data).then((resp) => {
-      toast.success(resp.data.message);
-      setRefresh(!refresh);
-    });
-  };
 
   const handleActivate = (id: number, parmId: number, active: boolean) => {
     const data = { id, parmId, active };
@@ -107,15 +89,6 @@ const page = ({ params }: { params: { id: number } }) => {
         toast.success(res.data.message);
         setRefresh(!refresh);
       });
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    checked.map((item) => {
-      const data1 = { doctor_id: params.id, permission_id: item, active: true };
-      axios.post('/api/allPermission/doctor/addPerm', data1);
-      setRefresh(!refresh);
-    });
   };
 
   const handleInputChange = (e: string, field: keyof PersonalInfoType) => {
@@ -327,11 +300,6 @@ const page = ({ params }: { params: { id: number } }) => {
                       key={index}
                       className={index % 2 === 0 ? 'bg-gray-100' : ''}
                     >
-                      <td className="border-none h-full px-4 py-2 flex justify-end items-center">
-                        <BsXCircleFill
-                          onClick={() => handleDelete(user.id, params.id)}
-                        />
-                      </td>
                       <td className="border border-gray-300 px-4 py-2">
                         <button
                           onClick={() => {
@@ -353,34 +321,6 @@ const page = ({ params }: { params: { id: number } }) => {
                   ))}
                 </tbody>
               </table>
-              <form onSubmit={handleSubmit} className="p-10 w-[400px] ">
-                <h1 className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary">
-                  اختر الصلاحيات
-                </h1>
-                <div className="p-1 rounded-md">
-                  {checkList.map((item, index) => (
-                    <div
-                      className="bg-lightBlue flex justify-between  "
-                      key={index}
-                    >
-                      <input
-                        className="p-2 ml-9"
-                        value={item.name}
-                        type="checkbox"
-                        onChange={() => handleCheck(item)} // Pass the item to handleCheck
-                        checked={checked.includes(item.id)} // Check if the item is in the checked list
-                      />
-                      <label className="pr-5">{item.name}</label>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  type="submit"
-                  className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary"
-                >
-                  اضافة
-                </button>
-              </form>
             </div>
           );
         }

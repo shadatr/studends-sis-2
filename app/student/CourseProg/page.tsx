@@ -3,11 +3,8 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import {
-  ClassesType,
-  CourseProgramType,
   CheckedType,
-  StudentClassType,
-  Section2Type,
+  StudenCourseType,
 } from '@/app/types/types';
 import { redirect } from 'next/navigation';
 
@@ -36,60 +33,18 @@ const Page = () => {
   }
 
   const user = session.data?.user;
-  const [sections, setSections] = useState<Section2Type[]>([]);
-  const [programClass, setProgramClass] = useState<CourseProgramType[]>([]);
-  const [classes, setClasses] = useState<ClassesType[]>([]);
+  const [courses, setCourses] = useState<StudenCourseType[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       if (user) {
         try {
           const responseCourseEnroll = await axios.get(
-            `/api/getAll/getCourseEnrollStudent/${user?.id}`
+            `/api/getAll/studentCoursesApprove/${user?.id}`
           );
-          const messageCourseEnroll: StudentClassType[] =
+          const messageCourseEnroll: StudenCourseType[] =
             responseCourseEnroll.data.message;
-
-          const classPromises = messageCourseEnroll.map(async (Class) => {
-            const responseReq = await axios.get(
-              `/api/getAll/getSpecificClass/${Class.class_id}`
-            );
-            const { message: classMessage }: { message: ClassesType[] } =
-              responseReq.data;
-            return classMessage;
-          });
-
-          const classData = await Promise.all(classPromises);
-          const classes = classData.flat();
-          setClasses(classes);
-
-
-          const sectionsPromises = classes.map(async (course) => {
-            const responseReq = await axios.get(
-              `/api/getAll/getSpecificSection/${course.section_id}`
-            );
-            const { message: secMessage }: { message: Section2Type[] } =
-              responseReq.data;
-            return secMessage;
-          });
-
-          const sectionData = await Promise.all(sectionsPromises);
-          const sections = sectionData.flat();
-          setSections(sections);
-
-          const progClassPromises = classes.map(async (section) => {
-            const responseReq = await axios.get(
-              `/api/courseProgram/${section.id}`
-            );
-            const { message: courseMessage }: { message: CourseProgramType[] } =
-              responseReq.data;
-            return courseMessage;
-          });
-
-          const progClassData = await Promise.all(progClassPromises);
-          const programClass = progClassData.flat();
-          setProgramClass(programClass);
- 
+          setCourses(messageCourseEnroll);
 
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -119,35 +74,24 @@ const Page = () => {
           {hoursNames.map((hour, hourIndex) => (
             <tr key={hourIndex}>
               {daysOfWeek.map((day) => {
-                const matchingClasses = programClass.filter((Class) => {
-                  const classStart = Class.starts_at;
-                  const classEnd = Class.ends_at;
+                const matchingClasses = courses.filter((cls) => {
+                  const classStart = cls.class.starts_at;
+                  const classEnd = cls.class.ends_at;
                   const hourId = hour.id;
                   return (
-                    Class.day === day &&
+                    cls.class.day === day &&
                     (classStart === hourId ||
                       (classStart < hourId && classEnd >= hourId + 1))
                   );
                 });
 
                 if (matchingClasses.length > 0) {
-                  return matchingClasses.map((matchingClass, index) => {
-                    const className = classes.find(
-                      (course) =>
-                        course.id === matchingClass.class_id
-                    );
-                    const sectionName = sections.find(
-                      (sec) => sec.id === className?.section_id
-                    );
-                    return (
-                      <td
-                        key={`${day}-${matchingClass.class_id}-${index}`}
-                        className="py-2 px-4 border-b"
-                      >
-                        {sectionName?.name} - {matchingClass.location}
-                      </td>
-                    );
-                  });
+                  return matchingClasses.map((matchingClass, index) => (
+                    <td key={hourIndex} className="py-2 px-4 border-b">
+                      {matchingClass.section.name} -{' '}
+                      {matchingClass.class.location}
+                    </td>
+                  ));
                 }
 
                 return <td key={day} className="py-2 px-4 border-b"></td>;

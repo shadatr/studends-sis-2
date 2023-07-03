@@ -23,11 +23,10 @@ export async function POST(request: Request) {
   const data = await request.json();
 
   try {
-    const res = await supabase
+    await supabase
       .from('tb_course_enrollment')
       .delete()
-      .eq('id', data.id)
-      .eq('student_id', data.student_id);
+      .eq('id', data.id);
 
       console.log(data);
     return new Response(JSON.stringify({ message: 'تم تسجيل الكلية بنجاح' }), {

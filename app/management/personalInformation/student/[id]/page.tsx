@@ -7,11 +7,9 @@ import {
   PersonalInfoHeaderType,
   RegisterStudent2Type,
   InfoDoctorType,
-  MajorRegType,
   GetPermissionType,
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
-import { BsXCircleFill } from 'react-icons/bs';
 import Link from 'next/link';
 import Transcript from '@/app/components/transcript';
 import { useReactToPrint } from 'react-to-print';
@@ -37,19 +35,16 @@ const Page = ({ params }: { params: { id: number } }) => {
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
     redirect('/');
   }
-
-  const user = session.data?.user;
-
   const [useMyData, setMydata] = useState<RegisterStudent2Type[]>([]);
   const [newData, setNewData] = useState<RegisterStudent2Type[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
   const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
-  const [permsAdmin, setPermsAdmin] = useState<GetPermissionType[]>([]);
-  const [major, setMajor] = useState<string>();
+  const [adminPerms, setAdminPerms] = useState<GetPermissionType[]>([]);
   const [refresh, setRefresh] = useState(false);
-  const [doctors, setDoctors] = useState<string>();
+  const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
   const [edit, setEdit] = useState(false);
   const printableContentRef = useRef<HTMLDivElement>(null);
+  const user = session.data?.user;
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -65,7 +60,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         `/api/allPermission/admin/selectedPerms/${user?.id}`
       );
       const messagePer: GetPermissionType[] = responsePer.data.message;
-      setPermsAdmin(messagePer);
+      setAdminPerms(messagePer);
 
       const response = await axios.get(
         `/api/allPermission/student/selectedPerms/${params.id}`
@@ -73,43 +68,25 @@ const Page = ({ params }: { params: { id: number } }) => {
       const message: GetPermissionStudentType[] = response.data.message;
       setPerms(message);
 
-      const responseStudent = await axios.get(
-        `/api/personalInfo/student/${params.id}`
-      );
-      const messageStudent: RegisterStudent2Type[] =
-        responseStudent.data.message;
-      setMydata(messageStudent);
-      setNewData(messageStudent);
+      axios.get(`/api/personalInfo/student/${params.id}`).then((resp) => {
+        const message: RegisterStudent2Type[] = resp.data.message;
+        setMydata(message);
+        setNewData(message);
+      });
 
-      const responseMaj = await axios.get(
-        `/api/majorEnrollment/${messageStudent[0].major}`
-      );
-      const messageMaj: MajorRegType[] = responseMaj.data.message;
-      setMajor(messageMaj[0].major_name);
-
-      axios
-        .get(`/api/personalInfo/doctor/${messageStudent[0].advisor}`)
-        .then((res) => {
-          const message: InfoDoctorType[] = res.data.message;
-          setDoctors(message[0].name);
-        });
+      axios.get('/api/getAll/doctor').then((res) => {
+        const message: InfoDoctorType[] = res.data.message;
+        setDoctors(message);
+      });
     };
-
     fetchPosts();
-  }, [refresh, params, edit, user]);
+  }, [refresh, params.id,user, edit]);
 
   const selected: AssignPermissionType[] = perms.flatMap((item) =>
     checkList
       .filter((item2) => item.permission_id == item2.id)
       .map((item2) => ({ name: item2.name, id: item2.id, active: item.active }))
   );
-  const handleDelete = (per_id: number, admin_id: number) => {
-    const data = { permission_id: per_id, student_id: admin_id };
-    axios.post('/api/allPermission/student/deletePerm', data).then((resp) => {
-      toast.success(resp.data.message);
-      setRefresh(!refresh);
-    });
-  };
 
   const handleActivate = (parmId: number, id: number, active: boolean) => {
     const data = { student_id: id, permission_id: parmId, active: active };
@@ -151,7 +128,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   });
 
   return (
-    <div className="absolute flex  justify-center items-center w-[80%] flex-col m-10">
+    <div className="absolute flex justify-center items-center w-[80%] flex-col m-10">
       <div className="flex flex-row ">
         <button
           onClick={handlePrint}
@@ -165,27 +142,13 @@ const Page = ({ params }: { params: { id: number } }) => {
         >
           مواد و درجات الطالب
         </Link>
-        <Link
-          className="flex bg-blue-500 hover:bg-blue-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
-          href={`/management/personalInformation/student/${params.id}/courseProg`}
+        <button
+          className="m-5  bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
+          type="submit"
+          onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
         >
-          جدول المحاضرات
-        </Link>
-        {permsAdmin.map((permItem, idx) => {
-          if (permItem.permission_id === 5 && permItem.active) {
-            return (
-              <button
-                key={idx}
-                className="m-5  bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
-                type="submit"
-                onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
-              >
-                {edit ? 'ارسال' : 'تعديل'}
-              </button>
-            );
-          }
-          return null;
-        })}
+          {edit ? 'ارسال' : 'تعديل'}
+        </button>
       </div>
       <table className="flex-row-reverse flex text-sm  border-collapse">
         <thead>
@@ -296,7 +259,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                       />
                     </td>
                     <td className="flex w-[700px] p-2 justify-end">
-                      {doctors ? doctors : 'لا يوجد'}
+                      {item.advisor
+                        ? doctors.find((doc) => item.advisor == doc.id)?.name
+                        : 'لا يوجد'}
                     </td>
                   </tr>
                 ))
@@ -312,7 +277,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                   <td className="flex w-[700px] p-2 justify-end">
                     {item.birth_date}
                   </td>
-                  <td className="flex w-[700px] p-2 justify-end">{major}</td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.major}
+                  </td>
                   <td className="flex w-[700px] p-2 justify-end">
                     {item.semester}
                   </td>
@@ -329,20 +296,21 @@ const Page = ({ params }: { params: { id: number } }) => {
                     {item.enrollment_date}
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
-                    {doctors ? doctors : 'لا يوجد'}
+                    {item.advisor
+                      ? doctors.find((doc) => item.advisor == doc.id)?.name
+                      : 'لا يوجد'}
                   </td>
                 </tr>
               ))}
         </tbody>
       </table>
       <div>
-        {permsAdmin.map((permItem, idx) => {
-          if (permItem.permission_id === 5 && !permItem.active) {
+        {adminPerms.map((permItem, idx) => {
+          if (permItem.permission_id === 5 && permItem.active) {
             return (
-              <table className="border-collapse mt-8 w-[800px]" key={idx}>
+              <table className="border-collapse mt-8 w-[700px]" key={idx}>
                 <thead>
                   <tr className="bg-gray-200">
-                    <th className="border border-gray-300 px-4 py-2">حذف</th>
                     <th className="border border-gray-300 px-4 py-2">
                       ايقاف/تفعيل
                     </th>
@@ -357,11 +325,6 @@ const Page = ({ params }: { params: { id: number } }) => {
                       key={index}
                       className={index % 2 === 0 ? 'bg-gray-100' : ''}
                     >
-                      <td className="border-none h-full px-4 py-2 flex justify-end items-center">
-                        <BsXCircleFill
-                          onClick={() => handleDelete(user.id, params.id)}
-                        />
-                      </td>
                       <td className="border border-gray-300 px-4 py-2">
                         <button
                           onClick={() => {
@@ -387,8 +350,7 @@ const Page = ({ params }: { params: { id: number } }) => {
           }
           return null;
         })}
-
-        <div ref={printableContentRef}>
+        <div ref={printableContentRef} >
           <Transcript user={params.id} />
         </div>
       </div>

@@ -84,6 +84,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                       الملف الشخصي
                     </Link>
                   </td>
+                  
 
                   <td className="border border-gray-300 px-4 py-2">
                     {user.class_work}

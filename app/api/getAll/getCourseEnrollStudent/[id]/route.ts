@@ -1,4 +1,3 @@
-import { StudentClassType } from '@/app/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(

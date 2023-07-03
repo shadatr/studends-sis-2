@@ -104,37 +104,6 @@ const Transcript = ({ user }: { user: number }) => {
     fetchData();
   }, [user]);
 
-  useEffect(() => {
-    const updatedStudentCourses: StudentCourseType[] = [];
-
-    courseEnrollments.map((course) => {
-      const studenClass = classes.find((Class) => Class.id == course.class_id);
-
-      const studentSection = sections.find(
-        (sec) => sec.id == studenClass?.section_id
-      );
-
-      const studentCourse = courses.find(
-        (course) => course.id == studentSection?.course_id
-      );
-
-      if (studentCourse) {
-        if (course.approved) {
-          {
-            const data = {
-              course: studentCourse,
-              courseEnroll: course,
-              section: studentSection,
-              class: studenClass,
-            };
-            updatedStudentCourses.push(data);
-          }
-        }
-      }
-    });
-    console.log(updatedStudentCourses);
-    setStudentCourses(updatedStudentCourses);
-  }, [refresh, classes, courseEnrollments, courses, sections]);
 
   return (
     <div className="absolute w-[85%] flex flex-col p-10 justify-content items-center">

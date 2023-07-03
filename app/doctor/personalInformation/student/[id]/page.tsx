@@ -9,7 +9,6 @@ import {
   InfoDoctorType,
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
-import { BsXCircleFill } from 'react-icons/bs';
 import Link from 'next/link';
 import Transcript from '@/app/components/transcript';
 import { useReactToPrint } from 'react-to-print';
@@ -38,7 +37,6 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [useMyData, setMydata] = useState<RegisterStudent2Type[]>([]);
   const [newData, setNewData] = useState<RegisterStudent2Type[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
-  const [checked, setChecked] = useState<number[]>([]); // Change to an array
   const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
   const [refresh, setRefresh] = useState(false);
   const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
@@ -68,7 +66,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         setNewData(message);
       });
 
-      axios.get('/api/getAll/getDoctorsHeadOfDep').then((res) => {
+      axios.get('/api/getAll/doctor').then((res) => {
         const message: InfoDoctorType[] = res.data.message;
         setDoctors(message);
       });
@@ -76,29 +74,13 @@ const Page = ({ params }: { params: { id: number } }) => {
     fetchPosts();
   }, [refresh, params.id,edit]);
 
-  const handleCheck = (item: AssignPermissionType) => {
-    const checkedIndex = checked.indexOf(item.id);
-    if (checkedIndex === -1) {
-      setChecked([...checked, item.id]);
-    } else {
-      const updatedChecked = [...checked];
-      updatedChecked.splice(checkedIndex, 1);
-      setChecked(updatedChecked);
-    }
-  };
 
   const selected: AssignPermissionType[] = perms.flatMap((item) =>
     checkList
       .filter((item2) => item.permission_id == item2.id)
       .map((item2) => ({ name: item2.name, id: item2.id, active: item.active }))
   );
-  const handleDelete = (per_id: number, admin_id: number) => {
-    const data = { permission_id: per_id, student_id: admin_id };
-    axios.post('/api/allPermission/student/deletePerm', data).then((resp) => {
-      toast.success(resp.data.message);
-      setRefresh(!refresh);
-    });
-  };
+
 
   const handleActivate = (parmId: number, id: number, active: boolean) => {
     const data = { student_id: id, permission_id: parmId, active: active };
@@ -110,21 +92,9 @@ const Page = ({ params }: { params: { id: number } }) => {
       });
   };
 
-  const handleSubmit = () => {
-    checked.map((item) => {
-      const data1 = {
-        student_id: params.id,
-        permission_id: item,
-        active: true,
-      };
-      axios.post('/api/allPermission/student/addPerms', data1);
-      setRefresh(!refresh);
-    });
-  };
 
   const handleInputChange = (e: string, field: keyof RegisterStudent2Type) => {
     const updatedData = newData.map((data) => {
-      console.log('Submitted gradesssss:', newData);
       return {
         ...data,
         [field]: e,
@@ -330,10 +300,9 @@ const Page = ({ params }: { params: { id: number } }) => {
         </tbody>
       </table>
       <div>
-        <table className="border-collapse mt-8 w-[800px]">
+        <table className="border-collapse mt-8 w-[700px]">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border border-gray-300 px-4 py-2">حذف</th>
               <th className="border border-gray-300 px-4 py-2">ايقاف/تفعيل</th>
               <th className="border border-gray-300 px-4 py-2">اسم الصلاحية</th>
             </tr>
@@ -341,11 +310,6 @@ const Page = ({ params }: { params: { id: number } }) => {
           <tbody>
             {selected.map((user, index) => (
               <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
-                <td className="border-none h-full px-4 py-2 flex justify-end items-center">
-                  <BsXCircleFill
-                    onClick={() => handleDelete(user.id, params.id)}
-                  />
-                </td>
                 <td className="border border-gray-300 px-4 py-2">
                   <button
                     onClick={() => {
@@ -365,32 +329,6 @@ const Page = ({ params }: { params: { id: number } }) => {
                 </td>
               </tr>
             ))}
-          </tbody>
-        </table>
-        <table className="border-collapse mt-8 w-[500px]">
-          <tbody>
-            <tr>
-              <td className="text-secondary bg-darkBlue">اختر الصلاحيات</td>
-            </tr>
-            {checkList.map((item, index) => (
-              <tr key={index}>
-                <td className="bg-lightBlue flex justify-between">
-                  <input
-                    className="p-2 ml-9"
-                    value={item.name}
-                    type="checkbox"
-                    onChange={() => handleCheck(item)} // Pass the item to handleCheck
-                    checked={checked.includes(item.id)} // Check if the item is in the checked list
-                  />
-                  <label className="pr-5">{item.name}</label>
-                </td>
-              </tr>
-            ))}
-            <tr>
-              <td className="text-secondary bg-darkBlue flex justify-center items-center">
-                <button onClick={handleSubmit}>اضافة</button>
-              </td>
-            </tr>
           </tbody>
         </table>
         <div ref={printableContentRef}>

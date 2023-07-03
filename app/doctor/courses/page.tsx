@@ -30,7 +30,6 @@ useEffect(() => {
           );
           const { message: classMessage }: { message: ClassesInfoType[] } =
             responseReq.data;
-          console.log(classMessage);
           return classMessage;
         });
         const classData = await Promise.all(classPromises);
@@ -53,9 +52,6 @@ useEffect(() => {
         <thead>
           <tr>
           <th className="border border-gray-300 px-4 py-2 bg-grey">
-            عدد الطلاب
-          </th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">
             اسم المجموعة
           </th>
           <th className="border border-gray-300 px-4 py-2 bg-grey">
@@ -66,9 +62,6 @@ useEffect(() => {
         <tbody>
           {classes.map((course, index) => (
             <tr key={index}>
-              <td className="border border-gray-300 px-4 py-2">
-                {course.section?.students_num}
-              </td>
               <td className="border border-gray-300 px-4 py-2">
                 {course.section?.name}
               </td>

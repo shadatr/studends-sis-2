@@ -2,7 +2,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {
-  AddCourse2Type,
+  AddCourseType,
   ExamProgramType,
   SectionType,
 } from '@/app/types/types';
@@ -17,7 +17,7 @@ const Page = () => {
   }
   const user = session.data?.user;
 
-  const [courses, setCourses] = useState<AddCourse2Type[]>([]);
+  const [courses, setCourses] = useState<AddCourseType[]>([]);
   const [examProg, setExamProg] = useState<ExamProgramType[]>([]);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const Page = () => {
           const responseReq = await axios.get(
             `/api/getAll/getSpecificCourse/${section.course_id}`
           );
-          const { message: courseMessage }: { message: AddCourse2Type[] } =
+          const { message: courseMessage }: { message: AddCourseType[] } =
             responseReq.data;
           return courseMessage;
         });

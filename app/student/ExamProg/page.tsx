@@ -2,12 +2,8 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {
-  AddCourse2Type,
+  StudenCourseType,
   ExamProgramType,
-  Section2Type,
-  PersonalInfoType,
-  ClassesType,
-  StudentClassType,
   StudentCourse2Type,
 } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
@@ -21,13 +17,7 @@ const Page = () => {
   }
   const user = session.data?.user;
 
-  const [courses, setCourses] = useState<AddCourse2Type[]>([]);
-  const [studentCourses, setStudentCourses] = useState<StudentCourse2Type[]>([]);
-  const [sections, setSections] = useState<Section2Type[]>([]);
-  const [classes, setClasses] = useState<ClassesType[]>([]);
-  const [courseEnrollments, setCourseEnrollments] = useState<StudentClassType[]>([]);
-  const [refresh, setRefresh] = useState(false);
-  const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
+  const [courses, setCourses] = useState<StudenCourseType[]>([]);
   const [examProg, setExamProg] = useState<ExamProgramType[]>([]);
 
 
@@ -35,67 +25,15 @@ const Page = () => {
     const fetchData = async () => {
       try {
         const responseCourseEnroll = await axios.get(
-          `/api/getAll/getCourseEnrollStudent/${user?.id}`
+          `/api/getAll/studentCoursesApprove/${user?.id}`
         );
-        const messageCourseEnroll: StudentClassType[] =
+        const messageCourseEnroll: StudenCourseType[] =
           responseCourseEnroll.data.message;
-        setCourseEnrollments(messageCourseEnroll);
+        setCourses(messageCourseEnroll);
+        
 
-        const classPromises = messageCourseEnroll.map(async (Class) => {
-          const responseReq = await axios.get(
-            `/api/getAll/getSpecificClass/${Class.class_id}`
-          );
-          const { message: classMessage }: { message: ClassesType[] } =
-            responseReq.data;
-          return classMessage;
-        });
-
-        const classData = await Promise.all(classPromises);
-        const classes = classData.flat();
-        setClasses(classes);
-
-        console.log(classes);
-        const docPromises = classes.map(async (Class) => {
-          const responseReq = await axios.get(
-            `/api/personalInfo/doctor/${Class.doctor_id}`
-          );
-          const { message: docMessage }: { message: PersonalInfoType[] } =
-            responseReq.data;
-          return docMessage;
-        });
-
-        const docData = await Promise.all(docPromises);
-        const doctors = docData.flat();
-        setDoctors(doctors);
-
-        const sectionsPromises = classes.map(async (course) => {
-          const responseReq = await axios.get(
-            `/api/getAll/getSpecificSection/${course.section_id}`
-          );
-          const { message: secMessage }: { message: Section2Type[] } =
-            responseReq.data;
-          return secMessage;
-        });
-
-        const sectionData = await Promise.all(sectionsPromises);
-        const sections = sectionData.flat();
-        setSections(sections);
-
-        const coursesPromises = sections.map(async (section) => {
-          const responseReq = await axios.get(
-            `/api/getAll/getSpecificCourse/${section.course_id}`
-          );
-          const { message: courseMessage }: { message: AddCourse2Type[] } =
-            responseReq.data;
-          return courseMessage;
-        });
-
-        const courseData = await Promise.all(coursesPromises);
-        const courses = courseData.flat();
-        setCourses(courses);
-
-        const progClassPromises = courses.map(async (course) => {
-          const responseReq = await axios.get(`/api/examProg/${course.id}`);
+        const progClassPromises = messageCourseEnroll.map(async (course) => {
+          const responseReq = await axios.get(`/api/examProg/${course.course.id}`);
           const { message: courseMessage }: { message: ExamProgramType[] } =
             responseReq.data;
           return courseMessage;
@@ -107,41 +45,10 @@ const Page = () => {
       } catch (error) {
         console.error('Error fetching data:', error);
       }
-      setRefresh(!refresh);
     };
 
     fetchData();
-  }, [user, refresh]);
-
-  useEffect(() => {
-    const updatedStudentCourses: StudentCourse2Type[] = [];
-
-    courseEnrollments.map((course) => {
-      const studenClass = classes.find((Class) => Class.id == course.class_id);
-
-      const studentSection = sections.find(
-        (sec) => sec.id == studenClass?.section_id
-      );
-
-      const doctor = doctors.find((doc) => studenClass?.doctor_id == doc.id);
-
-      const studentCourse = courses.find(
-        (course) => course.id == studentSection?.course_id
-      );
-
-      if (studentCourse) {
-          const data = {
-            course: studentCourse,
-            section: studentSection,
-            doctor_name: doctor?.name,
-          };
-          updatedStudentCourses.push(data);
-          console.log(updatedStudentCourses);
-      }
-    });
-
-    setStudentCourses(updatedStudentCourses);
-  }, [classes, courseEnrollments, courses, doctors, refresh, sections]);
+  }, [user]);
 
 
  
@@ -162,7 +69,7 @@ const Page = () => {
         </thead>
         <tbody>
           {examProg.map((item, index) => {
-            const selectcourse = studentCourses.find(
+            const selectcourse = courses.find(
               (course) => course.course?.id == item.course_id
             );
             return (

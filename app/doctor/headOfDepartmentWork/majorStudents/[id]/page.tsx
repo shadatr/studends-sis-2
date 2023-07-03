@@ -1,13 +1,13 @@
 'use client';
-import { GetPermissionType, PersonalInfoType } from '@/app/types/types';
+import { PersonalInfoType } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { redirect } from 'next/navigation';
 
-const Page = () => {
+const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
@@ -21,18 +21,16 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      if (user) {
-        
-        axios.get(`/api/advisor/assignAdvisor/${user?.id}`).then((resp) => {
-          console.log(resp.data);
-          const message: PersonalInfoType[] = resp.data.message;
-          setStudents(message);
-        });
-      }
+
+      axios.get(`/api/list/${params.id}/student`).then((resp) => {
+        const message: PersonalInfoType[] = resp.data.message;
+        setStudents(message);
+        console.log(message);
+      });
     };
 
     fetchPosts();
-  }, [user, refresh]);
+  }, [user, refresh, params]);
 
   const handleActivate = (studentId: number, active: boolean) => {
     const data = { studentId, active };
@@ -42,13 +40,14 @@ const Page = () => {
     });
   };
 
-
   return (
-    <div className="flex absolute flex-col w-[80%]">
-      <table className="border-collapse mt-8">
+    <div className="flex absolute flex-col justify-center items-center w-[80%]">
+      <table className="border-collapse mt-8 w-[1100px]">
         <thead>
           <tr className="bg-gray-200">
-            <th className="border border-gray-300 px-4 py-2">ايقاف/تفعيل</th>
+            <th className="border border-gray-300 px-4 py-2">
+              ايقاف/تفعيل
+            </th>
             <th className="border border-gray-300 px-4 py-2">
               المعلومات الشخصية
             </th>
@@ -57,11 +56,11 @@ const Page = () => {
             <th className="border border-gray-300 px-4 py-2">اسم</th>
           </tr>
         </thead>
-        {students ? (
-          <tbody>
-            {students.map((user, index) => (
+        <tbody>
+          {students ? (
+            students.map((user, index) => (
               <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
-                <td className="border border-gray-300 px-4 py-2">
+                <td className="border border-gray-300 px-4 py-2" >
                   <button
                     onClick={() => {
                       handleActivate(user.id, !user.active);
@@ -94,15 +93,13 @@ const Page = () => {
                   {user.name}
                 </td>
               </tr>
-            ))}
-          </tbody>
-        ) : (
-          <tbody >
-              <tr className="flex w-full flex-row justify-center items-center text-2xl border border-gray-300 px-4 py-2">
-                لا يوجد طلاب
-              </tr>
-          </tbody>
-        )}
+            ))
+          ) : (
+            <tr>
+              <td className="border border-gray-300 px-4 py-2">لا يوجد طلاب</td>
+            </tr>
+          )}
+        </tbody>
       </table>
     </div>
   );
