@@ -3,14 +3,7 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-toastify';
 import React, { useEffect, useState } from 'react';
-import {
-  AddCourse2Type,
-  ClassesType,
-  GetPermissionStudentType,
-  PrerequisiteCourseType,
-  SectionType,
-  StudentClassType,
-} from '@/app/types/types';
+import { CourseInfoType, GetPermissionStudentType } from '@/app/types/types';
 import { redirect } from 'next/navigation';
 
 
@@ -21,78 +14,25 @@ const Page = () => {
   }
   const user = session.data?.user;
 
-  const [courses, setCourses] = useState<AddCourse2Type[]>([]);
-  const [checkList, setCheckList] = useState<AddCourse2Type[]>([]);
+  const [courses, setCourses] = useState<CourseInfoType[]>([]);
+  const [checkList, setCheckList] = useState<CourseInfoType[]>([]);
   const [checked, setChecked] = useState<number[]>([]);
-  const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>(
-    []
-  );
-  const [sections, setSections] = useState<SectionType[]>([]);
-  const [classes, setClasses] = useState<ClassesType[]>([]);
-  const [courseEnrollments, setCourseEnrollments] = useState<
-    StudentClassType[]
-  >([]);
   const [refresh, setRefresh] = useState(false);
   const [submit, setSubmit] = useState(false);
   const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
-  const [unableCourses, setUnableCourses] = useState<AddCourse2Type[]>([]);
+  const [unableCourses, setUnableCourses] = useState<CourseInfoType[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       if (user) {
         try {
           const response = await axios.get(
-            `/api/course/majorCourses/${user?.major}`
+            `/api/getAll/getAllStudentCourse/${user?.major}`
           );
-          const message: AddCourse2Type[] = response.data.message;
+          const message: CourseInfoType[] = response.data.message;
           setCourses(message);
+          console.log(message);
 
-          const responseCourseEnroll = await axios.get(
-            `/api/getAll/getCourseEnrollStudentGpa/${user?.id}`
-          );
-          const messageCourseEnroll: StudentClassType[] =
-            responseCourseEnroll.data.message;
-          setCourseEnrollments(messageCourseEnroll);
-
-          const prerequisitePromises = message.map(async (course) => {
-            const responseReq = await axios.get(
-              `/api/course/prerequisitesCourses/${course.id}`
-            );
-            const {
-              message: prerequisiteMessage,
-            }: { message: PrerequisiteCourseType[] } = responseReq.data;
-            return prerequisiteMessage;
-          });
-
-          const prerequisiteData = await Promise.all(prerequisitePromises);
-          const prerequisites = prerequisiteData.flat();
-          setPrerequisites(prerequisites);
-
-          const sectionsPromises = message.map(async (course) => {
-            const responseReq = await axios.get(
-              `/api/getAll/getAllSections/${course.id}`
-            );
-            const { message: secMessage }: { message: SectionType[] } =
-              responseReq.data;
-            return secMessage;
-          });
-
-          const sectionData = await Promise.all(sectionsPromises);
-          const sections = sectionData.flat();
-          setSections(sections);
-
-          const classPromises = sections.map(async (section) => {
-            const responseReq = await axios.get(
-              `/api/getAll/getAllClasses/${section.id}`
-            );
-            const { message: classMessage }: { message: ClassesType[] } =
-              responseReq.data;
-            return classMessage;
-          });
-
-          const classData = await Promise.all(classPromises);
-          const classes = classData.flat();
-          setClasses(classes);
 
           const responsePer = await axios.get(
             `/api/allPermission/student/selectedPerms/${user?.id}`
@@ -110,39 +50,16 @@ const Page = () => {
   }, [user, submit]);
 
   useEffect(() => {
-    const updatedCheckList: AddCourse2Type[] = [];
-    const updatedCheckList2: AddCourse2Type[] = [];
-    const updatedSections: SectionType[] = [];
-    const updatedClasses: ClassesType[] = [];
+    const updatedCheckList: CourseInfoType[] = [];
+    const updatedCheckList2: CourseInfoType[] = [];
+
 
     courses.forEach((course) => {
-      const prerequisiteCourse = prerequisites.filter(
-        (prereq) => prereq.course_id === course.id
-      );
-      if (
-        !prerequisiteCourse.length &&
-        !updatedCheckList.find((item) => item.id === course.id)
-      ) {
-        const prerequisiteSection = sections.find(
-          (prereq) =>
-            course.id === prereq.course_id &&
-            prereq.max_students > prereq.students_num
-        );
-        if (prerequisiteSection) {
-          updatedSections.push(prerequisiteSection);
-        }
+      if(course.prerequisites){
 
-        classes.forEach((classItem) => {
-          updatedSections.forEach((sec) => {
-            if (sec.id === classItem.section_id) {
-              updatedClasses.push(classItem);
-            }
-          });
-        });
-
-        if (courseEnrollments.length) {
-          courseEnrollments.forEach((courseEnroll) => {
-            const passed = updatedClasses.map((classItem) => {
+        if (course.courseEnrollements) {
+          course.courseEnrollements.map((courseEnroll) => {
+            const passed = course.class.map((classItem) => {
               if (
                 courseEnroll.student_id === user?.id &&
                 classItem.id === courseEnroll.class_id &&
@@ -154,7 +71,7 @@ const Page = () => {
                   updatedCheckList.splice(index, 1);
                 }
               } else if (
-                !updatedCheckList.find((item) => item.id === course.id)
+                !updatedCheckList.find((item) => item.course.id === course.course.id)
               ) {
                 updatedCheckList.push(course);
               }
@@ -164,109 +81,109 @@ const Page = () => {
           updatedCheckList.push(course);
         }
       } else {
-        prerequisiteCourse.map((preCourse) => {
-          const updatedClasses2: ClassesType[] = [];
-          const prerequisiteSectionIds2 = sections.filter(
-            (prereq) => preCourse.prerequisite_course_id === prereq.course_id
-          );
+        if (course.prerequisites){
+          course.prerequisites.map((preCourse) => {
+            const prerequisiteCourse = courses.find(
+              (prereq) => preCourse.prerequisite_course_id === prereq.course.id
+            );
 
-          classes.forEach((classItem) => {
-            prerequisiteSectionIds2.forEach((sec) => {
-              if (sec.id === classItem.section_id) {
-                updatedClasses2.push(classItem);
-              }
-            });
-          });
+            if (prerequisiteCourse?.courseEnrollements.length) {
+              prerequisiteCourse.courseEnrollements.forEach((courseEnroll) => {
+                prerequisiteCourse.class.map((classItem) => {
+                  const passed = prerequisiteCourse.courseEnrollements.find(
+                    (classItem) =>
+                      courseEnroll.student_id === user?.id &&
+                      classItem.id === courseEnroll.class_id &&
+                      courseEnroll
+                  );
 
-          if (courseEnrollments.length) {
-            courseEnrollments.forEach((courseEnroll) => {
-              updatedClasses2.map((classItem) => {
-                const passed = courseEnrollments.find(
-                  (classItem) =>
-                    courseEnroll.student_id === user?.id &&
-                    classItem.id === courseEnroll.class_id &&
-                    courseEnroll
-                );
-
-                if (
-                  passed?.pass === true &&
-                  !updatedCheckList.find((item) => item.id === course.id)
-                ) {
-                  updatedCheckList.push(course);
-                  console.log(course);
-                } else {
                   if (
-                    !updatedCheckList2.find((item) => item.id === course.id)
+                    passed?.pass === true &&
+                    !updatedCheckList.find(
+                      (item) => item.course.id === course.course.id
+                    )
                   ) {
-                    updatedCheckList2.push(course);
+                    updatedCheckList.push(course);
+                    console.log(course);
+                  } else {
+                    if (
+                      !updatedCheckList2.find(
+                        (item) => item.course.id === course.course.id
+                      )
+                    ) {
+                      updatedCheckList2.push(course);
+                    }
+                    const index = updatedCheckList.indexOf(course);
+                    if (index !== -1) {
+                      updatedCheckList.splice(index, 1);
+                    }
                   }
-                  const index = updatedCheckList.indexOf(course);
-                  if (index !== -1) {
-                    updatedCheckList.splice(index, 1);
-                  }
-                }
+                });
               });
-            });
-          } else if (!updatedCheckList2.find((item) => item.id === course.id)) {
-            updatedCheckList2.push(course);
-          }
-        });
+            } else if (
+              !updatedCheckList2.find(
+                (item) => item.course.id === course.course.id
+              )
+            ) {
+              updatedCheckList2.push(course);
+            }
+          });}
       }
     });
 
     setUnableCourses(updatedCheckList2);
     setCheckList(updatedCheckList);
-  }, [user, refresh, courses, prerequisites, sections, classes, courseEnrollments]);
+  }, [user, refresh, courses]);
 
-  const handleCheck = (item: AddCourse2Type) => {
-    const checkedIndex = checked.indexOf(item.id);
-    if (checkedIndex === -1) {
-      setChecked([...checked, item.id]);
-    } else {
-      const updatedChecked = [...checked];
-      updatedChecked.splice(checkedIndex, 1);
-      setChecked(updatedChecked);
-    }
-    setRefresh(!refresh);
-  };
+  // const handleCheck = (item: AddCourse2Type) => {
+  //   const checkedIndex = checked.indexOf(item.id);
+  //   if (checkedIndex === -1) {
+  //     setChecked([...checked, item.id]);
+  //   } else {
+  //     const updatedChecked = [...checked];
+  //     updatedChecked.splice(checkedIndex, 1);
+  //     setChecked(updatedChecked);
+  //   }
+  //   setRefresh(!refresh);
+  // };
 
-  const handleSubmit = () => {
-    checked.forEach((item) => {
-      const updatedSections2: SectionType[] = [];
-      const updatedClasses2: ClassesType[] = [];
+  // const handleSubmit = () => {
+  //   checked.forEach((item) => {
+  //     const updatedSections2: SectionType[] = [];
+  //     const updatedClasses2: ClassesType[] = [];
 
-      const prerequisiteSection = sections.find(
-        (prereq) =>
-          item === prereq.course_id && prereq.max_students > prereq.students_num
-      );
-      if (prerequisiteSection) {
-        updatedSections2.push(prerequisiteSection);
+  //     const prerequisiteSection = sections.find(
+  //       (prereq) =>
+  //         item === prereq.course_id && prereq.max_students > prereq.students_num
+  //     );
+  //     if (prerequisiteSection) {
+  //       updatedSections2.push(prerequisiteSection);
 
-        classes.forEach((classItem) => {
-          updatedSections2.forEach((sec) => {
-            if (sec.id === classItem.section_id) {
-              updatedClasses2.push(classItem);
-            }
-          });
-        });
-        if (updatedClasses2[0]) {
-          const data1 = {
-            student_id: user?.id,
-            semester: user?.semester,
-            class_id: updatedClasses2[0].id,
-          };
-          axios.post(`/api/getAll/getAllCourseEnroll/${user?.id}`, data1);
-        }
-      }
-    });
-    const data2 = {
-      student_id: user?.id,
-      permission_id: 20,
-      active: false,
-    };
-    axios.post(`/api/allPermission/student/selectedPerms/${user?.id}`, data2);
-    setSubmit(!submit);
-  };
+  //       classes.forEach((classItem) => {
+  //         updatedSections2.forEach((sec) => {
+  //           if (sec.id === classItem.section_id) {
+  //             updatedClasses2.push(classItem);
+  //           }
+  //         });
+  //       });
+  //       if (updatedClasses2[0]) {
+  //         const data1 = {
+  //           student_id: user?.id,
+  //           semester: user?.semester,
+  //           class_id: updatedClasses2[0].id,
+  //         };
+  //         axios.post(`/api/getAll/getAllCourseEnroll/${user?.id}`, data1);
+  //       }
+  //     }
+  //   });
+  //   const data2 = {
+  //     student_id: user?.id,
+  //     permission_id: 20,
+  //     active: false,
+  //   };
+  //   axios.post(`/api/allPermission/student/selectedPerms/${user?.id}`, data2);
+  //   setSubmit(!submit);
+  // };
 
   return (
     <div className="absolute w-[80%] flex text-sm p-10 justify-center flex-col items-center ">
@@ -302,75 +219,74 @@ const Page = () => {
                 {checkList.map((item, index) => (
                   <tr key={index}>
                     <td className="border border-gray-300 px-4 py-2">
-                      <input
+                      {/* <input
                         value={item.course_name}
                         type="checkbox"
                         onChange={() => handleCheck(item)}
                         checked={checked.includes(item.id)}
-                      />
+                      /> */}
                     </td>
                     <td className="border border-gray-300 px-4 py-2"></td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {item.credits}
+                      {item.course.credits}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {item.passing_percentage}
+                      {item.course.passing_percentage}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {item.hours}
+                      {item.course.hours}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {item.IsOptional ? 'اجباري' : 'اختياري'}
+                      {item.majorCourse.isOptional ? 'اجباري' : 'اختياري'}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {item.course_name}
+                      {item.course.course_name}
                     </td>
                   </tr>
                 ))}
                 {unableCourses.map((item, index) => {
-                  const updatedCheckList: AddCourse2Type[] = [];
-                  const pre = prerequisites.filter(
-                    (i) => i.course_id === item.id
-                  );
-                  pre.map((i) =>
-                    courses.map((c) => {
-                      if (i.prerequisite_course_id == c.id) {
-                        updatedCheckList.push(c);
-                      }
-                    })
+                  const preCourses = item.prerequisites.map((pre) =>
+                    courses.find(
+                      (course) =>
+                        pre.prerequisite_course_id === course.course.id
+                    )
                   );
                   return (
                     <tr className="text-red-500" key={index}>
                       <td className="border border-gray-300 px-4 py-2"></td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {updatedCheckList.map((c) => `${c.course_name} - `)}
+                        {preCourses.map((preCourse) => (
+                          <span key={preCourse?.course.id}>
+                            {preCourse?.course.course_name}
+                          </span>
+                        ))}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {item.credits}
+                        {item.course.credits}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {item.passing_percentage}
+                        {item.course.passing_percentage}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {item.hours}
+                        {item.course.hours}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {item.IsOptional ? 'اجباري' : 'اختياري'}
+                        {item.majorCourse.isOptional ? 'اجباري' : 'اختياري'}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {item.course_name}
+                        {item.course.course_name}
                       </td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
-            <button
+            {/* <button
               onClick={handleSubmit}
               className="flex p-3 text-sm  bg-darkBlue text-secondary m-3 rounded-md"
             >
               اضافة
-            </button>
+            </button> */}
           </>
         ) : (
           <div
