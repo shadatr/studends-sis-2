@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
 
   try {
-    const res = await supabase.from('tb_admins').insert([data]);
+     await supabase.from('tb_admins').insert([data]);
     
     const doctors = await supabase
       .from('tb_admins')

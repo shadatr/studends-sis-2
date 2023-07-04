@@ -182,7 +182,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                 }
               }
             }
-            const data: LetterGradesType = {
+            const data = {
               letter_grade: letter,
               points: point,
               course_enrollment_id: grade.id,
