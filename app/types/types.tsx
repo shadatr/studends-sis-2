@@ -111,6 +111,8 @@ export type PersonalInfoType = {
   advisor?: string;
   active?: boolean;
   head_of_deparment_id?: number;
+  graduated?: boolean;
+  graduation_year?: string;
 };
 
 export type MajorRegType = {
@@ -189,6 +191,7 @@ export type DoctorsWithDepartmentsType = {
   doctorSince: string;
   email: string;
   major: string;
+  active: boolean;
   department: {
       created_at: string | null;
       id: number;
@@ -214,15 +217,16 @@ export type AssignCourseType = {
 };
 
 export type GetPermissionType={
+  id: number;
   permission_id: number;
   admin_id: number;
   active: boolean;
 }
 
 export type GetPermissionStudentType = {
-  permission_id?: number;
-  student_id?: number;
-  active?: boolean;
+  permission_id: number;
+  student_id: number;
+  active: boolean;
 };
 
 export type GetPermissionDoctorType = {
@@ -509,6 +513,94 @@ export type StudenCourseType = {
   };
 };
 
+export type StudenCourseGPAType = {
+  class: {
+    id: number;
+    doctor_id?: number;
+    section_id?: number;
+    mid_publish?: boolean;
+    final_publish?: boolean;
+    class_work_publish?: boolean;
+    result_publish?: boolean;
+    semester: string;
+    day: string;
+    starts_at: number;
+    ends_at: number;
+    location: string;
+    active: boolean;
+  };
+  course: {
+    id: number;
+    course_number: string;
+    course_name: string;
+    hours?: string;
+    credits?: number;
+    passing_percentage?: number;
+    pass?: boolean;
+    class_work?: number;
+    midterm?: number;
+    final?: number;
+  };
+  courseEnrollements: {
+    id: number;
+    student_id: number;
+    class_id?: number;
+    semester?: number;
+    class_work?: number;
+    midterm: number;
+    final?: number;
+    pass?: boolean;
+    result?: number;
+    can_repeat?: boolean;
+    approved?: boolean;
+  };
+  section: {
+    id: number;
+    name: string;
+    course_id: number;
+    students_num: number;
+  };
+  doctor: {
+    id: number;
+    name: string;
+    surname: string;
+    address: string;
+    phone: number;
+    email: string;
+    birth_date: number;
+    enrollment_date?: number;
+    major: number;
+    advisor?: string;
+    active?: boolean;
+    head_of_deparment_id?: number;
+  };
+  student?: {
+    id: number;
+    name: string;
+    surname: string;
+    address: string;
+    phone: number;
+    email: string;
+    birth_date: number;
+    semester: number;
+    enrollment_date?: number;
+    major: number;
+    advisor?: string;
+    active?: boolean;
+    head_of_deparment_id?: number;
+    graduated: boolean;
+    graduation_year?: string;
+    credits?: number;
+  };
+  major: {
+    id: number;
+    major_name: string;
+    semesters?: number;
+    department_id?: number;
+    credits_needed?: number;
+  };
+};
+
 
 export type ClassEnrollmentsType = {
   course: {
@@ -606,7 +698,7 @@ export type DoctorCourse2Type = {
 };
 
 export type TranscriptType = {
-  id?: number;
+  id: number;
   student_id: number;
   semester: string;
   studentSemester: number;
@@ -629,10 +721,11 @@ export type ExamProgramType = {
 };
 
 export type LetterGradesType = {
-  id?: number;
+  id: number;
   course_enrollment_id?: number;
   letter_grade?: string;
   points?:number;
+  repeated?: boolean;
 };
 
 export type LettersType = {

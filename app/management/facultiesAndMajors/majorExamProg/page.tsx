@@ -119,6 +119,18 @@ const Page = () => {
     setEdit(!edit);
   };
 
+  const deleteAllProgram = () => {
+    axios
+      .post('/api/examProg/1/deleteAllExamProg')
+      .then((res) => {
+        toast.success(res.data.message);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      });
+    setEdit(!edit);
+  };
+
   return (
     <div className="flex flex-col absolute w-[80%] mt-7 items-center justify-center ">
       <table className="w-[900px] m-10">
@@ -142,62 +154,70 @@ const Page = () => {
       {perms.map((permItem, idx) => {
         if (permItem.permission_id === 6 && permItem.active) {
           return (
-            <div
-              key={idx}
-              className="border-2 border-grey m-4 rounded-5 p-5 flex justify-center items-center rounded-md"
-            >
+            <>
               <button
-                onClick={handleSubmit}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                className="px-4 py-2 bg-red-500 text-white rounded-md"
+                onClick={deleteAllProgram}
               >
-                اضافة
+                حذف كل الجدول
               </button>
-              <input
-                dir="rtl"
-                placeholder=" القاعة "
-                type="text"
-                className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                onChange={(e) => setLocation(e.target.value)}
-              />
-              <div>
+              <div
+                key={idx}
+                className="border-2 border-grey m-4 rounded-5 p-5 flex justify-center items-center rounded-md"
+              >
+                <button
+                  onClick={handleSubmit}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                >
+                  اضافة
+                </button>
                 <input
                   dir="rtl"
-                  placeholder=" الفترة "
+                  placeholder=" القاعة "
                   type="text"
                   className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                  onChange={(e) => setDuration(e.target.value)}
+                  onChange={(e) => setLocation(e.target.value)}
                 />
+                <div>
+                  <input
+                    dir="rtl"
+                    placeholder=" الفترة "
+                    type="text"
+                    className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                    onChange={(e) => setDuration(e.target.value)}
+                  />
+                </div>
+                <TimePicker
+                  locale="ar"
+                  onChange={(e: any) => setSelecetedStartHour(e)}
+                  value={selectedStartHour}
+                  className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                  closeClock
+                />
+
+                <DatePicker
+                  locale="ar"
+                  className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                  onChange={(val) => setSelecetedDay(val as any)}
+                  value={selecetedDay}
+                />
+
+                <select
+                  id="dep"
+                  dir="rtl"
+                  onChange={(e) => setSelecetedCourse(e.target.value)}
+                  className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                  defaultValue=""
+                >
+                  <option disabled value="">
+                    المادة
+                  </option>
+                  {courses.map((course, index) => (
+                    <option key={index}>{course.course_name}</option>
+                  ))}
+                </select>
               </div>
-              <TimePicker
-                locale="ar"
-                onChange={(e: any) => setSelecetedStartHour(e)}
-                value={selectedStartHour}
-                className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                closeClock
-              />
-
-              <DatePicker
-                locale="ar"
-                className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                onChange={(val) => setSelecetedDay(val as any)}
-                value={selecetedDay}
-              />
-
-              <select
-                id="dep"
-                dir="rtl"
-                onChange={(e) => setSelecetedCourse(e.target.value)}
-                className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                defaultValue=""
-              >
-                <option disabled value="">
-                  المادة
-                </option>
-                {courses.map((course, index) => (
-                  <option key={index}>{course.course_name}</option>
-                ))}
-              </select>
-            </div>
+            </>
           );
         }
       })}

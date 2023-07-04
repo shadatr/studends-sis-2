@@ -93,16 +93,14 @@ const Page = ({ params }: { params: { id: number } }) => {
         const messageCour: AddCourseType[] = await res.data.message;
         setCourses(messageCour);
 
-        axios
-          .get(`/api/course/courseMajorReg/${params.id}`)
-          .then(async (resp) => {
-            const message: MajorCourseType[] = resp.data.message;
-            setMajorCourses(message);
-          });
 
-        const sectionsPromises = messageCour.map(async (course) => {
+          const resMajorCourses = await axios.get(`/api/course/courseMajorReg/${params.id}`);
+          const messageMajorCour: MajorCourseType[] = await resMajorCourses.data.message;
+          setMajorCourses(messageMajorCour);
+
+        const sectionsPromises = messageMajorCour.map(async (course) => {
           const responseReq = await axios.get(
-            `/api/getAll/getAllSections/${course.id}`
+            `/api/getAll/getAllSections/${course.course_id}`
           );
           const { message: secMessage }: { message: SectionType[] } =
             responseReq.data;
@@ -234,7 +232,10 @@ const Page = ({ params }: { params: { id: number } }) => {
     let duplicateFound = false;
 
     classes.forEach((item) => {
-      if (item.section.id == sectionId?.id) {
+      if (
+        item.section.id == sectionId?.id &&
+        item.class.semester == `${semester}-${year}`
+      ) {
         duplicateFound = true;
         return;
       }
@@ -288,6 +289,11 @@ const Page = ({ params }: { params: { id: number } }) => {
         >
           جدول المحاضرات
         </button>
+
+        <Link
+          className="px-4 py-2 bg-green-500 text-white ml-5 rounded-md"
+          href={`/management/course/allClasses/${params.id}`}
+        > جميع محاضرات السنوات الماضية</Link>
       </div>
       {activeTab === 'Tab 1' && (
         <>
@@ -336,7 +342,7 @@ const Page = ({ params }: { params: { id: number } }) => {
           })}
 
           <table className="w-[800px]  ">
-            <thead className="">
+            <thead>
               <tr>
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">
                   اجباري/اختياري

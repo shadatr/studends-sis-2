@@ -10,6 +10,7 @@ import AssignDepartment from '@/app/components/asignDepartment';
 import { useSession } from 'next-auth/react';
 import SearchBar from '@/app/components/searchBar';
 import { redirect } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 const Page = () => {
   const session = useSession({ required: true });
@@ -22,6 +23,7 @@ const Page = () => {
 
   const [doctors, setDoctors] = useState<DoctorsWithDepartmentsType[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [refresh, setRefresh] = useState(false);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
   const [selectedDoctor, setSelectedDoctor] =
     useState<DoctorsWithDepartmentsType>();
@@ -42,7 +44,16 @@ const Page = () => {
       });
     };
     fetchPosts();
-  }, [user?.id]);
+  }, [user?.id,refresh]);
+
+   const handleActivate = (doctorId: number, active: boolean) => {
+     const data = { doctorId, active };
+     axios.post('/api/active/doctorActive', data).then((res) => {
+       toast.success(res.data.message);
+       setRefresh(!refresh);
+     });
+   };
+
 
   return (
     <div className="flex absolute flex-col w-[80%] justify-center items-center mt-10">
@@ -64,6 +75,16 @@ const Page = () => {
       <table className="border-collapse w-[1100px]">
         <thead>
           <tr className="bg-gray-200">
+            {perms.map((permItem, idx) => {
+              if (permItem.permission_id === 5 && permItem.active) {
+                return (
+                  <th key={idx} className="border border-gray-300 px-4 py-2">
+                    ايقاف/تفعيل
+                  </th>
+                );
+              }
+              return null;
+            })}
             <th className="border border-gray-300 px-4 py-2">
               المعلومات الشخصية
             </th>
@@ -83,6 +104,27 @@ const Page = () => {
         <tbody>
           {doctors.map((user, index) => (
             <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
+              {perms.map((permItem, idx) => {
+                if (permItem.permission_id === 5 && permItem.active) {
+                  return (
+                    <td className="border border-gray-300 px-4 py-2" key={idx}>
+                      <button
+                        onClick={() => {
+                          handleActivate(user.id, !user.active);
+                        }}
+                        className={`text-white py-1 px-2 rounded ${
+                          user.active
+                            ? 'bg-red-500 hover:bg-red-600'
+                            : 'bg-green-600 hover:bg-green-700'
+                        }`}
+                      >
+                        {user.active ? 'ايقاف' : 'تفعيل'}
+                      </button>
+                    </td>
+                  );
+                }
+                return null;
+              })}
               <td className="border border-gray-300 px-4 py-2">
                 <Link
                   className=" bg-blue-500  hover:bg-blue-600 p-2 text-white rounded-md  justify-center items-center"

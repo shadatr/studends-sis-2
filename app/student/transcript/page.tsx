@@ -17,8 +17,10 @@ const Page = () => {
 
 
   return (
-    <div>
-      <Transcript user={user? user.id: 0} />
+    <div >
+      {user?.major && (
+        <Transcript majorId={user?.major} user={user?.id} />
+      )}
     </div>
   );
 };

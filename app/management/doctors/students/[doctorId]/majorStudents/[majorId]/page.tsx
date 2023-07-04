@@ -41,12 +41,12 @@ const Page = ({
         const message: GetPermissionType[] = response.data.message;
         setPerms(message);
 
-        axios.get(`/api/list/${params.majorId}/student`).then((resp) => {
+        axios.get(`/api/major/majorStudents/${params.majorId}`).then((resp) => {
           const message: RegisterStudent2Type[] = resp.data.message;
           setStudents(message);
         });
 
-        axios.get('/api/getAll/getDoctorsHeadOfDep').then((res) => {
+        axios.get('/api/getAll/doctor').then((res) => {
           console.log(res.data);
           const message: InfoDoctorType[] = res.data.message;
           setDoctors(message);

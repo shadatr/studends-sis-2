@@ -71,6 +71,7 @@ const Page = () => {
         </thead>
         <tbody>
           {studentCourses.map((course, index) => {
+            if(course.class){
             const letter = courseLetter.find(
               (item) =>
                 item.course_enrollment_id == course.courseEnrollements.id
@@ -96,7 +97,7 @@ const Page = () => {
                     : ''}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  {course.course.class_work}%
+                  {course.course?.class_work}%
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {course.class?.class_work_publish
@@ -104,7 +105,7 @@ const Page = () => {
                     : ''}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  {course.course.final}%
+                  {course.course?.final}%
                 </td>
                 <td className="border border-gray-300 px-4 py-2 ">
                   {course.class?.final_publish
@@ -112,7 +113,7 @@ const Page = () => {
                     : ' '}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  {course.course.midterm}%
+                  {course.course?.midterm}%
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {course.class?.mid_publish
@@ -123,10 +124,10 @@ const Page = () => {
                   {course.section?.name}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  {course.course.course_name}
+                  {course.course?.course_name}
                 </td>
               </tr>
-            );
+            );}
           })}
         </tbody>
       </table>

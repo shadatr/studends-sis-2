@@ -284,7 +284,6 @@ const page = ({ params }: { params: { id: number } }) => {
               <table className="border-collapse mt-8 w-[800px]">
                 <thead>
                   <tr className="bg-gray-200">
-                    <th className="border border-gray-300 px-4 py-2">حذف </th>
                     <th className="border border-gray-300 px-4 py-2">
                       ايقاف/تفعيل
                     </th>

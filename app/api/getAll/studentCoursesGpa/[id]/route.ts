@@ -10,6 +10,8 @@ export async function GET(
   { params }: { params: { id: number } }
 ) {
   try {
+
+    const dataStudent = supabase.from('tb_students').select('*').eq('id', params.id);
     
     const dataCourseEnroll = supabase.from('tb_course_enrollment').select('*').eq('student_id', params.id).eq('approved',true);
     
@@ -18,6 +20,8 @@ export async function GET(
     const dataSection = supabase.from('tb_section').select('*');
 
     const dataCourse = supabase.from('tb_courses').select('*');
+
+    const dataMajor = supabase.from('tb_majors').select('*');
 
     const dataDoctor = await supabase.from('tb_doctors').select('*');
 
@@ -28,12 +32,16 @@ export async function GET(
       sectionResponse,
       courseResponse,
       doctorResopnse,
+      studentResponse,
+      majorResponse,
     ] = await Promise.all([
       dataCourseEnroll,
       dataClasses,
       dataSection,
       dataCourse,
-      dataDoctor
+      dataDoctor,
+      dataStudent,
+      dataMajor,
     ]);
 
     const classes = classResponse.data;
@@ -41,6 +49,8 @@ export async function GET(
     const sections = sectionResponse.data;
     const courses = courseResponse.data;
     const doctors = doctorResopnse.data;
+    const student = studentResponse.data;
+    const major = majorResponse.data;
 
     const data = courseEnrollements?.map((course) => {
 
@@ -52,6 +62,9 @@ export async function GET(
 
       const cour = courses?.find((c) => secInfo?.course_id === c.id);
 
+      const stu = student?.find((c) => c.id);
+
+      const maj = major?.find((c) => stu?.major === c.id);
 
       return {
         class: clas,
@@ -59,6 +72,8 @@ export async function GET(
         courseEnrollements: course,
         section: secInfo,
         doctor: doc,
+        student: stu,
+        major:maj
       };
     });
 

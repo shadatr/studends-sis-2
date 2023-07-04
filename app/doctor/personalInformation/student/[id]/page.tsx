@@ -332,7 +332,9 @@ const Page = ({ params }: { params: { id: number } }) => {
           </tbody>
         </table>
         <div ref={printableContentRef}>
-          <Transcript user={params.id} />
+          {useMyData.length > 0 && (
+            <Transcript majorId={useMyData[0].major} user={params.id} />
+          )}
         </div>
       </div>
     </div>

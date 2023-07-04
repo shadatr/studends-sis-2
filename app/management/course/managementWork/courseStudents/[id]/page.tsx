@@ -23,13 +23,15 @@ const Page = ({ params }: { params: { id: number } }) => {
       const fetchPosts = async () => {
         try {
           const response = await axios.get(
-            `/api/exams/examRes/${params.id}/section`
+            `/api/exams/classExamResult/${params.id}`
           );
           const message: StudentClassType[] = response.data.message;
+          setStudents(message);
+            console.log(message);
+
           const resp = await axios.get(`/api/getAll/student`);
           const personalInfoMessage: PersonalInfoType[] = resp.data.message;
           setStudentsNames(personalInfoMessage);
-          setStudents(message);
         } catch (error) {
           console.error(error);
         }

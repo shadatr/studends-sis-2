@@ -82,11 +82,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     fetchPosts();
   }, [refresh, params.id,user, edit]);
 
-  const selected: AssignPermissionType[] = perms.flatMap((item) =>
-    checkList
-      .filter((item2) => item.permission_id == item2.id)
-      .map((item2) => ({ name: item2.name, id: item2.id, active: item.active }))
-  );
+
 
   const handleActivate = (parmId: number, id: number, active: boolean) => {
     const data = { student_id: id, permission_id: parmId, active: active };
@@ -306,7 +302,10 @@ const Page = ({ params }: { params: { id: number } }) => {
       </table>
       <div>
         {adminPerms.map((permItem, idx) => {
-          if (permItem.permission_id === 5 && permItem.active) {
+          if (
+            permItem.permission_id === 5 &&
+            permItem.active 
+          ) {
             return (
               <table className="border-collapse mt-8 w-[700px]" key={idx}>
                 <thead>
@@ -320,38 +319,49 @@ const Page = ({ params }: { params: { id: number } }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {selected.map((user, index) => (
-                    <tr
-                      key={index}
-                      className={index % 2 === 0 ? 'bg-gray-100' : ''}
-                    >
-                      <td className="border border-gray-300 px-4 py-2">
-                        <button
-                          onClick={() => {
-                            handleActivate(user.id, params.id, !user.active);
-                          }}
-                          className={`w-[50px] text-white py-1 px-2 rounded ${
-                            user.active
-                              ? 'bg-red-500 hover:bg-red-600'
-                              : 'bg-green-600 hover:bg-green-700'
-                          }`}
-                        >
-                          {user.active ? 'ايقاف' : 'تفعيل'}
-                        </button>
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {user.name}
-                      </td>
-                    </tr>
-                  ))}
+                  {perms.map((user, index) => {
+                    const selectedPer = checkList.find(
+                      (item) => item.id == user.permission_id
+                    );
+                    return (
+                      <tr
+                        key={index}
+                        className={index % 2 === 0 ? 'bg-gray-100' : ''}
+                      >
+                        <td className="border border-gray-300 px-4 py-2">
+                          <button
+                            onClick={() => {
+                              handleActivate(
+                                user.permission_id,
+                                params.id,
+                                !user.active
+                              );
+                            }}
+                            className={`w-[50px] text-white py-1 px-2 rounded ${
+                              user.active
+                                ? 'bg-red-500 hover:bg-red-600'
+                                : 'bg-green-600 hover:bg-green-700'
+                            }`}
+                          >
+                            {user.active ? 'ايقاف' : 'تفعيل'}
+                          </button>
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {selectedPer?.name}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             );
           }
           return null;
         })}
-        <div ref={printableContentRef} >
-          <Transcript user={params.id} />
+        <div ref={printableContentRef}>
+          {useMyData.length > 0 && (
+            <Transcript majorId={useMyData[0].major} user={params.id} />
+          )}
         </div>
       </div>
     </div>

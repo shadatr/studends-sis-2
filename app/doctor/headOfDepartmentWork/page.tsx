@@ -25,13 +25,11 @@ const Page = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       if (user){
-        axios.get('/api/major/majorReg').then((resp) => {
+        axios.get(`/api/major/getMajors/${user?.head_of_deparment_id}`).then((resp) => {
           console.log(resp.data);
           const message: MajorRegType[] = resp.data.message;
           setMajors(message);
         });
-  
-       
       }
     };
     fetchPosts();

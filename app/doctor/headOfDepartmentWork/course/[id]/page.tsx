@@ -95,21 +95,23 @@ const Page = ({ params }: { params: { id: number } }) => {
         const messageCour: AddCourseType[] = await res.data.message;
         setCourses(messageCour);
 
-        axios
-          .get(`/api/course/courseMajorReg/${params.id}`)
-          .then(async (resp) => {
-            const message: MajorCourseType[] = resp.data.message;
-            setMajorCourses(message);
+        
+          const resMajorCourses = await axios.get(
+            `/api/course/courseMajorReg/${params.id}`
+          );
+          const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
+            .message;
+          setMajorCourses(messageMajorCour);
+
+          const sectionsPromises = messageMajorCour.map(async (course) => {
+            const responseReq = await axios.get(
+              `/api/getAll/getAllSections/${course.course_id}`
+            );
+            const { message: secMessage }: { message: SectionType[] } =
+              responseReq.data;
+            return secMessage;
           });
 
-        const sectionsPromises = messageCour.map(async (course) => {
-          const responseReq = await axios.get(
-            `/api/getAll/getAllSections/${course.id}`
-          );
-          const { message: secMessage }: { message: SectionType[] } =
-            responseReq.data;
-          return secMessage;
-        });
 
         const sectionData = await Promise.all(sectionsPromises);
         const sections = sectionData.flat();
@@ -168,6 +170,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       return;
     }
 
+
     const opt = isOptional == 'اختياري' ? true : false;
 
     const data = {
@@ -219,6 +222,23 @@ const Page = ({ params }: { params: { id: number } }) => {
     const doctorId = doctors.find((item) => item.name === doctor);
 
     const sectionId = sections.find((item) => item.name === section);
+
+    let duplicateFound = false;
+
+    classes.forEach((item) => {
+      if (
+        item.section.id == sectionId?.id &&
+        item.class.semester == `${semester}-${year}`
+      ) {
+        duplicateFound = true;
+        return;
+      }
+    });
+
+    if (duplicateFound) {
+      toast.error('محاضرة هذه المجموعة مسجلة بالفعل');
+      return;
+    }
 
     const hasConflictingClass = classes.some(
       (cls) =>

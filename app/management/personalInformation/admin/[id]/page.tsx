@@ -34,8 +34,8 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [useMyData, useSetMydata] = useState<PersonalInfoType[]>([]);
   const [newData, setNewData] = useState<PersonalInfoType[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
-  const [checked, setChecked] = useState<number[]>([]); // Change to an array
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
+  const [adminPerms, setAdminPerms] = useState<GetPermissionType[]>([]);
   const [refresh, setRefresh] = useState(false);
   const [edit, setEdit] = useState(false);
  
@@ -56,7 +56,12 @@ const Page = ({ params }: { params: { id: number } }) => {
       );
       const message: GetPermissionType[] = response.data.message;
       setPerms(message);
-      console.log(message);
+
+      const responsePer = await axios.get(
+        `/api/allPermission/admin/selectedPerms/${params.id}`
+      );
+      const messagePer: GetPermissionType[] = responsePer.data.message;
+      setAdminPerms(messagePer);
 
       axios.get(`/api/personalInfo/manager/${params.id}`).then((resp) => {
         const message: PersonalInfoType[] = resp.data.message;
@@ -67,29 +72,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     fetchPosts();
   }, [params.id, refresh, edit,user]);
 
-  const handleCheck = (item: AssignPermissionType) => {
-    const checkedIndex = checked.indexOf(item.id);
-    if (checkedIndex === -1) {
-      setChecked([...checked, item.id]);
-    } else {
-      const updatedChecked = [...checked];
-      updatedChecked.splice(checkedIndex, 1);
-      setChecked(updatedChecked);
-    }
-  };
 
-  const selected: AssignPermissionType[] = perms.flatMap((item) =>
-    checkList
-      .filter((item2) => item.permission_id == item2.id)
-      .map((item2) => ({ name: item2.name, id: item2.id, active: item.active }))
-  );
-  const handleDelete = (per_id: number, admin_id: number) => {
-    const data = { item_per_id: per_id, item_admin_id: admin_id };
-    axios.post('/api/allPermission/deletePerm', data).then((resp) => {
-      toast.success(resp.data.message);
-      setRefresh(!refresh);
-    });
-  };
 
   const handleActivate = (id: number, parmId: number, active: boolean) => {
     const data = { id, parmId, active };
@@ -101,14 +84,6 @@ const Page = ({ params }: { params: { id: number } }) => {
       });
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    checked.map((item) => {
-      const data1 = { admin_id: params.id, permission_id: item, active: true };
-      axios.post('/api/allPermission/admin', data1);
-      setRefresh(!refresh);
-    });
-  };
 
   const handleInputChange = (e: string, field: keyof PersonalInfoType) => {
     const updatedData = newData.map((data) => {
@@ -279,7 +254,6 @@ const Page = ({ params }: { params: { id: number } }) => {
               <table className="border-collapse mt-8 w-[800px]">
                 <thead>
                   <tr className="bg-gray-200">
-                    <th className="border border-gray-300 px-4 py-2">حذف </th>
                     <th className="border border-gray-300 px-4 py-2">
                       ايقاف/تفعيل
                     </th>
@@ -289,65 +263,34 @@ const Page = ({ params }: { params: { id: number } }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {selected.map((user, index) => (
+                  {adminPerms.map((per, index) =>{ 
+                  const selectedPer=checkList.find((item)=> item.id==per.permission_id);
+                  return (
                     <tr
                       key={index}
                       className={index % 2 === 0 ? 'bg-gray-100' : ''}
                     >
-                      <td className="border-none h-full px-4 py-2 flex justify-end items-center">
-                        <BsXCircleFill
-                          onClick={() => handleDelete(user.id, params.id)}
-                        />
-                      </td>
                       <td className="border border-gray-300 px-4 py-2">
                         <button
                           onClick={() => {
-                            handleActivate(user.id, params.id, !user.active);
+                            handleActivate(per.permission_id, params.id, !per.active);
                           }}
                           className={`w-[50px]  text-white py-1 px-2 rounded ${
-                            user.active
+                            per.active
                               ? 'bg-red-500 hover:bg-red-600'
                               : 'bg-green-600 hover:bg-green-700'
                           }`}
                         >
-                          {user.active ? 'ايقاف' : 'تفعيل'}
+                          {per.active ? 'ايقاف' : 'تفعيل'}
                         </button>
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {user.name}
+                        {selectedPer?.name}
                       </td>
                     </tr>
-                  ))}
+                  );})}
                 </tbody>
               </table>
-              <form onSubmit={handleSubmit} className="p-10 w-[400px] ">
-                <h1 className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary">
-                  اختر الصلاحيات
-                </h1>
-                <div className="p-1 rounded-md">
-                  {checkList.map((item, index) => (
-                    <div
-                      className="bg-lightBlue flex justify-between  "
-                      key={index}
-                    >
-                      <input
-                        className="p-2 ml-9"
-                        value={item.name}
-                        type="checkbox"
-                        onChange={() => handleCheck(item)} // Pass the item to handleCheck
-                        checked={checked.includes(item.id)} // Check if the item is in the checked list
-                      />
-                      <label className="pr-5">{item.name}</label>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  type="submit"
-                  className="flex w-full  text-sm justify-center items-center bg-darkBlue text-secondary"
-                >
-                  اضافة
-                </button>
-              </form>
             </div>
           );
         }

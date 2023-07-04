@@ -1,50 +1,123 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { StudenCourseType, LetterGradesType, TranscriptType } from '@/app/types/types';
+import {
+  MajorRegType,
+  StudenCourseGPAType,
+  LetterGradesType,
+  TranscriptType,
+  MajorCourseType,
+} from '@/app/types/types';
 import axios from 'axios';
 
-const semesters: string[] = [
-  ' الفصل الدراسي الاول',
-  ' الفصل الدراسي الثاني',
-  ' الفصل الدراسي الثالث',
-  ' الفصل الدراسي الرابع',
-  '  الفصل الدراسي الخامس',
-  ' الفصل الدراسي السادس',
-  ' الفصل الدراسي السابع',
-  'الفصل الدراسي الثامن',
-];
-
-
-const Transcript = ({ user }: { user: number }) => {
-  const [courses, setCourses] = useState<StudenCourseType[]>([]);
+const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
+  const [courses, setCourses] = useState<StudenCourseGPAType[]>([]);
   const [transcript, setTranscript] = useState<TranscriptType[]>([]);
   const [courseLetter, setCourseLetter] = useState<LetterGradesType[]>([]);
-
+  const [majorCredit, setMajorCredit] = useState<number>();
+  const [studentCredit, setStudentCredit] = useState<number>();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseCourseLetter = await axios.get(`/api/exams/letterGrades`);
-        const messageCourseLetter: LetterGradesType[] =
-          responseCourseLetter.data.message;
-        setCourseLetter(messageCourseLetter);
+        if (user) {
+          const responseCourseLetter = await axios.get(
+            `/api/exams/letterGrades`
+          );
+          const messageCourseLetter: LetterGradesType[] =
+            responseCourseLetter.data.message;
+          setCourseLetter(messageCourseLetter);
 
-        const responseCourse = await axios.get(
-          `/api/getAll/studentCoursesGpa/${user}`
-        );
+          const responseCourse = await axios.get(
+            `/api/getAll/studentCoursesGpa/${user}`
+          );
 
-        const messageCourse: StudenCourseType[] = responseCourse.data.message;
-        setCourses(messageCourse);
+          const messageCourse: StudenCourseGPAType[] =
+            responseCourse.data.message;
+          setCourses(messageCourse);
 
-        const responseTranscript = await axios.get(
-          `/api/transcript/${user}`
-        );
-        const messageTranscript: TranscriptType[] =
-        responseTranscript.data.message;
-        setTranscript(messageTranscript);
+          
+          const majCredit = messageCourse.find((c) => c);
+          
+          const responseMaj = await axios.get(
+            `/api/major/getSpecificMajor/${majorId}`
+            );
+            const messageMaj: MajorRegType[] = responseMaj.data.message;
+            
+          const messageMajCourse = await axios.get(
+            `/api/course/courseMajorReg/${majorId}`
+          );
+          const responseCourseMaj: MajorCourseType[] =
+            messageMajCourse.data.message;
 
+          setMajorCredit(messageMaj[0].credits_needed);
 
-        
+          setStudentCredit(majCredit?.student?.credits);
+
+          console.log(messageMaj[0].credits_needed);
+
+          const responseTranscript = await axios.get(`/api/transcript/${user}`);
+          const messageTranscript: TranscriptType[] =
+            responseTranscript.data.message;
+          setTranscript(messageTranscript);
+
+          if (messageTranscript && messageCourseLetter && messageCourse) {
+            const enrollmentsData = messageTranscript.filter(
+              (item) => item.student_id == user
+            );
+            const maxId = enrollmentsData.reduce(
+              (max, { id }) => Math.max(max, id),
+              0
+            );
+
+            let studentTotalCredits = 0;
+            messageCourseLetter.map((item) => {
+              const selectedCourse = messageCourse.find(
+                (course) =>
+                  item.course_enrollment_id === course.courseEnrollements.id &&
+                  item.repeated == false 
+              );
+              if (selectedCourse?.course.credits) {
+                studentTotalCredits += selectedCourse?.course.credits;
+              }
+            });
+
+            const graduationYear = messageTranscript?.find(
+              (item) => item.id == maxId
+            );
+
+            const graduation = messageCourse.find((item) => item.major?.id);
+
+            let isGraduated = false;
+
+            if (
+              graduation?.major.credits_needed &&
+              studentTotalCredits >= graduation?.major.credits_needed
+            ) {
+              isGraduated = true;
+            }
+
+            responseCourseMaj.map((majCo) => {
+              const selecetedCourse = courses.find(
+                (c) =>
+                  c.course.id == majCo.course_id && c.courseEnrollements.pass
+              );
+              if (selecetedCourse == undefined && majCo.isOptional == false) {
+                isGraduated = false;
+              }
+            });
+
+            const data = {
+              credits: studentTotalCredits,
+              student_id: user,
+              graduation: isGraduated,
+              graduation_year: graduationYear?.semester,
+            };
+
+            console.log(data);
+
+            axios.post('/api/transcript/editCredits', data);
+          }
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -52,10 +125,16 @@ const Transcript = ({ user }: { user: number }) => {
 
     fetchData();
   }, [user]);
-
+            
 
   return (
     <div className="absolute w-[85%] flex flex-col p-10 justify-content items-center">
+      <h1 className="bg-green-300 p-2 m-1">
+        {majorCredit} :الكريدت المطلوبه لتخرج
+      </h1>
+      <h1 className="bg-blue-300 p-2 m-1">
+        {studentCredit}: كريديت الطالب الحالية
+      </h1>
       {transcript.map((tran, index) => (
         <table key={index} className="m-10 w-[500px]">
           <thead>
@@ -83,7 +162,12 @@ const Transcript = ({ user }: { user: number }) => {
               );
               if (course?.class.semester === tran.semester) {
                 return (
-                  <tr className="flex flex-row w-full" key={courseIndex}>
+                  <tr
+                    className={`flex flex-row w-full ${
+                      letter?.repeated ? 'text-blue-600 line-through' : ''
+                    }`}
+                    key={courseIndex}
+                  >
                     <td
                       className={`border border-gray-300 px-4 py-2 flex flex-row w-full items-center justify-center ${
                         course.courseEnrollements.pass

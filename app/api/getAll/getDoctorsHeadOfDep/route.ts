@@ -31,6 +31,7 @@ export async function GET() {
       doctorSince: doctor.enrollment_date,
       email: doctor.email,
       major: doctor.major,
+      active: doctor.active,
       department: department,
     };
   });

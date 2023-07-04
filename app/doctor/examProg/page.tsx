@@ -60,13 +60,9 @@ const Page = () => {
   }, [user]);
 
 
-  const handlePrint = () => {
-    window.print();
-  };
 
   return (
     <div className="flex flex-col absolute w-[80%] mt-7 items-center justify-center ">
-      <button onClick={handlePrint}>print</button>
       <table className="w-full bg-white shadow-md rounded-md">
         <thead>
           <tr>

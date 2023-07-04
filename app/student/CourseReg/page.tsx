@@ -224,8 +224,8 @@ const Page = () => {
       permissionData
     );
 
-    setSubmitting(false); // Re-enable the submit button
-    setSubmit(!submit); // Trigger any necessary state updates
+    setSubmitting(false); 
+    setSubmit(!submit);
   };
 
   return (

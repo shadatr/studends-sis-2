@@ -59,24 +59,35 @@ const SearchBar = () => {
               <td>لا يوجد</td>
             </tr>
           ) : (
-            searchedStudent.map((student, index) => (
-              <tr key={index}>
-                <td className="border border-gray-300 px-4 py-2">
-                  <Link
-                    href={`/management/personalInformation/student/${student.id}`}
-                    className="bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-md justify-center items-center"
-                  >
-                    الملف الشخصي
-                  </Link>
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {student.surname}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {student.name}
-                </td>
-              </tr>
-            ))
+            searchedStudent.map((student, index) => {
+              let type;
+              if (useSearchType == 'students'){
+                type='student';
+              }
+              else if (useSearchType == 'admins') {
+                type = 'admin';
+              }
+              if (useSearchType == 'doctors') {
+                type = 'doctor';
+              }
+                return (
+                  <tr key={index}>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <Link
+                        href={`/management/personalInformation/${type}/${student.id}`}
+                        className="bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-md justify-center items-center"
+                      >
+                        الملف الشخصي
+                      </Link>
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {student.surname}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {student.name}
+                    </td>
+                  </tr>
+                );})
           )}
         </tbody>
       </table>

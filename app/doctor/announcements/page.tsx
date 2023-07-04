@@ -3,7 +3,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { ClassesType, SectionType, AnnouncmentsType } from '@/app/types/types';
+import {
+  ClassesType,
+  AnnouncmentsType,
+  ClassesInfoType,
+} from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 
@@ -20,9 +24,8 @@ const AnnoPage = () => {
   const [newItem, setNewItem] = useState('');
   const [announcements2, setAnnouncements2] = useState<AnnouncmentsType[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [sections, setSections] = useState<SectionType[]>([]);
   const [SelecetdSections, setSelectedSections] = useState<string>();
-  const [classes, setClasses] = useState<ClassesType[]>([]);
+  const [classes, setClasses] = useState<ClassesInfoType[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -33,27 +36,25 @@ const AnnoPage = () => {
         });
 
         const response = await axios.get(
-          `/api/course/courses/${user?.id}/doctor`
+          `/api/course/doctorCourses/${user?.id}`
         );
-        const message: SectionType[] = response.data.message;
-        setSections(message);
+        const message: ClassesType[] = response.data.message;
 
         const classPromises = message.map(async (section) => {
           const responseReq = await axios.get(
-            `/api/getAll/getAllClasses/${section.id}`
+            `/api/getAll/getAllClassInfo/${section.section_id}`
           );
-          const { message: classMessage }: { message: ClassesType[] } =
+          const { message: classMessage }: { message: ClassesInfoType[] } =
             responseReq.data;
           return classMessage;
         });
-
         const classData = await Promise.all(classPromises);
         const classes = classData.flat();
         setClasses(classes);
 
-        const announcementsPromises = classes.map(async (announ) => {
+        const announcementsPromises = classes.map(async (cls) => {
           const responseReq = await axios.get(
-            `/api/announcements/courseAnnouncements/${announ.id}`
+            `/api/announcements/courseAnnouncements/${cls.class.id}`
           );
           const { message: secMessage }: { message: AnnouncmentsType[] } =
             responseReq.data;
@@ -83,14 +84,12 @@ const AnnoPage = () => {
       return;
     }
 
-    const section = sections.find((sec) => sec.name == SelecetdSections);
-
-    const selectedClass = classes.find((cla) => cla.section_id == section?.id);
+    const selectedClass = classes.find((cls) => cls.section.name == SelecetdSections);
 
     const data = {
       announcement_text: newItem,
       general: false,
-      posted_for_class_id: selectedClass?.id,
+      posted_for_class_id: selectedClass?.class.id,
     };
     console.log(data);
     axios.post('/api/announcements/newUniAnnouncement', data).then((resp) => {
@@ -145,9 +144,8 @@ const AnnoPage = () => {
             {announcements2.length ? (
               announcements2.map((item, index) => {
                 const clas = classes.find(
-                  (Class) => Class.id === item.posted_for_class_id
+                  (Class) => Class.class.id === item.posted_for_class_id
                 );
-                const sec = sections.find((sec) => sec.id === clas?.section_id);
                 return (
                   <tr key={index}>
                     <td className="w-1/9">
@@ -157,7 +155,7 @@ const AnnoPage = () => {
                       />
                     </td>
                     <td className="px-4 py-2">{item.announcement_text}</td>
-                    <td className="px-4 py-2 w-1/5">{sec?.name}</td>
+                    <td className="px-4 py-2 w-1/5">{clas?.section.name}</td>
                   </tr>
                 );
               })
@@ -190,8 +188,8 @@ const AnnoPage = () => {
             <option disabled value="">
               اختر المادة
             </option>
-            {sections.map((section, index) => (
-              <option key={index}>{section.name}</option>
+            {classes.map((cls, index) => (
+              <option key={index}>{cls.section.name}</option>
             ))}
           </select>
           <h1>اضف اعلان للمواد</h1>

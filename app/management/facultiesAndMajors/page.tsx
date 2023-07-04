@@ -27,6 +27,7 @@ const page = () => {
   const [load, setLoad] = useState(false);
   const [newItemMajor, setNewItemMajor] = useState('');
   const [newMajorDep, setNewMajorDep] = useState('');
+  const [credits, setCredits] = useState('');
 
   const department = useRef<HTMLInputElement>(null);
   const [departments, setDepartments] = useState<DepartmentRegType[]>([]);
@@ -83,13 +84,14 @@ const page = () => {
   const depId = selectedDep.map((i) => i.id);
 
   const handleRegisterMajor = () => {
-    if (!newItemMajor || !newMajorDep) {
-      toast.error('يجب كتابة ملئ جميع البيانات');
+    if (!newItemMajor || !newMajorDep ||!credits) {
+      toast.error('يجب  ملئ جميع البيانات');
       return;
     }
     const data: MajorRegType = {
       major_name: newItemMajor,
       department_id: depId[0],
+      credits_needed: parseInt(credits)
     };
     axios
       .post('/api/major/majorReg', data)
@@ -199,6 +201,15 @@ const page = () => {
                 value={newItemMajor}
                 onChange={(e) => setNewItemMajor(e.target.value)}
               />
+              <input
+                ref={major}
+                dir="rtl"
+                placeholder=" كرديت "
+                type="text"
+                className="w-[100px] border border-gray-300 px-4 py-2 rounded-[5px]"
+                value={credits}
+                onChange={(e) => setCredits(e.target.value)}
+              />
               <select
                 id="dep"
                 dir="rtl"
@@ -235,6 +246,7 @@ const page = () => {
           <thead>
             <tr>
               <th className="py-2 px-4 bg-gray-200 text-gray-700"></th>
+              <th className="py-2 px-4 bg-gray-200 text-gray-700">كرديت</th>
               <th className="py-2 px-4 bg-gray-200 text-gray-700">التخصص</th>
               <th className="py-2 px-4 bg-gray-200 text-gray-700">الكلية</th>
             </tr>
@@ -254,8 +266,11 @@ const page = () => {
                       className="bg-blue-700  hover:bg-blue-600 px-5 py-2 rounded-md text-white"
                       href={`/management/facultiesAndMajors/majorExamProg/${item.id}`}
                     >
-                      جدول الامتحانات 
+                      جدول الامتحانات
                     </Link>
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {item.credits_needed}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {item.major_name}

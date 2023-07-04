@@ -75,6 +75,7 @@ const Page = () => {
             <tr key={hourIndex}>
               {daysOfWeek.map((day) => {
                 const matchingClasses = courses.filter((cls) => {
+                  if(cls.class){
                   const classStart = cls.class.starts_at;
                   const classEnd = cls.class.ends_at;
                   const hourId = hour.id;
@@ -82,7 +83,7 @@ const Page = () => {
                     cls.class.day === day &&
                     (classStart === hourId ||
                       (classStart < hourId && classEnd >= hourId + 1))
-                  );
+                  );}
                 });
 
                 if (matchingClasses.length > 0) {

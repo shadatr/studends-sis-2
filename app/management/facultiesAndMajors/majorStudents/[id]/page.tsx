@@ -17,7 +17,6 @@ const Page = ({ params }: { params: { id: number } }) => {
   const user = session.data?.user;
   const [refresh, setRefresh] = useState(false);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
-
   const [students, setStudents] = useState<PersonalInfoType[]>([]);
 
   useEffect(() => {
@@ -48,13 +47,21 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   return (
     <div className="flex absolute flex-col justify-center items-center w-[80%]">
+      <Link
+        className="bg-green-700 m-2 hover:bg-green-600 p-3 rounded-md text-white w-[200px]"
+        href={`/management/facultiesAndMajors/graduatedStudents/${params.id}`}
+      >
+        الخرجين
+      </Link>
       <table className="border-collapse mt-8 w-[1100px]">
         <thead>
           <tr className="bg-gray-200">
             {perms.map((permItem, idx) => {
               if (permItem.permission_id === 5 && permItem.active) {
                 return (
-                  <th key={idx} className="border border-gray-300 px-4 py-2">ايقاف/تفعيل</th>
+                  <th key={idx} className="border border-gray-300 px-4 py-2">
+                    ايقاف/تفعيل
+                  </th>
                 );
               }
               return null;

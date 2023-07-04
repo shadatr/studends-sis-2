@@ -53,6 +53,9 @@ const Page = () => {
   const [selectedMajor, setSelectedMajor] = useState<
     MajorRegType | undefined
   >();
+  const [submitting, setSubmitting] = useState(false);
+  const [submit, setSubmit] = useState(false);
+
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -68,6 +71,12 @@ const Page = () => {
   }, []);
 
   const handleRegister = () => {
+    if (submitting) {
+      return;
+    }
+
+    setSubmitting(true);
+
     if (
       !name.current?.value ||
       !surname.current?.value ||
@@ -102,6 +111,9 @@ const Page = () => {
         console.log(err.message);
         toast.error(err.response.data.message);
       });
+
+      setSubmitting(false);
+      setSubmit(!submit);
   };
 
   const handleMajorChange = (event: React.ChangeEvent<HTMLSelectElement>) => {

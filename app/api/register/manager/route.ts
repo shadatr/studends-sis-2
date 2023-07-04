@@ -20,10 +20,33 @@ export async function POST(request: Request) {
 
   try {
     const res = await supabase.from('tb_admins').insert([data]);
-    if (res.error) {
-      console.log(res.error);
-      throw res.error;
+    
+    const doctors = await supabase
+      .from('tb_admins')
+      .select('*')
+      .eq('name', data.name)
+      .eq('surname', data.surname)
+      .eq('phone', data.phone);
+
+      const data3 = await supabase
+    .from('tb_all_permissions')
+    .select('*')
+    .eq('type', 'admin');
+
+    const doctor = doctors.data;
+    const perm= data3.data;
+
+    if (doctor && perm) {
+      perm.map(async (per)=>{
+      const data1 = {
+        permission_id: per.id,
+        admin_id: doctor[0].id,
+      };
+      await supabase.from('tb_admin_perms').insert([data1]);
+      }
+      );
     }
+
     return new Response(JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });

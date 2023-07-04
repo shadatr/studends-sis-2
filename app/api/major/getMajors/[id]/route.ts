@@ -8,7 +8,7 @@ const supabase = createClient(
 
 export async function GET(request: Request, { params }: { params: { id: number } }) {
   try {
-    const data = await supabase.from('tb_majors').select('*').eq('department_id',params.id);
+    const data = await supabase.from('tb_majors').select('*, tb_departments!inner(*)').eq('department_id',params.id);
     console.log(data.error?.message);
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {

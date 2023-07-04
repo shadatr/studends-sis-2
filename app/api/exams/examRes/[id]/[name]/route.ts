@@ -68,7 +68,6 @@ export async function POST(
   const parsedData = JSON.parse(JSON.stringify(data));
   const messageData = parsedData.data;
   const data3: ClassesType[] = messageData;
-  // console.log(data3);
 
   const data1 = await request.json();
 

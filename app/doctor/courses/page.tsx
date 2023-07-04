@@ -35,7 +35,7 @@ useEffect(() => {
         const classData = await Promise.all(classPromises);
         const classes = classData.flat();
         setClasses(classes);
-        console.log(classes);
+        
       } catch (error) {
         console.error('Error fetching data:', error);
       }

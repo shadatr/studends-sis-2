@@ -49,8 +49,16 @@ const Page = () => {
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
   const speciality = useRef<HTMLInputElement>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submit, setSubmit] = useState(false);
 
   const handleRegister = () => {
+    if (submitting) {
+      return;
+    }
+
+    setSubmitting(true);
+
     if (
       !name.current?.value ||
       !surname.current?.value ||
@@ -86,6 +94,9 @@ const Page = () => {
       .catch((err) => {
         toast.error(err.response.data.message);
       });
+
+    setSubmitting(false);
+    setSubmit(!submit);
   };
   return (
     <div className="flex flex-col items-center absolute justify-center w-[80%] text-sm mt-10">

@@ -10,6 +10,8 @@ import {
   StudenCourseType,
   TranscriptType,
   GetPermissionType,
+  StudenCourseGPAType,
+  MajorCourseType,
 } from '@/app/types/types';
 import axios from 'axios';
 import React, { useEffect, useState, useRef } from 'react';
@@ -125,6 +127,111 @@ const page = () => {
     fetchPosts();
   }, [active, edit, refresh, user, loadCourses]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (user) {
+          students.map(async (user) => {
+            const responseCourseLetter = await axios.get(
+              `/api/exams/letterGrades`
+            );
+            const messageCourseLetter: LetterGradesType[] =
+              responseCourseLetter.data.message;
+            setCourseLetter(messageCourseLetter);
+
+            const responseCourse = await axios.get(
+              `/api/getAll/studentCoursesGpa/${user.id}`
+            );
+
+            const messageCourse: StudenCourseGPAType[] =
+              responseCourse.data.message;
+            setCourses(messageCourse);
+
+            const majCredit = messageCourse.find(
+              (c) => c.student?.id == user.id
+            );
+
+            const messageMajCourse = await axios.get(
+              `/api/course/courseMajorReg/${majCredit?.major?.id}`
+            );
+            const responseCourseMaj: MajorCourseType[] =
+              messageMajCourse.data.message;
+
+            const responseTranscript = await axios.get(
+              `/api/transcript/${user}`
+            );
+            const messageTranscript: TranscriptType[] =
+              responseTranscript.data.message;
+            setTranscript(messageTranscript);
+
+            if (messageTranscript && messageCourseLetter && messageCourse) {
+              const enrollmentsData = messageTranscript.filter(
+                (item) => item.student_id == user.id
+              );
+              const maxId = enrollmentsData.reduce(
+                (max, { id }) => Math.max(max, id),
+                0
+              );
+
+              let studentTotalCredits = 0;
+              messageCourseLetter.map((item) => {
+                const selectedCourse = messageCourse.find(
+                  (course) =>
+                    item.course_enrollment_id ===
+                      course.courseEnrollements.id &&
+                    item.repeated == false 
+                );
+                if (selectedCourse?.course.credits) {
+                  studentTotalCredits += selectedCourse?.course.credits;
+                }
+              });
+
+              const graduationYear = messageTranscript?.find(
+                (item) => item.id == maxId
+              );
+
+              const graduation = messageCourse.find((item) => item.major?.id);
+
+              let isGraduated = false;
+
+              if (
+                graduation?.major.credits_needed &&
+                studentTotalCredits >= graduation?.major.credits_needed
+              ) {
+                isGraduated = true;
+              }
+
+              responseCourseMaj.map((majCo) => {
+                const selecetedCourse = messageCourse.find(
+                  (c) =>
+                    c.course.id == majCo.course_id && c.courseEnrollements.pass
+                );
+                if (selecetedCourse == undefined && majCo.isOptional == false) {
+                  isGraduated = false;
+                }
+              });
+
+              const data = {
+                credits: studentTotalCredits,
+                student_id: user,
+                graduation: isGraduated,
+                graduation_year: graduationYear?.semester,
+              };
+
+              console.log(data);
+
+              axios.post('/api/transcript/editCredits', data);
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
   const handleActivate = () => {
     setActive(!active);
     const data = { active: !active };
@@ -138,17 +245,67 @@ const page = () => {
   const handleSubmit = () => {
     let allDataSent = true;
 
-    console.log(students);
-
     students.map((student) => {
       let studentTotalGradePoints = 0;
       let studentTotalCredits = 0;
+
+      let studentTotalGradePoints2 = 0;
+      let studentTotalCredits2 = 0;
 
       const selectedCourses = courses.filter(
         (co) => co.courseEnrollements.student_id === student.id
       );
 
       selectedCourses.map((selectedCourse) => {
+        const repeatedCourse = courses.filter(
+          (co) =>
+            co.courseEnrollements.student_id ===
+            selectedCourse?.courseEnrollements.student_id
+        );
+
+        if (repeatedCourse.length > 1) {
+          const repeat = repeatedCourse.find(
+            (co) => co.class.semester != `${semester}-${year}`
+          );
+
+          const studentResult = courseLetter.find(
+            (item) =>
+              item.course_enrollment_id ===
+              selectedCourse?.courseEnrollements.id
+          );
+
+          if (
+            selectedCourse?.course.credits &&
+            studentResult?.points &&
+            selectedCourse.class.semester === repeat?.class.semester &&
+            selectedCourse?.course.id != repeat?.course.id
+          ) {
+            studentTotalGradePoints2 +=
+              studentResult?.points * selectedCourse?.course.credits;
+            studentTotalCredits2 += selectedCourse?.course.credits;
+          }
+
+          const data2 = {
+            student_id: student.id,
+            course_enrollment_id: repeat?.courseEnrollements.id,
+            semester: repeat?.class.semester,
+            gpa: parseFloat(
+              (studentTotalGradePoints2 / studentTotalCredits2).toFixed(2)
+            ),
+          };
+
+          console.log(data2);
+
+          if (studentTotalGradePoints && studentTotalCredits) {
+            axios
+              .post(`/api/transcript/transcriptUpdate`, data2)
+              .catch((error) => {
+                allDataSent = false;
+                console.error('Error sending data:', error);
+              });
+          }
+        }
+
         const studentResult = courseLetter.find(
           (item) =>
             item.course_enrollment_id === selectedCourse?.courseEnrollements.id
@@ -184,8 +341,6 @@ const page = () => {
           (studentTotalGradePoints / studentTotalCredits).toFixed(2)
         ),
       };
-
-      console.log(data2);
 
       if (studentTotalGradePoints && studentTotalCredits) {
         axios.post(`/api/transcript/${1}`, data2).catch((error) => {
