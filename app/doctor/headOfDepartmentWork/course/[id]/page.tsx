@@ -382,7 +382,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       )}
       {activeTab === 'Tab 2' && (
         <>
-          <div className="border-2 border-grey m-4 rounded-5 p-5 flex justify-center items-center rounded-md">
+          <div className="border-2 border-grey m-4 rounded-5 p-5 flex justify-center items-center rounded-md max-w-screen">
             <button
               onClick={handleSubmit}
               className="px-4 py-2 bg-blue-500 text-white rounded-md"

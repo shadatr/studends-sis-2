@@ -398,7 +398,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             if (permItem.permission_id === 9 && permItem.active) {
               return (
                 <div
-                  className="border-2 border-grey m-4 rounded-5 p-5 flex justify-center items-center rounded-md"
+                  className="border-2 border-grey m-4 rounded-5 p-5 flex justify-center items-center rounded-md max-w-screen"
                   key={idx}
                 >
                   <button
