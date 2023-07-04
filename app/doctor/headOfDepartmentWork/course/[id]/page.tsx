@@ -472,7 +472,7 @@ const Page = ({ params }: { params: { id: number } }) => {
               id="dep"
               dir="rtl"
               onChange={(e) => setSection(e.target.value)}
-              className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+              className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4 w-[150px]"
               defaultValue="المجموعة"
             >
               <option disabled>المجموعة</option>
@@ -484,7 +484,7 @@ const Page = ({ params }: { params: { id: number } }) => {
               id="dep"
               dir="rtl"
               onChange={(e) => setSelecetedCourse(e.target.value)}
-              className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+              className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4 w-[150px]"
               defaultValue=""
             >
               <option disabled selected value="">

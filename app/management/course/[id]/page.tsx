@@ -398,7 +398,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             if (permItem.permission_id === 9 && permItem.active) {
               return (
                 <div
-                  className="border-2 border-grey m-4 rounded-5 p-5 flex justify-center items-center rounded-md max-w-screen"
+                  className="border-2 border-grey m-4 rounded-5 p-5 flex justify-center items-center rounded-md "
                   key={idx}
                 >
                   <button
@@ -490,7 +490,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                     id="dep"
                     dir="rtl"
                     onChange={(e) => setSection(e.target.value)}
-                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4 w-[150px]"
                     defaultValue="المجموعة"
                   >
                     <option disabled>المجموعة</option>
@@ -502,7 +502,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                     id="dep"
                     dir="rtl"
                     onChange={(e) => setSelecetedCourse(e.target.value)}
-                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4 w-[150px]"
                     defaultValue=""
                   >
                     <option disabled selected value="">
