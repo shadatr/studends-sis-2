@@ -17,12 +17,18 @@ export async function GET(
 
       console.log(data.data);
 
+      const headers = {
+        'Cache-Control': 'no-store',
+      };
+
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }));
+    return new Response(JSON.stringify({ message: data.data }), {
+      headers,
+    });
   } catch {}
 }
