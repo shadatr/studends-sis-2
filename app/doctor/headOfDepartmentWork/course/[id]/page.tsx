@@ -105,7 +105,8 @@ const Page = ({ params }: { params: { id: number } }) => {
 
           const sectionsPromises = messageMajorCour.map(async (course) => {
             const responseReq = await axios.get(
-              `/api/getAll/getAllSections/${course.course_id}`
+              `/api/getAll/getAllSections/${course.course_id}`,
+              { headers: { 'Cache-Control': 'no-store' } }
             );
             const { message: secMessage }: { message: SectionType[] } =
               responseReq.data;
@@ -119,7 +120,8 @@ const Page = ({ params }: { params: { id: number } }) => {
 
         const classPromises = sections.map(async (section) => {
           const responseReq = await axios.get(
-            `/api/getAll/getAllClassInfo/${section.id}`
+            `/api/getAll/getAllClassInfo/${section.id}`,
+            { headers: { 'Cache-Control': 'no-store' } }
           );
           const { message: classMessage }: { message: ClassesInfoType[] } =
             responseReq.data;

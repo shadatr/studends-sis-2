@@ -41,7 +41,9 @@ const Page = () => {
           setCourses(message);
 
           const progClassPromises = message.map(async (course) => {
-            const responseReq = await axios.get(`/api/examProg/${course.id}`);
+            const responseReq = await axios.get(`/api/examProg/${course.id}`, {
+              headers: { 'Cache-Control': 'no-store' },
+            });
             const { message: courseMessage }: { message: ExamProgramType[] } =
               responseReq.data;
             return courseMessage;

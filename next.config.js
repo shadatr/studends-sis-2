@@ -3,7 +3,7 @@ const nextConfig = {
   experimental: {
     appDir: true,
   },
-  headers: async () => {
+  async headers() {
     return [
       {
         source: '/(.*)',
