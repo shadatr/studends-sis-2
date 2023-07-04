@@ -27,11 +27,15 @@ const Page = ({ params }: { params: { id: number } }) => {
       const message: GetPermissionType[] = response.data.message;
       setPerms(message);
 
-      axios.get(`/api/major/majorStudents/${params.id}`).then((resp) => {
-        const message: PersonalInfoType[] = resp.data.message;
-        setStudents(message);
-        console.log(message);
-      });
+      axios
+        .get(`/api/major/majorStudents/${params.id}`, {
+          headers: { 'Cache-Control': 'no-store' },
+        })
+        .then((resp) => {
+          const message: PersonalInfoType[] = resp.data.message;
+          setStudents(message);
+          console.log(message);
+        });
     };
 
     fetchPosts();
