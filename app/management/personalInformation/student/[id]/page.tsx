@@ -8,6 +8,7 @@ import {
   RegisterStudent2Type,
   InfoDoctorType,
   GetPermissionType,
+  MajorRegType,
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
@@ -43,6 +44,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [refresh, setRefresh] = useState(false);
   const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
   const [edit, setEdit] = useState(false);
+  const [major, setMajor] = useState<string>();
   const printableContentRef = useRef<HTMLDivElement>(null);
   const user = session.data?.user;
 
@@ -68,16 +70,23 @@ const Page = ({ params }: { params: { id: number } }) => {
       const message: GetPermissionStudentType[] = response.data.message;
       setPerms(message);
 
-      axios.get(`/api/personalInfo/student/${params.id}`).then((resp) => {
+      axios.get(`/api/personalInfo/student/${params.id}`).then(async (resp) => {
         const message: RegisterStudent2Type[] = resp.data.message;
         setMydata(message);
         setNewData(message);
+
+        const responseMaj = await axios.get(
+          `/api/majorEnrollment/${message[0].major}`
+        );
+        const messageMaj: MajorRegType[] = responseMaj.data.message;
+        setMajor(messageMaj[0].major_name);
       });
 
       axios.get('/api/getAll/doctor').then((res) => {
         const message: InfoDoctorType[] = res.data.message;
         setDoctors(message);
       });
+
     };
     fetchPosts();
   }, [refresh, params.id,user, edit]);
@@ -274,7 +283,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                     {item.birth_date}
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
-                    {item.major}
+                    {major ? major : 'غير محدد'}
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
                     {item.semester}
@@ -302,10 +311,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       </table>
       <div>
         {adminPerms.map((permItem, idx) => {
-          if (
-            permItem.permission_id === 5 &&
-            permItem.active 
-          ) {
+          if (permItem.permission_id === 5 && permItem.active) {
             return (
               <table className="border-collapse mt-8 w-[700px]" key={idx}>
                 <thead>

@@ -7,6 +7,7 @@ import {
   PersonalInfoHeaderType,
   RegisterStudent2Type,
   InfoDoctorType,
+  MajorRegType,
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
@@ -41,29 +42,37 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [refresh, setRefresh] = useState(false);
   const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
   const [edit, setEdit] = useState(false);
-    const printableContentRef = useRef<HTMLDivElement>(null);
+  const printableContentRef = useRef<HTMLDivElement>(null);
+  const [major, setMajor] = useState<string>();
 
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
+        
         const response = await axios.get('/api/allPermission/student');
         const message: AssignPermissionType[] = response.data.message;
         setCheckList(message);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
-
+      
       const response = await axios.get(
         `/api/allPermission/student/selectedPerms/${params.id}`
-      );
-      const message: GetPermissionStudentType[] = response.data.message;
-      setPerms(message);
+        );
+        const message: GetPermissionStudentType[] = response.data.message;
+        setPerms(message);
+        
+        axios.get(`/api/personalInfo/student/${params.id}`).then(async (resp) => {
+          const message: RegisterStudent2Type[] = resp.data.message;
+          setMydata(message);
+          setNewData(message);
 
-      axios.get(`/api/personalInfo/student/${params.id}`).then((resp) => {
-        const message: RegisterStudent2Type[] = resp.data.message;
-        setMydata(message);
-        setNewData(message);
+          const responseMaj = await axios.get(
+            `/api/majorEnrollment/${message[0].major}`
+          );
+          const messageMaj: MajorRegType[] = responseMaj.data.message;
+          setMajor(messageMaj[0].major_name);
       });
 
       axios.get('/api/getAll/doctor').then((res) => {
@@ -273,7 +282,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                     {item.birth_date}
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
-                    {item.major}
+                    {major ? major : 'غير محدد'}
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
                     {item.semester}
