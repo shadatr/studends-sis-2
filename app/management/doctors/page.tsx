@@ -37,7 +37,7 @@ const Page = () => {
       setPerms(message);
       console.log(message);
 
-      axios.get('/api/getAll/getDoctorsHeadOfDep').then((res) => {
+      axios.get('/api/getAll/doctor').then((res) => {
         console.log(res.data);
         const message: DoctorsWithDepartmentsType[] = res.data.message;
         setDoctors(message);
