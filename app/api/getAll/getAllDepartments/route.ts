@@ -20,6 +20,6 @@ export async function GET(
       });
     }
 
-    return new Response(JSON.stringify({ message: data }));
+    return new Response(JSON.stringify({ message: data.data }));
   } catch {}
 }
