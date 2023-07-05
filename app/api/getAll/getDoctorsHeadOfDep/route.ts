@@ -1,7 +1,10 @@
-import { createClient } from "@supabase/supabase-js";
-import { Database } from "@/app/types/supabase";
+import { createClient } from '@supabase/supabase-js';
+import { Database } from '@/app/types/supabase';
 
-const supabase = createClient<Database>( process.env.SUPABASE_URL || '', process.env.SUPABASE_KEY || '');
+const supabase = createClient<Database>(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET() {
   const fetchDoctorsQuery = supabase.from('tb_doctors').select('*');
@@ -36,7 +39,7 @@ export async function GET() {
     };
   });
   console.log(data);
-  return new Response(JSON.stringify({message : data}), {
+  return new Response(JSON.stringify({ message: data }), {
     headers: { 'content-type': 'application/json' },
   });
 }
