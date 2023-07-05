@@ -48,5 +48,4 @@ export async function POST(request: Request) {
     .update({ active: false })
     .eq('semester', data.semester);
 
-  console.log(data5.error?.message);
 }

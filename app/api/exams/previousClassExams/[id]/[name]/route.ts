@@ -26,7 +26,6 @@ export async function GET(
       .from('tb_course_enrollment')
       .select('*')
       .eq('class_id', data3[0].id);
-      console.log(data1);
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {

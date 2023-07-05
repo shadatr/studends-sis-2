@@ -25,8 +25,8 @@ export async function GET(
     .from('tb_admin_perms')
     .select('*')
     .eq('admin_id', params.id);
-    console.log(data.error?.message);
-  try {
+
+    try {
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,

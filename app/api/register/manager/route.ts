@@ -17,10 +17,9 @@ export async function POST(request: Request) {
     data.phone = undefined;
   }
 
-
   try {
-     await supabase.from('tb_admins').insert([data]);
-    
+    await supabase.from('tb_admins').insert([data]);
+
     const doctors = await supabase
       .from('tb_admins')
       .select('*')
@@ -28,22 +27,23 @@ export async function POST(request: Request) {
       .eq('surname', data.surname)
       .eq('phone', data.phone);
 
-      const data3 = await supabase
-    .from('tb_all_permissions')
-    .select('*')
-    .eq('type', 'admin');
+    const data3 = await supabase
+      .from('tb_all_permissions')
+      .select('*')
+      .eq('type', 'admin');
 
     const doctor = doctors.data;
-    const perm= data3.data;
+    const perms = data3.data;
 
-    if (doctor && perm) {
-      perm.map(async (per)=>{
-      const data1 = {
-        permission_id: per.id,
-        admin_id: doctor[0].id,
-      };
-      await supabase.from('tb_admin_perms').insert([data1]);
-      }
+    if (doctor && perms) {
+      await Promise.all(
+        perms.map(async (per) => {
+          const data1 = {
+            permission_id: per.id,
+            admin_id: doctor[0].id,
+          };
+          await supabase.from('tb_admin_perms').insert([data1]);
+        })
       );
     }
 
@@ -51,9 +51,9 @@ export async function POST(request: Request) {
       headers: { 'content-type': 'application/json' },
     });
   } catch (error) {
-    // send a 400 response with an error happened during registration in arabic
+    // send a 400 response with an error happened during registration in Arabic
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الحساب' }),
+      JSON.stringify({ message: 'حدث خطأ أثناء تسجيل الحساب' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }
@@ -61,14 +61,14 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const data = await supabase.from('tb_admins').select('*');
-    console.log(data.data);
-    if (data.error) {
-      return new Response(JSON.stringify({ message: 'an error occured' }), {
+    const { data, error } = await supabase.from('tb_admins').select('*');
+    console.log(data);
+    if (error) {
+      return new Response(JSON.stringify({ message: 'حدث خطأ ما' }), {
         status: 403,
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }));
+    return new Response(JSON.stringify({ message: data }));
   } catch {}
 }

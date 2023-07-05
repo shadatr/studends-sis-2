@@ -13,7 +13,7 @@ export async function GET(request: Request,{ params }: { params: { id: number } 
     
 
     return new Response(
-      JSON.stringify({ message:  data.data  })
+      JSON.stringify({ message: data.data })
     );
   } catch {}
 }

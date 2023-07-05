@@ -42,7 +42,6 @@ export async function GET(
           courseEnrollements: courseEnrollments,
           course: course,
         };
-        console.log(data);
   
       return new Response(JSON.stringify({ message: data }), {
         status: 200,

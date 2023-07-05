@@ -10,8 +10,8 @@ export async function GET(request: Request, { params }: { params: { id: number }
       .from('tb_doctors')
       .select('*')
       .eq('id', params.id);
-    console.log(data.data);
-    console.log(data.error?.message);
+
+
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,

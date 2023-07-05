@@ -15,20 +15,12 @@ export async function GET(
       .select('*')
       .eq('major', params.id);
 
-      console.log(data.data);
-
-      const headers = {
-        'Cache-Control': 'no-store',
-      };
-
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }), {
-      headers,
-    });
+    return new Response(JSON.stringify({ message: data.data }));
   } catch {}
 }

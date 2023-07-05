@@ -25,6 +25,6 @@ export async function GET(
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }));
+    return new Response(JSON.stringify({ message: data }));
   } catch {}
 }
