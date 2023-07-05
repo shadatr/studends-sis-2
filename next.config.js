@@ -9,7 +9,7 @@ const nextConfig = {
         source: '/(.*)',
         headers: [
           {
-            key: 'Cache-Control',
+            key: 'cache',
             value: 'no-store',
           },
         ],
