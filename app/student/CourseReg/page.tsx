@@ -305,7 +305,7 @@ const Page = () => {
                             {item.course.hours}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
-                            {item.majorCourse.isOptional ? 'اجباري' : 'اختياري'}
+                            {item.majorCourse.isOptional ? 'اختياري' : 'اجباري'}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
                             {findDay?.name}/ {findStartTime?.name}-
@@ -372,7 +372,7 @@ const Page = () => {
                       <td className="border border-gray-300 px-4 py-2">
                         {preCourses.map((preCourse) => (
                           <span key={preCourse?.course.id}>
-                            {preCourse?.course.course_name}
+                            {preCourse?.course.course_name}{' - '}
                           </span>
                         ))}
                       </td>
@@ -386,7 +386,7 @@ const Page = () => {
                         {item.course.hours}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {item.majorCourse.isOptional ? 'اجباري' : 'اختياري'}
+                        {item.majorCourse.isOptional ? 'اختياري' : 'اجباري'}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
                         {item.course.course_name}

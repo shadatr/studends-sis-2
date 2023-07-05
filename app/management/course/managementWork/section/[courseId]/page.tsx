@@ -113,7 +113,7 @@ const Page = ({ params }: { params: { courseId: number } }) => {
       course_id: selectedCourse?.id,
       prerequisite_course_id: selectedCoursePer?.id,
     };
-    console.log(data);
+
     axios
       .post(`/api/course/prerequisitesCourses/${params.courseId}`, data)
       .then((res) => {
