@@ -1,9 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
+import { AssignAdvisorType } from '@/app/types/types';
 
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseKey = process.env.SUPABASE_KEY || '';
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET(
   request: Request,
@@ -16,12 +17,11 @@ export async function GET(
       .eq('major', params.id);
 
     if (data.error) {
-      return new Response(JSON.stringify({ message: 'an error occurred' }), {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
       });
     }
 
     return new Response(JSON.stringify({ message: data.data }));
-  } catch (error) {
-  }
+  } catch {}
 }
