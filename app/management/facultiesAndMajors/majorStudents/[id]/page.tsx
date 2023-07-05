@@ -27,14 +27,13 @@ const Page = ({ params }: { params: { id: number } }) => {
       const message: GetPermissionType[] = response.data.message;
       setPerms(message);
 
-      axios
+      axios 
         .get(`/api/getAll/majStudents/${params.id}`, {
           headers: { 'cache': 'no-store' },
         })
         .then((resp) => {
           const message: PersonalInfoType[] = resp.data.message;
           setStudents(message);
-          console.log(message);
         });
     };
 
