@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import { AssignAdvisorType } from '@/app/types/types';
 
 const supabase = createClient(
   process.env.SUPABASE_URL || '',
@@ -11,6 +10,10 @@ export async function GET(
   { params }: { params: { id: number } }
 ) {
   try {
+    const headers = {
+      'cache': 'no-store', // Add Cache-Control header with "no-store" value
+    };
+
     const data = await supabase
       .from('tb_students')
       .select('*')
@@ -19,9 +22,14 @@ export async function GET(
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
+        headers,
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }));
-  } catch {}
+    return new Response(JSON.stringify({ message: data.data }), {
+      headers,
+    });
+  } catch {
+    // Handle error
+  }
 }
