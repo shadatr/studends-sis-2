@@ -28,13 +28,10 @@ const Page = ({ params }: { params: { id: number } }) => {
       setPerms(message);
 
       axios
-        .get(`/api/getAll/majStudents/${params.id}`, {
-          headers: { 'Cache-Control': 'no-store' },
-        })
+        .get(`/api/getAll/majStudents/${params.id}`)
         .then((resp) => {
           const message: PersonalInfoType[] = resp.data.message;
           setStudents(message);
-          console.log(message);
         });
     };
 

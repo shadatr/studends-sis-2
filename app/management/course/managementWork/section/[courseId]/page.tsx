@@ -54,7 +54,6 @@ const Page = ({ params }: { params: { courseId: number } }) => {
 
       const responseCourse = await axios.get(`/api/course/courseRegistration`);
       const messageCourse: CourseType[] = responseCourse.data.message;
-      console.log(messageCourse);
       setCourses(messageCourse);
 
       const responsePerCourse = await axios.get(
@@ -62,7 +61,6 @@ const Page = ({ params }: { params: { courseId: number } }) => {
       );
       const messagePerCourse: PrerequisiteCourseType[] =
         responsePerCourse.data.message;
-      console.log(messageCourse);
       setPrerequisites(messagePerCourse);
     };
     fetchPosts();
@@ -77,7 +75,6 @@ const Page = ({ params }: { params: { courseId: number } }) => {
       name: selectedCourse?.course_name + `(مجموعة${section.length + 1})`,
       course_id: selectedCourse?.id,
     };
-    console.log(data);
     axios
       .post('/api/course/sectionRegistration', data)
       .then((res) => {
@@ -121,7 +118,6 @@ const Page = ({ params }: { params: { courseId: number } }) => {
       .post(`/api/course/prerequisitesCourses/${params.courseId}`, data)
       .then((res) => {
         setLoad(!load);
-        console.log(res.data);
         toast.success(res.data.message);
       })
       .catch((err) => {
