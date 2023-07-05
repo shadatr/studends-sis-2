@@ -96,7 +96,6 @@ const Page = () => {
       location: Location,
     };
 
-    console.log(selecetedDay.toLocaleString());
 
     axios
       .post('/api/examProg/1', data)

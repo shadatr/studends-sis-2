@@ -52,11 +52,6 @@ const page = ({ params }: { params: { id: number } }) => {
         useSetMydata(message);
         setNewData(message);
       });
-      axios.get(`/api/personalInfo/doctor/${params.id}`).then((resp) => {
-        console.log(resp.data);
-        const message: PersonalInfoType[] = resp.data.message;
-        useSetMydata(message);
-      });
 
       const responsePerm = await axios.get(
         `/api/allPermission/admin/selectedPerms/${user?.id}`

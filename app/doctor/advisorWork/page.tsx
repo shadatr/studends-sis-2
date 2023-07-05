@@ -23,7 +23,7 @@ const Page = () => {
     const fetchPosts = async () => {
       if (user) {
         
-        axios.get(`/api/advisor/assignAdvisor/${user?.id}`).then((resp) => {
+        axios.get(`/api/advisor/${user?.id}`).then((resp) => {
           console.log(resp.data);
           const message: PersonalInfoType[] = resp.data.message;
           setStudents(message);

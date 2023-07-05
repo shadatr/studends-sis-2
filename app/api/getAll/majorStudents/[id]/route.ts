@@ -10,19 +10,18 @@ export async function GET(
   { params }: { params: { id: number } }
 ) {
   try {
-    const { data, error } = await supabase
+    const data = await supabase
       .from('tb_students')
       .select('*')
       .eq('major', params.id);
 
-    if (error) {
+    if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occurred' }), {
         status: 403,
       });
     }
 
-    return new Response(JSON.stringify({ message: data }));
+    return new Response(JSON.stringify({ message: data.data }));
   } catch (error) {
-    // Handle the error here if necessary
   }
 }

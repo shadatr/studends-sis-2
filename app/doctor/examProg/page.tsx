@@ -2,7 +2,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {
-  AddCourseType,
+  ClassesInfoType,
   ExamProgramType,
   SectionType,
 } from '@/app/types/types';
@@ -17,7 +17,7 @@ const Page = () => {
   }
   const user = session.data?.user;
 
-  const [courses, setCourses] = useState<AddCourseType[]>([]);
+  const [courses, setCourses] = useState<ClassesInfoType[]>([]);
   const [examProg, setExamProg] = useState<ExamProgramType[]>([]);
 
   useEffect(() => {
@@ -28,21 +28,20 @@ const Page = () => {
         );
         const message: SectionType[] = response.data.message;
 
-        const coursesPromises = message.map(async (section) => {
+        const classPromises = message.map(async (section) => {
           const responseReq = await axios.get(
-            `/api/getAll/getSpecificCourse/${section.course_id}`
+            `/api/getAll/getAllClassInfo/${section.id}`
           );
-          const { message: courseMessage }: { message: AddCourseType[] } =
+          const { message: classMessage }: { message: ClassesInfoType[] } =
             responseReq.data;
-          return courseMessage;
+          return classMessage;
         });
+        const classData = await Promise.all(classPromises);
+        const classes = classData.flat();
+        setCourses(classes);
 
-        const courseData = await Promise.all(coursesPromises);
-        const courses = courseData.flat();
-        setCourses(courses);
-
-        const progClassPromises = courses.map(async (course) => {
-          const responseReq = await axios.get(`/api/examProg/${course.id}`);
+        const progClassPromises = message.map(async (course) => {
+          const responseReq = await axios.get(`/api/examProg/${course.course_id}`);
           const { message: courseMessage }: { message: ExamProgramType[] } =
             responseReq.data;
           return courseMessage;
@@ -78,7 +77,7 @@ const Page = () => {
         <tbody>
           {examProg.map((item, index) => {
             const selectcourse = courses.find(
-              (course) => course.id == item.course_id
+              (course) => course.course.id == item.course_id
             );
             return (
               <tr key={index}>
@@ -86,7 +85,7 @@ const Page = () => {
                 <td className="py-2 px-4 border-b">{item.duration}</td>
                 <td className="py-2 px-4 border-b">{item.hour}</td>
                 <td className="py-2 px-4 border-b">
-                  {selectcourse?.course_name}
+                  {selectcourse?.course.course_name}
                 </td>
                 <td className="py-2 px-4 border-b">{item.date}</td>
               </tr>

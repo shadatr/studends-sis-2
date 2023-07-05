@@ -98,6 +98,7 @@ export type PersonalInfoHeaderType = {
 };
 
 export type PersonalInfoType = {
+  enrollment_date: string;
   id: number;
   name: string;
   surname: string;
@@ -106,7 +107,6 @@ export type PersonalInfoType = {
   email: string;
   birth_date: number;
   semester: number;
-  enrollment_date?: number;
   major: number;
   advisor?: string;
   active?: boolean;

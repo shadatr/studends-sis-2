@@ -82,7 +82,7 @@ const Page = () => {
       email: email.current?.value,
       major: speciality.current?.value,
       password: passwordHash,
-      birth_date: (birthDate.getTime() / 1000).toFixed(),
+      birth_date: birthDate.toLocaleDateString(),
     };
 
     axios

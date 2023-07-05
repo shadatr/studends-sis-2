@@ -22,7 +22,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   useEffect(() => {
     const fetchPosts = async () => {
 
-      axios.get(`/api/major/majorStudents/${params.id}`).then((resp) => {
+      axios.get(`/api/getAll/majorStudents/${params.id}`).then((resp) => {
         const message: PersonalInfoType[] = resp.data.message;
         setStudents(message);
         console.log(message);

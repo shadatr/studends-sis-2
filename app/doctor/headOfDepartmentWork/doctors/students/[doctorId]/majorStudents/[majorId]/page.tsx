@@ -30,7 +30,7 @@ const Page = ({
 
   useEffect(() => {
     const fetchPosts = async () => {
-      axios.get(`/api/list/${params.majorId}/student`).then((resp) => {
+      axios.get(`/api/getAll/majorStudents/${params.majorId}`).then((resp) => {
         const message: RegisterStudent2Type[] = resp.data.message;
         setStudents(message);
       });
@@ -65,7 +65,7 @@ const Page = ({
         advisor: params.doctorId,
       };
       axios
-        .post('/api/advisor/assignAdvisor/1', data)
+        .post('/api/assignAdvisor/1', data)
         .then((res) => {
           toast.success(res.data.message);
         })

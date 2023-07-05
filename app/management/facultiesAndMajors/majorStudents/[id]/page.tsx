@@ -28,7 +28,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       setPerms(message);
 
       axios
-        .get(`/api/major/majorStudents/${params.id}`, {
+        .get(`/api/getAll/majorStudents/${params.id}`, {
           headers: { 'Cache-Control': 'no-store' },
         })
         .then((resp) => {

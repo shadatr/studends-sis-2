@@ -99,7 +99,7 @@ const Page = () => {
       address: address.current?.value,
       email: email.current?.value,
       password: passwordHash,
-      birth_date: Math.floor(birthDate.getTime() / 1000).toString(),
+      birth_date: birthDate.toLocaleDateString(),
     };
 
     axios

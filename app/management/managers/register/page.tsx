@@ -81,7 +81,7 @@ const Page = () => {
       address: address.current?.value,
       email: email.current?.value,
       password: passwordHash,
-      birth_date: (birthDate.getTime() / 1000).toFixed(),
+      birth_date: birthDate.toLocaleDateString(),
     };
 
     axios
