@@ -1,5 +1,9 @@
 'use client';
-import { PersonalInfoType, StudentClassType } from '@/app/types/types';
+import {
+  PersonalInfoType,
+  StudentClassType,
+  LetterGradesType,
+} from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -17,11 +21,19 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [students, setStudents] = useState<StudentClassType[]>([]);
   const [studentsNames, setStudentsNames] = useState<PersonalInfoType[]>([]);
   const printableContentRef = useRef<HTMLDivElement>(null);
+  const [courseLetter, setCourseLetter] = useState<LetterGradesType[]>([]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const fetchPosts = async () => {
         try {
+          const responseCourseLetter = await axios.get(
+            `/api/exams/letterGrades`
+          );
+          const messageCourseLetter: LetterGradesType[] =
+            responseCourseLetter.data.message;
+          setCourseLetter(messageCourseLetter);
+
           const response = await axios.get(
             `/api/exams/classExamResult/${params.id}`
           );
@@ -103,6 +115,8 @@ const Page = ({ params }: { params: { id: number } }) => {
               <th className="border border-gray-300 px-4 py-2">
                 المعلومات الشخصية
               </th>
+              <th className="border border-gray-300 px-4 py-2"> النتيجة</th>
+              <th className="border border-gray-300 px-4 py-2"> المجموع</th>
               <th className="border border-gray-300 px-4 py-2">اعمال السنة</th>
               <th className="border border-gray-300 px-4 py-2">
                 الامتحان النهائي
@@ -120,6 +134,10 @@ const Page = ({ params }: { params: { id: number } }) => {
               const student = studentsNames.find(
                 (student) => student.id === user.student_id
               );
+              const letter = courseLetter.find(
+                (item) => item.course_enrollment_id == user.id
+              );
+
               return (
                 <tr key={index}>
                   <td className="border border-gray-300 px-4 py-2">
@@ -130,7 +148,22 @@ const Page = ({ params }: { params: { id: number } }) => {
                       الملف الشخصي
                     </Link>
                   </td>
-
+                  <td
+                    className={`border border-gray-300 px-4 py-2 ${
+                      user.pass
+                        ? 'text-green-600 hover:text-green-700'
+                        : 'text-red-500 hover:text-red-600'
+                    }`}
+                  >
+                    {user.pass == null
+                      ? ''
+                      : user.pass
+                      ? `${letter?.letter_grade} ناجح`
+                      : `${letter?.letter_grade} راسب`}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {user.result}
+                  </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {user.class_work}
                   </td>

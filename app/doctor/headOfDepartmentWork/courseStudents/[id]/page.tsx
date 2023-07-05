@@ -21,7 +21,6 @@ const Page = ({ params }: { params: { id: number } }) => {
   const user = session.data?.user;
 
   const [studentsNames, setStudentsNames] = useState<PersonalInfoType[]>([]);
-
   const [course, setCourse] = useState<ClassEnrollmentsType>();
   const [courseLetter, setCourseLetter] = useState<LetterGradesType[]>([]);
   const printableContentRef = useRef<HTMLDivElement>(null);
