@@ -3,6 +3,7 @@ const nextConfig = {
   experimental: {
     appDir: true,
   },
+  // output: 'export',
   async headers() {
     return [
       {
@@ -16,7 +17,7 @@ const nextConfig = {
       },
     ];
   },
-  
+  target: 'server',
 };
 
 module.exports = nextConfig;
