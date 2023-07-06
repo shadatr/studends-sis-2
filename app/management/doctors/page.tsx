@@ -13,7 +13,7 @@ import SearchBar from '@/app/components/searchBar';
 import { redirect } from 'next/navigation';
 import { toast } from 'react-toastify';
 
-export const Page = () => {
+const Page = () => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
@@ -38,10 +38,12 @@ export const Page = () => {
         const message: GetPermissionType[] = response.data.message;
         setPerms(message);
   
-        axios.get('/api/getAll/doctor').then((res) => {
-          const message: PersonalInfoType[] = res.data.message;
-          setDoctors(message);
-        });
+        fetch('/api/getAll/doctor', { cache: 'no-store' })
+          .then((response) => response.json())
+          .then((data) => {
+            const message = data.message;
+            setDoctors(message);
+          });
       }
     };
     fetchPosts();
@@ -175,4 +177,4 @@ export const Page = () => {
   );
 };
 
-// export default Page;
+export default Page;
