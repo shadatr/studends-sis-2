@@ -741,4 +741,3 @@ export type LettersType = {
     FF: number;
 };
 
-export const fetchCache = 'force-no-store';

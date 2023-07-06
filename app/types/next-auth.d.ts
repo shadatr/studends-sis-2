@@ -23,6 +23,7 @@ declare module "next-auth" {
       admin: boolean;
       head_of_deparment_id: number;
       advisor: number;
+      graduated:boolean;
       userType: 'student' | 'doctor' | 'admin';
     };
   }

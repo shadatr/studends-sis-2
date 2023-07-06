@@ -18,6 +18,7 @@ const stuInfo = [
   'الايميل',
   'تاريخ التسجيل',
   'المشرف',
+   'حالة الطالب'
 ];
 
 const Page = () => {
@@ -79,6 +80,7 @@ const Page = () => {
             <td className="border border-gray-300 px-4 py-2">{user?.email}</td>
             <td className="border border-gray-300 px-4 py-2">{user?.enrollment_date}</td>
             <td className="border border-gray-300 px-4 py-2">{advisor ? advisor : 'غير محدد'}</td>
+            <td className="border border-gray-300 px-4 py-2">{user?.graduated ? 'تخرج' : 'لم يتخرج'}</td>
           </tr>
         </tbody>
       </table>
