@@ -63,7 +63,6 @@ const Page = ({ params }: { params: { id: number } }) => {
 
         const messageCourse: StudenCourseType[] = responseCourse.data.message;
         setCheckList(messageCourse);
-        console.log(messageCourse);
 
         const responseStudentCourse = await axios.get(
           `/api/getAll/studentCoursesApprove/${params.id}`
@@ -73,7 +72,6 @@ const Page = ({ params }: { params: { id: number } }) => {
           responseStudentCourse.data.message;
         setStudentCourses(messageStudentCourse);
       } catch (error) {
-        console.error('Error fetching data:', error);
       }
       setRefresh(!refresh);
     };

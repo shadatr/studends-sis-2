@@ -53,8 +53,6 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
 
           setStudentCredit(majCredit?.student?.credits);
 
-          console.log(messageMaj[0].credits_needed);
-
           const responseTranscript = await axios.get(`/api/transcript/${user}`);
           const messageTranscript: TranscriptType[] =
             responseTranscript.data.message;
@@ -113,7 +111,6 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
               graduation_year: graduationYear?.semester,
             };
 
-            console.log(data);
 
             axios.post('/api/transcript/editCredits', data);
           }
@@ -124,7 +121,7 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
     };
 
     fetchData();
-  }, [user]);
+  }, [majorId, user]);
             
 
   return (

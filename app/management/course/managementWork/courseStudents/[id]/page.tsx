@@ -39,7 +39,6 @@ const Page = ({ params }: { params: { id: number } }) => {
           );
           const message: StudentClassType[] = response.data.message;
           setStudents(message);
-          console.log(message);
 
           const resp = await axios.get(`/api/getAll/student`);
           const personalInfoMessage: PersonalInfoType[] = resp.data.message;
@@ -63,8 +62,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         .then(() => {
           toast.success('تم موافقة على الدرجات بنجاح');
         })
-        .catch((error) => {
-          console.error(error);
+        .catch(() => {
           toast.error('حدث خطأ اثناء موافقة على الدرجات');
         });
     }

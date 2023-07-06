@@ -13,50 +13,48 @@ const Page = () => {
 
   const user = session.data?.user;
 
-    const [classes, setClasses] = useState<ClassesInfoType[]>([]);
+  const [classes, setClasses] = useState<ClassesInfoType[]>([]);
 
-useEffect(() => {
-  const fetchData = async () => {
-    if (user) {
-      try {
-        const response = await axios.get(
-          `/api/course/doctorCourses/${user?.id}`
-        );
-        const message: ClassesType[] = response.data.message;
-
-        const classPromises = message.map(async (section) => {
-          const responseReq = await axios.get(
-            `/api/getAll/getAllClassInfo/${section.section_id}`
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user) {
+        try {
+          const response = await axios.get(
+            `/api/course/doctorCourses/${user?.id}`
           );
-          const { message: classMessage }: { message: ClassesInfoType[] } =
-            responseReq.data;
-          return classMessage;
-        });
-        const classData = await Promise.all(classPromises);
-        const classes = classData.flat();
-        setClasses(classes);
-        
-      } catch (error) {
-        console.error('Error fetching data:', error);
+          const message: ClassesType[] = response.data.message;
+
+          const classPromises = message.map(async (section) => {
+            const responseReq = await axios.get(
+              `/api/getAll/getAllClassInfo/${section.section_id}`
+            );
+            const { message: classMessage }: { message: ClassesInfoType[] } =
+              responseReq.data;
+            return classMessage;
+          });
+          const classData = await Promise.all(classPromises);
+          const classes = classData.flat();
+          setClasses(classes);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
       }
-    }
-  };
+    };
 
-  fetchData();
-}, [user]);
-
+    fetchData();
+  }, [user]);
 
   return (
     <div className="absolute w-[80%] flex flex-col text-sm p-10 justify-content items-center ">
       <table className="w-[900px] m-10">
         <thead>
           <tr>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">
-            اسم المجموعة
-          </th>
-          <th className="border border-gray-300 px-4 py-2 bg-grey">
-            اسم المادة
-          </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              اسم المجموعة
+            </th>
+            <th className="border border-gray-300 px-4 py-2 bg-grey">
+              اسم المادة
+            </th>
           </tr>
         </thead>
         <tbody>

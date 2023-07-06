@@ -25,7 +25,6 @@ const Page = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       axios.get('/api/announcements/uniAnnouncements').then((resp) => {
-        console.log(resp.data);
         const message: AnnouncmentsMangType[] = resp.data.message;
         setAnnouncements(message);
       });
@@ -49,7 +48,6 @@ const Page = () => {
       general: true,
       admin_id: session.data?.user.id,
     };
-    console.log(data);
     axios.post('/api/announcements/newUniAnnouncement', data).then(() => {
       setLoad(!loadAnnouncements);
     });

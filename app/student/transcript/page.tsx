@@ -15,7 +15,6 @@ const Page = () => {
   const user = session.data?.user;
 
 
-
   return (
     <div >
       {user?.major && (

@@ -31,19 +31,21 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await axios.get(
-        `/api/allPermission/admin/selectedPerms/${user?.id}`
-      );
-      const message: GetPermissionType[] = response.data.message;
-      setPerms(message);
-
-      axios.get('/api/getAll/doctor').then((res) => {
-        const message: PersonalInfoType[] = res.data.message;
-        setDoctors(message);
-      });
+      if (user) {
+        const response = await axios.get(
+          `/api/allPermission/admin/selectedPerms/${user?.id}`
+        );
+        const message: GetPermissionType[] = response.data.message;
+        setPerms(message);
+  
+        axios.get('/api/getAll/doctor').then((res) => {
+          const message: PersonalInfoType[] = res.data.message;
+          setDoctors(message);
+        });
+      }
     };
     fetchPosts();
-  }, [user?.id,refresh]);
+  }, [user,refresh]);
 
    const handleActivate = (doctorId: number, active: boolean) => {
      const data = { doctorId, active };

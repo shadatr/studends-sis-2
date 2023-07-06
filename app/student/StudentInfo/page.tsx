@@ -35,17 +35,19 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const responseMaj = await axios.get(
-        `/api/majorEnrollment/${user?.major}`
-      );
-      const messageMaj: MajorRegType[] = responseMaj.data.message;
-      setMajor(messageMaj[0].major_name);
-
-
-      axios.get(`/api/personalInfo/doctor/${user?.advisor}`).then((res) => {
-        const message: InfoDoctorType[] = res.data.message;
-        setAdvisor(message[0].name);
-      });};
+      if(user){
+        const responseMaj = await axios.get(
+          `/api/majorEnrollment/${user?.major}`
+        );
+        const messageMaj: MajorRegType[] = responseMaj.data.message;
+        setMajor(messageMaj[0].major_name);
+  
+  
+        axios.get(`/api/personalInfo/doctor/${user?.advisor}`).then((res) => {
+          const message: InfoDoctorType[] = res.data.message;
+          setAdvisor(message[0].name);
+        });}
+      };
   
     fetchPosts();
   }, [user]);

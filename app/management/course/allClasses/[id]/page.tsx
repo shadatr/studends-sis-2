@@ -1,13 +1,9 @@
 'use client';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import React, { useState } from 'react';
 import {
-  AddCourseType,
   MajorCourseType,
-  GetPermissionType,
   SectionType,
-  PersonalInfoType,
   DayOfWeekType,
   CheckedType,
   ClassesInfoType,
@@ -74,7 +70,6 @@ const Page = ({ params }: { params: { id: number } }) => {
       );
       const { message: classMessage }: { message: ClassesInfoType[] } =
         responseReq.data;
-      console.log(classMessage);
       return classMessage;
     });
 

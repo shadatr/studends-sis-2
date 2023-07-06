@@ -56,7 +56,6 @@ const Page = () => {
   }, [ user]);
 
 
-
   return (
     <div className="absolute w-[80%] flex flex-col text-sm p-10 justify-content items-center">
       <table className="w-full bg-white shadow-md rounded-md">

@@ -55,31 +55,34 @@ const Page = ({ params }: { params: { id: number } }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responsePer = await axios.get(
-          `/api/allPermission/admin/selectedPerms/${user?.id}`
-        );
-        const messagePer: GetPermissionType[] = responsePer.data.message;
-        setPerms(messagePer);
+        if(user){
 
-        const responseCourseLetter = await axios.get(`/api/exams/letterGrades`);
-        const messageCourseLetter: LetterGradesType[] =
-          responseCourseLetter.data.message;
-        setCourseLetter(messageCourseLetter);
-
-        const responseCourse = await axios.get(
-          `/api/getAll/studentCourses/${params.id}`
-        );
-
-        const messageCourse: StudenCourseType[] = responseCourse.data.message;
-        setCheckList(messageCourse);
-
-        const responseStudentCourse = await axios.get(
-          `/api/getAll/studentCoursesApprove/${params.id}`
-        );
-
-        const messageStudentCourse: StudenCourseType[] =
-          responseStudentCourse.data.message;
-        setStudentCourses(messageStudentCourse);
+          const responsePer = await axios.get(
+            `/api/allPermission/admin/selectedPerms/${user?.id}`
+          );
+          const messagePer: GetPermissionType[] = responsePer.data.message;
+          setPerms(messagePer);
+  
+          const responseCourseLetter = await axios.get(`/api/exams/letterGrades`);
+          const messageCourseLetter: LetterGradesType[] =
+            responseCourseLetter.data.message;
+          setCourseLetter(messageCourseLetter);
+  
+          const responseCourse = await axios.get(
+            `/api/getAll/studentCourses/${params.id}`
+          );
+  
+          const messageCourse: StudenCourseType[] = responseCourse.data.message;
+          setCheckList(messageCourse);
+  
+          const responseStudentCourse = await axios.get(
+            `/api/getAll/studentCoursesApprove/${params.id}`
+          );
+  
+          const messageStudentCourse: StudenCourseType[] =
+            responseStudentCourse.data.message;
+          setStudentCourses(messageStudentCourse);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -140,7 +143,6 @@ const Page = ({ params }: { params: { id: number } }) => {
           toast.error(error.message);
         });
     }
-
     setRefresh(!refresh);
   };
 

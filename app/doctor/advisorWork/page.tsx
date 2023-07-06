@@ -24,7 +24,6 @@ const Page = () => {
       if (user) {
         
         axios.get(`/api/advisor/${user?.id}`).then((resp) => {
-          console.log(resp.data);
           const message: PersonalInfoType[] = resp.data.message;
           setStudents(message);
         });

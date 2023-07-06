@@ -88,7 +88,6 @@ const Page = () => {
     axios
       .post('/api/register/doctor', data)
       .then((res) => {
-        console.log(res.data);
         toast.success(res.data.message);
       })
       .catch((err) => {

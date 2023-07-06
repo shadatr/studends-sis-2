@@ -24,17 +24,19 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const responsePer = await axios.get(
-        `/api/allPermission/admin/selectedPerms/${user?.id}`
-      );
-      const messagePer: GetPermissionType[] = responsePer.data.message;
-      setPerms(messagePer);
-
-      axios.get('/api/major/majorReg').then((resp) => {
-        console.log(resp.data);
-        const message: MajorReg2Type[] = resp.data.message;
-        setMajors(message);
-      });
+      if(user){
+        const responsePer = await axios.get(
+          `/api/allPermission/admin/selectedPerms/${user?.id}`
+        );
+        const messagePer: GetPermissionType[] = responsePer.data.message;
+        setPerms(messagePer);
+  
+        axios.get('/api/major/majorReg').then((resp) => {
+          console.log(resp.data);
+          const message: MajorReg2Type[] = resp.data.message;
+          setMajors(message);
+        });
+      }
     };
     fetchPosts();
   }, [user]);

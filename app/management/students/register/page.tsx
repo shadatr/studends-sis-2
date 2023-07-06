@@ -56,16 +56,11 @@ const Page = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submit, setSubmit] = useState(false);
 
-
   useEffect(() => {
     const fetchPosts = async () => {
-      try {
-        const resp = await axios.get('/api/major/majorReg');
-        const message: MajorRegType[] = resp.data.message;
-        setMajors(message);
-      } catch (error) {
-        console.log(error);
-      }
+      const resp = await axios.get('/api/major/majorReg');
+      const message: MajorRegType[] = resp.data.message;
+      setMajors(message);
     };
     fetchPosts();
   }, []);
@@ -108,12 +103,11 @@ const Page = () => {
         toast.success(res.data.message);
       })
       .catch((err) => {
-        console.log(err.message);
         toast.error(err.response.data.message);
       });
 
-      setSubmitting(false);
-      setSubmit(!submit);
+    setSubmitting(false);
+    setSubmit(!submit);
   };
 
   const handleMajorChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -134,7 +128,9 @@ const Page = () => {
           className="flex flex-col bg-slate-200 w-[400px] h-[50px] rounded-md p-2"
           onChange={handleMajorChange}
         >
-          <option disabled selected>اختر التخصص</option>
+          <option disabled selected>
+            اختر التخصص
+          </option>
           {majors.map((item, index) => (
             <option key={index} value={item.major_name}>
               {item.major_name}

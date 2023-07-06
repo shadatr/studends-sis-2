@@ -21,24 +21,26 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await axios.get(
-        `/api/allPermission/admin/selectedPerms/${user?.id}`
-      );
-      const message: GetPermissionType[] = response.data.message;
-      setPerms(message);
+      if (user) {
+        const response = await axios.get(
+          `/api/allPermission/admin/selectedPerms/${user?.id}`
+        );
+        const message: GetPermissionType[] = response.data.message;
+        setPerms(message);
 
-      axios 
-        .get(`/api/getAll/majStudents/${params.id}`, {
-          headers: { 'cache': 'no-store' },
-        })
-        .then((resp) => {
-          const message: PersonalInfoType[] = resp.data.message;
-          setStudents(message);
-        });
+        axios
+          .get(`/api/getAll/majStudents/${params.id}`, {
+            headers: { cache: 'no-store' },
+          })
+          .then((resp) => {
+            const message: PersonalInfoType[] = resp.data.message;
+            setStudents(message);
+          });
+      }
     };
 
     fetchPosts();
-  }, [user, refresh,params]);
+  }, [user, refresh, params]);
 
   const handleActivate = (studentId: number, active: boolean) => {
     const data = { studentId, active };

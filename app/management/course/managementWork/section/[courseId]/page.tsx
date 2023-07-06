@@ -45,7 +45,6 @@ const Page = ({ params }: { params: { courseId: number } }) => {
         setPerms(messagePer);
       }
 
-
       const response = await axios.get(
         `/api/getAll/getAllSections/${params.courseId}`
       );

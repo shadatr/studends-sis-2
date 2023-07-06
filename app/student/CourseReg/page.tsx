@@ -71,8 +71,6 @@ const Page = () => {
           const messageEnroll: StudentClassType[] = responseEnroll.data.message;
           setCourseEnrollements(messageEnroll);
 
-          console.log(messageEnroll);
-
           const responsePer = await axios.get(
             `/api/allPermission/student/selectedPerms/${user?.id}`
           );

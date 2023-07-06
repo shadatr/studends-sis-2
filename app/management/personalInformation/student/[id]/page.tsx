@@ -116,14 +116,12 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   const handleSubmitInfo = () => {
     setEdit(false);
-    console.log('Submitted grades:', newData);
     axios
       .post(`/api/personalInfo/edit/${params.id}/editStudent`, newData)
       .then(() => {
         toast.success('تم تحديث البيانات بنجاح');
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
         toast.error('حدث خطأ أثناء تحديث البيانات');
       });
   };

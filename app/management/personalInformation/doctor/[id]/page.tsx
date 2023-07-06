@@ -97,14 +97,12 @@ const page = ({ params }: { params: { id: number } }) => {
 
   const handleSubmitInfo = () => {
     setEdit(!edit);
-    console.log('Submitted grades:', newData);
     axios
       .post(`/api/personalInfo/edit/${params.id}/editDoctor`, newData)
       .then(() => {
         toast.success('تم تحديث البيانات بنجاح');
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
         toast.error('حدث خطأ أثناء تحديث البيانات');
       });
   };

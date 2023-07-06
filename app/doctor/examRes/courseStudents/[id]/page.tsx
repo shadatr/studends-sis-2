@@ -264,8 +264,7 @@ const handleGradeChange = (studentId: number, exam: string, grade: string) => {
       .then(() => {
         toast.success('تم نشر الدرجات بنجاح');
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
         toast.error('حدث خطأ اثناء نشر الدرجات');
       });
   };

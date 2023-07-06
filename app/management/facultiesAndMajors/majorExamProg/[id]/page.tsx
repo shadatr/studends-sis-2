@@ -47,7 +47,6 @@ const Page = ({ params }: { params: { id: number } }) => {
       const progClassData = await Promise.all(progClassPromises);
       const programClass = progClassData.flat();
       setExamProg(programClass);
-      console.log(programClass);
     };
     fetchPosts();
   }, [params]);

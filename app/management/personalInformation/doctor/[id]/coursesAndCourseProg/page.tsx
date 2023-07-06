@@ -47,13 +47,11 @@ const Page = ({ params }: { params: { id: number } }) => {
             );
             const { message: classMessage }: { message: ClassesInfoType[] } =
               responseReq.data;
-            console.log(classMessage);
             return classMessage;
           });
           const classData = await Promise.all(classPromises);
           const classes = classData.flat();
           setClasses(classes);
-          console.log(classes);
         } catch (error) {
           console.error('Error fetching data:', error);
         }
@@ -61,7 +59,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     };
 
     fetchData();
-  }, [user]);
+  }, [params.id, user]);
 
   return (
     <div className="absolute w-[80%] flex flex-col text-sm p-10 justify-content items-center">

@@ -81,6 +81,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [year, setYear] = useState<string>();
   const [Location, setLocation] = useState<string>();
 
+
   useEffect(() => {
     const fetchPosts = async () => {
       if (user) {
@@ -118,7 +119,6 @@ const Page = ({ params }: { params: { id: number } }) => {
           );
           const { message: classMessage }: { message: ClassesInfoType[] } =
             responseReq.data;
-          console.log(classMessage);
           return classMessage;
         });
 

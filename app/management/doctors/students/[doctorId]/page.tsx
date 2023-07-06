@@ -28,7 +28,6 @@ const Page = ({ params }: { params: { doctorId: number } }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       axios.get('/api/major/majorReg').then((resp) => {
-        console.log(resp.data);
         const message: MajorReg2Type[] = resp.data.message;
         setMajors(message);
       });

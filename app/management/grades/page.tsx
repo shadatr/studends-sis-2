@@ -1,11 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client';
 import {
-  AddCourseType,
   AssignPermissionType,
   LetterGradesType,
   LettersType,
-  MajorRegType,
   PersonalInfoType,
   StudenCourseType,
   TranscriptType,
@@ -18,7 +16,6 @@ import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-toastify';
 import { redirect } from 'next/navigation';
-
 
 const page = () => {
   const session = useSession({ required: true });
@@ -41,15 +38,11 @@ const page = () => {
   const [points2, setPoints2] = useState<LettersType[]>([]);
   const [courseLetter, setCourseLetter] = useState<LetterGradesType[]>([]);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
-  const [loadCourses, setLoadCourse] = useState(false);
-
   const [year, setYear] = useState<string>();
   const [semester, setSemester] = useState<string>();
 
   useEffect(() => {
     const fetchPosts = async () => {
-
-
       const response = await axios.get(
         `/api/allPermission/admin/selectedPerms/${user?.id}`
       );
@@ -106,105 +99,98 @@ const page = () => {
       setActive(messageActive[0].active);
     };
     fetchPosts();
-  }, [active, edit, refresh, user, loadCourses]);
+  }, [active, edit, refresh, user]);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        if (user) {
-          students.map(async (user) => {
-            const responseCourseLetter = await axios.get(
-              `/api/exams/letterGrades`
+      if (user) {
+        students.map(async (user) => {
+          const responseCourseLetter = await axios.get(
+            `/api/exams/letterGrades`
+          );
+          const messageCourseLetter: LetterGradesType[] =
+            responseCourseLetter.data.message;
+          setCourseLetter(messageCourseLetter);
+
+          const responseCourse = await axios.get(
+            `/api/getAll/studentCoursesGpa/${user.id}`
+          );
+
+          const messageCourse: StudenCourseGPAType[] =
+            responseCourse.data.message;
+
+          const majCredit = messageCourse.find((c) => c.student?.id == user.id);
+
+          const messageMajCourse = await axios.get(
+            `/api/course/courseMajorReg/${majCredit?.major?.id}`
+          );
+          const responseCourseMaj: MajorCourseType[] =
+            messageMajCourse.data.message;
+
+          const responseTranscript = await axios.get(
+            `/api/transcript/${user.id}`
+          );
+          const messageTranscript: TranscriptType[] =
+            responseTranscript.data.message;
+
+          if (messageTranscript && messageCourseLetter && messageCourse) {
+            const enrollmentsData = messageTranscript.filter(
+              (item) => item.student_id == user.id
             );
-            const messageCourseLetter: LetterGradesType[] =
-              responseCourseLetter.data.message;
-            setCourseLetter(messageCourseLetter);
-
-            const responseCourse = await axios.get(
-              `/api/getAll/studentCoursesGpa/${user.id}`
+            const maxId = enrollmentsData.reduce(
+              (max, { id }) => Math.max(max, id),
+              0
             );
 
-            const messageCourse: StudenCourseGPAType[] =
-              responseCourse.data.message;
-
-            const majCredit = messageCourse.find(
-              (c) => c.student?.id == user.id
-            );
-
-            const messageMajCourse = await axios.get(
-              `/api/course/courseMajorReg/${majCredit?.major?.id}`
-            );
-            const responseCourseMaj: MajorCourseType[] =
-              messageMajCourse.data.message;
-
-            const responseTranscript = await axios.get(
-              `/api/transcript/${user.id}`
-            );
-            const messageTranscript: TranscriptType[] =
-              responseTranscript.data.message;
-            setTranscript(messageTranscript);
-
-            if (messageTranscript && messageCourseLetter && messageCourse) {
-              const enrollmentsData = messageTranscript.filter(
-                (item) => item.student_id == user.id
+            let studentTotalCredits = 0;
+            messageCourseLetter.map((item) => {
+              const selectedCourse = messageCourse.find(
+                (course) =>
+                  item.course_enrollment_id === course.courseEnrollements.id &&
+                  item.repeated == false
               );
-              const maxId = enrollmentsData.reduce(
-                (max, { id }) => Math.max(max, id),
-                0
-              );
-
-              let studentTotalCredits = 0;
-              messageCourseLetter.map((item) => {
-                const selectedCourse = messageCourse.find(
-                  (course) =>
-                    item.course_enrollment_id ===
-                      course.courseEnrollements.id && item.repeated == false
-                );
-                if (selectedCourse?.course.credits) {
-                  studentTotalCredits += selectedCourse?.course.credits;
-                }
-              });
-
-              const graduationYear = messageTranscript?.find(
-                (item) => item.id == maxId
-              );
-
-              const graduation = messageCourse.find((item) => item.major?.id);
-
-              let isGraduated = false;
-
-              if (
-                graduation?.major.credits_needed &&
-                studentTotalCredits >= graduation?.major.credits_needed
-              ) {
-                isGraduated = true;
+              if (selectedCourse?.course.credits) {
+                studentTotalCredits += selectedCourse?.course.credits;
               }
+            });
 
-              responseCourseMaj.map((majCo) => {
-                const selecetedCourse = messageCourse.find(
-                  (c) =>
-                    c.course.id == majCo.course_id && c.courseEnrollements.pass
-                );
-                if (selecetedCourse == undefined && majCo.isOptional == false) {
-                  isGraduated = false;
-                }
-              });
+            const graduationYear = messageTranscript?.find(
+              (item) => item.id == maxId
+            );
 
-              if (studentTotalCredits && user.id&&graduationYear?.semester){
-                const data = {
-                  credits: studentTotalCredits,
-                  student_id: user.id,
-                  graduation: isGraduated,
-                  graduation_year: graduationYear?.semester,
-                };
-                console.log(data);
+            const graduation = messageCourse.find((item) => item.major?.id);
 
-              axios.post('/api/transcript/editCredits', data);}
+            let isGraduated = false;
+
+            if (
+              graduation?.major.credits_needed &&
+              studentTotalCredits >= graduation?.major.credits_needed
+            ) {
+              isGraduated = true;
             }
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
+
+            responseCourseMaj.map((majCo) => {
+              const selecetedCourse = messageCourse.find(
+                (c) =>
+                  c.course.id == majCo.course_id && c.courseEnrollements.pass
+              );
+              if (selecetedCourse == undefined && majCo.isOptional == false) {
+                isGraduated = false;
+              }
+            });
+
+            if (studentTotalCredits && user.id && graduationYear?.semester) {
+              const data = {
+                credits: studentTotalCredits,
+                student_id: user.id,
+                graduation: isGraduated,
+                graduation_year: graduationYear?.semester,
+              };
+
+              axios.post('/api/transcript/editCredits', data);
+            }
+          }
+        });
       }
     };
 
@@ -224,7 +210,7 @@ const page = () => {
   const handleSubmit = () => {
     let allDataSent = true;
 
-    students.forEach((student)=> {
+    students.forEach((student) => {
       let studentTotalGradePoints = 0;
       let studentTotalCredits = 0;
 
@@ -232,13 +218,8 @@ const page = () => {
       let studentTotalCredits2 = 0;
 
       const selectedCourses = courses.filter(
-        (co) =>
-          co.courseEnrollements.student_id == student.id 
+        (co) => co.courseEnrollements.student_id == student.id
       );
-
-      console.log(selectedCourses);
-      console.log(courses);
-      console.log(student);
 
       selectedCourses.map((selectedCourse) => {
         const repeatedCourse = courses.filter(
@@ -278,8 +259,6 @@ const page = () => {
             ),
           };
 
-          console.log(data2);
-
           if (studentTotalGradePoints && studentTotalCredits) {
             axios
               .post(`/api/transcript/transcriptUpdate`, data2)
@@ -304,6 +283,15 @@ const page = () => {
           studentTotalCredits += selectedCourse?.course.credits;
         }
       });
+
+      const gpaFound = transcript.find(
+        (item) =>
+          item.semester == `${semester}-${year}` &&
+          student.id == item.student_id
+      );
+      if (gpaFound) {
+        return;
+      }
       const data2 = {
         student_id: student.id,
         semester: `${semester}-${year}`,
@@ -312,7 +300,6 @@ const page = () => {
           (studentTotalGradePoints / studentTotalCredits).toFixed(2)
         ),
       };
-      console.log(data2);
 
       if (studentTotalGradePoints && studentTotalCredits) {
         axios.post(`/api/transcript/${1}`, data2).catch((error) => {
@@ -361,7 +348,6 @@ const page = () => {
         toast.error('حدث خطأ اثناء التعديل');
       });
   };
-
 
   return (
     <div className="absolute flex flex-col w-[80%] items-center justify-center">
@@ -458,9 +444,7 @@ const page = () => {
                               step="any"
                             />
                           </td>
-                          <td
-                            className="border border-gray-300 px-4 py-2 "
-                          >
+                          <td className="border border-gray-300 px-4 py-2 ">
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
                               value={letter2?.AA || 0}
@@ -491,9 +475,7 @@ const page = () => {
                               step="any"
                             />
                           </td>
-                          <td
-                            className="border border-gray-300 px-4 py-2 "
-                          >
+                          <td className="border border-gray-300 px-4 py-2 ">
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
                               value={letter2?.BA || 0}
@@ -524,9 +506,7 @@ const page = () => {
                               step="any"
                             />
                           </td>
-                          <td
-                            className="border border-gray-300 px-4 py-2 "
-                          >
+                          <td className="border border-gray-300 px-4 py-2 ">
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
                               value={letter2?.BB || 0}
@@ -557,9 +537,7 @@ const page = () => {
                               step="any"
                             />
                           </td>
-                          <td
-                            className="border border-gray-300 px-4 py-2 "
-                          >
+                          <td className="border border-gray-300 px-4 py-2 ">
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
                               value={letter2?.CB || 0}
@@ -590,9 +568,7 @@ const page = () => {
                               step="any"
                             />
                           </td>
-                          <td
-                            className="border border-gray-300 px-4 py-2 "
-                          >
+                          <td className="border border-gray-300 px-4 py-2 ">
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
                               value={letter2?.CC || 0}
@@ -623,9 +599,7 @@ const page = () => {
                               step="any"
                             />
                           </td>
-                          <td
-                            className="border border-gray-300 px-4 py-2 "
-                          >
+                          <td className="border border-gray-300 px-4 py-2 ">
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
                               value={letter2?.DC || 0}
@@ -656,9 +630,7 @@ const page = () => {
                               step="any"
                             />
                           </td>
-                          <td
-                            className="border border-gray-300 px-4 py-2 "
-                          >
+                          <td className="border border-gray-300 px-4 py-2 ">
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
                               value={letter2?.DD || 0}
@@ -689,9 +661,7 @@ const page = () => {
                               step="any"
                             />
                           </td>
-                          <td
-                            className="border border-gray-300 px-4 py-2 "
-                          >
+                          <td className="border border-gray-300 px-4 py-2 ">
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
                               value={letter2?.FD || 0}
@@ -722,9 +692,7 @@ const page = () => {
                               step="any"
                             />
                           </td>
-                          <td
-                            className="border border-gray-300 px-4 py-2 "
-                          >
+                          <td className="border border-gray-300 px-4 py-2 ">
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
                               value={letter2?.FF || 0}

@@ -50,7 +50,8 @@ const Page = () => {
       {perms.map((permItem, idx) => {
         if (permItem.permission_id === 3 && permItem.active) {
           return (
-            <Link key={idx}
+            <Link
+              key={idx}
               className="bg-green-500 hover:bg-green-600 p-1 rounded-md text-white mt-20 justify-center flex w-[15%] text-sm items-center"
               href="/management/managers/register"
             >

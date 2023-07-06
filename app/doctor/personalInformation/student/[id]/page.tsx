@@ -121,8 +121,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       .then(() => {
         toast.success('تم تحديث البيانات بنجاح');
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
         toast.error('حدث خطأ أثناء تحديث البيانات');
       });
   };

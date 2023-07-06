@@ -44,7 +44,6 @@ const Page = ({ params }: { params: { id: number } }) => {
       try {
         const response = await axios.get('/api/allPermission/admin');
         const message: AssignPermissionType[] = response.data.message;
-        console.log(message);
         setCheckList(message);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -86,7 +85,6 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   const handleInputChange = (e: string, field: keyof PersonalInfoType) => {
     const updatedData = newData.map((data) => {
-      console.log('Submitted gradesssss:', newData);
       return {
         ...data,
         [field]: e,
@@ -98,14 +96,12 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   const handleSubmitInfo = () => {
     setEdit(false);
-    console.log('Submitted grades:', newData);
     axios
       .post(`/api/personalInfo/edit/${params.id}/editAdmin`, newData)
       .then(() => {
         toast.success('تم تحديث البيانات بنجاح');
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
         toast.error('حدث خطأ أثناء تحديث البيانات');
       });
   };

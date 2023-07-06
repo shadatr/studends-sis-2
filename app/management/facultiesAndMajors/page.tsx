@@ -42,15 +42,12 @@ const page = () => {
         );
         const message: GetPermissionType[] = response.data.message;
         setPerms(message);
-        console.log(message);
 
         axios.get('/api/department/departmentRegister').then((resp) => {
-          console.log(resp.data);
           const message: DepartmentRegType[] = resp.data.message;
           setDepartments(message);
 
           axios.get('/api/major/majorReg').then((resp) => {
-            console.log(resp.data);
             const message: MajorRegType[] = resp.data.message;
             setMajors(message);
           });

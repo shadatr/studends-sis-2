@@ -49,7 +49,6 @@ const page = ({ params }: { params: { id: number } }) => {
         setNewData(message);
       });
       axios.get(`/api/personalInfo/doctor/${params.id}`).then((resp) => {
-        console.log(resp.data);
         const message: PersonalInfoType[] = resp.data.message;
         useSetMydata(message);
       });
@@ -59,7 +58,6 @@ const page = ({ params }: { params: { id: number } }) => {
       );
       const message: GetPermissionDoctorType[] = response.data.message;
       setPerms(message);
-      console.log(message);
     };
     fetchPosts();
   }, [refresh, edit, params.id]);
@@ -85,7 +83,6 @@ const page = ({ params }: { params: { id: number } }) => {
 
   const handleInputChange = (e: string, field: keyof PersonalInfoType) => {
     const updatedData = newData.map((data) => {
-      console.log('Submitted gradesssss:', newData);
       return {
         ...data,
         [field]: e,
@@ -96,14 +93,12 @@ const page = ({ params }: { params: { id: number } }) => {
 
   const handleSubmitInfo = () => {
     setEdit(!edit);
-    console.log('Submitted grades:', newData);
     axios
       .post(`/api/personalInfo/edit/${params.id}/editDoctor`, newData)
       .then(() => {
         toast.success('تم تحديث البيانات بنجاح');
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
         toast.error('حدث خطأ أثناء تحديث البيانات');
       });
   };

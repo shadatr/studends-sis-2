@@ -47,13 +47,11 @@ const Page = () => {
             );
             const { message: classMessage }: { message: ClassesInfoType[] } =
               responseReq.data;
-            console.log(classMessage);
             return classMessage;
           });
           const classData = await Promise.all(classPromises);
           const classes = classData.flat();
           setClasses(classes);
-          console.log(classes);
         } catch (error) {
           console.error('Error fetching data:', error);
         }

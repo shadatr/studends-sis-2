@@ -50,7 +50,6 @@ const Tabs = ({ params }: { params: { sectionId: number } }) => {
          );
          const classMessage:ClassesInfoType[] = responseReq.data.message;
 
-       console.log(classMessage);
        setClasses(classMessage);
       
     };

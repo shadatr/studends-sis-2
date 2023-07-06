@@ -26,7 +26,6 @@ const AnnoPage = () => {
     const fetchPosts = async () => {
       if (user) {
         axios.get('/api/announcements/uniAnnouncements').then((resp) => {
-          console.log(resp.data);
           const message: AnnouncmentsType[] = resp.data.message;
           setAnnouncements(message);
         });

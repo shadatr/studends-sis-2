@@ -3,15 +3,8 @@
 import {
   AddCourseType,
   AssignPermissionType,
-  LetterGradesType,
-  LettersType,
   MajorRegType,
-  PersonalInfoType,
-  StudenCourseType,
-  TranscriptType,
   GetPermissionType,
-  StudenCourseGPAType,
-  MajorCourseType,
 } from '@/app/types/types';
 import axios from 'axios';
 import React, { useEffect, useState, useRef } from 'react';
@@ -31,11 +24,9 @@ const page = () => {
 
   const user = session.data?.user;
 
-  const [edit, setEdit] = useState(false);
   const [majors, setMajors] = useState<MajorRegType[]>([]);
   const [active, setActive] = useState<boolean>();
   const [allCourses, setAllCourses] = useState<AddCourseType[]>([]);
-  const [refresh, setRefresh] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('Tab 1');
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
   const course = useRef<HTMLInputElement>(null);
@@ -66,18 +57,13 @@ const page = () => {
       const messagePer: GetPermissionType[] = response.data.message;
       setPerms(messagePer);
 
-
-
       const responseActive = await axios.get('/api/allPermission/courseRegPer');
       const messageActive: AssignPermissionType[] = responseActive.data.message;
       setActive(messageActive[0].active);
     };
     fetchPosts();
-  }, [active, edit, refresh, user, loadCourses]);
+  }, [active, user, loadCourses]);
 
-
-
- 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
   };
@@ -323,7 +309,7 @@ const page = () => {
           </table>
         </>
       )}
-      
+
       {activeTab === 'Tab 2' && (
         <>
           <p className="flex text-md bg-lightBlue rounded-md p-4 w-[200px] justify-center m-5 items-center">
