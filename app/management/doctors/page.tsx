@@ -13,7 +13,7 @@ import SearchBar from '@/app/components/searchBar';
 import { redirect } from 'next/navigation';
 import { toast } from 'react-toastify';
 
-const Page = () => {
+export const Page = () => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
@@ -175,4 +175,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+// export default Page;
