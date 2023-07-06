@@ -1,24 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
-  // output: 'export',
+  reactStrictMode: true,
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: '/about',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'no-store',
+            value: 's-maxage=1, stale-while-revalidate=59',
           },
         ],
       },
     ];
   },
-  target: 'server',
 };
 
-module.exports = {};
-
+module.exports = nextConfig;
