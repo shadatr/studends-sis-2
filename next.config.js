@@ -1,10 +1,11 @@
+module.exports = nextConfig;
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   async headers() {
     return [
       {
-        source: '/about',
+        source: '/(.*)',
         headers: [
           {
             key: 'Cache-Control',
