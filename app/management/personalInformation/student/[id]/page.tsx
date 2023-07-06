@@ -304,7 +304,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                       ? doctors.find((doc) => item.advisor == doc.id)?.name
                       : 'لا يوجد'}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">{user?.graduated ? 'تخرج' : 'لم يتخرج'}</td>
+                  <td className="flex w-[700px] p-2 justify-end">{user?.graduated ? 'تخرج' : 'لم يتخرج'}</td>
                 </tr>
               ))}
         </tbody>
