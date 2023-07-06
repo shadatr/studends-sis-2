@@ -38,7 +38,7 @@ export async function GET() {
       department: department,
     };
   });
-  console.log(data);
+
   return new Response(JSON.stringify({ message: data }), {
     headers: { 'content-type': 'application/json' },
   });
