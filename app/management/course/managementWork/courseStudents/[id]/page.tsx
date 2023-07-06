@@ -142,7 +142,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                 <tr key={index}>
                   <td className="border border-gray-300 px-4 py-2">
                     <Link
-                      href={`/doctor/personalInformation/student/${user.student_id}`}
+                      href={`/management/personalInformation/student/${user.student_id}`}
                       className="bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-md inline-block"
                     >
                       الملف الشخصي

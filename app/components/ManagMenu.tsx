@@ -10,6 +10,7 @@ const item: MenuItemType[] = [
   { id: 4, link: 'managers', name: 'موظفين الادارة' },
   { id: 5, link: 'courseReg', name: ' المواد' },
   { id: 6, link: 'facultiesAndMajors', name: ' الكليات و التخصصات' },
+  { id: 7, link: 'grades', name: 'الدرجات' },
 ];
 
 function ManagMenu() {
