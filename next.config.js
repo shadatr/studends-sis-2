@@ -1,6 +1,11 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  vercel: {
+    build: {
+      cache: false,
+    },
+  },
   reactStrictMode: true,
   async headers() {
     return [
@@ -9,7 +14,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 's-maxage=1, stale-while-revalidate=59',
+            value: 'no-storage',
           },
         ],
       },
