@@ -89,7 +89,7 @@ const page = () => {
 
       const coursesPromises = students.map(async (student) => {
         const responseReq = await axios.get(
-          `/api/getAll/studentCoursesApprove/${student.id}`
+          `/api/getAll/studentCoursesGpa/${student.id}`
         );
         const { message: courseMessage }: { message: StudenCourseType[] } =
           responseReq.data;
@@ -99,6 +99,7 @@ const page = () => {
       const courseData = await Promise.all(coursesPromises);
       const courses = courseData.flat();
       setCourses(courses);
+      console.log(courses);
 
       const responseActive = await axios.get('/api/allPermission/courseRegPer');
       const messageActive: AssignPermissionType[] = responseActive.data.message;
@@ -125,7 +126,6 @@ const page = () => {
 
             const messageCourse: StudenCourseGPAType[] =
               responseCourse.data.message;
-            setCourses(messageCourse);
 
             const majCredit = messageCourse.find(
               (c) => c.student?.id == user.id
@@ -138,7 +138,7 @@ const page = () => {
               messageMajCourse.data.message;
 
             const responseTranscript = await axios.get(
-              `/api/transcript/${user}`
+              `/api/transcript/${user.id}`
             );
             const messageTranscript: TranscriptType[] =
               responseTranscript.data.message;
@@ -190,16 +190,16 @@ const page = () => {
                 }
               });
 
-              const data = {
-                credits: studentTotalCredits,
-                student_id: user,
-                graduation: isGraduated,
-                graduation_year: graduationYear?.semester,
-              };
+              if (studentTotalCredits && user.id&&graduationYear?.semester){
+                const data = {
+                  credits: studentTotalCredits,
+                  student_id: user.id,
+                  graduation: isGraduated,
+                  graduation_year: graduationYear?.semester,
+                };
+                console.log(data);
 
-              console.log(data);
-
-              axios.post('/api/transcript/editCredits', data);
+              axios.post('/api/transcript/editCredits', data);}
             }
           });
         }
@@ -224,7 +224,7 @@ const page = () => {
   const handleSubmit = () => {
     let allDataSent = true;
 
-    students.map((student) => {
+    students.forEach((student)=> {
       let studentTotalGradePoints = 0;
       let studentTotalCredits = 0;
 
@@ -232,29 +232,20 @@ const page = () => {
       let studentTotalCredits2 = 0;
 
       const selectedCourses = courses.filter(
-        (co) => co.courseEnrollements.student_id === student.id
+        (co) =>
+          co.courseEnrollements.student_id == student.id 
       );
 
+      console.log(selectedCourses);
+      console.log(courses);
+      console.log(student);
+
       selectedCourses.map((selectedCourse) => {
-        let duplicateFound = false;
         const repeatedCourse = courses.filter(
           (co) =>
             co.courseEnrollements.student_id ===
             selectedCourse?.courseEnrollements.student_id
         );
-        transcript.forEach((item) => {
-          if (
-            item.semester === `${semester}-${year}` &&
-            selectedCourse.courseEnrollements.student_id == item.student_id
-          ) {
-            duplicateFound = true;
-            return;
-          }
-
-          if (duplicateFound) {
-            allDataSent = false;
-          }
-        });
 
         if (repeatedCourse.length > 1) {
           const repeat = repeatedCourse.find(
@@ -286,6 +277,8 @@ const page = () => {
               (studentTotalGradePoints2 / studentTotalCredits2).toFixed(2)
             ),
           };
+
+          console.log(data2);
 
           if (studentTotalGradePoints && studentTotalCredits) {
             axios
@@ -319,6 +312,7 @@ const page = () => {
           (studentTotalGradePoints / studentTotalCredits).toFixed(2)
         ),
       };
+      console.log(data2);
 
       if (studentTotalGradePoints && studentTotalCredits) {
         axios.post(`/api/transcript/${1}`, data2).catch((error) => {
@@ -447,7 +441,7 @@ const page = () => {
                     const letter2 = letters2.find((l) => l);
                     const Point = points2.find((p) => p);
                     return edit ? (
-                      <>
+                      <tbody key={index}>
                         <tr>
                           <td
                             className="border border-gray-300 px-4 py-2 "
@@ -466,7 +460,6 @@ const page = () => {
                           </td>
                           <td
                             className="border border-gray-300 px-4 py-2 "
-                            key={index}
                           >
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
@@ -500,7 +493,6 @@ const page = () => {
                           </td>
                           <td
                             className="border border-gray-300 px-4 py-2 "
-                            key={index}
                           >
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
@@ -534,7 +526,6 @@ const page = () => {
                           </td>
                           <td
                             className="border border-gray-300 px-4 py-2 "
-                            key={index}
                           >
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
@@ -568,7 +559,6 @@ const page = () => {
                           </td>
                           <td
                             className="border border-gray-300 px-4 py-2 "
-                            key={index}
                           >
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
@@ -602,7 +592,6 @@ const page = () => {
                           </td>
                           <td
                             className="border border-gray-300 px-4 py-2 "
-                            key={index}
                           >
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
@@ -636,7 +625,6 @@ const page = () => {
                           </td>
                           <td
                             className="border border-gray-300 px-4 py-2 "
-                            key={index}
                           >
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
@@ -670,7 +658,6 @@ const page = () => {
                           </td>
                           <td
                             className="border border-gray-300 px-4 py-2 "
-                            key={index}
                           >
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
@@ -704,7 +691,6 @@ const page = () => {
                           </td>
                           <td
                             className="border border-gray-300 px-4 py-2 "
-                            key={index}
                           >
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
@@ -738,7 +724,6 @@ const page = () => {
                           </td>
                           <td
                             className="border border-gray-300 px-4 py-2 "
-                            key={index}
                           >
                             <input
                               className="text-right px-4 py-2 bg-lightBlue w-[70px]"
@@ -754,9 +739,9 @@ const page = () => {
                             FF
                           </td>
                         </tr>
-                      </>
+                      </tbody>
                     ) : (
-                      <>
+                      <tbody>
                         <tr>
                           <td
                             className="border border-gray-300 px-4 py-2"
@@ -883,7 +868,7 @@ const page = () => {
                             FF
                           </td>
                         </tr>
-                      </>
+                      </tbody>
                     );
                   })}
                 </table>

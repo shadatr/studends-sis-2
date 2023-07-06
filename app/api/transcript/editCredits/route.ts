@@ -1,22 +1,29 @@
 import { createClient } from '@supabase/supabase-js';
+
 const supabase = createClient(
   process.env.SUPABASE_URL || '',
   process.env.SUPABASE_KEY || ''
 );
 
 export async function POST(request: Request) {
-  const data = await request.json();
+  try {
+    const data = await request.json();
 
-  const res = await supabase
-    .from('tb_students')
-    .update([
-      {
+    const { data: updatedData, error } = await supabase
+      .from('tb_students')
+      .update({
         credits: data.credits,
         graduated: data.graduation,
         graduation_year: data.graduation_year,
-      },
-    ])
-    .eq('id', data.student_id);
+      })
+      .eq('id', data.student_id);
 
-    console.log(data);
+    if (error) {
+      console.log(error.message);
+    } else {
+      console.log('Update successful');
+    }
+  } catch (error) {
+    console.log(error);
+  }
 }
