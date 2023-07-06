@@ -89,8 +89,13 @@ const AnnoPage = () => {
           {courseAnnouncements.length ? (
             courseAnnouncements.map((item, index) => {
               const clas = classes.find(
-                (Class) => Class.class.id === item.posted_for_class_id
+                (Class) =>
+                  Class.class && Class.class.id === item.posted_for_class_id
               );
+              if (!clas) {
+                // Handle the case where 'clas' is undefined
+                return null;
+              }
               return (
                 <tr key={index} className="">
                   <td className=" flex items-center justify-end p-1">
