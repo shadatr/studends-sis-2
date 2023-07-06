@@ -9,13 +9,16 @@ export async function POST(request: Request) {
   const data = await request.json();
 
   try {
-    await supabase.from('tb_doctors').insert([data]);
+    const re=await supabase.from('tb_doctors').insert([data]);
+
+    console.log(re);
 
     const doctors = await supabase
       .from('tb_doctors')
       .select('*')
       .eq('name', data.name)
       .eq('surname', data.surname);
+
 
     const doctor = doctors.data;
     if (doctor && doctor.length > 0) {

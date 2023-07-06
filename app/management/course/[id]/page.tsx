@@ -145,20 +145,6 @@ const Page = ({ params }: { params: { id: number } }) => {
       return;
     }
 
-    let duplicateFound = false;
-
-    majorCourses.forEach((item) => {
-      if (item.course_id == courseId?.id) {
-        duplicateFound = true;
-        return;
-      }
-    });
-
-    if (duplicateFound) {
-      toast.error('هذه المادة مسجلة بالفعل');
-      return;
-    }
-
     const opt = isOptional == 'اختياري' ? true : false;
 
     const data = {

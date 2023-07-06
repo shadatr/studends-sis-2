@@ -43,11 +43,14 @@ const page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await axios.get(
-        `/api/allPermission/admin/selectedPerms/${user?.id}`
-      );
-      const messagePer: GetPermissionType[] = response.data.message;
-      setPerms(messagePer);
+        if(user){
+
+            const response = await axios.get(
+              `/api/allPermission/admin/selectedPerms/${user?.id}`
+            );
+            const messagePer: GetPermissionType[] = response.data.message;
+            setPerms(messagePer);
+        }
 
       const responseLetter = await axios.get(`/api/exams/grading/1`);
       const messageLetters: LettersType[] = responseLetter.data.message;
