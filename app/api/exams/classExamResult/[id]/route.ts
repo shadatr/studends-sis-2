@@ -14,7 +14,7 @@ export async function GET(
     const data = await supabase
       .from('tb_classes')
       .select('*')
-      .eq('section_id', params.id).eq('active', true);
+      .eq('section_id', params.id).eq('active', true).order('id', { ascending: true });
 
     const parsedData = JSON.parse(JSON.stringify(data));
     const messageData = parsedData.data;
@@ -23,7 +23,9 @@ export async function GET(
     const data1 = await supabase
       .from('tb_course_enrollment')
       .select('*')
-      .eq('class_id', data3[0].id);
+      .eq('class_id', data3[0].id)
+      .eq('approved', true)
+      .order('id', { ascending: true });
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
