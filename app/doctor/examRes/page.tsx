@@ -1,5 +1,5 @@
 'use client';
-import { SectionType } from '@/app/types/types';
+import { ClassesInfoType, ClassesType, SectionType } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -14,16 +14,25 @@ const Page = () => {
   }
   // if user isn't a admin, throw an error
   const user = session.data?.user;
-  const [sections, setSections] = useState<SectionType[]>([]);
+  const [sections, setSections] = useState<ClassesInfoType[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
       if(user){
-      const response = await axios.get(
-        `/api/course/courses/${user?.id}/doctor`
-      );
-      const message: SectionType[] = response.data.message;
-      setSections(message);
+      const response = await axios.get(`/api/course/doctorCourses/${user?.id}`);
+      const message: ClassesType[] = response.data.message;
+
+      const classPromises = message.map(async (section) => {
+        const responseReq = await axios.get(
+          `/api/getAll/getAllClassInfo/${section.section_id}`
+        );
+        const { message: classMessage }: { message: ClassesInfoType[] } =
+          responseReq.data;
+        return classMessage;
+      });
+      const classData = await Promise.all(classPromises);
+      const classes = classData.flat();
+      setSections(classes);
     }};
     fetchPosts();
   }, [user]);
@@ -43,7 +52,7 @@ const Page = () => {
             <tr key={index}>
               <td className="border px-4 py-2 bg-lightBlue">
                 <Link href={`/doctor/examRes/courseStudents/${item.id}`}>
-                  {item.name}
+                  {item.section.name}
                 </Link>
               </td>
             </tr>
