@@ -56,8 +56,6 @@ const Page = ({ params }: { params: { id: number } }) => {
           `/api/exams/examRes/${params.id}/${"section"}`
         );
         const message: ClassEnrollmentsType = response.data.message;
-        setGrades(message);
-        setCourse(message);
 
         const resp = await axios.get(`/api/getAll/student`);
         const personalInfoMessage: PersonalInfoType[] = resp.data.message;
@@ -229,6 +227,18 @@ const Page = ({ params }: { params: { id: number } }) => {
     };
     fetchPosts();
   }, [edit, params.id, editMid, editFinal, editHw, user]);
+
+    useEffect(() => {
+      const fetchPosts = async () => {
+         const response = await axios.get(
+           `/api/exams/examRes/${params.id}/${'section'}`
+         );
+         const message: ClassEnrollmentsType = response.data.message;
+         setGrades(message);
+         setCourse(message);
+      };
+      fetchPosts();
+    }, []);
 
 const handleGradeChange = (studentId: number, exam: string, grade: string) => {
   const updatedGrades = grades?.courseEnrollements.map((gradeObj) => {
