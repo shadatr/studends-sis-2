@@ -7,6 +7,8 @@ import { redirect } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
+
+export const fetchCache = 'force-no-store';
 const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
