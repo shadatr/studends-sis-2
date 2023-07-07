@@ -1,11 +1,16 @@
 'use client';
-import { PersonalInfoType, StudentClassType } from '@/app/types/types';
+import {
+  PersonalInfoType,
+  StudentClassType,
+  LetterGradesType,
+} from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
+import { toast } from 'react-toastify';
 
 const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });
@@ -15,19 +20,25 @@ const Page = ({ params }: { params: { id: number } }) => {
   }
   const [students, setStudents] = useState<StudentClassType[]>([]);
   const [studentsNames, setStudentsNames] = useState<PersonalInfoType[]>([]);
-    const printableContentRef = useRef<HTMLDivElement>(null);
-
+  const printableContentRef = useRef<HTMLDivElement>(null);
+  const [courseLetter, setCourseLetter] = useState<LetterGradesType[]>([]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const fetchPosts = async () => {
         try {
+          const responseCourseLetter = await axios.get(
+            `/api/exams/letterGrades`
+          );
+          const messageCourseLetter: LetterGradesType[] =
+            responseCourseLetter.data.message;
+          setCourseLetter(messageCourseLetter);
+
           const response = await axios.get(
             `/api/exams/classExamResult/${params.id}`
           );
           const message: StudentClassType[] = response.data.message;
           setStudents(message);
-            console.log(message);
 
           const resp = await axios.get(`/api/getAll/student`);
           const personalInfoMessage: PersonalInfoType[] = resp.data.message;
@@ -40,18 +51,61 @@ const Page = ({ params }: { params: { id: number } }) => {
     }
   }, [params.id]);
 
-    const handlePrint = useReactToPrint({
-      content: () => printableContentRef.current,
-    });
+  const handlePrint = useReactToPrint({
+    content: () => printableContentRef.current,
+  });
+
+  const handleSubmit = (name: string) => {
+    if (typeof window !== 'undefined') {
+      axios
+        .post(`/api/exams/submitGrades/${params.id}/${name}`, 'true')
+        .then(() => {
+          toast.success('تم موافقة على الدرجات بنجاح');
+        })
+        .catch(() => {
+          toast.error('حدث خطأ اثناء موافقة على الدرجات');
+        });
+    }
+  };
 
   return (
     <div className="flex absolute flex-col w-4/5 justify-center items-center">
-      <button
-        onClick={handlePrint}
-        className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
-      >
-        طباعة درجات
-      </button>
+      <div className="flex ">
+        <button
+          onClick={handlePrint}
+          className="flex bg-green-500 hover:bg-green-600 p-1 m-2 text-white rounded-md w-[200px] justify-center items-center"
+        >
+          طباعة درجات
+        </button>
+        <button
+          className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
+          type="submit"
+          onClick={() => handleSubmit('result_publish')}
+        >
+          موافقة النتيجة النهائية
+        </button>
+        <button
+          className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-1 rounded-md w-[200px]"
+          type="submit"
+          onClick={() => handleSubmit('class_work_publish')}
+        >
+          موافقة على درجات اعمال السنة
+        </button>
+        <button
+          className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-1 rounded-md w-[250px]"
+          type="submit"
+          onClick={() => handleSubmit('final_publish')}
+        >
+          موافقة على درجات الامتحان النهائي
+        </button>
+        <button
+          className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-1 rounded-md w-[250px]"
+          type="submit"
+          onClick={() => handleSubmit('mid_publish')}
+        >
+          موافقة على درجات الامتحان النصفي
+        </button>
+      </div>
       <div ref={printableContentRef}>
         <table className="border-collapse mt-8 w-[900px]">
           <thead>
@@ -59,6 +113,8 @@ const Page = ({ params }: { params: { id: number } }) => {
               <th className="border border-gray-300 px-4 py-2">
                 المعلومات الشخصية
               </th>
+              <th className="border border-gray-300 px-4 py-2"> النتيجة</th>
+              <th className="border border-gray-300 px-4 py-2"> المجموع</th>
               <th className="border border-gray-300 px-4 py-2">اعمال السنة</th>
               <th className="border border-gray-300 px-4 py-2">
                 الامتحان النهائي
@@ -76,18 +132,36 @@ const Page = ({ params }: { params: { id: number } }) => {
               const student = studentsNames.find(
                 (student) => student.id === user.student_id
               );
+              const letter = courseLetter.find(
+                (item) => item.course_enrollment_id == user.id
+              );
+
               return (
                 <tr key={index}>
                   <td className="border border-gray-300 px-4 py-2">
                     <Link
-                      href={`/doctor/personalInformation/student/${user.student_id}`}
+                      href={`/management/personalInformation/student/${user.student_id}`}
                       className="bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-md inline-block"
                     >
                       الملف الشخصي
                     </Link>
                   </td>
-                  
-
+                  <td
+                    className={`border border-gray-300 px-4 py-2 ${
+                      user.pass
+                        ? 'text-green-600 hover:text-green-700'
+                        : 'text-red-500 hover:text-red-600'
+                    }`}
+                  >
+                    {user.pass == null
+                      ? ''
+                      : user.pass
+                      ? `${letter?.letter_grade} ناجح`
+                      : `${letter?.letter_grade} راسب`}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {user.result}
+                  </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {user.class_work}
                   </td>
