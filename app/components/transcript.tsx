@@ -99,9 +99,9 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
             responseCourseMaj.map((majCo) => {
               const selecetedCourse = courses.find(
                 (c) =>
-                  c.course.id == majCo.course_id && c.courseEnrollements.pass
+                  c.course.id == majCo.course_id && c.courseEnrollements.pass==true
               );
-              if (selecetedCourse == undefined && majCo.isOptional == false) {
+              if (!selecetedCourse && majCo.isOptional == false) {
                 isGraduated = false;
               }
             });
