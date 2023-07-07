@@ -230,15 +230,15 @@ const Page = ({ params }: { params: { id: number } }) => {
 
     useEffect(() => {
       const fetchPosts = async () => {
-         const response = await axios.get(
-           `/api/exams/examRes/${params.id}/${'section'}`
-         );
-         const message: ClassEnrollmentsType = response.data.message;
-         setGrades(message);
-         setCourse(message);
+        const response = await axios.get(
+          `/api/exams/examRes/${params.id}/${'section'}`
+        );
+        const message: ClassEnrollmentsType = response.data.message;
+        setGrades(message);
+        setCourse(message);
       };
       fetchPosts();
-    }, []);
+    }, [edit, editMid, editFinal, editHw]);
 
 const handleGradeChange = (studentId: number, exam: string, grade: string) => {
   const updatedGrades = grades?.courseEnrollements.map((gradeObj) => {
