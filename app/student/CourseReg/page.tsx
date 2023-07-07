@@ -60,7 +60,7 @@ const Page = () => {
       if (user) {
         try {
           const response = await axios.get(
-            `/api/getAll/StudentCourseReg/${user?.major}`
+            `/api/getAll/StudentCourseReg/${user?.major}`,
           );
           const message: CourseInfoType[] = response.data.message;
           setCourses(message);
@@ -94,28 +94,32 @@ const Page = () => {
     courses.forEach((course) => {
       if (course.prerequisites.length === 0) {
         if (course?.courseEnrollements?.length != 0) {
-          course.courseEnrollements.map((courseEnroll) => {
+          const enrollments = course.courseEnrollements.filter((co)=> co.student_id==user?.id);
+
+          enrollments.map((courseEnroll) => {
             course.class.map((classItem) => {
               if (
-                courseEnroll.student_id === user?.id &&
                 classItem.id === courseEnroll.class_id &&
-                courseEnroll.pass === true &&
-                courseEnroll.can_repeat === false
+                courseEnroll.pass === true
               ) {
                 const index = updatedCheckList.indexOf(course);
-                if (index !== -1) {
-                  updatedCheckList.splice(index, 1);
-                }
+
+                if (courseEnroll.can_repeat == true) {
+                  repeatList.push(course);
+                  if (index !== -1) {
+                    updatedCheckList.splice(index, 1);
+                  }
+                } 
+                
               } else if (
-                !updatedCheckList.find(
+                (!updatedCheckList.find(
                   (item) => item.course.id === course.course.id
-                )
+                ) &&
+                  courseEnroll.pass == false) ||
+                courseEnroll.can_repeat == true
               ) {
                 updatedCheckList.push(course);
-                if (courseEnroll.can_repeat === true) {
-                  repeatList.push(course);
-                }
-              }
+              }               
             });
           });
         } else {
@@ -124,7 +128,7 @@ const Page = () => {
       } else {
         course.prerequisites.map((preCourse) => {
           const prerequisiteCourse = courses.find(
-            (prereq) => preCourse.prerequisite_course_id === prereq.course.id
+            (prereq) => preCourse.prerequisite_course_id === prereq.course.id 
           );
 
           prerequisiteCourse?.class.forEach((classItem) => {
@@ -136,11 +140,12 @@ const Page = () => {
             );
 
             if (
-              passed?.pass === true &&
+              passed?.pass === true && 
               !updatedCheckList.find(
                 (item) => item.course.id === course.course.id
               )
             ) {
+
               updatedCheckList.push(course);
               const index = updatedCheckList2.indexOf(course);
               if (index !== -1) {
@@ -263,7 +268,7 @@ const Page = () => {
                 </tr>
               </thead>
               <tbody>
-                {checkList.map((item, index) =>
+                {checkList.map((item, inde) =>
                   item.class.map((cls) => {
                     if (cls.active) {
                       const selectedSec = item.section.find(
@@ -284,7 +289,7 @@ const Page = () => {
                       );
 
                       return (
-                        <tr key={index}>
+                        <tr key={inde + 1}>
                           <td className="border border-gray-300 px-4 py-2">
                             <input
                               type="checkbox"
@@ -358,7 +363,7 @@ const Page = () => {
                 </tr>
               </thead>
               <tbody>
-                {unableCourses.map((item, index) => {
+                {unableCourses.map((item, ind) => {
                   const preCourses = item.prerequisites.map((pre) =>
                     courses.find(
                       (course) =>
@@ -366,7 +371,7 @@ const Page = () => {
                     )
                   );
                   return (
-                    <tr className="text-red-500" key={index}>
+                    <tr className="text-red-500" key={ind+2}>
                       <td className="border border-gray-300 px-4 py-2">
                         {preCourses.map((preCourse) => (
                           <span key={preCourse?.course.id}>
