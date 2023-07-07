@@ -78,7 +78,6 @@ export async function GET(
       );
       const cour = courses?.find((c) => course.course_id === c.id);
 
-      console.log(courseEnrollements);
 
       return {
         class: clas,
@@ -90,6 +89,8 @@ export async function GET(
         doctor: doc,
       };
     });
+
+    console.log(data);
 
     return new Response(JSON.stringify({ message: data }), {
       status: 200,

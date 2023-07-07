@@ -64,14 +64,13 @@ const Page = () => {
           );
           const message: CourseInfoType[] = response.data.message;
           setCourses(message);
+          // console.log(message);
 
           const responseEnroll = await axios.get(
             `/api/courseEnrollment/courseAccept`
           );
           const messageEnroll: StudentClassType[] = responseEnroll.data.message;
           setCourseEnrollements(messageEnroll);
-
-          console.log(messageEnroll);
 
           const responsePer = await axios.get(
             `/api/allPermission/student/selectedPerms/${user?.id}`
@@ -96,27 +95,42 @@ const Page = () => {
     courses.forEach((course) => {
       if (course.prerequisites.length === 0) {
         if (course?.courseEnrollements?.length != 0) {
-          course.courseEnrollements.map((courseEnroll) => {
+          const enrollments = course.courseEnrollements.filter(
+            (co) => co.student_id == user?.id
+          );
+          if (enrollments.length == 0) {
+            updatedCheckList.push(course);
+          }
+
+          enrollments.map((courseEnroll) => {
             course.class.map((classItem) => {
               if (
-                courseEnroll.student_id === user?.id &&
                 classItem.id === courseEnroll.class_id &&
-                courseEnroll.pass === true &&
-                courseEnroll.can_repeat === false
+                courseEnroll.pass === true
               ) {
                 const index = updatedCheckList.indexOf(course);
-                if (index !== -1) {
-                  updatedCheckList.splice(index, 1);
+
+                if (courseEnroll.can_repeat == false) {
+                  if (index !== -1) {
+                    updatedCheckList.splice(index, 1);
+                  }
                 }
               } else if (
-                !updatedCheckList.find(
+                (!updatedCheckList.find(
                   (item) => item.course.id === course.course.id
-                )
+                ) &&
+                  courseEnroll.pass == false) ||
+                courseEnroll.can_repeat == true
               ) {
-                updatedCheckList.push(course);
-                if (courseEnroll.can_repeat === true) {
+                if (
+                  courseEnroll.can_repeat == true &&
+                  !repeatList.find(
+                    (item) => item.course.id === course.course.id
+                  )
+                ) {
                   repeatList.push(course);
                 }
+                updatedCheckList.push(course);
               }
             });
           });
@@ -124,58 +138,59 @@ const Page = () => {
           updatedCheckList.push(course);
         }
       } else {
-        course.prerequisites.map((preCourse) => {
+        let done = 0;
+        course.prerequisites.forEach((preCourse) => {
           const prerequisiteCourse = courses.find(
             (prereq) => preCourse.prerequisite_course_id === prereq.course.id
           );
 
-          prerequisiteCourse?.class.forEach((classItem) => {
-            const passed = prerequisiteCourse.courseEnrollements.find(
-              (courseEnroll) =>
-                courseEnroll.student_id === user?.id &&
-                classItem.id === courseEnroll.class_id &&
-                courseEnroll
-            );
-
-            if (
-              passed?.pass === true &&
-              !updatedCheckList.find(
-                (item) => item.course.id === course.course.id
+          const passed = prerequisiteCourse?.courseEnrollements.find(
+            (courseEnroll) =>
+              prerequisiteCourse.class.find(
+                (classItem) =>
+                  courseEnroll.student_id === user?.id &&
+                  classItem.id === courseEnroll.class_id
               )
-            ) {
-              updatedCheckList.push(course);
-              const index = updatedCheckList2.indexOf(course);
-              if (index !== -1) {
-                updatedCheckList2.splice(index, 1);
-              }
-            } else {
-              if (
-                !updatedCheckList2.find(
-                  (item) => item.course.id === course.course.id
-                )
-              ) {
-                updatedCheckList2.push(course);
-              }
-              const index = updatedCheckList.indexOf(course);
-              if (index !== -1) {
-                updatedCheckList.splice(index, 1);
-              }
-            }
-          });
-          if (
-            prerequisiteCourse?.class.length == 0 &&
-            !updatedCheckList2.find(
-              (item) => item.course.id === course.course.id
-            )
-          ) {
-            updatedCheckList2.push(course);
-          }
+          );
+
+            console.log(passed);
+            if (passed?.pass==true) {
+              done++;
+            } 
         });
+
+        if (done == course.prerequisites.length) {
+          updatedCheckList.push(course);
+          const index = updatedCheckList.indexOf(course);
+          if (index !== -1) {
+            updatedCheckList2.splice(index, 1);
+          }
+        } else  {
+          updatedCheckList2.push(course);
+          const index = updatedCheckList.indexOf(course);
+          if (index !== -1) {
+            updatedCheckList.splice(index, 1);
+          }
+        }
+      }
+
+    });
+    const uniqueCourseIds = new Set();
+    const uniqueCourses:any = [];
+
+
+    updatedCheckList.forEach((item) => {
+      if (!uniqueCourseIds.has(item.course.id)) {
+        uniqueCourseIds.add(item.course.id);
+        uniqueCourses.push(item);
       }
     });
+
+    console.log(uniqueCourses);
     setRepeat(repeatList);
     setUnableCourses(updatedCheckList2);
-    setCheckList(updatedCheckList);
+    setCheckList(uniqueCourses);
+    
   }, [user, refresh, courses]);
 
   const handleCheck = (item: number) => {
@@ -224,7 +239,7 @@ const Page = () => {
       permissionData
     );
 
-    setSubmitting(false); 
+    setSubmitting(false);
     setSubmit(!submit);
   };
 
@@ -265,7 +280,8 @@ const Page = () => {
                 </tr>
               </thead>
               <tbody>
-                {checkList.map((item, index) =>
+                {checkList.map((item, inde) =>
+                  
                   item.class.map((cls) => {
                     if (cls.active) {
                       const selectedSec = item.section.find(
@@ -286,7 +302,7 @@ const Page = () => {
                       );
 
                       return (
-                        <tr key={index}>
+                        <tr key={inde + 1}>
                           <td className="border border-gray-300 px-4 py-2">
                             <input
                               type="checkbox"
@@ -305,7 +321,7 @@ const Page = () => {
                             {item.course.hours}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
-                            {item.majorCourse.isOptional ? 'اجباري' : 'اختياري'}
+                            {item.majorCourse.isOptional ? 'اختياري' : 'اجباري'}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
                             {findDay?.name}/ {findStartTime?.name}-
@@ -360,7 +376,7 @@ const Page = () => {
                 </tr>
               </thead>
               <tbody>
-                {unableCourses.map((item, index) => {
+                {unableCourses.map((item, ind) => {
                   const preCourses = item.prerequisites.map((pre) =>
                     courses.find(
                       (course) =>
@@ -368,11 +384,12 @@ const Page = () => {
                     )
                   );
                   return (
-                    <tr className="text-red-500" key={index}>
+                    <tr className="text-red-500" key={ind + 3}>
                       <td className="border border-gray-300 px-4 py-2">
                         {preCourses.map((preCourse) => (
                           <span key={preCourse?.course.id}>
                             {preCourse?.course.course_name}
+                            {' - '}
                           </span>
                         ))}
                       </td>
@@ -386,7 +403,7 @@ const Page = () => {
                         {item.course.hours}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {item.majorCourse.isOptional ? 'اجباري' : 'اختياري'}
+                        {item.majorCourse.isOptional ? 'اختياري' : 'اجباري'}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
                         {item.course.course_name}
