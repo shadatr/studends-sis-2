@@ -51,7 +51,7 @@ const Page = () => {
           {sections.map((item, index) => (
             <tr key={index}>
               <td className="border px-4 py-2 bg-lightBlue">
-                <Link href={`/doctor/examRes/courseStudents/${item.id}`}>
+                <Link href={`/doctor/examRes/courseStudents/${item.section.id}`}>
                   {item.section.name}
                 </Link>
               </td>
