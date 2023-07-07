@@ -1,10 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  AnnouncmentsType,
-  StudenCourseType,
-} from '@/app/types/types';
+import { AnnouncmentsType, StudenCourseType } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
@@ -26,7 +23,6 @@ const AnnoPage = () => {
     const fetchPosts = async () => {
       if (user) {
         axios.get('/api/announcements/uniAnnouncements').then((resp) => {
-          console.log(resp.data);
           const message: AnnouncmentsType[] = resp.data.message;
           setAnnouncements(message);
         });
@@ -90,8 +86,13 @@ const AnnoPage = () => {
           {courseAnnouncements.length ? (
             courseAnnouncements.map((item, index) => {
               const clas = classes.find(
-                (Class) => Class.class.id === item.posted_for_class_id
+                (Class) =>
+                  Class.class && Class.class.id === item.posted_for_class_id
               );
+              if (!clas) {
+                // Handle the case where 'clas' is undefined
+                return null;
+              }
               return (
                 <tr key={index} className="">
                   <td className=" flex items-center justify-end p-1">
