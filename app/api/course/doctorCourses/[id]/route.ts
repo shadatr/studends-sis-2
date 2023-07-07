@@ -14,7 +14,7 @@ export async function GET(
   const data= await supabase
     .from('tb_classes')
     .select('*')
-    .eq('doctor_id', params.id);
+    .eq('doctor_id', params.id).eq('active',true);
 
   if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
