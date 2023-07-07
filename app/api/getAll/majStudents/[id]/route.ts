@@ -10,9 +10,6 @@ export async function GET(
   { params }: { params: { id: number } }
 ) {
   try {
-    const headers = {
-      'cache': 'no-store', // Add Cache-Control header with "no-store" value
-    };
 
     const data = await supabase
       .from('tb_students')
@@ -21,14 +18,11 @@ export async function GET(
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
-        status: 403,
-        headers,
+        status: 403
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }), {
-      headers,
-    });
+    return new Response(JSON.stringify({ message: data.data }),);
   } catch {
     // Handle error
   }

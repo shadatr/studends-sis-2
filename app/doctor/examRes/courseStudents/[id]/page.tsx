@@ -209,7 +209,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                     (grade.final * message.course[0].final) / 100 +
                     (grade.class_work * message.course[0].class_work) / 100;
 
-                  if (avrg < messageGrade[0].DC && avrg > messageGrade[0].DD) {
+                  if (avrg <= messageGrade[0].DC && avrg >= messageGrade[0].DD) {
                     return {
                       ...grade,
                       can_repeat: true,

@@ -104,15 +104,16 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
               }
             });
 
-            const data = {
-              credits: studentTotalCredits,
-              student_id: user,
-              graduation: isGraduated,
-              graduation_year: graduationYear?.semester,
-            };
+            if (studentTotalCredits && user && graduationYear?.semester){
+              const data = {
+                credits: studentTotalCredits,
+                student_id: user,
+                graduation: isGraduated,
+                graduation_year: graduationYear?.semester,
+              };
 
 
-            axios.post('/api/transcript/editCredits', data);
+            axios.post('/api/transcript/editCredits', data);}
           }
         }
       } catch (error) {
