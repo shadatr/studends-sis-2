@@ -5,33 +5,30 @@ import { MenuItemType } from '../types/types';
 
 const item: MenuItemType[] = [
   { id: 1, link: 'announcements', name: 'الإعلانات' },
-  { id: 2, link: 'students', name: 'الطلاب' },
-  { id: 3, link: 'doctors', name: ' اعضاء هيئة التدريس' },
-  { id: 4, link: 'managers', name: 'موظفين الادارة' },
-  { id: 5, link: 'courseReg', name: ' المواد' },
-  { id: 6, link: 'facultiesAndMajors', name: ' الكليات و التخصصات' },
-  { id: 7, link: 'grades', name: 'الدرجات' },
+  { id: 3, link: 'courses', name: 'المواد الدراسية' },
+  { id: 4, link: 'courseProg', name: 'جدول المحاضرات' },
+  { id: 6, link: 'examProg', name: 'جدول الامتحانات' },
+  { id: 7, link: 'examRes', name: 'نتائج الامتحانات' },
+  // { id: 9, link: 'headOfDepartmentWork', name: 'اعمال عميد الكلية' },
+  { id: 10, link: 'advisorWork', name: 'اعمال الاشراف' },
 ];
 
-function ManagMenu() {
+function DoctorMenu() {
   return (
     <div className="flex justify-end items-center h-screen text-sm">
       <table className="w-[260px]  bg-darkBlue text-white">
         <tbody className="text-sm ">
-          <tr className="flex flex-col">
-            {item.map((item, index) => (
-              <td
-                key={index}
-                className="w-full h-[80px] p-3 flex items-center justify-center hover:text-cyan-300"
-              >
-                <Link href={`/management/${item.link}`}>{item.name}</Link>
+          {item.map((item, index) => (
+            <tr className="" key={index}>
+              <td className="w-full px-3 py-5 flex items-center justify-center hover:text-cyan-300">
+                <Link href={`/doctor/${item.link}`}>{item.name}</Link>
               </td>
-            ))}
-          </tr>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
   );
 }
 
-export default ManagMenu;
+export default DoctorMenu;
