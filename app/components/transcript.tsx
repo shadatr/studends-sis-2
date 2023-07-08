@@ -35,14 +35,13 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
             responseCourse.data.message;
           setCourses(messageCourse);
 
-          
           const majCredit = messageCourse.find((c) => c);
-          
+
           const responseMaj = await axios.get(
             `/api/major/getSpecificMajor/${majorId}`
-            );
-            const messageMaj: MajorRegType[] = responseMaj.data.message;
-            
+          );
+          const messageMaj: MajorRegType[] = responseMaj.data.message;
+
           const messageMajCourse = await axios.get(
             `/api/course/courseMajorReg/${majorId}`
           );
@@ -52,8 +51,6 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
           setMajorCredit(messageMaj[0].credits_needed);
 
           setStudentCredit(majCredit?.student?.credits);
-
-          console.log(messageMaj[0].credits_needed);
 
           const responseTranscript = await axios.get(`/api/transcript/${user}`);
           const messageTranscript: TranscriptType[] =
@@ -74,7 +71,7 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
               const selectedCourse = messageCourse.find(
                 (course) =>
                   item.course_enrollment_id === course.courseEnrollements.id &&
-                  item.repeated == false 
+                  item.repeated == false
               );
               if (selectedCourse?.course.credits) {
                 studentTotalCredits += selectedCourse?.course.credits;
@@ -99,23 +96,23 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
             responseCourseMaj.map((majCo) => {
               const selecetedCourse = courses.find(
                 (c) =>
-                  c.course.id == majCo.course_id && c.courseEnrollements.pass==true
+                  c.course.id == majCo.course_id && c.courseEnrollements.pass
               );
-              if (!selecetedCourse && majCo.isOptional == false) {
+              if (selecetedCourse == undefined && majCo.isOptional == false) {
                 isGraduated = false;
               }
             });
 
-            const data = {
-              credits: studentTotalCredits,
-              student_id: user,
-              graduation: isGraduated,
-              graduation_year: graduationYear?.semester,
-            };
+            if (studentTotalCredits && user && graduationYear?.semester) {
+              const data = {
+                credits: studentTotalCredits,
+                student_id: user,
+                graduation: isGraduated,
+                graduation_year: graduationYear?.semester,
+              };
 
-            console.log(data);
-
-            axios.post('/api/transcript/editCredits', data);
+              axios.post('/api/transcript/editCredits', data);
+            }
           }
         }
       } catch (error) {
@@ -124,8 +121,7 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
     };
 
     fetchData();
-  }, [user]);
-            
+  }, [majorId, user]);
 
   return (
     <div className="absolute w-[85%] flex flex-col p-10 justify-content items-center">
