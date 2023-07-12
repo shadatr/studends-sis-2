@@ -1,10 +1,9 @@
 'use client';
-
 import React, {  useEffect, useState } from 'react';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import {
-  MajorReg2Type,
+  MajorRegType,
 } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
@@ -23,12 +22,17 @@ const Page = ({ params }: { params: { doctorId: number } }) => {
     redirect('/');
   }
 
-  const [majors, setMajors] = useState<MajorReg2Type[]>([]);
+  const [majors, setMajors] = useState<MajorRegType[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
       axios.get('/api/major/majorReg').then((resp) => {
+<<<<<<< HEAD
         const message: MajorReg2Type[] = resp.data.message;
+=======
+        console.log(resp.data);
+        const message: MajorRegType[] = resp.data.message;
+>>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
         setMajors(message);
       });
     };

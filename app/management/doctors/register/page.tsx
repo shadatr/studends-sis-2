@@ -5,7 +5,6 @@ import React, { FC, useRef, useState } from 'react';
 import { DatePicker } from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import { RegisterdoctorType } from '@/app/types/types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
@@ -41,6 +40,8 @@ const Page = () => {
     redirect('/');
   }
 
+  const user = session.data?.user;
+
   const [birthDate, setBirthDate] = useState(new Date());
   const name = useRef<HTMLInputElement>(null);
   const surname = useRef<HTMLInputElement>(null);
@@ -49,6 +50,7 @@ const Page = () => {
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
   const speciality = useRef<HTMLInputElement>(null);
+  const number = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submit, setSubmit] = useState(false);
 
@@ -64,7 +66,8 @@ const Page = () => {
       !surname.current?.value ||
       !email.current?.value ||
       !password.current?.value ||
-      !speciality.current?.value
+      !speciality.current?.value||
+      !number.current?.value
     ) {
       toast.error('يجب ملئ جميع الحقول');
       return;
@@ -74,13 +77,14 @@ const Page = () => {
       .update(password.current?.value)
       .digest('hex');
 
-    const data: RegisterdoctorType = {
+    const data = {
       name: name.current?.value,
       surname: surname.current?.value,
       phone: phone.current?.value,
       address: address.current?.value,
       email: email.current?.value,
       major: speciality.current?.value,
+      number: number.current?.value,
       password: passwordHash,
       birth_date: birthDate.toLocaleDateString(),
     };
@@ -89,6 +93,12 @@ const Page = () => {
       .post('/api/register/doctor', data)
       .then((res) => {
         toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تسجيل دكتور' ,
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -99,8 +109,13 @@ const Page = () => {
   };
   return (
     <div className="flex flex-col items-center absolute justify-center w-[80%] text-sm mt-10">
-      <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
-      <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
+      <InputBox label="الاسم" placeholder="الاسم" inputRef={name} />
+      <InputBox label="اللقب" placeholder="اللقب" inputRef={surname} />
+      <InputBox
+        label="الرقم التعريفي"
+        placeholder="الرقم التعريفي"
+        inputRef={number}
+      />
       <InputBox label="رقم الهاتف" placeholder="01000000000" inputRef={phone} />
       <InputBox label="العنوان" placeholder="طرابلس" inputRef={address} />
       <InputBox label="التخصص" placeholder="احصاء" inputRef={speciality} />

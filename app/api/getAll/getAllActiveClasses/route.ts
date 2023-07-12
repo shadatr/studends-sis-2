@@ -1,7 +1,6 @@
-import { Database } from '@/app/types/supabase';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient<Database>(
+const supabase = createClient(
   process.env.SUPABASE_URL || '',
   process.env.SUPABASE_KEY || ''
 );
@@ -9,8 +8,9 @@ const supabase = createClient<Database>(
 export async function GET() {
   try {
     const data = await supabase
-      .from('tb_students')
-      .select('*').eq('graduated', false);
+      .from('tb_classes')
+      .select('*')
+      .eq('active', true);
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {

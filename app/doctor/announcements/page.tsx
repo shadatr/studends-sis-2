@@ -74,6 +74,12 @@ const AnnoPage = () => {
     axios.post('/api/announcements/uniAnnouncements', data).then((resp) => {
       toast.success(resp.data.message);
       setLoad(!loadAnnouncements);
+      const dataUsageHistory = {
+        id: user?.id,
+        type: 'doctor',
+        action: 'اضافة اعلان',
+      };
+      axios.post('/api/usageHistory', dataUsageHistory);
     });
   };
 
@@ -91,10 +97,15 @@ const AnnoPage = () => {
       general: false,
       posted_for_class_id: selectedClass?.class.id,
     };
-    console.log(data);
     axios.post('/api/announcements/newUniAnnouncement', data).then((resp) => {
       toast.success(resp.data.message);
       setLoad(!loadAnnouncements);
+      const dataUsageHistory = {
+        id: user?.id,
+        type: 'doctor',
+        action: 'حذف اعلان',
+      };
+      axios.post('/api/usageHistory', dataUsageHistory);
     });
     setNewItem('');
   };

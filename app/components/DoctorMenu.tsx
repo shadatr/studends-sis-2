@@ -14,17 +14,13 @@ const item: MenuItemType[] = [
 ];
 
 function DoctorMenu() {
-  
-
   return (
     <div className="flex justify-end items-center h-screen text-sm">
       <table className="w-[260px]  bg-darkBlue text-white">
         <tbody className="text-sm ">
           {item.map((item, index) => (
             <tr className="" key={index}>
-              <td
-                className="w-full px-3 py-5 flex items-center justify-center hover:text-cyan-300"
-              >
+              <td className="w-full px-3 py-5 flex items-center justify-center hover:text-cyan-300">
                 <Link href={`/doctor/${item.link}`}>{item.name}</Link>
               </td>
             </tr>
@@ -33,8 +29,6 @@ function DoctorMenu() {
       </table>
     </div>
   );
-
 }
 
 export default DoctorMenu;
-

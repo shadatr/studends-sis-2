@@ -6,7 +6,7 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import { DatePicker } from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import { MajorRegType, RegisterStudentType } from '@/app/types/types';
+import { MajorRegType } from '@/app/types/types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
@@ -42,11 +42,14 @@ const Page = () => {
     redirect('/');
   }
 
+  const user = session.data?.user;
+
   const [birthDate, setBirthDate] = useState(new Date());
   const name = useRef<HTMLInputElement>(null);
   const surname = useRef<HTMLInputElement>(null);
   const phone = useRef<HTMLInputElement>(null);
   const address = useRef<HTMLInputElement>(null);
+  const number = useRef<HTMLInputElement>(null);
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
   const [majors, setMajors] = useState<MajorRegType[]>([]);
@@ -76,7 +79,9 @@ const Page = () => {
       !name.current?.value ||
       !surname.current?.value ||
       !email.current?.value ||
-      !password.current?.value
+      !password.current?.value ||
+      !number.current?.value ||
+      !selectedMajor
     ) {
       toast.error('يجب ملئ جميع الحقول');
       return;
@@ -86,11 +91,12 @@ const Page = () => {
       .update(password.current?.value)
       .digest('hex');
 
-    const data: RegisterStudentType = {
+    const data = {
       name: name.current?.value,
       surname: surname.current?.value,
       major: selectedMajor?.id,
       phone: phone.current?.value,
+      number: number.current?.value,
       address: address.current?.value,
       email: email.current?.value,
       password: passwordHash,
@@ -101,6 +107,12 @@ const Page = () => {
       .post('/api/register/student', data)
       .then((res) => {
         toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: 'اضافة طالب ',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -119,8 +131,14 @@ const Page = () => {
   return (
     <div className="flex absolute flex-col items-center w-[100%] p-10 h-[150px] text-sm">
       <div>
-        <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
-        <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
+        <InputBox label="الاسم" placeholder="الاسم" inputRef={name} />
+        <InputBox label="اللقب" placeholder="اللقب" inputRef={surname} />
+        <InputBox
+          label="رقم الطالب"
+          placeholder="رقم الطالب"
+          inputRef={number}
+        />
+
         <label>اختر التخصص</label>
         <select
           id="dep"

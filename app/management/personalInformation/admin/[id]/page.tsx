@@ -79,6 +79,12 @@ const Page = ({ params }: { params: { id: number } }) => {
       .then((res) => {
         toast.success(res.data.message);
         setRefresh(!refresh);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تغيير صلاحية موظف',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       });
   };
 
@@ -100,6 +106,12 @@ const Page = ({ params }: { params: { id: number } }) => {
       .post(`/api/personalInfo/edit/${params.id}/editAdmin`, newData)
       .then(() => {
         toast.success('تم تحديث البيانات بنجاح');
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل معلومات موظف',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch(() => {
         toast.error('حدث خطأ أثناء تحديث البيانات');

@@ -5,7 +5,7 @@ import {
   AssignPermissionType,
   GetPermissionStudentType,
   PersonalInfoHeaderType,
-  RegisterStudent2Type,
+  PersonalInfoType,
   InfoDoctorType,
   GetPermissionType,
   MajorRegType,
@@ -20,6 +20,7 @@ import { redirect } from 'next/navigation';
 const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'الاسم' },
   { header: 'اللقب' },
+  { header: 'رقم الطالب' },
   { header: 'تاريخ الميلاد' },
   { header: 'التخصص' },
   { header: 'الفصل الدراسي' },
@@ -37,8 +38,8 @@ const Page = ({ params }: { params: { id: number } }) => {
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
     redirect('/');
   }
-  const [useMyData, setMydata] = useState<RegisterStudent2Type[]>([]);
-  const [newData, setNewData] = useState<RegisterStudent2Type[]>([]);
+  const [useMyData, setMydata] = useState<PersonalInfoType[]>([]);
+  const [newData, setNewData] = useState<PersonalInfoType[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
   const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
   const [adminPerms, setAdminPerms] = useState<GetPermissionType[]>([]);
@@ -48,6 +49,8 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [major, setMajor] = useState<string>();
   const printableContentRef = useRef<HTMLDivElement>(null);
   const user = session.data?.user;
+  const [major, setMajor] = useState<string>();
+
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -72,7 +75,11 @@ const Page = ({ params }: { params: { id: number } }) => {
       setPerms(message);
 
       axios.get(`/api/personalInfo/student/${params.id}`).then(async (resp) => {
+<<<<<<< HEAD
         const message: RegisterStudent2Type[] = resp.data.message;
+=======
+        const message: PersonalInfoType[] = resp.data.message;
+>>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
         setMydata(message);
         setNewData(message);
 
@@ -101,10 +108,16 @@ const Page = ({ params }: { params: { id: number } }) => {
       .then((res) => {
         toast.success(res.data.message);
         setRefresh(!refresh);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تغيير صلاحية الطالب',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       });
   };
 
-  const handleInputChange = (e: string, field: keyof RegisterStudent2Type) => {
+  const handleInputChange = (e: string, field: keyof PersonalInfoType) => {
     const updatedData = newData.map((data) => {
       return {
         ...data,
@@ -115,12 +128,33 @@ const Page = ({ params }: { params: { id: number } }) => {
     setNewData(updatedData);
   };
 
+    const handleInputChangeDoctor = (
+      e: string,
+      field: keyof PersonalInfoType
+    ) => {
+      const value = doctors.find((item) => item.name === e);
+      const updatedData = newData.map((data) => {
+        return {
+          ...data,
+          [field]: value?.id,
+        };
+      });
+
+      setNewData(updatedData);
+    };
+
   const handleSubmitInfo = () => {
     setEdit(false);
     axios
       .post(`/api/personalInfo/edit/${params.id}/editStudent`, newData)
       .then(() => {
         toast.success('تم تحديث البيانات بنجاح');
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل معلومات الطالب',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch(() => {
         toast.error('حدث خطأ أثناء تحديث البيانات');
@@ -195,6 +229,16 @@ const Page = ({ params }: { params: { id: number } }) => {
                     <td className="flex w-[700px] p-2 justify-end">
                       <input
                         className=" w-[700px] text-right "
+                        type="number"
+                        value={item2.number}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'number')
+                        }
+                      />
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <input
+                        className=" w-[700px] text-right "
                         type="text"
                         value={item2.birth_date}
                         onChange={(e) =>
@@ -203,19 +247,12 @@ const Page = ({ params }: { params: { id: number } }) => {
                       />
                     </td>
                     <td className="flex w-[700px] p-2 justify-end">
-                      <input
-                        className=" w-[700px] text-right "
-                        type="text"
-                        value={item2.major}
-                        onChange={(e) =>
-                          handleInputChange(e.target.value, 'major')
-                        }
-                      />
+                      {item2.major}
                     </td>
                     <td className="flex w-[700px] p-2 justify-end">
                       <input
                         className=" w-[700px] text-right "
-                        type="text"
+                        type="number"
                         value={item2.semester}
                         onChange={(e) =>
                           handleInputChange(e.target.value, 'semester')
@@ -263,9 +300,26 @@ const Page = ({ params }: { params: { id: number } }) => {
                       />
                     </td>
                     <td className="flex w-[700px] p-2 justify-end">
-                      {item.advisor
-                        ? doctors.find((doc) => item.advisor == doc.id)?.name
-                        : 'لا يوجد'}
+                      <select
+                        id="dep"
+                        dir="rtl"
+                        onChange={(e) =>
+                          handleInputChangeDoctor(e.target.value, 'advisor')
+                        }
+                        className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
+                        defaultValue={
+                          item.advisor
+                            ? doctors.find((doc) => item.advisor == doc.id)
+                                ?.name
+                            : 'لا يوجد'
+                        }
+                      >
+                        <option disabled>الدكتور</option>
+                        {doctors.map((doc, index) => {
+                          if (doc.active)
+                            return <option key={index}>{doc.name}</option>;
+                        })}
+                      </select>
                     </td>
                   </tr>
                 ))
@@ -279,11 +333,15 @@ const Page = ({ params }: { params: { id: number } }) => {
                     {item.surname}
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
+                    {item.number}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
                     {item.birth_date}
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
                     {major ? major : 'غير محدد'}
                   </td>
+
                   <td className="flex w-[700px] p-2 justify-end">
                     {item.semester}
                   </td>
@@ -364,10 +422,22 @@ const Page = ({ params }: { params: { id: number } }) => {
           }
           return null;
         })}
-        <div ref={printableContentRef}>
+        <div>
           {useMyData.length > 0 && (
             <Transcript majorId={useMyData[0].major} user={params.id} />
           )}
+        </div>
+        <div style={{ position: 'absolute', top: '-9999px' }}>
+          <div ref={printableContentRef} className="m-5">
+            {useMyData.length > 0 && (
+              <>
+                <h1>{useMyData[0].name} :الاسم</h1>
+                <h1>{useMyData[0].surname} :اللقب</h1>
+                <h1>{useMyData[0].number} : رقم الطالب</h1>
+                <Transcript majorId={useMyData[0].major} user={params.id} />
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

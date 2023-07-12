@@ -16,7 +16,9 @@ export async function POST(request: Request) {
       .from('tb_students')
       .select('*')
       .eq('name', data.name)
-      .eq('surname', data.surname);
+      .eq('surname', data.surname)
+      .eq('major', data.major)
+      .eq('email', data.email);
 
     console.log(res.error?.message);
 

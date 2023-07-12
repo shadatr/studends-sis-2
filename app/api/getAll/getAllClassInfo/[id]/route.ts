@@ -35,7 +35,6 @@ export async function GET(
       const secInfo = sections?.find((sec) => cls.section_id === sec.id);
       const docto = doctors?.find((doc) => doc.id === cls.doctor_id);
       const cours = courses?.find((co) => co.id === secInfo?.course_id);
-      console.log(cours);
       return {
         class: cls,
         course: cours,
@@ -54,3 +53,19 @@ export async function GET(
     });
   }
 }
+
+export async function POST(request: Request) {
+
+    const req = await request.json();
+    const deleteReq = await supabase.from('tb_classes').delete().eq('id', req);
+    if(deleteReq.error){return new Response(
+      JSON.stringify({ message: 'لا يمكنك حذف هذه المحاضرة ، يوجد طلاب مشتركين' }),
+      {
+        status: 500,
+      }
+    );}
+
+    return new Response(JSON.stringify({ message: 'تم حذف المحاضرة بنجاح' }));
+
+}
+

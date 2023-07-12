@@ -11,23 +11,26 @@ const item: MenuItemType[] = [
   { id: 5, link: 'courseReg', name: ' المواد' },
   { id: 6, link: 'facultiesAndMajors', name: ' الكليات و التخصصات' },
   { id: 7, link: 'grades', name: 'الدرجات' },
+<<<<<<< HEAD
+=======
+  { id: 7, link: 'usageHistory', name: 'سجل الاستخدام' },
+>>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
 ];
 
 function ManagMenu() {
   return (
     <div className="flex justify-end items-center h-screen text-sm">
       <table className="w-[260px]  bg-darkBlue text-white">
-        <tbody className="text-sm ">
-          <tr className="flex flex-col">
-            {item.map((item, index) => (
-              <td
-                key={index}
-                className="w-full h-[80px] p-3 flex items-center justify-center hover:text-cyan-300"
-              >
-                <Link href={`/management/${item.link}`}>{item.name}</Link>
-              </td>
-            ))}
-          </tr>
+        <tbody>
+          {item.map((item, index) => (
+            <Link href={`/management/${item.link}`} key={index}>
+              <tr className="flex flex-col">
+                <td className="w-full h-[60px] p-3 flex items-center justify-center hover:text-cyan-300">
+                  {item.name}
+                </td>
+              </tr>
+            </Link>
+          ))}
         </tbody>
       </table>
     </div>

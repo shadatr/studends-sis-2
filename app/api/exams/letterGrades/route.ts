@@ -16,7 +16,6 @@ export async function GET() {
 export async function POST(request: Request) {
 
   const data1 = await request.json();
-  console.log(data1);
 
   try {
     await Promise.all(
@@ -29,7 +28,6 @@ export async function POST(request: Request) {
           })
           .eq('course_enrollment_id', item.course_enrollment_id);
 
-        console.log(data.error?.message);
       })
     );
 

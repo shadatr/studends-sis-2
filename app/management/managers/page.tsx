@@ -40,6 +40,12 @@ const Page = () => {
   const handleActivate = (adminId: number, active: boolean) => {
     const data = { adminId, active };
     axios.post('/api/active/staffActive', data).then((res) => {
+      const dataUsageHistory = {
+        id: user?.id,
+        type: 'admin',
+        action: ' تغيير حالة موظف',
+      };
+      axios.post('/api/usageHistory', dataUsageHistory);
       toast.success(res.data.message);
       setRefresh(!refresh);
     });

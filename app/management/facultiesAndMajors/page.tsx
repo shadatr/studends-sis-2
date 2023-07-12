@@ -67,7 +67,13 @@ const page = () => {
     axios
       .post('/api/department/departmentRegister', data)
       .then((res) => {
-        console.log(res.data);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل الاقسام',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
+        toast.success(res.data.message);
         toast.success(res.data.message);
       })
       .catch((err) => {
@@ -93,7 +99,12 @@ const page = () => {
     axios
       .post('/api/major/majorReg', data)
       .then((res) => {
-        console.log(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل التخصصات',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
         toast.success(res.data.message);
       })
       .catch((err) => {

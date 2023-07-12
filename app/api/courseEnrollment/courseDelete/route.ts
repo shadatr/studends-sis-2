@@ -22,20 +22,17 @@ export async function GET() {
 export async function POST(request: Request) {
   const data = await request.json();
 
-  try {
-    await supabase
+    const res=await supabase
       .from('tb_course_enrollment')
       .delete()
       .eq('id', data.id);
 
-      console.log(data);
-    return new Response(JSON.stringify({ message: 'تم تسجيل الكلية بنجاح' }), {
+      if(res.error){return new Response(
+        JSON.stringify({ message: 'لا يمكنك مسح المادة' }),
+        { headers: { 'content-type': 'application/json' }, status: 400 }
+      );}
+    return new Response(JSON.stringify({ message: 'تم مسح المادة بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });
-  } catch (error) {
-    return new Response(
-      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الكلية' }),
-      { headers: { 'content-type': 'application/json' }, status: 400 }
-    );
-  }
+  
 }

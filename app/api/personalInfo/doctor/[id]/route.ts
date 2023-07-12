@@ -15,8 +15,13 @@ export async function GET(
       .select('*')
       .eq('id', params.id);
 
+<<<<<<< HEAD
     if (error) {
       return new Response(JSON.stringify({ message: 'an error occurred' }), {
+=======
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
+>>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
         status: 403,
       });
     }

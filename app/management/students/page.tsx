@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import { MajorReg2Type, GetPermissionType } from '@/app/types/types';
+import { MajorRegType, GetPermissionType } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -19,11 +19,12 @@ const Page = () => {
   }
   const user = session.data?.user;
 
-  const [majors, setMajors] = useState<MajorReg2Type[]>([]);
+  const [majors, setMajors] = useState<MajorRegType[]>([]);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
+<<<<<<< HEAD
       if(user){
         const responsePer = await axios.get(
           `/api/allPermission/admin/selectedPerms/${user?.id}`
@@ -37,6 +38,19 @@ const Page = () => {
           setMajors(message);
         });
       }
+=======
+      const responsePer = await axios.get(
+        `/api/allPermission/admin/selectedPerms/${user?.id}`
+      );
+      const messagePer: GetPermissionType[] = responsePer.data.message;
+      setPerms(messagePer);
+
+      axios.get('/api/major/majorReg').then((resp) => {
+        
+        const message: MajorRegType[] = resp.data.message;
+        setMajors(message);
+      });
+>>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
     };
     fetchPosts();
   }, [user]);

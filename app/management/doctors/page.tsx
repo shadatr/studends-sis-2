@@ -1,13 +1,11 @@
 'use client';
 import {
-  DoctorsWithDepartmentsType,
   GetPermissionType,
   PersonalInfoType,
 } from '@/app/types/types';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import AssignDepartment from '@/app/components/asignDepartment';
 import { useSession } from 'next-auth/react';
 import SearchBar from '@/app/components/searchBar';
 import { redirect } from 'next/navigation';
@@ -23,11 +21,12 @@ const Page = () => {
   const user = session.data?.user;
 
   const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
+<<<<<<< HEAD
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+=======
+>>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
   const [refresh, setRefresh] = useState(false);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
-  const [selectedDoctor, setSelectedDoctor] =
-    useState<DoctorsWithDepartmentsType>();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -37,8 +36,13 @@ const Page = () => {
         );
         const message: GetPermissionType[] = response.data.message;
         setPerms(message);
+<<<<<<< HEAD
   
         fetch('/api/getAll/doctor', { cache: 'no-store' })
+=======
+
+        fetch('/api/getAll/doctor')
+>>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
           .then((response) => response.json())
           .then((data) => {
             const message = data.message;
@@ -47,6 +51,7 @@ const Page = () => {
       }
     };
     fetchPosts();
+<<<<<<< HEAD
   }, [user,refresh]);
 
    const handleActivate = (doctorId: number, active: boolean) => {
@@ -56,7 +61,23 @@ const Page = () => {
        setRefresh(!refresh);
      });
    };
+=======
+  }, [user, refresh]);
+>>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
 
+  const handleActivate = (doctorId: number, active: boolean) => {
+    const data = { doctorId, active };
+    axios.post('/api/active/doctorActive', data).then((res) => {
+      const dataUsageHistory = {
+        id: user?.id,
+        type: 'admin',
+        action: ' تغيير حالة الدكاترة',
+      };
+      axios.post('/api/usageHistory', dataUsageHistory);
+      toast.success(res.data.message);
+      setRefresh(!refresh);
+    });
+  };
 
   return (
     <div className="flex absolute flex-col w-[80%] justify-center items-center mt-10">
@@ -91,12 +112,16 @@ const Page = () => {
             <th className="border border-gray-300 px-4 py-2">
               المعلومات الشخصية
             </th>
+<<<<<<< HEAD
             {/* <th className="border border-gray-300 px-4 py-2">رئيس قسم</th> */}
+=======
+>>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
             <th className="border border-gray-300 px-4 py-2">تاريخ الانشاء</th>
             <th className="border border-gray-300 px-4 py-2">لقب</th>
             <th className="border border-gray-300 px-4 py-2">اسم</th>
           </tr>
         </thead>
+<<<<<<< HEAD
         {/* <AssignDepartment
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
@@ -104,6 +129,8 @@ const Page = () => {
           doctors={doctors}
           setdoctors={setDoctors}
         /> */}
+=======
+>>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
         <tbody>
           {doctors.map((user, index) => (
             <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
@@ -136,6 +163,7 @@ const Page = () => {
                   الملف الشخصي
                 </Link>
               </td>
+<<<<<<< HEAD
               {/* <td className="border border-gray-300 px-4 py-2 flex justify-between">
                 {perms.map((permItem) => {
                   if (permItem.permission_id === 9 && permItem.active) {
@@ -162,6 +190,8 @@ const Page = () => {
                 )}
               </td> */}
 
+=======
+>>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
               <td className="border border-gray-300 px-4 py-2">
                 {user.enrollment_date}
               </td>

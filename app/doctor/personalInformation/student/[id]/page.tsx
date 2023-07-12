@@ -339,10 +339,22 @@ const Page = ({ params }: { params: { id: number } }) => {
             ))}
           </tbody>
         </table>
-        <div ref={printableContentRef}>
+        <div>
           {useMyData.length > 0 && (
-            <Transcript majorId={useMyData[0].major} user={params.id} />
+              <Transcript majorId={useMyData[0].major} user={params.id} />
           )}
+        </div>
+        <div style={{ position: 'absolute', top: '-9999px' }}>
+        <div ref={printableContentRef} className='m-5'>
+          {useMyData.length > 0 && (
+            <>
+              <h1>{useMyData[0].name} :الاسم</h1>
+              <h1>{useMyData[0].surname} :اللقب</h1>
+              <h1>{useMyData[0].number} : رقم الطالب</h1>
+              <Transcript majorId={useMyData[0].major} user={params.id} />
+            </>
+          )}
+        </div>
         </div>
       </div>
     </div>

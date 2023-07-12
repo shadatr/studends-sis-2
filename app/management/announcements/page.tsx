@@ -15,6 +15,8 @@ const Page = () => {
     redirect('/');
   }
 
+  const user = session.data?.user;
+
   const [loadAnnouncements, setLoad] = useState(false);
   const [newItem, setNewItem] = useState('');
   const [announcements, setAnnouncements] = useState<AnnouncmentsMangType[]>(
@@ -37,6 +39,12 @@ const Page = () => {
     axios.post('/api/announcements/uniAnnouncements', data).then((resp) => {
       toast.success(resp.data.message);
       setLoad(!loadAnnouncements);
+      const dataUsageHistory = {
+        id: user?.id,
+        type: 'admin',
+        action: 'تعديل الاعلانات',
+      };
+      axios.post('/api/usageHistory', dataUsageHistory);
     });
   };
 
@@ -49,6 +57,12 @@ const Page = () => {
       admin_id: session.data?.user.id,
     };
     axios.post('/api/announcements/newUniAnnouncement', data).then(() => {
+      const dataUsageHistory={
+        id: user?.id,
+        type: 'admin',
+        action: 'تعديل الاعلانات'
+      };
+      axios.post('/api/usageHistory', dataUsageHistory);
       setLoad(!loadAnnouncements);
     });
     setNewItem('');

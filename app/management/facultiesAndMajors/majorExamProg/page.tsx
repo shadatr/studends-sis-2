@@ -1,6 +1,6 @@
 'use client';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import { toast } from 'react-toastify';
 import {
   AddCourseType,
@@ -16,6 +16,7 @@ import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
 import { BsXCircleFill } from 'react-icons/bs';
 import { redirect } from 'next/navigation';
+import { useReactToPrint } from 'react-to-print';
 
 const Page = () => {
   const session = useSession({ required: true });
@@ -32,6 +33,7 @@ const Page = () => {
   const [selecetedDay, setSelecetedDay] = useState(new Date());
   const [Location, setLocation] = useState<string>();
   const [edit, setEdit] = useState(false);
+  const printableContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -101,6 +103,12 @@ const Page = () => {
       .post('/api/examProg/1', data)
       .then((res) => {
         toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل جدول الامتحانات',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -113,6 +121,12 @@ const Page = () => {
       .post('/api/examProg/1/deleteExamProg', item)
       .then((res) => {
         toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل جدول الامتحانات',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -125,12 +139,22 @@ const Page = () => {
       .post('/api/examProg/1/deleteAllExamProg')
       .then((res) => {
         toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل جدول الامتحانات',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
       });
     setEdit(!edit);
   };
+
+    const handlePrint = useReactToPrint({
+      content: () => printableContentRef.current,
+    });
 
   return (
     <div className="flex flex-col absolute w-[80%] mt-7 items-center justify-center ">
@@ -222,6 +246,12 @@ const Page = () => {
           );
         }
       })}
+      <button
+        onClick={handlePrint}
+        className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
+      >
+        طباعة جدول الامتحانات
+      </button>
       <table className="w-full bg-white shadow-md rounded-md">
         <thead>
           <tr>
@@ -257,6 +287,44 @@ const Page = () => {
           })}
         </tbody>
       </table>
+      <div style={{ position: 'absolute', top: '-9999px' }}>
+        <div ref={printableContentRef} className="m-5">
+          <h1 className='flex justify-center items-center text-[30px] m-5'>جدول الامتحانات</h1>
+          <table className="w-full bg-white shadow-md rounded-md">
+            <thead>
+              <tr>
+                <th className="py-2 px-4 bg-gray-200 text-gray-700">القاعة</th>
+                <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                  مدة الامتحان
+                </th>
+                <th className="py-2 px-4 bg-gray-200 text-gray-700">الساعة</th>
+                <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                  اسم المادة
+                </th>
+                <th className="py-2 px-4 bg-gray-200 text-gray-700">التاريخ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {examProg.map((item, index) => {
+                const selectcourse = courses.find(
+                  (course) => course.id == item.course_id
+                );
+                return (
+                  <tr key={index}>
+                    <td className="py-2 px-4 border-b">{item.location}</td>
+                    <td className="py-2 px-4 border-b">{item.duration}</td>
+                    <td className="py-2 px-4 border-b">{item.hour}</td>
+                    <td className="py-2 px-4 border-b">
+                      {selectcourse?.course_name}
+                    </td>
+                    <td className="py-2 px-4 border-b">{item.date}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

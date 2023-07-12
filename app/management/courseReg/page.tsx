@@ -37,7 +37,6 @@ const page = () => {
   const [final, setFinal] = useState('');
   const [classWork, setClassWork] = useState('');
   const [newItemCourse, setNewItemCourse] = useState('');
-  const [passingGrade, setPassingGrade] = useState('');
   const [courseNumber, setCourseNumber] = useState('');
 
   useEffect(() => {
@@ -73,12 +72,10 @@ const page = () => {
       toast.error('يجب كتابة اسم المادة');
       return;
     }
-
     if (
       !(
         credits &&
         hours &&
-        passingGrade &&
         newItemCourse &&
         mid &&
         final &&
@@ -114,7 +111,6 @@ const page = () => {
       final: parseInt(final),
       class_work: parseInt(classWork),
       hours: parseInt(hours),
-      passing_percentage: parseInt(passingGrade),
     };
 
     axios
@@ -122,6 +118,12 @@ const page = () => {
       .then((res) => {
         toast.success(res.data.message);
         setLoadCourse(!loadCourses);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: 'تعديل مواد الجامعة',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -225,15 +227,6 @@ const page = () => {
                     className="w-[150px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
                     onChange={(e) => setClassWork(e.target.value)}
                   />
-
-                  <input
-                    ref={course}
-                    dir="rtl"
-                    placeholder="درجة النجاح"
-                    type="text"
-                    className="w-[150px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
-                    onChange={(e) => setPassingGrade(e.target.value)}
-                  />
                   <button
                     className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
                     type="submit"
@@ -250,9 +243,6 @@ const page = () => {
           <table className="w-[1100px]  ">
             <thead className="">
               <tr>
-                <th className="py-2 px-4 bg-gray-200 text-gray-700">
-                  درجة النجاح
-                </th>
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">
                   نسبة اعمال السنة{' '}
                 </th>
@@ -275,9 +265,6 @@ const page = () => {
             <tbody>
               {allCourses.map((item, index) => (
                 <tr key={index}>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.passing_percentage}
-                  </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {item.class_work}
                   </td>

@@ -7,7 +7,6 @@ const supabase = createClient(
 
 export async function POST(request: Request) {
   const req = await request.json();
-  console.log(req);
   const deleteReq = await supabase
     .from('tb_exam_program')
     .delete()

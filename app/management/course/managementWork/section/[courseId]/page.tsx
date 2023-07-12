@@ -79,6 +79,12 @@ const Page = ({ params }: { params: { courseId: number } }) => {
       .then((res) => {
         setLoad(!load);
         toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' اضافة مجموعة لمادة' + selectedCourse?.course_name,
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -112,7 +118,10 @@ const Page = ({ params }: { params: { courseId: number } }) => {
       course_id: selectedCourse?.id,
       prerequisite_course_id: selectedCoursePer?.id,
     };
+<<<<<<< HEAD
 
+=======
+>>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
     axios
       .post(`/api/course/prerequisitesCourses/${params.courseId}`, data)
       .then((res) => {
