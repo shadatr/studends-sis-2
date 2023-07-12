@@ -5,7 +5,7 @@ import {
   AssignPermissionType,
   GetPermissionStudentType,
   PersonalInfoHeaderType,
-  RegisterStudent2Type,
+  PersonalInfoType,
   InfoDoctorType,
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
@@ -34,8 +34,8 @@ const Page = ({ params }: { params: { id: number } }) => {
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
     redirect('/');
   }
-  const [useMyData, setMydata] = useState<RegisterStudent2Type[]>([]);
-  const [newData, setNewData] = useState<RegisterStudent2Type[]>([]);
+  const [useMyData, setMydata] = useState<PersonalInfoType[]>([]);
+  const [newData, setNewData] = useState<PersonalInfoType[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
   const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
   const [refresh, setRefresh] = useState(false);
@@ -61,7 +61,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       setPerms(message);
 
       axios.get(`/api/personalInfo/student/${params.id}`).then((resp) => {
-        const message: RegisterStudent2Type[] = resp.data.message;
+        const message: PersonalInfoType[] = resp.data.message;
         setMydata(message);
         setNewData(message);
       });
@@ -93,7 +93,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   };
 
 
-  const handleInputChange = (e: string, field: keyof RegisterStudent2Type) => {
+  const handleInputChange = (e: string, field: keyof PersonalInfoType) => {
     const updatedData = newData.map((data) => {
       return {
         ...data,

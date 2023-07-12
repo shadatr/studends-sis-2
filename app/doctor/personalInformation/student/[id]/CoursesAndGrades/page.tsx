@@ -9,7 +9,7 @@ import {
   CheckedType,
   CourseInfoType,
   StudentClassType,
-  RegisterStudent2Type,
+  PersonalInfoType,
 } from '@/app/types/types';
 import { useReactToPrint } from 'react-to-print';
 import { toast } from 'react-toastify';
@@ -48,7 +48,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   const user = session.data?.user;
 
   const [studentCourses, setStudentCourses] = useState<StudenCourseType[]>([]);
-  const [student, setStudent] = useState<RegisterStudent2Type[]>([]);
+  const [student, setStudent] = useState<PersonalInfoType[]>([]);
   const [checkList, setCheckList] = useState<StudenCourseType[]>([]);
   const [checked, setChecked] = useState<number[]>([]);
   const [refresh, setRefresh] = useState(false);
@@ -69,7 +69,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     const fetchData = async () => {
       try {
         const resp = await axios.get(`/api/personalInfo/student/${params.id}`);
-        const messageMaj: RegisterStudent2Type[] = resp.data.message;
+        const messageMaj: PersonalInfoType[] = resp.data.message;
         setStudent(messageMaj);
 
         const response = await axios.get(
