@@ -1,7 +1,8 @@
 'use client';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
+import { useReactToPrint } from 'react-to-print';
 import {
   AddCourseType,
   MajorCourseType,
@@ -11,10 +12,14 @@ import {
   DayOfWeekType,
   CheckedType,
   ClassesInfoType,
+  LettersType,
+  MajorRegType,
 } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { BsXCircleFill } from 'react-icons/bs';
+
 
 const hours: string[] = [
   '8:00',
@@ -59,7 +64,9 @@ const Page = ({ params }: { params: { id: number } }) => {
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
     redirect('/');
   }
+
   const user = session.data?.user;
+
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
   const [majorCourses, setMajorCourses] = useState<MajorCourseType[]>([]);
   const [courses, setCourses] = useState<AddCourseType[]>([]);
@@ -73,13 +80,13 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [edit, setEdit] = useState(false);
   const [section, setSection] = useState<string>();
   const [doctor, setDoctor] = useState<string>();
-  const [semester, setSemester] = useState<string>();
   const [selectedCourse, setSelecetedCourse] = useState<string>();
   const [selectedStartHour, setSelecetedStartHour] = useState<string>();
   const [selectedEndHour, setSelecetedEndHour] = useState<string>();
   const [selectedDay, setSelecetedDay] = useState<string>();
-  const [year, setYear] = useState<string>();
+  const [year, setYear] = useState<LettersType[]>([]);
   const [Location, setLocation] = useState<string>();
+  const [major, setMajor] = useState<string>();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -93,6 +100,11 @@ const Page = ({ params }: { params: { id: number } }) => {
         const messageCour: AddCourseType[] = await res.data.message;
         setCourses(messageCour);
 
+        const responseMaj = await axios.get(
+          `/api/majorEnrollment/${params.id}`
+        );
+        const messageMaj: MajorRegType[] = responseMaj.data.message;
+        setMajor(messageMaj[0].major_name);
 
           const resMajorCourses = await axios.get(`/api/course/courseMajorReg/${params.id}`);
           const messageMajorCour: MajorCourseType[] = await resMajorCourses.data.message;
@@ -125,6 +137,11 @@ const Page = ({ params }: { params: { id: number } }) => {
         const classes = classData.flat();
 
         setClasses(classes);
+
+        const responseYear = await axios.get(`/api/exams/grading/4`);
+        const messageYear: LettersType[] = responseYear.data.message;
+        setYear(messageYear);
+        setYear(messageYear);
 
         const response = await axios.get(
           `/api/allPermission/admin/selectedPerms/${user?.id}`
@@ -171,6 +188,12 @@ const Page = ({ params }: { params: { id: number } }) => {
       .then((res) => {
         toast.success(res.data.message);
         setLoadCourse(!loadCourses);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل مواد تخصص'+major,
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -191,7 +214,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         location &&
         doctor &&
         section &&
-        semester &&
+        `${year[0].AA}-${year[0].BA}` &&
         year
       )
     ) {
@@ -234,7 +257,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     classes.forEach((item) => {
       if (
         item.section.id == sectionId?.id &&
-        item.class.semester == `${semester}-${year}`
+        item.class.semester == `${year[0].AA}-${year[0].BA}`
       ) {
         duplicateFound = true;
         return;
@@ -248,7 +271,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     const data = {
       doctor_id: doctorId?.id,
       section_id: sectionId?.id,
-      semester: `${semester}-${year}`,
+      semester: `${year[0].AA}-${year[0].BA}`,
       day: findDay?.day,
       starts_at: findStartTime?.id,
       ends_at: findEndTime?.id,
@@ -259,6 +282,12 @@ const Page = ({ params }: { params: { id: number } }) => {
       .post('/api/course/classRegister', data)
       .then((res) => {
         toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل محاضرات تخصص' + major,
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -266,8 +295,32 @@ const Page = ({ params }: { params: { id: number } }) => {
     setEdit(!edit);
   };
 
+    const handleDelete = (item?: number) => {
+      axios
+        .post(`/api/getAll/getAllClassInfo/1`, item)
+        .then((res) => {
+          toast.success(res.data.message);
+          const dataUsageHistory = {
+            id: user?.id,
+            type: 'admin',
+            action: ' تعديل محاضرات تخصص' + major,
+          };
+          axios.post('/api/usageHistory', dataUsageHistory);
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message);
+        });
+      setEdit(!edit);
+    };
+
+      const printableContentRef = useRef<HTMLDivElement>(null);
+
+      const handlePrint = useReactToPrint({
+        content: () => printableContentRef.current,
+      });
+
   return (
-    <div className="flex flex-col absolute w-[90%]  items-center justify-center text-[16px]">
+    <div className="flex flex-col absolute w-[80%]  items-center justify-center text-[16px]">
       <div className="text-sm flex flex-row ">
         <button
           onClick={() => handleTabClick('Tab 1')}
@@ -293,7 +346,9 @@ const Page = ({ params }: { params: { id: number } }) => {
         <Link
           className="px-4 py-2 bg-green-500 text-white ml-5 rounded-md"
           href={`/management/course/allClasses/${params.id}`}
-        > جميع محاضرات السنوات الماضية</Link>
+        >
+          جميع محاضرات السنوات الماضية
+        </Link>
       </div>
       {activeTab === 'Tab 1' && (
         <>
@@ -398,7 +453,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             if (permItem.permission_id === 9 && permItem.active) {
               return (
                 <div
-                  className="border-2 border-grey m-4 rounded-5 p-5 flex justify-center items-center rounded-md"
+                  className="border-2 border-grey m-4 rounded-5 p-5 flex w-[100%] justify-center items-center rounded-md"
                   key={idx}
                 >
                   <button
@@ -419,11 +474,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                     dir="rtl"
                     onChange={(e) => setSelecetedEndHour(e.target.value)}
                     className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                    defaultValue=""
+                    defaultValue="وقت الانتهاء"
                   >
-                    <option disabled selected value="">
-                      وقت الانتهاء
-                    </option>
+                    <option disabled>وقت الانتهاء</option>
                     {hours.map((hour, index) => (
                       <option key={index}>{hour}</option>
                     ))}
@@ -433,11 +486,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                     dir="rtl"
                     onChange={(e) => setSelecetedStartHour(e.target.value)}
                     className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                    defaultValue=""
+                    defaultValue="وقت البدأ"
                   >
-                    <option disabled selected value="">
-                      وقت البدأ
-                    </option>
+                    <option disabled>وقت البدأ</option>
                     {hours.map((hour, index) => (
                       <option key={index}>{hour}</option>
                     ))}
@@ -447,33 +498,14 @@ const Page = ({ params }: { params: { id: number } }) => {
                     dir="rtl"
                     onChange={(e) => setSelecetedDay(e.target.value)}
                     className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                    defaultValue=""
+                    defaultValue="اليوم"
                   >
-                    <option disabled selected value="">
-                      اليوم
-                    </option>
+                    <option disabled>اليوم</option>
                     {days.map((day, index) => (
                       <option key={index}>{day.name}</option>
                     ))}
                   </select>
-                  <input
-                    dir="rtl"
-                    placeholder=" السنة"
-                    type="text"
-                    className="w-20 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                    onChange={(e) => setYear(e.target.value)}
-                  />
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    onChange={(e) => setSemester(e.target.value)}
-                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                    defaultValue="الفصل"
-                  >
-                    <option disabled>الفصل</option>
-                    <option>خريف</option>
-                    <option>ربيع</option>
-                  </select>
+
                   <select
                     id="dep"
                     dir="rtl"
@@ -482,15 +514,16 @@ const Page = ({ params }: { params: { id: number } }) => {
                     defaultValue="الدكتور"
                   >
                     <option disabled>الدكتور</option>
-                    {doctors.map((doc, index) => (
-                      <option key={index}>{doc.name}</option>
-                    ))}
+                    {doctors.map((doc, index) => {
+                      if (doc.active)
+                        return <option key={index}>{doc.name}</option>;
+                    })}
                   </select>
                   <select
                     id="dep"
                     dir="rtl"
                     onChange={(e) => setSection(e.target.value)}
-                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4  w-[150px]"
                     defaultValue="المجموعة"
                   >
                     <option disabled>المجموعة</option>
@@ -502,12 +535,10 @@ const Page = ({ params }: { params: { id: number } }) => {
                     id="dep"
                     dir="rtl"
                     onChange={(e) => setSelecetedCourse(e.target.value)}
-                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                    defaultValue=""
+                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4 w-[150px]"
+                    defaultValue="المادة"
                   >
-                    <option disabled selected value="">
-                      المادة
-                    </option>
+                    <option disabled>المادة</option>
                     {selectedMajorCourse.map((course, index) => (
                       <option key={index}>{course.course_name}</option>
                     ))}
@@ -517,7 +548,114 @@ const Page = ({ params }: { params: { id: number } }) => {
             }
             return null;
           })}
-          <table className="w-[1000px]">
+          <button
+            onClick={handlePrint}
+            className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
+          >
+            طباعة جدول المحاضرات
+          </button>
+          <h1 className="flex justify-center items-center text-sm w-[100%] m-4">
+            جدول محاضرات تخصص {major}
+          </h1>
+          <table className="w-[1100px]">
+            <thead>
+              <tr>
+                <th className="border border-gray-300 bg-gray-200 px-4 py-2"></th>
+                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                  الموقع
+                </th>
+                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                  موعد الانتهاء
+                </th>
+                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                  موعد البدأ
+                </th>
+                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                  اليوم
+                </th>
+                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                  الفصل الدراسي
+                </th>
+                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                  الدكتور
+                </th>
+                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                  المجموعة
+                </th>
+                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                  المادة
+                </th>
+                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                  رقم المادة
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {classes.map((Class, index) => {
+                const findDay = days.find((day) => day.day == Class.class?.day);
+                const findStartTime = hoursNames.find(
+                  (hour) => hour.id == Class.class?.starts_at
+                );
+                const findEndTime = hoursNames.find(
+                  (hour) => hour.id == Class.class?.ends_at
+                );
+                return (
+                  <tr key={index}>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <BsXCircleFill
+                        className="cursor-pointer"
+                        onClick={() => handleDelete(Class.class.id)}
+                      />
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {Class.class?.location}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {findEndTime?.name}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {findStartTime?.name}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {findDay?.name}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {Class.class?.semester}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {Class.doctor?.name}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <Link
+                        href={`/management/course/managementWork/class/${Class.class.section_id}`}
+                      >
+                        {Class.section?.name}
+                      </Link>
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <Link
+                        href={`/management/course/managementWork/class/${Class.class.section_id}`}
+                      >
+                        {Class.course?.course_name}
+                      </Link>
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {Class.course?.course_number}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </>
+      )}
+      <div style={{ position: 'absolute', top: '-9999px' }}>
+        <div ref={printableContentRef} className="m-5">
+          <h1 className="flex justify-center items-center text-sm w-[100%] m-4">
+            {' '}
+            جدول محاضرات تخصص {major}
+          </h1>
+          <table className="w-[1100px]">
             <thead>
               <tr>
                 <th className="border border-gray-300 bg-gray-200 px-4 py-2">
@@ -600,8 +738,8 @@ const Page = ({ params }: { params: { id: number } }) => {
               })}
             </tbody>
           </table>
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 };

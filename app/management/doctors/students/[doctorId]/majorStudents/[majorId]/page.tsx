@@ -2,7 +2,7 @@
 import {
   InfoDoctorType,
   GetPermissionType,
-  RegisterStudent2Type,
+  PersonalInfoType,
 } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
@@ -28,7 +28,7 @@ const Page = ({
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
   const [checked, setChecked] = useState<number[]>([]);
   const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
-  const [students, setStudents] = useState<RegisterStudent2Type[]>([]);
+  const [students, setStudents] = useState<PersonalInfoType[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -42,7 +42,7 @@ const Page = ({
         setPerms(message);
 
         axios.get(`/api/major/majorStudents/${params.majorId}`).then((resp) => {
-          const message: RegisterStudent2Type[] = resp.data.message;
+          const message: PersonalInfoType[] = resp.data.message;
           setStudents(message);
         });
 
@@ -56,7 +56,7 @@ const Page = ({
     fetchPosts();
   }, [user, refresh, params.majorId]);
 
-  const handleCheck = (item: RegisterStudent2Type) => {
+  const handleCheck = (item: PersonalInfoType) => {
     const checkedIndex = checked.indexOf(item.id);
     if (checkedIndex === -1) {
       setChecked([...checked, item.id]);
@@ -76,7 +76,15 @@ const Page = ({
       };
       axios
         .post('/api/advisor/assignAdvisor/1', data)
-        .then((res) => toast.success(res.data.message))
+        .then((res) => {toast.success(res.data.message); 
+          const dataUsageHistory = {
+            id: user?.id,
+            type: 'admin',
+            action:
+              ' تعديل الاشراف لدكتور' +
+              doctors.find((doc) => params.doctorId == doc.id)?.name,
+          };
+        axios.post('/api/usageHistory', dataUsageHistory);} )
         .catch((err) => {
           toast.error(err.response.data.message);
         });

@@ -30,11 +30,14 @@ export async function POST(request: Request) {
 
   console.log(data);
 
-  await supabase
-    .from('tb_transcript')
-    .insert([
-      { gpa: data.gpa, semester: data.semester, student_id: data.student_id },
-    ]);
+  await supabase.from('tb_transcript').insert([
+    {
+      gpa: data.gpa,
+      semester: data.semester,
+      student_id: data.student_id,
+      credits: data.credits,
+    },
+  ]);
 
   await supabase
     .from('tb_students')

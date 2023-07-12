@@ -90,7 +90,6 @@ export async function GET(
       };
     });
 
-    console.log(data);
 
     return new Response(JSON.stringify({ message: data }), {
       status: 200,

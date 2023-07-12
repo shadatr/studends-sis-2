@@ -144,9 +144,9 @@ const authOptions: NextAuthOptions = {
       session.user.admin = token.admin as any;
       session.user.active = token.active as any;
       session.user.advisor = token.advisor as any;
+      session.user.number = token.number as any;
       session.user.head_of_deparment_id = token.head_of_deparment_id as any;
       session.user.userType = token.userType as any;
-
       return session;
     },
   },

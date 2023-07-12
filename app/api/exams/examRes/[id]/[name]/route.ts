@@ -22,8 +22,6 @@ export async function GET(
       .select('*')
       .eq('id', params.id);
 
-    // console.log(classes);
-
     if (classes && sections) {
       
       const { data: courseEnrollments } = await supabase
@@ -41,8 +39,9 @@ export async function GET(
         const data = {
           courseEnrollements: courseEnrollments,
           course: course,
+          section: sections,
+          class: classes
         };
-        console.log(data);
   
       return new Response(JSON.stringify({ message: data }), {
         status: 200,
@@ -71,15 +70,16 @@ export async function POST(
 
   const data1 = await request.json();
 
-  await Promise.all(
+  const res=await Promise.all(
     data1.map(async (item: StudentClassType) => {
       const data = await supabase
         .from('tb_course_enrollment')
-        .update([{ [params.name]: item[params.name] }])
+        .update([item])
         .eq('student_id', item.student_id)
         .eq('class_id', data3[0].id);
       return data;
     })
   );
+  console.log(res);
   return new Response(JSON.stringify({ message: 'تم حذف الاعلان بنجاح' }));
 }

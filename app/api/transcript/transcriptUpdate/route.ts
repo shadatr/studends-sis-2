@@ -8,8 +8,6 @@ const supabase = createClient(
 export async function POST(request: Request) {
   const data = await request.json();
 
-  console.log(data);
-
   await supabase
     .from('tb_transcript')
     .update([{ gpa: data.gpa }])

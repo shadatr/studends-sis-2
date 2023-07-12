@@ -72,7 +72,6 @@ const page = () => {
       toast.error('يجب كتابة اسم المادة');
       return;
     }
-
     if (
       !(
         credits &&
@@ -119,6 +118,12 @@ const page = () => {
       .then((res) => {
         toast.success(res.data.message);
         setLoadCourse(!loadCourses);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: 'تعديل مواد الجامعة',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch((err) => {
         toast.error(err.response.data.message);

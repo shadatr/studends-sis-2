@@ -22,7 +22,7 @@ export async function GET(
     const data = await supabase
       .from(tableName)
       .select('*')
-      .eq('id', params.searchBy);
+      .eq('student_number', params.searchBy);
     console.log(data);
     console.log(data.error?.message);
     const data2 = JSON.stringify(data.data);

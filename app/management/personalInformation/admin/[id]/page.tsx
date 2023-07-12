@@ -44,7 +44,6 @@ const Page = ({ params }: { params: { id: number } }) => {
       try {
         const response = await axios.get('/api/allPermission/admin');
         const message: AssignPermissionType[] = response.data.message;
-        console.log(message);
         setCheckList(message);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -80,13 +79,18 @@ const Page = ({ params }: { params: { id: number } }) => {
       .then((res) => {
         toast.success(res.data.message);
         setRefresh(!refresh);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تغيير صلاحية موظف',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       });
   };
 
 
   const handleInputChange = (e: string, field: keyof PersonalInfoType) => {
     const updatedData = newData.map((data) => {
-      console.log('Submitted gradesssss:', newData);
       return {
         ...data,
         [field]: e,
@@ -98,11 +102,16 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   const handleSubmitInfo = () => {
     setEdit(false);
-    console.log('Submitted grades:', newData);
     axios
       .post(`/api/personalInfo/edit/${params.id}/editAdmin`, newData)
       .then(() => {
         toast.success('تم تحديث البيانات بنجاح');
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل معلومات موظف',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch((error) => {
         console.error(error);

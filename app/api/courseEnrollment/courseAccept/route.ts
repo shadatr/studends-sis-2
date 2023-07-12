@@ -34,7 +34,6 @@ export async function POST(request: Request) {
         .eq('id', data.course.section_id);
 
       await supabase.from('tb_grades').insert([data.grade]);
-        console.log(data.course.approved);
 
 
     return new Response(JSON.stringify({ message: 'تم الموافقة على المواد بنجاح' }), {

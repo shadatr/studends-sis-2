@@ -45,7 +45,6 @@ const Page = ({ params }: { params: { courseId: number } }) => {
         setPerms(messagePer);
       }
 
-
       const response = await axios.get(
         `/api/getAll/getAllSections/${params.courseId}`
       );
@@ -77,12 +76,17 @@ const Page = ({ params }: { params: { courseId: number } }) => {
       name: selectedCourse?.course_name + `(مجموعة${section.length + 1})`,
       course_id: selectedCourse?.id,
     };
-    console.log(data);
     axios
       .post('/api/course/sectionRegistration', data)
       .then((res) => {
         setLoad(!load);
         toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' اضافة مجموعة لمادة' + selectedCourse?.course_name,
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -116,12 +120,10 @@ const Page = ({ params }: { params: { courseId: number } }) => {
       course_id: selectedCourse?.id,
       prerequisite_course_id: selectedCoursePer?.id,
     };
-    console.log(data);
     axios
       .post(`/api/course/prerequisitesCourses/${params.courseId}`, data)
       .then((res) => {
         setLoad(!load);
-        console.log(res.data);
         toast.success(res.data.message);
       })
       .catch((err) => {

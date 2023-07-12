@@ -4,6 +4,7 @@ import './globals.css';
 import { ToastContainer } from 'react-toastify';
 import { SessionProvider } from 'next-auth/react';
 
+
 export default function RootLayout({
   children,
   session,
@@ -13,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ar">
-      <head>{/* Add your head content here */}</head>
+      <head></head>
       <body>
         <SessionProvider session={session}>{children}</SessionProvider>
         <ToastContainer position="bottom-right" autoClose={2000} rtl={true} />

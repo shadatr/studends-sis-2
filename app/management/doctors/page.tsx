@@ -1,13 +1,11 @@
 'use client';
 import {
-  DoctorsWithDepartmentsType,
   GetPermissionType,
   PersonalInfoType,
 } from '@/app/types/types';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import AssignDepartment from '@/app/components/asignDepartment';
 import { useSession } from 'next-auth/react';
 import SearchBar from '@/app/components/searchBar';
 import { redirect } from 'next/navigation';
@@ -23,11 +21,8 @@ const Page = () => {
   const user = session.data?.user;
 
   const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [refresh, setRefresh] = useState(false);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
-  const [selectedDoctor, setSelectedDoctor] =
-    useState<DoctorsWithDepartmentsType>();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -38,7 +33,7 @@ const Page = () => {
         const message: GetPermissionType[] = response.data.message;
         setPerms(message);
 
-        fetch('/api/getAll/doctor', { cache: 'no-store' })
+        fetch('/api/getAll/doctor')
           .then((response) => response.json())
           .then((data) => {
             const message = data.message;
@@ -52,6 +47,12 @@ const Page = () => {
   const handleActivate = (doctorId: number, active: boolean) => {
     const data = { doctorId, active };
     axios.post('/api/active/doctorActive', data).then((res) => {
+      const dataUsageHistory = {
+        id: user?.id,
+        type: 'admin',
+        action: ' تغيير حالة الدكاترة',
+      };
+      axios.post('/api/usageHistory', dataUsageHistory);
       toast.success(res.data.message);
       setRefresh(!refresh);
     });
@@ -90,19 +91,11 @@ const Page = () => {
             <th className="border border-gray-300 px-4 py-2">
               المعلومات الشخصية
             </th>
-            {/* <th className="border border-gray-300 px-4 py-2">رئيس قسم</th> */}
             <th className="border border-gray-300 px-4 py-2">تاريخ الانشاء</th>
             <th className="border border-gray-300 px-4 py-2">لقب</th>
             <th className="border border-gray-300 px-4 py-2">اسم</th>
           </tr>
         </thead>
-        {/* <AssignDepartment
-          isOpen={isModalOpen}
-          setIsOpen={setIsModalOpen}
-          selectedDoctor={selectedDoctor}
-          doctors={doctors}
-          setdoctors={setDoctors}
-        /> */}
         <tbody>
           {doctors.map((user, index) => (
             <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
@@ -135,32 +128,6 @@ const Page = () => {
                   الملف الشخصي
                 </Link>
               </td>
-              {/* <td className="border border-gray-300 px-4 py-2 flex justify-between">
-                {perms.map((permItem) => {
-                  if (permItem.permission_id === 9 && permItem.active) {
-                    return (
-                      <button
-                        key={index}
-                        className="bg-green-500 hover:bg-green-600 px-5 py-1 rounded-md text-white"
-                        onClick={() => {
-                          setSelectedDoctor(user);
-                          setIsModalOpen(true);
-                        }}
-                      >
-                        تعين
-                      </button>
-                    );
-                  }
-                  return null;
-                })}
-
-                {user.department ? (
-                  <p>{user.department.name}</p>
-                ) : (
-                  <p className="text-red-500">لا يوجد </p>
-                )}
-              </td> */}
-
               <td className="border border-gray-300 px-4 py-2">
                 {user.enrollment_date}
               </td>

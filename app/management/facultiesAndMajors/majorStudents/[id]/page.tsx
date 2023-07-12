@@ -40,6 +40,12 @@ const Page = ({ params }: { params: { id: number } }) => {
   const handleActivate = (studentId: number, active: boolean) => {
     const data = { studentId, active };
     axios.post('/api/active/studentActive', data).then((res) => {
+      const dataUsageHistory = {
+        id: user?.id,
+        type: 'admin',
+        action: ' تغيير حالة الطلبة',
+      };
+      axios.post('/api/usageHistory', dataUsageHistory);
       toast.success(res.data.message);
       setRefresh(!refresh);
     });
@@ -72,6 +78,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             <th className="border border-gray-300 px-4 py-2">تاريخ الانشاء</th>
             <th className="border border-gray-300 px-4 py-2">لقب</th>
             <th className="border border-gray-300 px-4 py-2">اسم</th>
+            <th className="border border-gray-300 px-4 py-2">رقم الطالب</th>
           </tr>
         </thead>
         <tbody>
@@ -118,6 +125,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {user.name}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {user.number}
                 </td>
               </tr>
             ))

@@ -7,16 +7,15 @@ const supabase = createClient(
 export async function POST(request: Request) {
   const data = await request.json();
 
-  const res = await supabase
+  await supabase
     .from('tb_students')
     .update([
       {
         credits: data.credits,
-        graduated: data.graduation,
+        can_graduate: data.can_graduate,
         graduation_year: data.graduation_year,
       },
     ])
     .eq('id', data.student_id);
 
-    console.log(data);
 }

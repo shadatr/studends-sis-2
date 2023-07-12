@@ -1,56 +1,9 @@
-export type TablePropsType<T, K extends keyof T> = {
-  data: Array<T>;
-  columns: Array<ColumnDefinitionType<T, K>>;
-};
-
-export type ColumnDefinitionType<T, K extends keyof T> = {
-  key: K;
-  header: string;
-  width?: number;
-};
-
-export type TableRowsPropsType<T, K extends keyof T> = {
-  data: Array<T>;
-  columns: Array<ColumnDefinitionType<T, K>>;
-};
-
-export type TableHeaderPropsType<T, K extends keyof T> = {
-  columns: Array<ColumnDefinitionType<T, K>>;
-};
-
 export type MenuItemType = {
   id: number;
   name: string;
   link: string;
 };
 
-export type RegisterStudentType = {
-  id?: number;
-  name?: string;
-  surname?: string;
-  birth_date?: string;
-  email?: string;
-  password?: string;
-  major?: number;
-  phone?: string;
-  address?: string;
-  enrollment_date?: string;
-  advisor?: string;
-};
-export type RegisterStudent2Type = {
-  id: number;
-  name: string;
-  surname: string;
-  birth_date: string;
-  email: string;
-  password: string;
-  major: number;
-  phone: string;
-  address: string;
-  enrollment_date: string;
-  semester: number;
-  advisor?: number;
-};
 
 export type AnnouncmentsMangType = {
   id?: number;
@@ -70,28 +23,6 @@ export type AnnouncmentsType = {
   admin_id?: number;
 };
 
-export type RegisterdoctorType = {
-  name: string;
-  surname: string;
-  birth_date: string;
-  email: string;
-  password: string;
-  phone?: string;
-  address?: string;
-  enrollment_date?: string;
-  major: string;
-};
-
-export type RegisterManagerType = {
-  name: string;
-  surname: string;
-  birth_date: string;
-  email: string;
-  password: string;
-  phone?: string;
-  address?: string;
-  enrollment_date?: string;
-};
 
 export type PersonalInfoHeaderType = {
   header: string;
@@ -108,11 +39,15 @@ export type PersonalInfoType = {
   semester: number;
   enrollment_date?: number;
   major: number;
-  advisor?: string;
+  advisor?: number;
   active?: boolean;
   head_of_deparment_id?: number;
   graduated?: boolean;
   graduation_year?: string;
+  can_graduate: boolean;
+  number: number;
+  graduate_advisor_approval:boolean;
+  final_gpa: number
 };
 
 export type MajorRegType = {
@@ -127,17 +62,6 @@ export type MajorRegType = {
   };
 };
 
-export type MajorReg2Type = {
-  id: number;
-  major_name: string;
-  semesters?: number;
-  department_id?: number;
-  credits_needed?: number;
-  tb_departments?: {
-    name: string;
-    id: number;
-  };
-};
 
 export type DepartmentRegType = {
   id?: number;
@@ -156,7 +80,6 @@ export type SearchIntityType = {
   searchType: 'student' | 'doctor' | 'admin';
   searchBy: string;
 };
-
 
 
 export type AddCourseType = {
@@ -268,6 +191,7 @@ export type ClassesType = {
   starts_at: number;
   ends_at: number;
   location: string;
+  active:boolean;
 };
 
 export type ClassesInfoType = {
@@ -628,6 +552,27 @@ export type ClassEnrollmentsType = {
     can_repeat?: boolean;
     approved?: boolean;
   }[];
+  section: {
+    id?: number;
+    name?: string;
+    class_id?: number;
+    students_num: number;
+  }[];
+  class: {
+    id: number;
+    doctor_id?: number;
+    section_id?: number;
+    mid_publish?: boolean;
+    final_publish?: boolean;
+    class_work_publish?: boolean;
+    result_publish?: boolean;
+    semester: string;
+    day: string;
+    starts_at: number;
+    ends_at: number;
+    location: string;
+    active: boolean;
+  }[];
 };
 
 
@@ -655,6 +600,7 @@ export type InfoDoctorType = {
   address?: string;
   enrollment_date?: string;
   speciality: string;
+  active:boolean;
 };
 
 export type StudentCourseType = {
@@ -703,6 +649,7 @@ export type TranscriptType = {
   semester: string;
   studentSemester: number;
   gpa: number;
+  credits:number;
 };
 
 export type DayOfWeekType = {
@@ -729,14 +676,22 @@ export type LetterGradesType = {
 };
 
 export type LettersType = {
-    id?: number;
-    AA: number;
-    BA: number;
-    BB: number;
-    CB: number;
-    CC: number;
-    DC: number;
-    DD: number;
-    FD: number;
-    FF: number;
+  id?: string;
+  AA: string;
+  BA: string;
+  BB: string;
+  CB: string;
+  CC: string;
+  DC: string;
+  DD: string;
+  FD: string;
+  FF: string;
+};
+
+export type UsageHistoryType = {
+  id: number;
+  user_id: number;
+  action: string;
+  type: string;
+  date: string;
 };

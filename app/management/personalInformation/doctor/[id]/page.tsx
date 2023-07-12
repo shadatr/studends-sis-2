@@ -85,6 +85,12 @@ const page = ({ params }: { params: { id: number } }) => {
     axios
       .post(`/api/allPermission/doctor/selectedPerms/${params.id}`, data)
       .then((res) => {
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تغيير حالة الدكتور',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
         toast.success(res.data.message);
         setRefresh(!refresh);
       });
@@ -107,6 +113,12 @@ const page = ({ params }: { params: { id: number } }) => {
       .post(`/api/personalInfo/edit/${params.id}/editDoctor`, newData)
       .then(() => {
         toast.success('تم تحديث البيانات بنجاح');
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل معلومات الدكتور',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch((error) => {
         console.error(error);

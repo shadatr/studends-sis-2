@@ -5,7 +5,6 @@ import React, { FC, useRef, useState } from 'react';
 import { DatePicker } from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import {  RegisterStudentType } from '@/app/types/types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
@@ -41,6 +40,7 @@ const Page = () => {
     redirect('/');
   }
 
+  const user = session.data?.user;
 
   const [birthDate, setBirthDate] = useState(new Date());
   const name = useRef<HTMLInputElement>(null);
@@ -49,6 +49,7 @@ const Page = () => {
   const address = useRef<HTMLInputElement>(null);
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
+  const number = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submit, setSubmit] = useState(false);
 
@@ -64,6 +65,7 @@ const Page = () => {
       !name.current?.value ||
       !surname.current?.value ||
       !email.current?.value ||
+      !number.current?.value ||
       !password.current?.value
     ) {
       toast.error('يجب ملئ جميع الحقول');
@@ -74,12 +76,13 @@ const Page = () => {
       .update(password.current?.value)
       .digest('hex');
 
-    const data: RegisterStudentType = {
+    const data = {
       name: name.current?.value,
       surname: surname.current?.value,
       phone: phone.current?.value,
       address: address.current?.value,
       email: email.current?.value,
+      number: number.current?.value,
       password: passwordHash,
       birth_date: (birthDate.getTime() / 1000).toFixed(),
     };
@@ -88,6 +91,12 @@ const Page = () => {
       .post('/api/register/manager', data)
       .then((res) => {
         toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تسجيل موظف',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -101,6 +110,11 @@ const Page = () => {
       <div className="flex flex-col items-center h-[150px]  right-[600px] text-sm ">
         <InputBox label="الاسم" placeholder="احمد" inputRef={name} />
         <InputBox label="اللقب" placeholder="محمد" inputRef={surname} />
+        <InputBox
+          label="الرقم التعريفي"
+          placeholder="الرقم التعريفي"
+          inputRef={number}
+        />
         <InputBox
           label="رقم الهاتف"
           placeholder="01000000000"

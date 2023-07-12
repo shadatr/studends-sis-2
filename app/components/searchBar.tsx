@@ -46,7 +46,7 @@ const SearchBar = () => {
           onChange={(event) => setSearchBy(event.target.value)}
           type="text"
           dir="rtl"
-          placeholder="ابحث باستعمال الرقم التريفي او الاسم"
+          placeholder="ابحث باستعمال الرقم  او الاسم"
           className="rounded-sm bg-gray-200 w-[500px] h-[45px] pr-2"
         />
       </div>
