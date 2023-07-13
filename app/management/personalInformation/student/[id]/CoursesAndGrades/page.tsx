@@ -43,7 +43,7 @@ const days: DayOfWeekType[] = [
 const Page = ({ params }: { params: { id: number } }) => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
-  if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
+  if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
     redirect('/');
   }
   const user = session.data?.user;
@@ -866,9 +866,9 @@ const Page = ({ params }: { params: { id: number } }) => {
       </div>
       <div style={{ position: 'absolute', top: '-9999px' }}>
         <div ref={printableContentRef} className="m-5">
-          <h1>{student[0].name} :الاسم</h1>
-          <h1>{student[0].surname} :اللقب</h1>
-          <h1>{student[0].number} : رقم الطالب</h1>
+          <h1>{student[0]?.name} :الاسم</h1>
+          <h1>{student[0]?.surname} :اللقب</h1>
+          <h1>{student[0]?.number} : رقم الطالب</h1>
           <table className="m-10 w-[1100px]">
             <thead>
               <tr>

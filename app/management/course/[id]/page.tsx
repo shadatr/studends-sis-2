@@ -20,7 +20,6 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { BsXCircleFill } from 'react-icons/bs';
 
-
 const hours: string[] = [
   '8:00',
   '9:00',
@@ -106,9 +105,12 @@ const Page = ({ params }: { params: { id: number } }) => {
         const messageMaj: MajorRegType[] = responseMaj.data.message;
         setMajor(messageMaj[0].major_name);
 
-          const resMajorCourses = await axios.get(`/api/course/courseMajorReg/${params.id}`);
-          const messageMajorCour: MajorCourseType[] = await resMajorCourses.data.message;
-          setMajorCourses(messageMajorCour);
+        const resMajorCourses = await axios.get(
+          `/api/course/courseMajorReg/${params.id}`
+        );
+        const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
+          .message;
+        setMajorCourses(messageMajorCour);
 
         const sectionsPromises = messageMajorCour.map(async (course) => {
           const responseReq = await axios.get(
@@ -191,7 +193,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         const dataUsageHistory = {
           id: user?.id,
           type: 'admin',
-          action: ' تعديل مواد تخصص'+major,
+          action: ' تعديل مواد تخصص' + major,
         };
         axios.post('/api/usageHistory', dataUsageHistory);
       })
@@ -295,29 +297,47 @@ const Page = ({ params }: { params: { id: number } }) => {
     setEdit(!edit);
   };
 
-    const handleDelete = (item?: number) => {
-      axios
-        .post(`/api/getAll/getAllClassInfo/1`, item)
-        .then((res) => {
-          toast.success(res.data.message);
-          const dataUsageHistory = {
-            id: user?.id,
-            type: 'admin',
-            action: ' تعديل محاضرات تخصص' + major,
-          };
-          axios.post('/api/usageHistory', dataUsageHistory);
-        })
-        .catch((err) => {
-          toast.error(err.response.data.message);
-        });
-      setEdit(!edit);
-    };
-
-      const printableContentRef = useRef<HTMLDivElement>(null);
-
-      const handlePrint = useReactToPrint({
-        content: () => printableContentRef.current,
+  const handleDelete = (item?: number) => {
+    axios
+      .post(`/api/getAll/getAllClassInfo/1`, item)
+      .then((res) => {
+        toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل محاضرات تخصص' + major,
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message);
       });
+    setEdit(!edit);
+  };
+
+  const handleDeleteCourse = (item?: number) => {
+    axios
+      .post(`/api/course/majorCourses/1`, item)
+      .then((res) => {
+        toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: `${major} تعديل مواد تخصص`,
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      });
+    setEdit(!edit);
+  };
+
+  const printableContentRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = useReactToPrint({
+    content: () => printableContentRef.current,
+  });
 
   return (
     <div className="flex flex-col absolute w-[80%]  items-center justify-center text-[16px]">
@@ -399,6 +419,7 @@ const Page = ({ params }: { params: { id: number } }) => {
           <table className="w-[800px]  ">
             <thead>
               <tr>
+                <th className="py-2 px-4 bg-gray-200 text-gray-700"></th>
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">
                   اجباري/اختياري
                 </th>
@@ -417,6 +438,21 @@ const Page = ({ params }: { params: { id: number } }) => {
                 );
                 return (
                   <tr key={index}>
+                    {perms.map((permItem, idx) => {
+                      if (permItem.permission_id === 6 && permItem.active) {
+                        return (
+                          <td
+                            className="border border-gray-300 px-4 py-2"
+                            key={idx}
+                          >
+                            <BsXCircleFill
+                              onClick={() => handleDeleteCourse(item.id)}
+                            />
+                          </td>
+                        );
+                      }
+                      return null;
+                    })}
                     <td className="border border-gray-300 px-4 py-2">
                       {item.isOptional ? 'اختياري' : 'اجباري'}
                     </td>

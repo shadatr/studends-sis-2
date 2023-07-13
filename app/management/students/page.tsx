@@ -30,8 +30,7 @@ const Page = () => {
       const messagePer: GetPermissionType[] = responsePer.data.message;
       setPerms(messagePer);
 
-      axios.get('/api/major/majorReg').then((resp) => {
-        
+      axios.get('/api/major/getMajors').then((resp) => {
         const message: MajorRegType[] = resp.data.message;
         setMajors(message);
       });

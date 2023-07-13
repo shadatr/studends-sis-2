@@ -19,3 +19,13 @@ export async function GET(request: Request, { params }: { params: { id: number }
     return new Response(JSON.stringify({ message: data.data }));
   } catch {}
 }
+
+
+export async function POST(request: Request) {
+  const req = await request.json();
+  await supabase
+    .from('tb_major_courses')
+    .delete()
+    .eq('id', req);
+  return new Response(JSON.stringify({ message: 'تم حذف المادة بنجاح' }));
+}

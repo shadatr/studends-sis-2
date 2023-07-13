@@ -27,9 +27,7 @@ export async function GET() {
   try {
     const data = await supabase
       .from('tb_usage_history')
-      .select('*').order('id', { ascending: true });
-
-      console.log(data);
+      .select('*').order('id', { ascending: false });
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {

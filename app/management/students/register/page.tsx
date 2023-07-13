@@ -6,7 +6,7 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import { DatePicker } from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import { MajorRegType } from '@/app/types/types';
+import { MajorType } from '@/app/types/types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
@@ -52,9 +52,9 @@ const Page = () => {
   const number = useRef<HTMLInputElement>(null);
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
-  const [majors, setMajors] = useState<MajorRegType[]>([]);
+  const [majors, setMajors] = useState<MajorType[]>([]);
   const [selectedMajor, setSelectedMajor] = useState<
-    MajorRegType | undefined
+    MajorType | undefined
   >();
   const [submitting, setSubmitting] = useState(false);
   const [submit, setSubmit] = useState(false);
@@ -63,8 +63,8 @@ const Page = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const resp = await axios.get('/api/major/majorReg');
-        const message: MajorRegType[] = resp.data.message;
+        const resp = await axios.get('/api/major/getMajors');
+        const message: MajorType[] = resp.data.message;
         setMajors(message);
       } catch (error) {
         console.log(error);
@@ -154,11 +154,11 @@ const Page = () => {
           <option disabled selected>
             اختر التخصص
           </option>
-          {majors.map((item, index) => (
+          {majors.map((item, index) =>{if(item.active){return(
             <option key={index} value={item.major_name}>
               {item.major_name}
             </option>
-          ))}
+          );}})}
         </select>
         <InputBox
           label="رقم الهاتف"

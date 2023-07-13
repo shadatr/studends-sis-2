@@ -41,15 +41,11 @@ export async function GET(
     const prerequisiteData = await Promise.all(prerequisitePromises);
     const prerequisites: Section2Type[] = prerequisiteData.flat();
 
-    console.log(data3);
-
     if (data.error) {
       return new Response(JSON.stringify({ message: 'An error occurred' }), {
         status: 403,
       });
     }
-
-    console.log(prerequisites);
 
     return new Response(JSON.stringify({ message: prerequisites }), {
       headers: { 'Content-Type': 'application/json' },

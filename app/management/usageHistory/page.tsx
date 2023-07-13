@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 
-const itemsPerPage = 18; // Number of items to display per page
+const itemsPerPage = 25; // Number of items to display per page
 
 
 const Page = () => {
@@ -44,37 +44,38 @@ const Page = () => {
     fetchPosts();
   }, [user]);
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = Math.min(startIndex + itemsPerPage, usage.length);
+ const startIndex = (currentPage - 1) * itemsPerPage;
+ const endIndex = Math.min(startIndex + itemsPerPage, usage.length);
 
-  // Array to store the current page items
-  const currentItems = [];
+ const currentItems = usage.slice(startIndex, endIndex);
 
-  // Populate the currentItems array with items for the current page
-  for (let i = startIndex; i < endIndex; i++) {
-    currentItems.push(usage[i]);
-  }
+ const handlePageChange = (pageNumber:number) => {
+   setCurrentPage(pageNumber);
+ };
 
-  // Handle the pagination event by updating the current page state
-  const handlePageChange = (pageNumber:number) => {
-    setCurrentPage(pageNumber);
-  };
+ const totalPages = Math.ceil(usage.length / itemsPerPage);
 
-  // Generate the array of page numbers
-  const totalPages = Math.ceil(usage.length / itemsPerPage);
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
+ const maxPageNumbers = 10; // Maximum number of page numbers to display
+ const maxVisiblePages = Math.min(maxPageNumbers, totalPages); // Maximum number of visible page numbers
+ const middlePage = Math.ceil(maxVisiblePages / 2); // Middle page number
+ let startPage = Math.max(currentPage - middlePage, 1); // Start page number
+ const endPage = Math.min(startPage + maxVisiblePages - 1, totalPages); // End page number
+
+ if (endPage - startPage < maxVisiblePages - 1) {
+   startPage = Math.max(endPage - maxVisiblePages + 1, 1);
+ }
+
+ const pageNumbers = Array.from(
+   { length: endPage - startPage + 1 },
+   (_, index) => startPage + index
+ );
 
   return (
     <div className="flex absolute flex-col w-[80%] justify-center items-center">
       <table className="border-collapse mt-8 w-[1000px]">
         <thead>
           <tr className="bg-gray-200">
-            <th className="border border-gray-300 px-4 py-2">
-              الوظيفة
-            </th>
+            <th className="border border-gray-300 px-4 py-2">الوظيفة</th>
             <th className="border border-gray-300 px-4 py-2">اسم المستخدم</th>
             <th className="border border-gray-300 px-4 py-2"> الحركة</th>
             <th className="border border-gray-300 px-4 py-2">تاريخ </th>
@@ -104,6 +105,10 @@ const Page = () => {
         </tbody>
       </table>
       <div className="flex justify-center mt-4">
+        {startPage > 1 && (
+          <button onClick={() => handlePageChange(1)}>1</button>
+        )}
+        {startPage > 2 && <span>...</span>}
         {pageNumbers.map((pageNumber) => (
           <button
             key={pageNumber}
@@ -116,6 +121,12 @@ const Page = () => {
             {pageNumber}
           </button>
         ))}
+        {endPage < totalPages - 1 && <span>...</span>}
+        {endPage < totalPages && (
+          <button onClick={() => handlePageChange(totalPages)}>
+            {totalPages}
+          </button>
+        )}
       </div>
     </div>
   );

@@ -62,10 +62,19 @@ export type MajorRegType = {
   };
 };
 
+export type MajorType = {
+  id?: number;
+  major_name: string;
+  department_id?: number;
+  credits_needed: number;
+  active: boolean
+};
+
 
 export type DepartmentRegType = {
   id?: number;
   name: string;
+  active:boolean;
 };
 
 export type AdminStaffType = {
@@ -265,13 +274,6 @@ export type ExamType={
   grade?:string
 }
 
-export type MajorType = {
-  id: number;
-  major_name: string;
-  semesters?: number;
-  department_id?: number;
-  credits_needed?: number;
-};
 
 export type TabType = {
   id: number;
