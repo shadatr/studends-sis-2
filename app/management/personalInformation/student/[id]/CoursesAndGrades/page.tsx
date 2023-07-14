@@ -532,7 +532,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   <table>
                     <tbody>
                       <tr>
-                        <td className="border border-gray-300 px-4 py-2 w-[200px]">
+                        <td className="border border-gray-300 px-4 py-2 w-[500px]">
                           لا يوجد
                         </td>
                       </tr>
@@ -546,181 +546,198 @@ const Page = ({ params }: { params: { id: number } }) => {
                     <h1 className="text-sm bg-lightBlue rounded-md p-3 px-12 m-3">
                       اضف مواد اضافية لطالب
                     </h1>
-                    <table className="w-[1100px] ">
-                      <thead>
-                        <tr>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey"></th>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey">
-                            الكريدت
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey">
-                            درجة النجاح
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey">
-                            الساعات
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey">
-                            اجباري/اختياري
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey">
-                            التوقيت
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey">
-                            اسم الدكتور
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey">
-                            اسم المجموعة
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey">
-                            اسم المادة
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {checkList2.map((item, inde) =>
-                          item.class.map((cls) => {
-                            if (
-                              cls.active &&
-                              item.class &&
-                              !studentCourses.find(
-                                (item) => cls.id === item.class.id
+                    {checkList2.length ? (
+                      <table className="w-[1100px] ">
+                        <thead>
+                          <tr>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey"></th>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey">
+                              الكريدت
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey">
+                              درجة النجاح
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey">
+                              الساعات
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey">
+                              اجباري/اختياري
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey">
+                              التوقيت
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey">
+                              اسم الدكتور
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey">
+                              اسم المجموعة
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey">
+                              اسم المادة
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {checkList2.map((item, inde) =>
+                            item.class.map((cls) => {
+                              if (
+                                cls.active &&
+                                item.class &&
+                                !studentCourses.find(
+                                  (item) => cls.id === item.class.id
+                                )
+                              ) {
+                                const selectedSec = item.section.find(
+                                  (sec) => sec.id == cls.section_id
+                                );
+                                const selectedDoc = item.doctor.find(
+                                  (doct) => doct.id == cls.doctor_id
+                                );
+                                const findDay = days.find(
+                                  (day) => day.day == cls.day
+                                );
+                                const findStartTime = hoursNames.find(
+                                  (hour) => hour.id == cls.starts_at
+                                );
+                                const findEndTime = hoursNames.find(
+                                  (hour) => hour.id == cls.ends_at
+                                );
+                                const repeated = repeat.find(
+                                  (co) => co.course.id == item.course.id
+                                );
+
+                                return (
+                                  <tr key={inde + 1}>
+                                    <td className="border border-gray-300 px-4 py-2">
+                                      <input
+                                        type="checkbox"
+                                        onChange={() => handleCheck2(cls.id)}
+                                        checked={checked2.includes(cls.id)}
+                                      />
+                                    </td>
+
+                                    <td className="border border-gray-300 px-4 py-2">
+                                      {item.course.credits}
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2">
+                                      {item.course.passing_percentage}
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2">
+                                      {item.course.hours}
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2">
+                                      {item.majorCourse.isOptional
+                                        ? 'اختياري'
+                                        : 'اجباري'}
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2">
+                                      {findDay?.name}/ {findStartTime?.name}-
+                                      {findEndTime?.name}
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2">
+                                      {selectedDoc?.name} {selectedDoc?.surname}
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2">
+                                      {selectedSec?.name}
+                                    </td>
+                                    <td
+                                      className={`border border-gray-300 px-4 py-2 ${
+                                        repeated?.course.id == item.course.id
+                                          ? 'text-green-500'
+                                          : ''
+                                      }`}
+                                    >
+                                      {item.course.course_name}{' '}
+                                      {repeated?.course.id == item.course.id
+                                        ? '- اعادة'
+                                        : ''}
+                                    </td>
+                                  </tr>
+                                );
+                              }
+                            })
+                          )}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <table>
+                        <tbody>
+                          <tr>
+                            <td className="border border-gray-300 px-4 py-2 w-[500px]">
+                              لا يوجد
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    )}
+                    {unableCourses.length ? (
+                      <table className="m-10">
+                        <thead>
+                          <tr>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey">
+                              المواد المشروطة
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey">
+                              الكريدت
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey">
+                              درجة النجاح
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey">
+                              الساعات
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey">
+                              اجباري/اختياري
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2 bg-grey">
+                              اسم المادة
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {unableCourses.map((item, ind) => {
+                            const preCourses = item.prerequisites.map((pre) =>
+                              courses.find(
+                                (course) =>
+                                  pre.prerequisite_course_id ===
+                                  course.course.id
                               )
-                            ) {
-                              const selectedSec = item.section.find(
-                                (sec) => sec.id == cls.section_id
-                              );
-                              const selectedDoc = item.doctor.find(
-                                (doct) => doct.id == cls.doctor_id
-                              );
-                              const findDay = days.find(
-                                (day) => day.day == cls.day
-                              );
-                              const findStartTime = hoursNames.find(
-                                (hour) => hour.id == cls.starts_at
-                              );
-                              const findEndTime = hoursNames.find(
-                                (hour) => hour.id == cls.ends_at
-                              );
-                              const repeated = repeat.find(
-                                (co) => co.course.id == item.course.id
-                              );
-
-                              return (
-                                <tr key={inde + 1}>
-                                  <td className="border border-gray-300 px-4 py-2">
-                                    <input
-                                      type="checkbox"
-                                      onChange={() => handleCheck2(cls.id)}
-                                      checked={checked2.includes(cls.id)}
-                                    />
-                                  </td>
-
-                                  <td className="border border-gray-300 px-4 py-2">
-                                    {item.course.credits}
-                                  </td>
-                                  <td className="border border-gray-300 px-4 py-2">
-                                    {item.course.passing_percentage}
-                                  </td>
-                                  <td className="border border-gray-300 px-4 py-2">
-                                    {item.course.hours}
-                                  </td>
-                                  <td className="border border-gray-300 px-4 py-2">
-                                    {item.majorCourse.isOptional
-                                      ? 'اختياري'
-                                      : 'اجباري'}
-                                  </td>
-                                  <td className="border border-gray-300 px-4 py-2">
-                                    {findDay?.name}/ {findStartTime?.name}-
-                                    {findEndTime?.name}
-                                  </td>
-                                  <td className="border border-gray-300 px-4 py-2">
-                                    {selectedDoc?.name} {selectedDoc?.surname}
-                                  </td>
-                                  <td className="border border-gray-300 px-4 py-2">
-                                    {selectedSec?.name}
-                                  </td>
-                                  <td
-                                    className={`border border-gray-300 px-4 py-2 ${
-                                      repeated?.course.id == item.course.id
-                                        ? 'text-green-500'
-                                        : ''
-                                    }`}
-                                  >
-                                    {item.course.course_name}{' '}
-                                    {repeated?.course.id == item.course.id
-                                      ? '- اعادة'
-                                      : ''}
-                                  </td>
-                                </tr>
-                              );
-                            }
-                          })
-                        )}
-                      </tbody>
-                    </table>
-                    <table className="m-10">
-                      <thead>
-                        <tr>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey">
-                            المواد المشروطة
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey">
-                            الكريدت
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey">
-                            درجة النجاح
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey">
-                            الساعات
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey">
-                            اجباري/اختياري
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2 bg-grey">
-                            اسم المادة
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {unableCourses.map((item, ind) => {
-                          const preCourses = item.prerequisites.map((pre) =>
-                            courses.find(
-                              (course) =>
-                                pre.prerequisite_course_id === course.course.id
-                            )
-                          );
-                          return (
-                            <tr className="text-red-500" key={ind + 3}>
-                              <td className="border border-gray-300 px-4 py-2">
-                                {preCourses.map((preCourse) => (
-                                  <span key={preCourse?.course.id}>
-                                    {preCourse?.course.course_name}
-                                    {' - '}
-                                  </span>
-                                ))}
-                              </td>
-                              <td className="border border-gray-300 px-4 py-2">
-                                {item.course.credits}
-                              </td>
-                              <td className="border border-gray-300 px-4 py-2">
-                                {item.course.passing_percentage}
-                              </td>
-                              <td className="border border-gray-300 px-4 py-2">
-                                {item.course.hours}
-                              </td>
-                              <td className="border border-gray-300 px-4 py-2">
-                                {item.majorCourse.isOptional
-                                  ? 'اختياري'
-                                  : 'اجباري'}
-                              </td>
-                              <td className="border border-gray-300 px-4 py-2">
-                                {item.course.course_name}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                            );
+                            return (
+                              <tr className="text-red-500" key={ind + 3}>
+                                <td className="border border-gray-300 px-4 py-2">
+                                  {preCourses.map((preCourse) => (
+                                    <span key={preCourse?.course.id}>
+                                      {preCourse?.course.course_name}
+                                      {' - '}
+                                    </span>
+                                  ))}
+                                </td>
+                                <td className="border border-gray-300 px-4 py-2">
+                                  {item.course.credits}
+                                </td>
+                                <td className="border border-gray-300 px-4 py-2">
+                                  {item.course.passing_percentage}
+                                </td>
+                                <td className="border border-gray-300 px-4 py-2">
+                                  {item.course.hours}
+                                </td>
+                                <td className="border border-gray-300 px-4 py-2">
+                                  {item.majorCourse.isOptional
+                                    ? 'اختياري'
+                                    : 'اجباري'}
+                                </td>
+                                <td className="border border-gray-300 px-4 py-2">
+                                  {item.course.course_name}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    ) : (
+                      ''
+                    )}
                     <button
                       onClick={handleSubmit2}
                       className="flex p-3 text-sm  bg-darkBlue text-secondary m-3 rounded-md"
