@@ -5,7 +5,7 @@ import {
   AssignPermissionType,
   GetPermissionStudentType,
   PersonalInfoHeaderType,
-  RegisterStudent2Type,
+  PersonalInfoType,
   InfoDoctorType,
   MajorRegType,
 } from '@/app/types/types';
@@ -35,8 +35,8 @@ const Page = ({ params }: { params: { id: number } }) => {
   if (session.data?.user ? session.data?.user.userType !== 'doctor' : false) {
     redirect('/');
   }
-  const [useMyData, setMydata] = useState<RegisterStudent2Type[]>([]);
-  const [newData, setNewData] = useState<RegisterStudent2Type[]>([]);
+  const [useMyData, setMydata] = useState<PersonalInfoType[]>([]);
+  const [newData, setNewData] = useState<PersonalInfoType[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
   const [perms, setPerms] = useState<GetPermissionStudentType[]>([]);
   const [refresh, setRefresh] = useState(false);
@@ -68,11 +68,18 @@ const Page = ({ params }: { params: { id: number } }) => {
           setMydata(message);
           setNewData(message);
 
+<<<<<<< HEAD
           const responseMaj = await axios.get(
             `/api/majorEnrollment/${message[0].major}`
           );
           const messageMaj: MajorRegType[] = responseMaj.data.message;
           setMajor(messageMaj[0].major_name);
+=======
+      axios.get(`/api/personalInfo/student/${params.id}`).then((resp) => {
+        const message: PersonalInfoType[] = resp.data.message;
+        setMydata(message);
+        setNewData(message);
+>>>>>>> aac1929ac54b173e923e0facecfcf4e9b3f5ccef
       });
 
       axios.get('/api/getAll/doctor').then((res) => {
@@ -102,7 +109,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   };
 
 
-  const handleInputChange = (e: string, field: keyof RegisterStudent2Type) => {
+  const handleInputChange = (e: string, field: keyof PersonalInfoType) => {
     const updatedData = newData.map((data) => {
       return {
         ...data,

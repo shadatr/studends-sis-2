@@ -1,23 +1,21 @@
 import { createClient } from '@supabase/supabase-js';
+import { MajorType } from '@/app/types/types';
 
 const supabase = createClient(
   process.env.SUPABASE_URL || '',
   process.env.SUPABASE_KEY || ''
 );
 
-export async function POST(request: Request, { params }: { params: { id: number } }) {
-  // TODO: Maybe add some validation for security here
+export async function POST(
+  request: Request,
+) {
 
-  const newData = await request.json();
+  const newData: MajorType[] = await request.json();
 
   try {
-    const updatePromises =  await supabase
-        .from('tb_students')
-        .update(newData)
-        .eq('id', params.id);
-    
-
-    console.log(updatePromises.error?.message);
+    newData.map(async (data) => {
+      const updatePromises = await supabase.from('tb_majors').update(data).eq('id', data.id);
+    });
 
     return new Response(
       JSON.stringify({ message: 'تم تحديث البيانات بنجاح' }),
@@ -33,6 +31,3 @@ export async function POST(request: Request, { params }: { params: { id: number 
     );
   }
 }
-
-
-

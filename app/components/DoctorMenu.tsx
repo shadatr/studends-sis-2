@@ -9,7 +9,6 @@ const item: MenuItemType[] = [
   { id: 4, link: 'courseProg', name: 'جدول المحاضرات' },
   { id: 6, link: 'examProg', name: 'جدول الامتحانات' },
   { id: 7, link: 'examRes', name: 'نتائج الامتحانات' },
-  // { id: 9, link: 'headOfDepartmentWork', name: 'اعمال عميد الكلية' },
   { id: 10, link: 'advisorWork', name: 'اعمال الاشراف' },
 ];
 

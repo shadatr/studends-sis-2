@@ -5,11 +5,12 @@ const supabase = createClient(
   process.env.SUPABASE_KEY || ''
 );
 
-export async function GET(request: Request, { params }: { params: { id: number } }) {
+export async function GET() {
   try {
-    const data = await supabase.from('tb_courses').select('*').eq('major_id', params.id).eq('active',true);
+    const data = await supabase
+      .from('tb_courses')
+      .select('*, tb_majors!inner(*)');
 
-    console.log(data.error?.message);
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
@@ -23,9 +24,6 @@ export async function GET(request: Request, { params }: { params: { id: number }
 
 export async function POST(request: Request) {
   const req = await request.json();
-  await supabase
-    .from('tb_major_courses')
-    .delete()
-    .eq('id', req);
+  await supabase.from('tb_courses').delete().eq('id', req);
   return new Response(JSON.stringify({ message: 'تم حذف المادة بنجاح' }));
 }

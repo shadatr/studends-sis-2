@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const data = await supabase.from('tb_majors').select('*, tb_departments!inner(*)');
+    const data = await supabase.from('tb_majors').select('*');
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,

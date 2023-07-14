@@ -47,8 +47,6 @@ export async function GET(
       });
     }
 
-    console.log(prerequisites);
-
     return new Response(JSON.stringify({ message: prerequisites }), {
       headers: { 'Content-Type': 'application/json' },
     });

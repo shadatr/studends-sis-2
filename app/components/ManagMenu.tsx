@@ -23,13 +23,11 @@ function ManagMenu() {
       <table className="w-[260px]  bg-darkBlue text-white">
         <tbody>
           {item.map((item, index) => (
-            <Link href={`/management/${item.link}`} key={index}>
-              <tr className="flex flex-col">
-                <td className="w-full h-[60px] p-3 flex items-center justify-center hover:text-cyan-300">
-                  {item.name}
-                </td>
-              </tr>
-            </Link>
+            <tr className="flex flex-col" key={index}>
+              <td className="w-full h-[60px] p-3 flex items-center justify-center hover:text-cyan-300">
+                <Link href={`/management/${item.link}`}>{item.name}</Link>
+              </td>
+            </tr>
           ))}
         </tbody>
       </table>

@@ -1,4 +1,3 @@
-import { RegisterStudentType } from '@/app/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -9,7 +8,7 @@ const supabase = createClient(
 export async function POST(request: Request) {
   // TODO: Maybe add some validation for security here
 
-  const data: RegisterStudentType = await request.json();
+  const data = await request.json();
   if (data.address === '') {
     data.address = undefined;
   }
