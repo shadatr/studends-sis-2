@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import { ClassesInfoType, ClassesType, CheckedType } from '@/app/types/types';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 const hoursNames: CheckedType[] = [
   { id: 8, name: '8:00' },
@@ -83,7 +84,11 @@ const Page = ({ params }: { params: { id: number } }) => {
                 {course.section?.name}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {course.course.course_name}
+                <Link
+                  href={`/management/course/managementWork/class/${course.class.section_id}`}
+                >
+                  {course.course.course_name}
+                </Link>
               </td>
             </tr>
           ))}

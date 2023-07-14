@@ -66,7 +66,9 @@ const Page = () => {
       !surname.current?.value ||
       !email.current?.value ||
       !number.current?.value ||
-      !password.current?.value
+      !password.current?.value ||
+      !address.current?.value ||
+      !phone.current?.value
     ) {
       toast.error('يجب ملئ جميع الحقول');
       return;

@@ -66,8 +66,10 @@ const Page = () => {
       !surname.current?.value ||
       !email.current?.value ||
       !password.current?.value ||
-      !speciality.current?.value||
-      !number.current?.value
+      !speciality.current?.value ||
+      !number.current?.value ||
+      !address.current?.value ||
+      !phone.current?.value
     ) {
       toast.error('يجب ملئ جميع الحقول');
       return;
@@ -86,7 +88,7 @@ const Page = () => {
       major: speciality.current?.value,
       number: number.current?.value,
       password: passwordHash,
-      birth_date: (birthDate.getTime() / 1000).toFixed(),
+      birth_date: birthDate.toLocaleDateString(),
     };
 
     axios

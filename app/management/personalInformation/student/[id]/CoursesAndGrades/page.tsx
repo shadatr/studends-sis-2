@@ -365,7 +365,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       const dataUsageHistory = {
         id: user?.id,
         type: 'admin',
-        action: ' تعديل مواد الطالب',
+        action: `${student[0]?.name}  ${student[0]?.surname} تعديل مواد الطالب`,
       };
       axios.post('/api/usageHistory', dataUsageHistory);
     }

@@ -12,8 +12,6 @@ import SearchBar from '@/app/components/searchBar';
 import { redirect } from 'next/navigation';
 
 
-
-
 const Page = ({ params }: { params: { doctorId: number } }) => {
   // handling authentication
   const session = useSession({ required: true });
@@ -26,7 +24,7 @@ const Page = ({ params }: { params: { doctorId: number } }) => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      axios.get('/api/major/majorReg').then((resp) => {
+      axios.get('/api/major/getMajors').then((resp) => {
         console.log(resp.data);
         const message: MajorRegType[] = resp.data.message;
         setMajors(message);
