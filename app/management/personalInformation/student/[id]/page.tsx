@@ -49,7 +49,6 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [major, setMajor] = useState<string>();
   const printableContentRef = useRef<HTMLDivElement>(null);
   const user = session.data?.user;
-  const [major, setMajor] = useState<string>();
 
 
   useEffect(() => {
@@ -75,11 +74,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       setPerms(message);
 
       axios.get(`/api/personalInfo/student/${params.id}`).then(async (resp) => {
-<<<<<<< HEAD
-        const message: RegisterStudent2Type[] = resp.data.message;
-=======
         const message: PersonalInfoType[] = resp.data.message;
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
         setMydata(message);
         setNewData(message);
 

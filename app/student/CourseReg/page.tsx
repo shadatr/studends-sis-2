@@ -109,16 +109,12 @@ const Page = () => {
     courses.forEach((course) => {
       if (course.prerequisites.length === 0) {
         if (course?.courseEnrollements?.length != 0) {
-<<<<<<< HEAD
-          const enrollments = course.courseEnrollements.filter((co)=> co.student_id==user?.id);
-=======
           const enrollments = course.courseEnrollements.filter(
             (co) => co.student_id == user?.id
           );
           if (enrollments.length == 0) {
             updatedCheckList.push(course);
           }
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
 
           enrollments.map((courseEnroll) => {
             course.class.map((classItem) => {
@@ -128,21 +124,11 @@ const Page = () => {
               ) {
                 const index = updatedCheckList.indexOf(course);
 
-<<<<<<< HEAD
-                if (courseEnroll.can_repeat == true) {
-                  repeatList.push(course);
-                  if (index !== -1) {
-                    updatedCheckList.splice(index, 1);
-                  }
-                } 
-                
-=======
                 if (courseEnroll.can_repeat == false) {
                   if (index !== -1) {
                     updatedCheckList.splice(index, 1);
                   }
                 }
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
               } else if (
                 (!updatedCheckList.find(
                   (item) => item.course.id === course.course.id
@@ -150,10 +136,6 @@ const Page = () => {
                   courseEnroll.pass == false) ||
                 courseEnroll.can_repeat == true
               ) {
-<<<<<<< HEAD
-                updatedCheckList.push(course);
-              }               
-=======
                 if (
                   courseEnroll.can_repeat == true &&
                   !repeatList.find(
@@ -164,7 +146,6 @@ const Page = () => {
                 }
                 updatedCheckList.push(course);
               }
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
             });
           });
         } else {
@@ -177,23 +158,6 @@ const Page = () => {
             (prereq) => preCourse.prerequisite_course_id === prereq.course.id 
           );
 
-<<<<<<< HEAD
-          prerequisiteCourse?.class.forEach((classItem) => {
-            const passed = prerequisiteCourse.courseEnrollements.find(
-              (courseEnroll) =>
-                courseEnroll.student_id === user?.id &&
-                classItem.id === courseEnroll.class_id &&
-                courseEnroll
-            );
-
-            if (
-              passed?.pass === true && 
-              !updatedCheckList.find(
-                (item) => item.course.id === course.course.id
-              )
-            ) {
-
-=======
           const passed = prerequisiteCourse?.courseEnrollements.find(
             (courseEnroll) =>
               prerequisiteCourse.class.find(
@@ -217,7 +181,6 @@ const Page = () => {
               (co) => co.student_id == user?.id
             );
             if (enrollments.length == 0) {
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
               updatedCheckList.push(course);
               const index = updatedCheckList.indexOf(course);
               if (index !== -1) {
@@ -488,42 +451,6 @@ const Page = () => {
                 </tr>
               </thead>
               <tbody>
-<<<<<<< HEAD
-                {unableCourses.map((item, ind) => {
-                  const preCourses = item.prerequisites.map((pre) =>
-                    courses.find(
-                      (course) =>
-                        pre.prerequisite_course_id === course.course.id
-                    )
-                  );
-                  return (
-                    <tr className="text-red-500" key={ind+2}>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {preCourses.map((preCourse) => (
-                          <span key={preCourse?.course.id}>
-                            {preCourse?.course.course_name}{' - '}
-                          </span>
-                        ))}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {item.course.credits}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {item.course.passing_percentage}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {item.course.hours}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {item.majorCourse.isOptional ? 'اختياري' : 'اجباري'}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {item.course.course_name}
-                      </td>
-                    </tr>
-                  );
-                })}
-=======
                 {courses &&
                   unableCourses.map((item, ind) => {
                     const preCourses = item.prerequisites.map((pre) =>
@@ -560,7 +487,6 @@ const Page = () => {
                       </tr>
                     );
                   })}
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
               </tbody>
             </table>
             <button

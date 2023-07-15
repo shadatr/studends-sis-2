@@ -64,22 +64,15 @@ const Page = ({ params }: { params: { id: number } }) => {
         setPerms(message);
         
         axios.get(`/api/personalInfo/student/${params.id}`).then(async (resp) => {
-          const message: RegisterStudent2Type[] = resp.data.message;
+          const message: PersonalInfoType[] = resp.data.message;
           setMydata(message);
           setNewData(message);
 
-<<<<<<< HEAD
           const responseMaj = await axios.get(
             `/api/majorEnrollment/${message[0].major}`
           );
           const messageMaj: MajorRegType[] = responseMaj.data.message;
           setMajor(messageMaj[0].major_name);
-=======
-      axios.get(`/api/personalInfo/student/${params.id}`).then((resp) => {
-        const message: PersonalInfoType[] = resp.data.message;
-        setMydata(message);
-        setNewData(message);
->>>>>>> aac1929ac54b173e923e0facecfcf4e9b3f5ccef
       });
 
       axios.get('/api/getAll/doctor').then((res) => {

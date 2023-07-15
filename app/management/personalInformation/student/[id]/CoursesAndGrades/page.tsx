@@ -70,9 +70,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-<<<<<<< HEAD
         if(user){
-=======
         const resp = await axios.get(`/api/personalInfo/student/${params.id}`);
         const messageMaj: PersonalInfoType[] = resp.data.message;
         setStudent(messageMaj);
@@ -94,13 +92,6 @@ const Page = ({ params }: { params: { id: number } }) => {
         );
         const messagePer: GetPermissionType[] = responsePer.data.message;
         setPerms(messagePer);
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
-
-          const responsePer = await axios.get(
-            `/api/allPermission/admin/selectedPerms/${user?.id}`
-          );
-          const messagePer: GetPermissionType[] = responsePer.data.message;
-          setPerms(messagePer);
   
           const responseCourseLetter = await axios.get(`/api/exams/letterGrades`);
           const messageCourseLetter: LetterGradesType[] =

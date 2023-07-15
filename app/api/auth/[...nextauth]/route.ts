@@ -165,6 +165,7 @@ const authOptions: NextAuthOptions = {
       session.user.number = token.number as any;
       session.user.head_of_deparment_id = token.head_of_deparment_id as any;
       session.user.userType = token.userType as any;
+      session.user.graduated = token.graduated as any;
       return session;
     },
   },

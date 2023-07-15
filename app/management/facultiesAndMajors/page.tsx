@@ -44,19 +44,6 @@ const Page = () => {
         );
         const message: GetPermissionType[] = response.data.message;
         setPerms(message);
-<<<<<<< HEAD
-
-        axios.get('/api/department/departmentRegister').then((resp) => {
-          const message: DepartmentRegType[] = resp.data.message;
-          setDepartments(message);
-
-          axios.get('/api/major/majorReg').then((resp) => {
-            const message: MajorRegType[] = resp.data.message;
-            setMajors(message);
-          });
-        });
-=======
->>>>>>> aac1929ac54b173e923e0facecfcf4e9b3f5ccef
       }
     };
 

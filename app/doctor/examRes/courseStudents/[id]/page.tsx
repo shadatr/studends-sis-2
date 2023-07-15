@@ -144,12 +144,8 @@ const Page = ({ params }: { params: { id: number } }) => {
                   (grade.final * message.course[0].final) / 100 +
                   (grade.class_work * message.course[0].class_work) / 100;
 
-<<<<<<< HEAD
-                  if (avrg <= messageGrade[0].DC && avrg >= messageGrade[0].DD) {
-=======
                 if (parseFloat(messageGrade[0].AA) <= avrg && 100 >= avrg) {
                   if (messageResult[0].AA == 'نجاح') {
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
                     return {
                       ...grade,
                       pass: true,

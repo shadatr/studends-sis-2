@@ -71,10 +71,6 @@ const Tabs = ({ params }: { params: { sectionId: number } }) => {
         setDoctors(message);
       });
 
-<<<<<<< HEAD
-       setClasses(classMessage);
-      
-=======
       const responseReq = await axios.get(
         `/api/getAll/getAllClassInfo/${params.sectionId}`
       );
@@ -82,7 +78,6 @@ const Tabs = ({ params }: { params: { sectionId: number } }) => {
 
       setClasses(classMessage);
       setEditClasses(classMessage);
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
     };
     fetchdata();
   }, [params.sectionId, edit]);

@@ -32,13 +32,6 @@ const Page = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       if (user) {
-<<<<<<< HEAD
-        
-        axios.get(`/api/advisor/${user?.id}`).then((resp) => {
-          const message: PersonalInfoType[] = resp.data.message;
-          setStudents(message);
-        });
-=======
         axios
           .get(`/api/advisor/assignAdvisor/${user?.id}`)
           .then(async (resp) => {
@@ -57,7 +50,6 @@ const Page = () => {
         );
         const messageClasses: ClassesType[] = responseClasses.data.message;
         setClasses(messageClasses);
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
       }
     };
 

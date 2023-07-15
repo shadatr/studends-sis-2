@@ -78,42 +78,9 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
           const messageResult: LettersType[] = responseResult.data.message;
           setResult(messageResult);
 
-<<<<<<< HEAD
-            let isGraduated = false;
-
-            if (
-              graduation?.major.credits_needed &&
-              studentTotalCredits >= graduation?.major.credits_needed
-            ) {
-              isGraduated = true;
-            }
-
-            responseCourseMaj.map((majCo) => {
-              const selecetedCourse = courses.find(
-                (c) =>
-                  c.course.id == majCo.course_id && c.courseEnrollements.pass
-              );
-              if (selecetedCourse == undefined && majCo.isOptional == false) {
-                isGraduated = false;
-              }
-            });
-
-            if (studentTotalCredits && user && graduationYear?.semester){
-              const data = {
-                credits: studentTotalCredits,
-                student_id: user,
-                graduation: isGraduated,
-                graduation_year: graduationYear?.semester,
-              };
-
-
-            axios.post('/api/transcript/editCredits', data);}
-          }
-=======
           const responseGPA = await axios.get(`/api/exams/grading/6`);
           const messageGPA: LettersType[] = responseGPA.data.message;
           setGpa(messageGPA);
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -122,10 +89,6 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
 
     fetchData();
   }, [majorId, user]);
-<<<<<<< HEAD
-            
-=======
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
 
   return (
     <div className="absolute w-[85%] flex flex-col p-10 justify-content items-center">
