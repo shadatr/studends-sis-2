@@ -61,11 +61,6 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-<<<<<<< HEAD
-      const resp = await axios.get('/api/major/majorReg');
-      const message: MajorRegType[] = resp.data.message;
-      setMajors(message);
-=======
       try {
         const resp = await axios.get('/api/major/getMajors');
         const message: MajorType[] = resp.data.message;
@@ -73,7 +68,6 @@ const Page = () => {
       } catch (error) {
         console.log(error);
       }
->>>>>>> aac1929ac54b173e923e0facecfcf4e9b3f5ccef
     };
     fetchPosts();
   }, []);

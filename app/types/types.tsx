@@ -677,20 +677,6 @@ export type LetterGradesType = {
 };
 
 export type LettersType = {
-<<<<<<< HEAD
-    id?: number;
-    AA: number;
-    BA: number;
-    BB: number;
-    CB: number;
-    CC: number;
-    DC: number;
-    DD: number;
-    FD: number;
-    FF: number;
-};
-
-=======
   id?: string;
   AA: string;
   BA: string;
@@ -710,4 +696,3 @@ export type UsageHistoryType = {
   type: string;
   date: string;
 };
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5

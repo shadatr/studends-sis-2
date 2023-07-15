@@ -24,21 +24,6 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-<<<<<<< HEAD
-      if(user){
-        const responsePer = await axios.get(
-          `/api/allPermission/admin/selectedPerms/${user?.id}`
-        );
-        const messagePer: GetPermissionType[] = responsePer.data.message;
-        setPerms(messagePer);
-  
-        axios.get('/api/major/majorReg').then((resp) => {
-          console.log(resp.data);
-          const message: MajorReg2Type[] = resp.data.message;
-          setMajors(message);
-        });
-      }
-=======
       const responsePer = await axios.get(
         `/api/allPermission/admin/selectedPerms/${user?.id}`
       );
@@ -49,7 +34,6 @@ const Page = () => {
         const message: MajorRegType[] = resp.data.message;
         setMajors(message);
       });
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
     };
     fetchPosts();
   }, [user]);

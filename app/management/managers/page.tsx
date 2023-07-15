@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import SearchBar from '@/app/components/searchBar';
 import { redirect } from 'next/navigation';
+ 
 
 const Page = () => {
   const session = useSession({ required: true });
