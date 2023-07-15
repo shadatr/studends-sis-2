@@ -1,24 +1,33 @@
-import { AddCourseType } from '@/app/types/types';
-import { createClient } from '@supabase/supabase-js';
+import { Client } from 'pg';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
 export async function POST(request: Request) {
-  const data: AddCourseType = await request.json();
+  const data = await request.json();
 
   try {
-    await supabase.from('tb_courses').insert([data]);
+    await client.connect();
 
-   
+    await client.query(
+      'INSERT INTO tb_courses (course_name, course_code) VALUES ($1, $2)',
+      [data.course_name, data.course_code]
+    );
+
+    await client.end();
+
     return new Response(JSON.stringify({ message: 'تم تسجيل المادة بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });
   } catch (error) {
+    console.error('Error occurred:', error);
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل المادة' }),
+      JSON.stringify({ message: 'حدث خطأ أثناء تسجيل المادة' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }
@@ -26,16 +35,22 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const data = await supabase
-      .from('tb_courses')
-      .select('*');
+    await client.connect();
 
-    if (data.error) {
-      return new Response(JSON.stringify({ message: 'an error occured' }), {
-        status: 403,
-      });
-    }
+    const queryResult = await client.query('SELECT * FROM tb_courses');
 
-    return new Response(JSON.stringify({ message: data.data }));
-  } catch {}
+    const data = queryResult.rows;
+
+    await client.end();
+
+    return new Response(JSON.stringify({ message: data }), {
+      headers: { 'content-type': 'application/json' },
+    });
+  } catch (error) {
+    console.error('Error occurred:', error);
+    return new Response(JSON.stringify({ message: 'an error occured' }), {
+      headers: { 'content-type': 'application/json' },
+      status: 403,
+    });
+  }
 }

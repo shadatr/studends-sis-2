@@ -28,7 +28,7 @@ const Page = () => {
       const message: GetPermissionType[] = response.data.message;
       setPerms(message);
 
-      axios.get('/api/getAll/getAllStaff').then((res) => {
+      axios.get('/api/register/manager').then((res) => {
         const message: AdminStaffType[] = res.data.message;
         setStaff(message);
       });

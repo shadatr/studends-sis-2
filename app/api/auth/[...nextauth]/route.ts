@@ -3,11 +3,17 @@ import { createHash } from "crypto";
 import CredentialsProvider from "next-auth/providers/credentials";
 import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
-import { createClient } from "@supabase/supabase-js";
-import { Database } from "@/app/types/supabase";
+import { Client } from 'pg';
 
 
-const supabase = createClient<Database>(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "");
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT) 
+});
+
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -31,14 +37,18 @@ const authOptions: NextAuthOptions = {
           .update(password)
           .digest('hex');
 
-        const { data, error } = await supabase
-          .from('tb_admins')
-          .select('*')
-          .eq('email', email)
-          .eq('password', passwordHash)
-          .eq('active', true);
+        await client.connect();
 
-        if ((!data && error) || (data && data.length === 0)) {
+        const queryResult = await client.query(
+          'SELECT * FROM tb_admins WHERE email = $1 AND password = $2 AND active = TRUE',
+          [email, passwordHash]
+        );
+
+        await client.end();
+
+        const data = queryResult.rows;
+
+        if ((!data ) || (data && data.length === 0)) {
           return null;
         } else {
           const userObj = data[0] as any;
@@ -67,14 +77,18 @@ const authOptions: NextAuthOptions = {
           .update(password)
           .digest('hex');
 
-        const { data, error } = await supabase
-          .from('tb_doctors')
-          .select('*')
-          .eq('email', email)
-          .eq('password', passwordHash)
-          .eq('active', true);
+        await client.connect();
 
-        if ((!data && error) || (data && data.length === 0)) {
+        const queryResult = await client.query(
+          'SELECT * FROM tb_doctors WHERE email = $1 AND password = $2 AND active = TRUE',
+          [email, passwordHash]
+        );
+
+        await client.end();
+
+        const data = queryResult.rows;
+
+        if ((!data) || (data && data.length === 0)) {
           return null;
         } else {
           const userObj = data[0] as any;
@@ -104,14 +118,18 @@ const authOptions: NextAuthOptions = {
           .update(password)
           .digest('hex');
 
-        const { data, error } = await supabase
-          .from('tb_students')
-          .select('*')
-          .eq('email', email)
-          .eq('password', passwordHash)
-          .eq('active', true);
+       await client.connect();
 
-        if ((!data && error) || (data && data.length === 0)) {
+       const queryResult = await client.query(
+         'SELECT * FROM tb_students WHERE email = $1 AND password = $2 AND active = TRUE',
+         [email, passwordHash]
+       );
+
+       await client.end();
+
+       const data = queryResult.rows;
+
+        if ((!data ) || (data && data.length === 0)) {
           return null;
         } else {
           const userObj = data[0] as any;
@@ -150,13 +168,6 @@ const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  // pages: {
-  //   signIn: '/auth/signin',
-  //   signOut: '/auth/signout',
-  //   error: '/auth/error', // Error code passed in query string as ?error=
-  //   verifyRequest: '/auth/verify-request', // (used for check email message)
-  //   newUser: '/auth/new-user', // New users will be directed here on first sign in (leave the property out if not of interest)
-  // },
 };
 
 const handler = NextAuth(authOptions);

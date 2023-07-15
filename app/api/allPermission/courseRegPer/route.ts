@@ -1,47 +1,63 @@
+import { Client } from 'pg';
 import { AssignPermissionType } from '@/app/types/types';
-import { createClient } from '@supabase/supabase-js';
 
-
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
 export async function GET() {
-  const data = await supabase
-    .from('tb_all_permissions')
-    .select('*')
-    .eq('id', 22);
   try {
-    if (data.error) {
-      return new Response(JSON.stringify({ message: 'an error occured' }), {
+    await client.connect();
+
+    const queryResult = await client.query(
+      'SELECT * FROM tb_all_permissions WHERE id = $1',
+      [22]
+    );
+
+    await client.end();
+
+    if (queryResult.rowCount === 0) {
+      return new Response(JSON.stringify({ message: 'No data found' }), {
         status: 403,
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }));
-  } catch {}
+    return new Response(JSON.stringify({ message: queryResult.rows }));
+  } catch (error) {
+    console.error('Error occurred:', error);
+
+    return new Response(JSON.stringify({ message: 'An error occurred' }), {
+      status: 403,
+    });
+  }
 }
 
 export async function POST(request: Request) {
   const data: AssignPermissionType = await request.json();
 
   try {
-    await supabase
-      .from('tb_all_permissions')
-      .update({ active: data.active })
-      .eq('id', 22);
+    await client.connect();
 
-      console.log(data);
+    const queryResult = await client.query(
+      'UPDATE tb_all_permissions SET active = $1 WHERE id = $2',
+      [data.active, 22]
+    );
+
+    await client.end();
+
+    console.log(queryResult);
 
     return new Response(
-      JSON.stringify({ message: 'تم فتح/اغلاق تسجيل المواد بنجاح' }),
-      {
-        headers: { 'content-type': 'application/json' },
-      }
+      JSON.stringify({ message: 'تم فتح/إغلاق تسجيل المواد بنجاح' }),
+      { headers: { 'content-type': 'application/json' } }
     );
   } catch (error) {
-    console.log(error);
+    console.error('Error occurred:', error);
+
     return new Response(JSON.stringify({ message: 'حدث خطأ أثناء التحديث' }), {
       headers: { 'content-type': 'application/json' },
       status: 500,

@@ -1,42 +1,52 @@
-import { createClient } from "@supabase/supabase-js";
-import { Database } from "@/app/types/supabase";
+import { Client } from 'pg';
 
-const supabase = createClient<Database>( process.env.SUPABASE_URL || '', process.env.SUPABASE_KEY || '');
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
 export async function GET() {
-  const fetchDoctorsQuery = supabase.from('tb_doctors').select('*').order('id');
-  const fetchDepartmentsQuery = supabase.from('tb_departments').select('*');
-  const [doctorsResponse, departmentsResponse] = await Promise.all([
-    fetchDoctorsQuery,
-    fetchDepartmentsQuery,
-  ]);
-  if (doctorsResponse.error) {
-    throw doctorsResponse.error;
-  }
-  if (departmentsResponse.error) {
-    throw departmentsResponse.error;
-  }
+  try {
+    await client.connect();
 
-  const doctors = doctorsResponse.data;
-  const departments = departmentsResponse.data;
+    const doctorsQuery = 'SELECT * FROM tb_doctors ORDER BY id';
+    const departmentsQuery = 'SELECT * FROM tb_departments';
 
-  const data = doctors.map((doctor) => {
-    const department = departments.find(
-      (department) => department.id === doctor.head_of_deparment_id
-    );
-    return {
-      id: doctor.id,
-      name: doctor.name,
-      surname: doctor.surname,
-      doctorSince: doctor.enrollment_date,
-      email: doctor.email,
-      major: doctor.major,
-      active: doctor.active,
-      department: department,
-    };
-  });
-  console.log(data);
-  return new Response(JSON.stringify({message : data}), {
-    headers: { 'content-type': 'application/json' },
-  });
+    const [doctorsResult, departmentsResult] = await Promise.all([
+      client.query(doctorsQuery),
+      client.query(departmentsQuery),
+    ]);
+
+    const doctors = doctorsResult.rows;
+    const departments = departmentsResult.rows;
+
+    const data = doctors.map((doctor) => {
+      const department = departments.find(
+        (department) => department.id === doctor.head_of_deparment_id
+      );
+      return {
+        id: doctor.id,
+        name: doctor.name,
+        surname: doctor.surname,
+        doctorSince: doctor.enrollment_date,
+        email: doctor.email,
+        major: doctor.major,
+        active: doctor.active,
+        department: department,
+      };
+    });
+
+    await client.end();
+
+    return new Response(JSON.stringify({ message: data }), {
+      headers: { 'content-type': 'application/json' },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ message: 'An error occurred' }), {
+      status: 500,
+    });
+  }
 }

@@ -580,7 +580,6 @@ export type ClassEnrollmentsType = {
 
 
 export type PrerequisiteCourseType = {
-  prerequisite_course: any;
   id?: number;
   course_id?: number;
   prerequisite_course_id?: number;

@@ -1,20 +1,35 @@
-import { createClient } from '@supabase/supabase-js';
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+import { Client } from 'pg';
+
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: number ; name: string} }
+  { params }: { params: { id: number; name: string } }
 ) {
-  const data1 = await request.json();
-  const data2=await supabase
-    .from('tb_classes')
-    .update({ [params.name]: data1 })
-    .eq('section_id', params.id);
+  try {
+    await client.connect();
 
-  console.log(data2);
+    const updateQuery = `
+      UPDATE tb_classes
+      SET ${params.name} = $1
+      WHERE section_id = $2
+    `;
+    const updateValues = [request.body, params.id];
+    await client.query(updateQuery, updateValues);
 
-  return new Response(JSON.stringify({ message: 'تم حذف الاعلان بنجاح' }));
+    await client.end();
+
+    return new Response(JSON.stringify({ message: 'تم حذف الاعلان بنجاح' }));
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ message: 'An error occurred' }), {
+      status: 500,
+    });
+  }
 }

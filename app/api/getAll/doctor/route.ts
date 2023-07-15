@@ -1,20 +1,29 @@
-import { Database } from '@/app/types/supabase';
-import { createClient } from '@supabase/supabase-js';
+import { Client } from 'pg';
 
-const supabase = createClient<Database>(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
 export async function GET() {
   try {
-    const data = await supabase.from('tb_doctors').select('*');
-    if (data.error) {
-      return new Response(JSON.stringify({ message: 'an error occured' }), {
-        status: 403,
-      });
-    }
+    await client.connect();
 
-    return new Response(JSON.stringify({ message: data.data }));
-  } catch {}
+    const query = `SELECT * FROM tb_doctors`;
+    const result = await client.query(query);
+    const doctors = result.rows;
+
+    await client.end();
+
+    return new Response(JSON.stringify({ message: doctors }), {
+      status: 200,
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ message: 'An error occurred' }), {
+      status: 500,
+    });
+  }
 }

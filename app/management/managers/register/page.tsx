@@ -84,9 +84,9 @@ const Page = () => {
       phone: phone.current?.value,
       address: address.current?.value,
       email: email.current?.value,
-      number: number.current?.value,
+      number: parseInt(number.current?.value),
       password: passwordHash,
-      birth_date: (birthDate.getTime() / 1000).toFixed(),
+      birth_date: birthDate.toLocaleDateString(),
     };
 
     axios

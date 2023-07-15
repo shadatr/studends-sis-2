@@ -1,35 +1,61 @@
-import { createClient } from '@supabase/supabase-js';
 import { LetterGradesType } from '@/app/types/types';
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+import { Client } from 'pg';
+
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
 export async function GET() {
   try {
-    const data = await supabase.from('tb_grades').select('*');
+    await client.connect();
 
-    return new Response(JSON.stringify({ message: data.data }));
-  } catch {}
+    const query = `
+      SELECT *
+      FROM tb_grades
+    `;
+
+    const result = await client.query(query);
+    const data = result.rows;
+
+    await client.end();
+
+    return new Response(JSON.stringify({ message: data }));
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ message: 'An error occurred' }), {
+      status: 500,
+    });
+  }
 }
 
 export async function POST(request: Request) {
-
-  const data1 = await request.json();
+  const data = await request.json();
 
   try {
-    await Promise.all(
-      data1.map(async (item: LetterGradesType) => {
-        const data = await supabase
-          .from('tb_grades')
-          .update({
-            letter_grade: item.letter_grade,
-            points: item.points,
-          })
-          .eq('course_enrollment_id', item.course_enrollment_id);
+    await client.connect();
 
+    await Promise.all(
+      data.map(async (item: LetterGradesType) => {
+        const query = `
+          UPDATE tb_grades
+          SET letter_grade = $1, points = $2
+          WHERE course_enrollment_id = $3
+        `;
+        const values = [
+          item.letter_grade,
+          item.points,
+          item.course_enrollment_id,
+        ];
+
+        await client.query(query, values);
       })
     );
+
+    await client.end();
 
     return new Response(
       JSON.stringify({ message: 'تم تسجيل الامتحان بنجاح' }),
@@ -38,7 +64,8 @@ export async function POST(request: Request) {
       }
     );
   } catch (error) {
-    // send a 400 response with an error happened during registration in arabic
+    console.error(error);
+    await client.end();
     return new Response(
       JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الامتحان' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }

@@ -1,39 +1,64 @@
-import { AddCourseType } from '@/app/types/types';
-import { createClient } from '@supabase/supabase-js';
+import { Client } from 'pg';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
 export async function POST(request: Request) {
-  const data: AddCourseType = await request.json();
+  const data = await request.json();
 
   try {
-    const res=await supabase.from('tb_major_courses').insert([data]);
+    await client.connect();
+
+    const res = await client.query(
+      'INSERT INTO tb_major_courses (major_id, course_id) VALUES ($1, $2)',
+      [data.major_id, data.course_id]
+    );
+
+    await client.end();
+
     console.log(res);
 
     return new Response(JSON.stringify({ message: 'تم تسجيل المادة بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });
   } catch (error) {
+    console.error('Error occurred:', error);
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل المادة' }),
+      JSON.stringify({ message: 'حدث خطأ أثناء تسجيل المادة' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }
 }
 
-export async function GET(request: Request, { params }: { params: { id: number } }) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: number } }
+) {
   try {
-    const data = await supabase.from('tb_major_courses').select('*').eq('major_id', params.id);
+    await client.connect();
 
-    if (data.error) {
-      return new Response(JSON.stringify({ message: 'an error occured' }), {
-        status: 403,
-      });
-    }
+    const queryResult = await client.query(
+      'SELECT * FROM tb_major_courses WHERE major_id = $1',
+      [params.id]
+    );
 
-    return new Response(JSON.stringify({ message: data.data }));
-  } catch {}
+    const data = queryResult.rows;
+
+    await client.end();
+
+    return new Response(JSON.stringify({ message: data }), {
+      headers: { 'content-type': 'application/json' },
+    });
+  } catch (error) {
+    console.error('Error occurred:', error);
+    return new Response(JSON.stringify({ message: 'an error occured' }), {
+      headers: { 'content-type': 'application/json' },
+      status: 403,
+    });
+  }
 }
