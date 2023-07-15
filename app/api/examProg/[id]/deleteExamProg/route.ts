@@ -1,16 +1,37 @@
-import { createClient } from '@supabase/supabase-js';
+import { Client } from 'pg';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
 export async function POST(request: Request) {
-  const req = await request.json();
-  const deleteReq = await supabase
-    .from('tb_exam_program')
-    .delete()
-    .eq('id', req.id);
-  console.log(deleteReq.error);
-  return new Response(JSON.stringify({ message: 'تم حذف الامتحان بنجاح' }));
+  try {
+    const { id } = await request.json();
+
+    await client.connect();
+
+    const deleteQuery = `
+      DELETE FROM tb_exam_program
+      WHERE id = $1
+    `;
+    const values = [id];
+
+    await client.query(deleteQuery, values);
+
+    await client.end();
+
+    return new Response(JSON.stringify({ message: 'تم حذف الامتحان بنجاح' }), {
+      headers: { 'content-type': 'application/json' },
+    });
+  } catch (error) {
+    console.error(error);
+    return new Response(
+      JSON.stringify({ message: 'حدث خطأ أثناء حذف الامتحان' }),
+      { headers: { 'content-type': 'application/json' }, status: 400 }
+    );
+  }
 }

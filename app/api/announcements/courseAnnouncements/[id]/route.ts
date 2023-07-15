@@ -1,29 +1,41 @@
-import { createClient } from '@supabase/supabase-js';
+import { Client } from 'pg';
 
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
-
-
-export async function GET(request: Request,
-  { params }: { params: { id: number }} ) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: number } }
+) {
   try {
-    const data = await supabase
-      .from('tb_announcements')
-      .select('*')
-      .order('id', { ascending: true })
-      .eq('posted_for_class_id', params.id);
+    await client.connect();
 
+    const queryResult = await client.query(
+      'SELECT * FROM tb_announcements WHERE posted_for_class_id = $1 ORDER BY id ASC',
+      [params.id]
+    );
 
-    if (data.error) {
-      return new Response(JSON.stringify({ message: 'an error occured' }), {
+    await client.end();
+
+    console.log(queryResult);
+
+    if (queryResult.rowCount === 0) {
+      return new Response(JSON.stringify({ message: 'No data found' }), {
         status: 403,
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }));
-  } catch {}
-}
+    return new Response(JSON.stringify({ message: queryResult.rows }));
+  } catch (error) {
+    console.error('Error occurred:', error);
 
+    return new Response(JSON.stringify({ message: 'An error occurred' }), {
+      status: 403,
+    });
+  }
+}

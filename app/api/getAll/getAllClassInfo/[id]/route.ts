@@ -1,35 +1,37 @@
-import { createClient } from '@supabase/supabase-js';
+import { Client } from 'pg';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
 export async function GET(
   request: Request,
   { params }: { params: { id: number } }
 ) {
   try {
-    const dataClass = supabase
-      .from('tb_classes')
-      .select('*')
-      .eq('section_id', params.id).eq('active', true);
+    await client.connect();
 
-    const dataSection = supabase
-      .from('tb_section')
-      .select('*')
-      .eq('id', params.id);
+    const classQuery = `SELECT * FROM tb_classes WHERE section_id = $1 AND active = true`;
+    const classValues = [params.id];
+    const classResult = await client.query(classQuery, classValues);
+    const classes = classResult.rows;
 
-    const dataDoctors = await supabase.from('tb_doctors').select('*');
+    const sectionQuery = `SELECT * FROM tb_section WHERE id = $1`;
+    const sectionValues = [params.id];
+    const sectionResult = await client.query(sectionQuery, sectionValues);
+    const sections = sectionResult.rows;
 
-    const dataCourse = await supabase.from('tb_courses').select('*');
+    const doctorQuery = `SELECT * FROM tb_doctors`;
+    const doctorResult = await client.query(doctorQuery);
+    const doctors = doctorResult.rows;
 
-    const [classResponse, sectionResponse, courseResponse, doctorResponse] =await Promise.all([dataClass, dataSection, dataDoctors, dataCourse]);
-    
-    const classes = classResponse.data;
-    const sections = sectionResponse.data;
-    const doctors = courseResponse.data;
-    const courses = doctorResponse.data;
+    const courseQuery = `SELECT * FROM tb_courses`;
+    const courseResult = await client.query(courseQuery);
+    const courses = courseResult.rows;
 
     const data = classes?.map((cls) => {
       const secInfo = sections?.find((sec) => cls.section_id === sec.id);
@@ -43,6 +45,7 @@ export async function GET(
       };
     });
 
+    await client.end();
 
     return new Response(JSON.stringify({ message: data }), {
       status: 200,
@@ -55,17 +58,40 @@ export async function GET(
 }
 
 export async function POST(request: Request) {
-
+  try {
     const req = await request.json();
-    const deleteReq = await supabase.from('tb_classes').delete().eq('id', req);
-    if(deleteReq.error){return new Response(
-      JSON.stringify({ message: 'لا يمكنك حذف هذه المحاضرة ، يوجد طلاب مشتركين' }),
-      {
-        status: 500,
-      }
-    );}
 
-    return new Response(JSON.stringify({ message: 'تم حذف المحاضرة بنجاح' }));
+    const classId = req;
 
+    await client.connect();
+
+    const studentQuery = `SELECT * FROM tb_course_enrollment WHERE class_id = $1`;
+    const studentValues = [classId];
+    const studentResult = await client.query(studentQuery, studentValues);
+    const students = studentResult.rows;
+
+    if (students.length > 0) {
+      await client.end();
+      return new Response(
+        JSON.stringify({
+          message: 'لا يمكنك حذف هذه المحاضرة ، يوجد طلاب مشتركين',
+        }),
+        { status: 500 }
+      );
+    }
+
+    const deleteQuery = `DELETE FROM tb_classes WHERE id = $1`;
+    const deleteValues = [classId];
+    await client.query(deleteQuery, deleteValues);
+
+    await client.end();
+
+    return new Response(JSON.stringify({ message: 'تم حذف المحاضرة بنجاح' }), {
+      status: 200,
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ message: 'An error occurred' }), {
+      status: 500,
+    });
+  }
 }
-

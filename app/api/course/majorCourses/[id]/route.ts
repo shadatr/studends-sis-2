@@ -1,31 +1,66 @@
-import { createClient } from '@supabase/supabase-js';
+import { Client } from 'pg';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
-export async function GET(request: Request, { params }: { params: { id: number } }) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: number } }
+) {
   try {
-    const data = await supabase.from('tb_courses').select('*').eq('major_id', params.id).eq('active',true);
+    await client.connect();
 
-    console.log(data.error?.message);
-    if (data.error) {
-      return new Response(JSON.stringify({ message: 'an error occured' }), {
-        status: 403,
-      });
-    }
+    const query = `
+      SELECT *
+      FROM tb_courses
+      WHERE major_id = $1 AND active = true
+    `;
+    const values = [params.id];
 
-    return new Response(JSON.stringify({ message: data.data }));
-  } catch {}
+    const result = await client.query(query, values);
+    const data = result.rows;
+
+    await client.end();
+
+    return new Response(JSON.stringify({ message: data }), {
+      headers: { 'content-type': 'application/json' },
+    });
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ message: 'an error occurred' }), {
+      status: 403,
+    });
+  }
 }
-
 
 export async function POST(request: Request) {
   const req = await request.json();
-  await supabase
-    .from('tb_major_courses')
-    .delete()
-    .eq('id', req);
-  return new Response(JSON.stringify({ message: 'تم حذف المادة بنجاح' }));
+
+  try {
+    await client.connect();
+
+    const query = `
+      DELETE FROM tb_major_courses
+      WHERE id = $1
+    `;
+    const values = [req];
+
+    await client.query(query, values);
+
+    await client.end();
+
+    return new Response(JSON.stringify({ message: 'تم حذف المادة بنجاح' }), {
+      headers: { 'content-type': 'application/json' },
+    });
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ message: 'an error occurred' }), {
+      status: 500,
+    });
+  }
 }

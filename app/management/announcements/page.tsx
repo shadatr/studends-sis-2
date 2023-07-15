@@ -54,7 +54,6 @@ const Page = () => {
     const data: AnnouncmentsMangType = {
       announcement_text: newItem,
       general: true,
-      admin_id: session.data?.user.id,
     };
     axios.post('/api/announcements/newUniAnnouncement', data).then(() => {
       const dataUsageHistory={

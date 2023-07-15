@@ -1,24 +1,45 @@
 import { SectionType } from '@/app/types/types';
-import { createClient } from '@supabase/supabase-js';
+import { Client } from 'pg';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
 export async function POST(request: Request) {
   const data: SectionType = await request.json();
 
-
   try {
-     await supabase.from('tb_section').insert([data]);
+    await client.connect();
 
-    return new Response(JSON.stringify({ message: 'تم تسجيل المجموعة بنجاح' }), {
-      headers: { 'content-type': 'application/json' },
-    });
-  } catch (error) {
+    const query = `
+      INSERT INTO tb_section (id, course_id, name, students_num)
+      VALUES ($1, $2, $3, $4)
+    `;
+    const values = [
+      data.id,
+      data.course_id,
+      data.name,
+      data.students_num,
+    ];
+
+    await client.query(query, values);
+
+    await client.end();
+
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل المجموعة' }),
+      JSON.stringify({ message: 'تم تسجيل المجموعة بنجاح' }),
+      {
+        headers: { 'content-type': 'application/json' },
+      }
+    );
+  } catch (error) {
+    console.error(error);
+    return new Response(
+      JSON.stringify({ message: 'حدث خطأ أثناء تسجيل المجموعة' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }

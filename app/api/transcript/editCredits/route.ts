@@ -1,39 +1,44 @@
-import { createClient } from '@supabase/supabase-js';
+import { Client } from 'pg';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
 export async function POST(request: Request) {
-  try {
+
     const data = await request.json();
 
-<<<<<<< HEAD
-    const { data: updatedData, error } = await supabase
-      .from('tb_students')
-      .update({
-=======
-  await supabase
-    .from('tb_students')
-    .update([
-      {
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
-        credits: data.credits,
-        can_graduate: data.can_graduate,
-        graduation_year: data.graduation_year,
-      })
-      .eq('id', data.student_id);
+  try {
+    await client.connect();
 
-<<<<<<< HEAD
-    if (error) {
-      console.log(error.message);
-    } else {
-      console.log('Update successful');
-    }
+    const updateQuery = `UPDATE tb_students SET credits = $1, can_graduate = $2, graduation_year = $3 WHERE id = $4`;
+    const updateParams = [
+      data.credits,
+      data.can_graduate,
+      data.graduation_year,
+      data.student_id,
+    ];
+    await client.query(updateQuery, updateParams);
+
+    await client.end();
+
+    return new Response(
+      JSON.stringify({ message: 'تم تحديث البيانات بنجاح' }),
+      {
+        headers: { 'content-type': 'application/json' },
+      }
+    );
   } catch (error) {
-    console.log(error);
+    return new Response(
+      JSON.stringify({ message: 'حدث خطأ أثناء تحديث البيانات' }),
+      {
+        headers: { 'content-type': 'application/json' },
+        status: 400,
+      }
+    );
   }
-=======
->>>>>>> 60795405c522ea122ef98b85b257185e32a615e5
 }

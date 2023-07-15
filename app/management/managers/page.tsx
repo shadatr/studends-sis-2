@@ -22,16 +22,17 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
+      axios.get('/api/getAll/getAllStaff').then((res) => {
+        const message: AdminStaffType[] = res.data.message;
+        setStaff(message);
+        console.log(message);
+      });
       const response = await axios.get(
         `/api/allPermission/admin/selectedPerms/${user?.id}`
       );
       const message: GetPermissionType[] = response.data.message;
       setPerms(message);
 
-      axios.get('/api/getAll/getAllStaff').then((res) => {
-        const message: AdminStaffType[] = res.data.message;
-        setStaff(message);
-      });
     };
 
     fetchPosts();

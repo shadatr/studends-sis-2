@@ -1,23 +1,33 @@
-import { createClient } from '@supabase/supabase-js';
-import {DepartmentRegType} from '@/app/types/types';
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+import { Client } from 'pg';
+import { DepartmentRegType } from '@/app/types/types';
 
-export async function POST(
-  request: Request,
-) {
-  // TODO: Maybe add some validation for security here
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
+export async function POST(request: Request) {
   const newData: DepartmentRegType[] = await request.json();
 
   try {
-    newData.map(async (data) => {
-      const updatePromises = await supabase.from('tb_departments').update(data).eq('id', data.id);
-      console.log(updatePromises.error?.message);
+    await client.connect();
+
+    const updateQueries = newData.map((data) => {
+      const updateQuery = `
+        UPDATE tb_departments
+        SET name = $1, description = $2, active = $3
+        WHERE id = $4
+      `;
+      const updateValues = [data.name, data.active, data.id];
+      return client.query(updateQuery, updateValues);
     });
 
+    await Promise.all(updateQueries);
+
+    await client.end();
 
     return new Response(
       JSON.stringify({ message: 'تم تحديث البيانات بنجاح' }),
@@ -26,7 +36,7 @@ export async function POST(
       }
     );
   } catch (error) {
-    // send a 400 response with an error happened during update in Arabic
+    console.error(error);
     return new Response(
       JSON.stringify({ message: 'حدث خطأ أثناء تحديث البيانات' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }

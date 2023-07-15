@@ -1,30 +1,40 @@
-import { createClient } from '@supabase/supabase-js';
+import { Client } from 'pg';
 import { MajorType } from '@/app/types/types';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
-export async function POST(
-  request: Request,
-) {
-
+export async function POST(request: Request) {
   const newData: MajorType[] = await request.json();
 
   try {
-    newData.map(async (data) => {
-      const updatePromises = await supabase.from('tb_majors').update(data).eq('id', data.id);
-    });
+    await client.connect();
+
+    for (const data of newData) {
+      const updateQuery = `UPDATE tb_majors SET major_name = $1, department_id = $2, credits_needed = $3, active = $4 WHERE id = $5`;
+      const updateValues = [
+        data.major_name,
+        data.department_id,
+        data.credits_needed,
+        data.active,
+        data.id,
+      ];
+
+      await client.query(updateQuery, updateValues);
+    }
+
+    await client.end();
 
     return new Response(
       JSON.stringify({ message: 'تم تحديث البيانات بنجاح' }),
-      {
-        headers: { 'content-type': 'application/json' },
-      }
+      { headers: { 'content-type': 'application/json' } }
     );
   } catch (error) {
-    // send a 400 response with an error happened during update in Arabic
     return new Response(
       JSON.stringify({ message: 'حدث خطأ أثناء تحديث البيانات' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }

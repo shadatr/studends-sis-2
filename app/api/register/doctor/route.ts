@@ -1,33 +1,34 @@
-import { createClient } from '@supabase/supabase-js';
+import { Client } from 'pg';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
 export async function POST(request: Request) {
   const data = await request.json();
 
   try {
-    const re=await supabase.from('tb_doctors').insert([data]);
+    await client.connect();
 
-    console.log(re);
+    const insertQuery = `INSERT INTO tb_doctors (name, surname) VALUES ($1, $2) RETURNING id`;
+    const insertValues = [data.name, data.surname];
+    const insertResult = await client.query(insertQuery, insertValues);
+    const doctorId = insertResult.rows[0].id;
 
-    const doctors = await supabase
-      .from('tb_doctors')
-      .select('*')
-      .eq('name', data.name)
-      .eq('surname', data.surname);
+    const data1 = {
+      permission_id: 21,
+      doctor_id: doctorId,
+    };
 
+    const insertQuery2 = `INSERT INTO tb_doctor_perms (permission_id, doctor_id) VALUES ($1, $2)`;
+    const insertValues2 = [data1.permission_id, data1.doctor_id];
+    await client.query(insertQuery2, insertValues2);
 
-    const doctor = doctors.data;
-    if (doctor && doctor.length > 0) {
-      const data1 = {
-        permission_id: 21,
-        doctor_id: doctor[0].id,
-      };
-      await supabase.from('tb_doctor_perms').insert([data1]);
-    }
+    await client.end();
 
     return new Response(JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }), {
       headers: { 'content-type': 'application/json' },
@@ -43,14 +44,20 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const { data, error } = await supabase.from('tb_doctors').select('*');
-    console.log(data);
-    if (error) {
-      return new Response(JSON.stringify({ message: 'حدث خطأ ما' }), {
-        status: 403,
-      });
-    }
+    await client.connect();
 
-    return new Response(JSON.stringify({ message: data }));
-  } catch {}
+    const fetchQuery = `SELECT * FROM tb_doctors`;
+    const fetchResult = await client.query(fetchQuery);
+    const data = fetchResult.rows;
+
+    await client.end();
+
+    return new Response(JSON.stringify({ message: data }), {
+      headers: { 'content-type': 'application/json' },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ message: 'an error occured' }), {
+      status: 403,
+    });
+  }
 }

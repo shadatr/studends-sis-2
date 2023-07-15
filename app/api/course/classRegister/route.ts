@@ -1,24 +1,36 @@
-import { ClassesType } from '@/app/types/types';
-import { createClient } from '@supabase/supabase-js';
+import { Client } from 'pg';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
 export async function POST(request: Request) {
-  const data: ClassesType = await request.json();
+  const data = await request.json();
 
   try {
-    const res = await supabase.from('tb_classes').insert([data]);
-    console.log(res.error?.message);
-    
-    return new Response(JSON.stringify({ message: 'تم تسجيل المحاضرة بنجاح' }), {
-      headers: { 'content-type': 'application/json' },
-    });
-  } catch (error) {
+    await client.connect();
+
+    await client.query(
+      'INSERT INTO tb_classes (name, description) VALUES ($1, $2)',
+      [data.name, data.description]
+    );
+
+    await client.end();
+
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل المحاضرة' }),
+      JSON.stringify({ message: 'تم تسجيل المحاضرة بنجاح' }),
+      {
+        headers: { 'content-type': 'application/json' },
+      }
+    );
+  } catch (error) {
+    console.error('Error occurred:', error);
+    return new Response(
+      JSON.stringify({ message: 'حدث خطأ أثناء تسجيل المحاضرة' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }

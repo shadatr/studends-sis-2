@@ -1,10 +1,14 @@
 import { DepartmentRegType } from '@/app/types/types';
-import { createClient } from '@supabase/supabase-js';
+import { Client } from 'pg';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
+
 
 export async function POST(request: Request) {
 
@@ -12,12 +16,14 @@ export async function POST(request: Request) {
 
 
   try {
-    const res = await supabase.from('tb_departments').insert([data]);
-    console.log(res.error?.message);
-    if (res.error) {
-      console.log(res.error);
-      throw res.error;
-    }
+    await client.connect();
+
+    await client.query(
+      'INSERT INTO tb_departments (name) VALUES ($1)',
+      [data.name]
+    );
+
+    await client.end();
     return new Response(JSON.stringify({ message: "تم تسجيل الكلية بنجاح"}), {
       headers: { 'content-type': 'application/json' },
     });
@@ -32,17 +38,17 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const data = await supabase
-      .from('tb_departments')
-      .select('*',);
+    const queryResult = await client.query(
+      'SELECT * FROM tb_students'
+    );
 
-    if (data.error) {
+    if (queryResult.rowCount === 0) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }));
+    return new Response(JSON.stringify({ message: queryResult.rows }));
   } catch {}
 }
 

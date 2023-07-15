@@ -1,35 +1,40 @@
-import { createClient } from '@supabase/supabase-js';
+import {
+  CourseType,
+  ClassesType,
+  PersonalInfoType,
+  SectionType,
+} from '@/app/types/types';
+import { Client } from 'pg';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT)});
 
 export async function GET(
   request: Request,
   { params }: { params: { id: number, name:string } }
 ) {
   try {
-    const dataClass = supabase
-      .from('tb_classes')
-      .select('*')
-      .eq('section_id', params.id).eq('semester', params.name);
+    const classQuery = `SELECT * FROM tb_classes WHERE section_id = $1 AND semester = $2`;
+    const classValues = [params.id, params.name];
+    const classResult = await client.query(classQuery, classValues);
+    const classes: ClassesType[] = classResult.rows;
 
-    const dataSection = supabase
-      .from('tb_section')
-      .select('*')
-      .eq('id', params.id);
+    const sectionQuery = `SELECT * FROM tb_section WHERE id = $1`;
+    const sectionValues = [params.id];
+    const sectionResult = await client.query(sectionQuery, sectionValues);
+    const sections: SectionType[] = sectionResult.rows;
 
-    const dataDoctors = await supabase.from('tb_doctors').select('*');
+    const doctorQuery = `SELECT * FROM tb_doctors`;
+    const doctorResult = await client.query(doctorQuery);
+    const doctors: PersonalInfoType[] = doctorResult.rows;
 
-    const dataCourse = await supabase.from('tb_courses').select('*');
-
-    const [classResponse, sectionResponse, courseResponse, doctorResponse] =await Promise.all([dataClass, dataSection, dataDoctors, dataCourse]);
-    
-    const classes = classResponse.data;
-    const sections = sectionResponse.data;
-    const doctors = courseResponse.data;
-    const courses = doctorResponse.data;
+    const courseQuery = `SELECT * FROM tb_courses`;
+    const courseResult = await client.query(courseQuery);
+    const courses: CourseType[] = courseResult.rows;
 
     const data = classes?.map((cls) => {
       const secInfo = sections?.find((sec) => cls.section_id === sec.id);

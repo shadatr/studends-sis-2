@@ -1,29 +1,36 @@
-import { createClient } from '@supabase/supabase-js';
 import { AssignAdvisorType } from '@/app/types/types';
+import { Client } from 'pg';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
 
 export async function POST(request: Request) {
   const data: AssignAdvisorType = await request.json();
-  console.log(data);
 
   try {
-    const res = await supabase.from('tb_students').update( {advisor: data.advisor} ).eq("id", data.id);
-    console.log(res);
-    
-    return new Response(
-      JSON.stringify({ message: 'تم تعيين الدكتور بنجاح ' }),
-      {
-        headers: { 'content-type': 'application/json' },
-      }
+    await client.connect();
+
+    await client.query(
+      'UPDATE tb_students SET advisor = $1 WHERE id = $2',
+      [data.advisor, data.id]
     );
+
+    await client.end();
+
+
+    return new Response(JSON.stringify({ message: 'تم تعيين الدكتور بنجاح' }), {
+      headers: { 'content-type': 'application/json' },
+    });
   } catch (error) {
-    console.log(error);
+    console.error('Error occurred:', error);
+
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ اثناء  تعيين الدكتور ' }),
+      JSON.stringify({ message: 'حدث خطأ أثناء تعيين الدكتور' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }
@@ -34,17 +41,27 @@ export async function GET(
   { params }: { params: { id: number } }
 ) {
   try {
-    const data = await supabase
-      .from('tb_students')
-      .select('*')
-      .eq('advisor', params.id);
+    await client.connect();
 
-    if (data.error) {
-      return new Response(JSON.stringify({ message: 'an error occured' }), {
+    const queryResult = await client.query(
+      'SELECT * FROM tb_students WHERE advisor = $1',
+      [params.id]
+    );
+
+    await client.end();
+
+    if (queryResult.rowCount === 0) {
+      return new Response(JSON.stringify({ message: 'No data found' }), {
         status: 403,
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }));
-  } catch {}
+    return new Response(JSON.stringify({ message: queryResult.rows }));
+  } catch (error) {
+    console.error('Error occurred:', error);
+
+    return new Response(JSON.stringify({ message: 'An error occurred' }), {
+      status: 403,
+    });
+  }
 }
