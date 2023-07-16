@@ -45,7 +45,6 @@ const Tabs = ({ params }: { params: { id: number, name:string } }) => {
       );
       const classMessage: ClassesInfoType[] = responseReq.data.message;
 
-      console.log(classMessage);
       setClasses(classMessage);
     };
     fetchdata();

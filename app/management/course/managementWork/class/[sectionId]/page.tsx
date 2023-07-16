@@ -100,7 +100,6 @@ const Tabs = ({ params }: { params: { sectionId: number } }) => {
         },
       };
     });
-    console.log(updatedData);
     setEditClasses(updatedData);
   };
 
@@ -117,7 +116,6 @@ const Tabs = ({ params }: { params: { sectionId: number } }) => {
         },
       };
     });
-    console.log(updatedData);
     setEditClasses(updatedData);
   };
 
@@ -139,7 +137,6 @@ const Tabs = ({ params }: { params: { sectionId: number } }) => {
         },
       };
     });
-    console.log(updatedData);
     setEditClasses(updatedData);
   };
 
@@ -160,7 +157,6 @@ const Tabs = ({ params }: { params: { sectionId: number } }) => {
         },
       };
     });
-    console.log(updatedData);
     setEditClasses(updatedData);
   };
 

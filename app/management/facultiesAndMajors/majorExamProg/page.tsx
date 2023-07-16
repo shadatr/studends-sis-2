@@ -176,7 +176,7 @@ const Page = () => {
         </tbody>
       </table>
       {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 6 && permItem.active) {
+        if (permItem.permission_id == 6 && permItem.active) {
           return (
             <>
               <button

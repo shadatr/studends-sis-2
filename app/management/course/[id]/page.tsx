@@ -373,7 +373,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       {activeTab === 'Tab 1' && (
         <>
           {perms.map((permItem, idx) => {
-            if (permItem.permission_id === 6 && permItem.active) {
+            if (permItem.permission_id == 6 && permItem.active) {
               return (
                 <div
                   className="flex flex-row-reverse items-center justify-center  w-[100%] m-10 "
@@ -486,7 +486,7 @@ const Page = ({ params }: { params: { id: number } }) => {
               (item1) => item1.course_id === courseId?.id
             );
 
-            if (permItem.permission_id === 9 && permItem.active) {
+            if (permItem.permission_id == 9 && permItem.active) {
               return (
                 <div
                   className="border-2 border-grey m-4 rounded-5 p-5 flex w-[100%] justify-center items-center rounded-md"

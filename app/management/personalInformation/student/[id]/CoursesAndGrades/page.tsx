@@ -423,7 +423,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         طباعة درجات الطالب
       </button>
       {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 5 && permItem.active) {
+        if (permItem.permission_id == 5 && permItem.active) {
           return (
             <form
               key={idx}

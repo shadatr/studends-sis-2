@@ -122,7 +122,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   return (
     <div className="flex absolute text-sm w-[80%] justify-center items-center flex-col m-10">
       {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 3 && permItem.active) {
+        if (permItem.permission_id == 3 && permItem.active) {
           return (
             <div key={idx}>
               <button
@@ -256,7 +256,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         </tbody>
       </table>
       {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 1 && permItem.active) {
+        if (permItem.permission_id == 1 && permItem.active) {
           return (
             <div key={idx}>
               <table className="border-collapse mt-8 w-[800px]">

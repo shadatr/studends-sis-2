@@ -63,7 +63,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         <thead>
           <tr className="bg-gray-200">
             {perms.map((permItem, idx) => {
-              if (permItem.permission_id === 5 && permItem.active) {
+              if (permItem.permission_id == 5 && permItem.active) {
                 return (
                   <th key={idx} className="border border-gray-300 px-4 py-2">
                     ايقاف/تفعيل
@@ -86,7 +86,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             students.map((user, index) => (
               <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
                 {perms.map((permItem, idx) => {
-                  if (permItem.permission_id === 5 && permItem.active) {
+                  if (permItem.permission_id == 5 && permItem.active) {
                     return (
                       <td
                         className="border border-gray-300 px-4 py-2"

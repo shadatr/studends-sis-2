@@ -25,18 +25,19 @@ const Page = () => {
       axios.get('/api/getAll/getAllStaff').then((res) => {
         const message: AdminStaffType[] = res.data.message;
         setStaff(message);
-        console.log(message);
       });
+
       const response = await axios.get(
         `/api/allPermission/admin/selectedPerms/${user?.id}`
       );
       const message: GetPermissionType[] = response.data.message;
       setPerms(message);
-
+        console.log(message);
     };
 
     fetchPosts();
-  }, [user?.id, refresh]);
+  }, [user, refresh]);
+
 
   const handleActivate = (adminId: number, active: boolean) => {
     const data = { adminId, active };
@@ -55,7 +56,7 @@ const Page = () => {
   return (
     <div className="flex absolute flex-col w-[80%] justify-center items-center">
       {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 3 && permItem.active) {
+        if (permItem.permission_id == 3 && permItem.active) {
           return (
             <Link key={idx}
               className="bg-green-500 hover:bg-green-600 p-1 rounded-md text-white mt-20 justify-center flex w-[15%] text-sm items-center"
@@ -72,7 +73,7 @@ const Page = () => {
         <thead>
           <tr className="bg-gray-200">
             {perms.map((permItem, idx) => {
-              if (permItem.permission_id === 3 && permItem.active) {
+              if (permItem.permission_id == 3 && permItem.active) {
                 return (
                   <th key={idx} className="border border-gray-300 px-4 py-2">
                     ايقاف/تفعيل
@@ -84,7 +85,6 @@ const Page = () => {
             <th className="border border-gray-300 px-4 py-2">
               المعلومات الشخصية
             </th>
-            <th className="border border-gray-300 px-4 py-2">تاريخ الانشاء</th>
             <th className="border border-gray-300 px-4 py-2">لقب</th>
             <th className="border border-gray-300 px-4 py-2">اسم</th>
           </tr>
@@ -93,7 +93,7 @@ const Page = () => {
           {staff.map((user, index) => (
             <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
               {perms.map((permItem, idx) => {
-                if (permItem.permission_id === 3 && permItem.active) {
+                if (permItem.permission_id == 3 && permItem.active) {
                   return (
                     <td className="border border-gray-300 px-4 py-2" key={idx}>
                       <button
@@ -120,9 +120,6 @@ const Page = () => {
                 >
                   الملف الشخصي
                 </Link>
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {user.createdAt}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {user.surname}

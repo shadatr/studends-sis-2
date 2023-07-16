@@ -467,7 +467,7 @@ const page = () => {
   return (
     <div className="absolute flex flex-col w-[80%] items-center justify-center">
       {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 23 && permItem.active) {
+        if (permItem.permission_id == 23 && permItem.active) {
           return (
             <div
               key={idx + 2}

@@ -1,19 +1,19 @@
 import { TranscriptType } from '@/app/types/types';
 import { Client } from 'pg';
 
-const client = new Client({
-  user: process.env.DB_USERNAME || '',
-  password: process.env.DB_PASSWORD || '',
-  host: process.env.DB_HOST || '',
-  database: process.env.DB_NAME || '',
-  port: Number(process.env.DB_PORT),
-});
-
 export async function GET(
   request: Request,
   { params }: { params: { id: number } }
 ) {
   try {
+    const client = new Client({
+      user: process.env.DB_USERNAME || '',
+      password: process.env.DB_PASSWORD || '',
+      host: process.env.DB_HOST || '',
+      database: process.env.DB_NAME || '',
+      port: Number(process.env.DB_PORT),
+    });
+
     await client.connect();
 
     const query = 'SELECT * FROM tb_transcript WHERE student_id = $1';
@@ -42,6 +42,14 @@ export async function POST(request: Request) {
   const data: TranscriptType = await request.json();
 
   try {
+    const client = new Client({
+      user: process.env.DB_USERNAME || '',
+      password: process.env.DB_PASSWORD || '',
+      host: process.env.DB_HOST || '',
+      database: process.env.DB_NAME || '',
+      port: Number(process.env.DB_PORT),
+    });
+    
     await client.connect();
 
     const insertQuery =

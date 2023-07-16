@@ -15,7 +15,7 @@ const Page = ({ params }: { params: { id: number , name:string} }) => {
   }
   const [students, setStudents] = useState<StudentClassType[]>([]);
   const [studentsNames, setStudentsNames] = useState<PersonalInfoType[]>([]);
-    const printableContentRef = useRef<HTMLDivElement>(null);
+  const printableContentRef = useRef<HTMLDivElement>(null);
 
 
   useEffect(() => {
@@ -27,7 +27,6 @@ const Page = ({ params }: { params: { id: number , name:string} }) => {
           );
           const message: StudentClassType[] = response.data.message;
           setStudents(message);
-            console.log(message);
 
           const resp = await axios.get(`/api/getAll/student`);
           const personalInfoMessage: PersonalInfoType[] = resp.data.message;

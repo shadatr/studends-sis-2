@@ -33,7 +33,6 @@ const Page = ({
   useEffect(() => {
     const fetchPosts = async () => {
       if (user) {
-        console.log(user);
 
         const response = await axios.get(
           `/api/allPermission/admin/selectedPerms/${user?.id}`
@@ -95,7 +94,7 @@ const Page = ({
   return (
     <div className="flex absolute flex-col w-[80%]">
       {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 9 && permItem.active) {
+        if (permItem.permission_id == 9 && permItem.active) {
           return (
             <button
               key={idx}

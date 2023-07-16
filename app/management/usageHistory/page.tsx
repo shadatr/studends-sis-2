@@ -8,7 +8,6 @@ import { redirect } from 'next/navigation';
 
 const itemsPerPage = 25; // Number of items to display per page
 
-
 const Page = () => {
   // handling authentication
   const session = useSession({ required: true });
@@ -26,9 +25,7 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const responsePer = await axios.get(
-        `/api/usageHistory`
-      );
+      const responsePer = await axios.get(`/api/usageHistory`);
       const messagePer: UsageHistoryType[] = responsePer.data.message;
       setUsage(messagePer);
 
@@ -39,36 +36,35 @@ const Page = () => {
       const responseDoctor = await axios.get(`/api/getAll/doctor`);
       const messageDoctor: PersonalInfoType[] = responseDoctor.data.message;
       setDoctor(messageDoctor);
-
     };
     fetchPosts();
   }, [user]);
 
- const startIndex = (currentPage - 1) * itemsPerPage;
- const endIndex = Math.min(startIndex + itemsPerPage, usage.length);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, usage.length);
 
- const currentItems = usage.slice(startIndex, endIndex);
+  const currentItems = usage.slice(startIndex, endIndex);
 
- const handlePageChange = (pageNumber:number) => {
-   setCurrentPage(pageNumber);
- };
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
- const totalPages = Math.ceil(usage.length / itemsPerPage);
+  const totalPages = Math.ceil(usage.length / itemsPerPage);
 
- const maxPageNumbers = 10; // Maximum number of page numbers to display
- const maxVisiblePages = Math.min(maxPageNumbers, totalPages); // Maximum number of visible page numbers
- const middlePage = Math.ceil(maxVisiblePages / 2); // Middle page number
- let startPage = Math.max(currentPage - middlePage, 1); // Start page number
- const endPage = Math.min(startPage + maxVisiblePages - 1, totalPages); // End page number
+  const maxPageNumbers = 10; // Maximum number of page numbers to display
+  const maxVisiblePages = Math.min(maxPageNumbers, totalPages); // Maximum number of visible page numbers
+  const middlePage = Math.ceil(maxVisiblePages / 2); // Middle page number
+  let startPage = Math.max(currentPage - middlePage, 1); // Start page number
+  const endPage = Math.min(startPage + maxVisiblePages - 1, totalPages); // End page number
 
- if (endPage - startPage < maxVisiblePages - 1) {
-   startPage = Math.max(endPage - maxVisiblePages + 1, 1);
- }
+  if (endPage - startPage < maxVisiblePages - 1) {
+    startPage = Math.max(endPage - maxVisiblePages + 1, 1);
+  }
 
- const pageNumbers = Array.from(
-   { length: endPage - startPage + 1 },
-   (_, index) => startPage + index
- );
+  const pageNumbers = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, index) => startPage + index
+  );
 
   return (
     <div className="flex absolute flex-col w-[80%] justify-center items-center">

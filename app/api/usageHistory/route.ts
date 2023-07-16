@@ -1,13 +1,5 @@
 import { Client } from 'pg';
 
-const client = new Client({
-  user: process.env.DB_USERNAME || '',
-  password: process.env.DB_PASSWORD || '',
-  host: process.env.DB_HOST || '',
-  database: process.env.DB_NAME || '',
-  port: Number(process.env.DB_PORT),
-});
-
 export async function POST(request: Request) {
   const data = await request.json();
 
@@ -18,6 +10,14 @@ export async function POST(request: Request) {
   const formattedTime = `${hours}:${minutes < 10 ? '0' + minutes : minutes}`;
 
   try {
+    const client = new Client({
+      user: process.env.DB_USERNAME || '',
+      password: process.env.DB_PASSWORD || '',
+      host: process.env.DB_HOST || '',
+      database: process.env.DB_NAME || '',
+      port: Number(process.env.DB_PORT),
+    });
+
     await client.connect();
 
     const insertQuery = `INSERT INTO tb_usage_history (user_id, action, type, date) VALUES ($1, $2, $3, $4)`;
@@ -50,6 +50,13 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
+    const client = new Client({
+      user: process.env.DB_USERNAME || '',
+      password: process.env.DB_PASSWORD || '',
+      host: process.env.DB_HOST || '',
+      database: process.env.DB_NAME || '',
+      port: Number(process.env.DB_PORT),
+    });
     await client.connect();
 
     const selectQuery = `SELECT * FROM tb_usage_history ORDER BY id DESC`;

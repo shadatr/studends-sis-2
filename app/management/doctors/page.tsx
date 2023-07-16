@@ -61,7 +61,7 @@ const Page = () => {
   return (
     <div className="flex absolute flex-col w-[80%] justify-center items-center mt-10">
       {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 9 && permItem.active) {
+        if (permItem.permission_id == 9 && permItem.active) {
           return (
             <Link
               key={idx}
@@ -100,7 +100,7 @@ const Page = () => {
           {doctors.map((user, index) => (
             <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
               {perms.map((permItem, idx) => {
-                if (permItem.permission_id === 5 && permItem.active) {
+                if (permItem.permission_id == 5 && permItem.active) {
                   return (
                     <td className="border border-gray-300 px-4 py-2" key={idx}>
                       <button

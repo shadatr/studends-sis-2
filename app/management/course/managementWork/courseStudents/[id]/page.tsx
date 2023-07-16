@@ -523,7 +523,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       <div>
         <form onSubmit={(e) => e.preventDefault()}>
           {perms.map((item) => {
-            if (item.permission_id === 24 && item.active) {
+            if (item.permission_id == 24 && item.active) {
               return (
                 <>
                   <button

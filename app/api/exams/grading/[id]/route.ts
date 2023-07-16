@@ -1,18 +1,19 @@
 import { Client } from 'pg';
 
-const client = new Client({
-  user: process.env.DB_USERNAME || '',
-  password: process.env.DB_PASSWORD || '',
-  host: process.env.DB_HOST || '',
-  database: process.env.DB_NAME || '',
-  port: Number(process.env.DB_PORT),
-});
 
 export async function GET(
   request: Request,
   { params }: { params: { id: number } }
 ) {
   try {
+    const client = new Client({
+      user: process.env.DB_USERNAME || '',
+      password: process.env.DB_PASSWORD || '',
+      host: process.env.DB_HOST || '',
+      database: process.env.DB_NAME || '',
+      port: Number(process.env.DB_PORT),
+    });
+
     await client.connect();
 
     const query = `
@@ -43,6 +44,14 @@ export async function POST(
   const data = await request.json();
 
   try {
+    const client = new Client({
+      user: process.env.DB_USERNAME || '',
+      password: process.env.DB_PASSWORD || '',
+      host: process.env.DB_HOST || '',
+      database: process.env.DB_NAME || '',
+      port: Number(process.env.DB_PORT),
+    });
+
     await client.connect();
 
     const query = `
@@ -55,14 +64,12 @@ export async function POST(
     `;
     const values = [data.col1, data.col2, params.id];
 
-    const result = await client.query(query, values);
+    await client.query(query, values);
 
     await client.end();
 
     return new Response(JSON.stringify({ message: 'تم حذف الاعلان بنجاح' }));
   } catch (error) {
-    console.error(error);
-    await client.end();
     return new Response(
       JSON.stringify({ message: 'حدث خطأ أثناء تحديث البيانات' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }

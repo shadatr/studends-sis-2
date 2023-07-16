@@ -362,7 +362,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       </table>
       <div>
         {adminPerms.map((permItem, idx) => {
-          if (permItem.permission_id === 5 && permItem.active) {
+          if (permItem.permission_id == 5 && permItem.active) {
             return (
               <table className="border-collapse mt-8 w-[700px]" key={idx}>
                 <thead>

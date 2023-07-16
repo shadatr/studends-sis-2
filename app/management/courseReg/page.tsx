@@ -198,7 +198,7 @@ const page = () => {
       {activeTab === 'Tab 1' && (
         <>
           {perms.map((permItem, idx) => {
-            if (permItem.permission_id === 6 && permItem.active) {
+            if (permItem.permission_id == 6 && permItem.active) {
               return (
                 <>
                   <div
