@@ -62,7 +62,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     };
 
     fetchData();
-  }, [user]);
+  }, [params.id, user]);
 
   return (
     <div className="absolute w-[80%] flex flex-col text-sm p-10 justify-content items-center">
