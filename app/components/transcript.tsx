@@ -150,7 +150,7 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
                           : 'text-red-500 hover:text-red-600'
                       }`}
                     >
-                      {course.class?.result_publish
+                      {course.class?.publish_grades
                         ? course.courseEnrollements.pass
                           ? `${letter?.letter_grade} `
                           : `${letter?.letter_grade} `
