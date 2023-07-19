@@ -25,6 +25,8 @@ export async function POST(request: Request) {
       );
     }
     
+     await supabase.from('tb_students').insert([data]);
+     
       const student = students.data;
       if (student){
       const data1= {
