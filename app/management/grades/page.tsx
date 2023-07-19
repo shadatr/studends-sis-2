@@ -157,7 +157,7 @@ const page = () => {
 
         if (repeatedCourse.length > 1) {
           const repeat = repeatedCourse.find(
-            (co) => co.class.semester != `${year[0].AA}-${year[0].BA}`
+            (co) => co.class?.semester != `${year[0].AA}-${year[0].BA}`
           );
 
           const studentResult = courseLetter.find(

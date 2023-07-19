@@ -181,7 +181,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             (courseEnroll) =>
               prerequisiteCourse.class.find(
                 (classItem) =>
-                  courseEnroll.student_id === params.id &&
+                  courseEnroll.student_id == params.id &&
                   classItem.id === courseEnroll.class_id
               )
           );
@@ -270,6 +270,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     setCheckList2(uniqueCourses);
   }, [user, refresh, courses, params.id]);
 
+
   const handleCheck2 = (item: number) => {
     const isChecked = checked2.includes(item);
     if (!isChecked) {
@@ -291,7 +292,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     for (const item of checked2) {
       const registeredBefore = courseEnrollements.find(
         (enrollment) =>
-          enrollment.class_id === item && enrollment.student_id === params?.id
+          enrollment.class_id === item && enrollment.student_id == params?.id
       );
 
       if (registeredBefore) {
@@ -340,6 +341,7 @@ const Page = ({ params }: { params: { id: number } }) => {
           id: check?.courseEnrollements.id,
           approved: true,
           section_id: check?.section.id,
+          course_id: check?.course.id,
         },
         grade: { course_enrollment_id: check?.courseEnrollements.id },
       };
@@ -577,7 +579,8 @@ const Page = ({ params }: { params: { id: number } }) => {
                                 cls.active &&
                                 item.class &&
                                 !studentCourses.find(
-                                  (item) => cls.id === item.class.id
+                                  (item) =>
+                                    cls.id === item.class?.id
                                 )
                               ) {
                                 const selectedSec = item.section.find(

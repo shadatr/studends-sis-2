@@ -20,8 +20,7 @@ export async function POST(request: Request) {
       .eq('student_id', data.student_id);
 
     const course = enrollment.data;
-    console.log(course);
-    console.log(data);
+
     if (course) {
       const data2 = {
         course_enrollment_id: course[0].id,

@@ -174,7 +174,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             (courseEnroll) =>
               prerequisiteCourse.class.find(
                 (classItem) =>
-                  courseEnroll.student_id === params.id &&
+                  courseEnroll.student_id == params.id &&
                   classItem.id === courseEnroll.class_id
               )
           );
@@ -284,7 +284,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     for (const item of checked2) {
       const registeredBefore = courseEnrollements.find(
         (enrollment) =>
-          enrollment.class_id === item && enrollment.student_id === params?.id
+          enrollment.class_id === item && enrollment.student_id == params?.id
       );
 
       if (registeredBefore) {

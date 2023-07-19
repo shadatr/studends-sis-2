@@ -59,14 +59,6 @@ export async function POST(
   request: Request,
   { params }: { params: { id: number; name: string } }
 ) {
-  const data = await supabase
-    .from('tb_classes')
-    .select('*')
-    .eq('section_id', params.id);
-
-  const parsedData = JSON.parse(JSON.stringify(data));
-  const messageData = parsedData.data;
-  const data3: ClassesType[] = messageData;
 
   const data1 = await request.json();
 
@@ -76,7 +68,7 @@ export async function POST(
         .from('tb_course_enrollment')
         .update([item])
         .eq('student_id', item.student_id)
-        .eq('class_id', data3[0].id);
+        .eq('class_id', item.class_id);
       return data;
     })
   );
