@@ -524,9 +524,6 @@ const Page = ({ params }: { params: { id: number } }) => {
               الكريدت
             </th>
             <th className="border border-gray-300 px-4 py-2 bg-grey">
-              درجة النجاح
-            </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
               الساعات
             </th>
             <th className="border border-gray-300 px-4 py-2 bg-grey">
@@ -585,9 +582,6 @@ const Page = ({ params }: { params: { id: number } }) => {
                       {item.course.credits}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {item.course.passing_percentage}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
                       {item.course.hours}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
@@ -629,9 +623,6 @@ const Page = ({ params }: { params: { id: number } }) => {
               الكريدت
             </th>
             <th className="border border-gray-300 px-4 py-2 bg-grey">
-              درجة النجاح
-            </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
               الساعات
             </th>
             <th className="border border-gray-300 px-4 py-2 bg-grey">
@@ -661,9 +652,6 @@ const Page = ({ params }: { params: { id: number } }) => {
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {item.course.credits}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {item.course.passing_percentage}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {item.course.hours}

@@ -330,9 +330,6 @@ const Page = () => {
                     الكريدت
                   </th>
                   <th className="border border-gray-300 px-4 py-2 bg-grey">
-                    درجة النجاح
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
                     الساعات
                   </th>
                   <th className="border border-gray-300 px-4 py-2 bg-grey">
@@ -390,9 +387,6 @@ const Page = () => {
                             {item.course.credits}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
-                            {item.course.passing_percentage}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-2">
                             {item.course.hours}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
@@ -437,9 +431,6 @@ const Page = () => {
                     الكريدت
                   </th>
                   <th className="border border-gray-300 px-4 py-2 bg-grey">
-                    درجة النجاح
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
                     الساعات
                   </th>
                   <th className="border border-gray-300 px-4 py-2 bg-grey">
@@ -473,9 +464,6 @@ const Page = () => {
                           {item.course.credits}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
-                          {item.course.passing_percentage}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
                           {item.course.hours}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
@@ -504,9 +492,6 @@ const Page = () => {
                   <th className="border border-gray-300 px-4 py-2 bg-grey"></th>
                   <th className="border border-gray-300 px-4 py-2 bg-grey">
                     الكريدت
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
-                    درجة النجاح
                   </th>
                   <th className="border border-gray-300 px-4 py-2 bg-grey">
                     الساعات
@@ -552,9 +537,6 @@ const Page = () => {
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           {item.course.credits}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {item.course.passing_percentage}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           {item.course.hours}

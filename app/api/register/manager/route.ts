@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
     if (admins.data && admins.data.length > 0) {
       return new Response(
-        JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الحساب' }),
+        JSON.stringify({ message: 'يوجد هذا البريد من قبل' }),
         { headers: { 'content-type': 'application/json' }, status: 400 }
       );
     }

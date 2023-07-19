@@ -147,7 +147,11 @@ const page = () => {
       return i;
     });
     setAllCourses2(updatedData);
+    if(field=='course_name'){
+  
+    }
   };
+
 
   const handleSubmit = () => {
     setEdit(false);

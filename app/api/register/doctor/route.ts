@@ -17,10 +17,13 @@ export async function POST(request: Request) {
       .eq('email', data.email);
 
     if (doctors.data && doctors.data.length > 0) {
-      return new Response(JSON.stringify({ message: 'حدث خطأ اثناء تسجيل ' }), {
-        headers: { 'content-type': 'application/json' },
-        status: 400,
-      });
+      return new Response(
+        JSON.stringify({ message: 'يوجد هذا البريد من قبل' }),
+        {
+          headers: { 'content-type': 'application/json' },
+          status: 400,
+        }
+      );
     } else {
       await supabase.from('tb_doctors').insert([data]);
       
@@ -39,7 +42,7 @@ export async function POST(request: Request) {
       }
 
       return new Response(
-        JSON.stringify({ message: 'يوجد هذا البريد من قبل' }),
+        JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }),
         {
           headers: { 'content-type': 'application/json' },
         }
