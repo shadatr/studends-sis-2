@@ -11,7 +11,8 @@ const item: MenuItemType[] = [
   { id: 5, link: 'courseReg', name: ' المواد' },
   { id: 6, link: 'facultiesAndMajors', name: ' الكليات و التخصصات' },
   { id: 7, link: 'grades', name: 'الدرجات' },
-  { id: 7, link: 'usageHistory', name: 'سجل الاستخدام' },
+  { id: 8, link: 'classes', name: 'المحاضرات' },
+  { id: 9, link: 'usageHistory', name: 'سجل الاستخدام' },
 ];
 
 function ManagMenu() {
