@@ -17,41 +17,45 @@ export async function POST(request: Request) {
   }
 
   try {
-    
     const admins = await supabase
-    .from('tb_admins')
-    .select('*')
-    .eq('email', data.email);
-    
+      .from('tb_admins')
+      .select('*')
+      .eq('email', data.email);
+
     if (admins.data && admins.data.length > 0) {
       return new Response(
         JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الحساب' }),
         { headers: { 'content-type': 'application/json' }, status: 400 }
-        );
-      }
+      );
+    }
+    else{
       await supabase.from('tb_admins').insert([data]);
-
-    const data3 = await supabase
-      .from('tb_all_permissions')
-      .select('*')
-      .eq('type', 'admin');
-
-    const doctor = admins.data;
-    const perm = data3.data;
-
-    if (doctor && perm) {
-      perm.map(async (per) => {
-        const data1 = {
-          permission_id: per.id,
-          admin_id: doctor[0].id,
-        };
-        await supabase.from('tb_admin_perms').insert([data1]);
+      const admins = await supabase
+        .from('tb_admins')
+        .select('*')
+        .eq('email', data.email);
+      const data3 = await supabase
+        .from('tb_all_permissions')
+        .select('*')
+        .eq('type', 'admin');
+  
+      const doctor = admins.data;
+      const perm = data3.data;
+  
+      if (doctor && perm) {
+        perm.map(async (per) => {
+          const data1 = {
+            permission_id: per.id,
+            admin_id: doctor[0].id,
+          };
+          await supabase.from('tb_admin_perms').insert([data1]);
+        });
+      }
+  
+      return new Response(JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }), {
+        headers: { 'content-type': 'application/json' },
       });
     }
-
-    return new Response(JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }), {
-      headers: { 'content-type': 'application/json' },
-    });
   } catch (error) {
     // send a 400 response with an error happened during registration in arabic
     return new Response(

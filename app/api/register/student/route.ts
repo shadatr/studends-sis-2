@@ -10,35 +10,39 @@ export async function POST(request: Request) {
 
   const data = await request.json();
 
-
   try {
     const students = await supabase
       .from('tb_students')
       .select('*')
       .eq('email', data.email);
 
-
     if (students.data && students.data.length > 0) {
       return new Response(
         JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الحساب' }),
         { headers: { 'content-type': 'application/json' }, status: 400 }
       );
-    }
-    
-     await supabase.from('tb_students').insert([data]);
-     
+    } else {
+      await supabase.from('tb_students').insert([data]);
+      const students = await supabase
+        .from('tb_students')
+        .select('*')
+        .eq('email', data.email);
       const student = students.data;
-      if (student){
-      const data1= {
-        permission_id: 20,
-        student_id: student[0].id,
-      };
-      await supabase.from('tb_student_perms').insert([data1]);
-    }
+      if (student) {
+        const data1 = {
+          permission_id: 20,
+          student_id: student[0].id,
+        };
+        await supabase.from('tb_student_perms').insert([data1]);
+      }
 
-    return new Response(JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }), {
-      headers: { 'content-type': 'application/json' },
-    });
+      return new Response(
+        JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }),
+        {
+          headers: { 'content-type': 'application/json' },
+        }
+      );
+    }
   } catch (error) {
     // send a 400 response with an error happened during registration in arabic
     return new Response(
