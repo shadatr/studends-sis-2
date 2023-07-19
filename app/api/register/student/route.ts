@@ -31,7 +31,7 @@ export async function POST(request: Request) {
         permission_id: 20,
         student_id: student[0].id,
       };
-      const res2 = await supabase.from('tb_student_perms').insert([data1]);
+      await supabase.from('tb_student_perms').insert([data1]);
     }
 
     return new Response(JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }), {

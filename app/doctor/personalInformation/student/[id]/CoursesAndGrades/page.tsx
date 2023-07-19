@@ -758,14 +758,14 @@ const Page = ({ params }: { params: { id: number } }) => {
                           : 'text-red-500 hover:text-red-600'
                       }`}
                     >
-                      {course.class?.result_publish
+                      {course.class?.publish_grades
                         ? course.courseEnrollements.pass
                           ? `${letter?.letter_grade} ناجح`
                           : `${letter?.letter_grade} راسب`
                         : ''}
                     </td>
                     <td className="border border-gray-300 px-4 py-2 ">
-                      {course.class?.result_publish
+                      {course.class?.publish_grades
                         ? course.courseEnrollements.result
                         : ''}
                     </td>
@@ -773,7 +773,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                       {course.course.class_work}%
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {course.class?.class_work_publish
+                      {course.class?.publish_grades
                         ? course.course.class_work
                         : ''}
                     </td>
@@ -781,7 +781,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                       {course.course.final}%
                     </td>
                     <td className="border border-gray-300 px-4 py-2 ">
-                      {course.class?.final_publish
+                      {course.class?.publish_grades
                         ? course.courseEnrollements.final
                         : ' '}
                     </td>
@@ -789,7 +789,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                       {course.course.midterm}%
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {course.class?.mid_publish
+                      {course.class?.publish_grades
                         ? course.courseEnrollements.midterm
                         : ''}
                     </td>
@@ -881,14 +881,14 @@ const Page = ({ params }: { params: { id: number } }) => {
                             : 'text-red-500 hover:text-red-600'
                         }`}
                       >
-                        {course.class?.result_publish
+                        {course.class?.publish_grades
                           ? course.courseEnrollements.pass
                             ? `${letter?.letter_grade} ناجح`
                             : `${letter?.letter_grade} راسب`
                           : ''}
                       </td>
                       <td className="border border-gray-300 px-4 py-2 ">
-                        {course.class?.result_publish
+                        {course.class?.publish_grades
                           ? course.courseEnrollements.result
                           : ''}
                       </td>
@@ -896,7 +896,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         {course.course.class_work}%
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {course.class?.class_work_publish
+                        {course.class?.publish_grades
                           ? course.course.class_work
                           : ''}
                       </td>
@@ -904,7 +904,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         {course.course.final}%
                       </td>
                       <td className="border border-gray-300 px-4 py-2 ">
-                        {course.class?.final_publish
+                        {course.class?.publish_grades
                           ? course.courseEnrollements.final
                           : ' '}
                       </td>
@@ -912,7 +912,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         {course.course.midterm}%
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {course.class?.mid_publish
+                        {course.class?.publish_grades
                           ? course.courseEnrollements.midterm
                           : ''}
                       </td>

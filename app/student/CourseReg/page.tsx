@@ -9,7 +9,7 @@ import {
   DayOfWeekType,
   GetPermissionStudentType,
   StudenCourseType,
-  StudentClassType,  AssignPermissionType,
+  StudentClassType
 } from '@/app/types/types';
 import { redirect } from 'next/navigation';
 import { BsXCircleFill } from 'react-icons/bs';
