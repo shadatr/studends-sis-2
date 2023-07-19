@@ -300,9 +300,9 @@ const Page = ({ params }: { params: { id: number } }) => {
       }
 
       const enrollmentData = {
-        student_id: params.id,
-        class_id: item,
-        approved: true,
+          student_id: params.id,
+          class_id: item,
+          approved: true,
       };
       await axios.post(`/api/getAll/getAllCourseEnroll`, enrollmentData);
     }

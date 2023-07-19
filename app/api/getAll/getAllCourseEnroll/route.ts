@@ -11,12 +11,18 @@ export async function POST(request: Request) {
   const data: StudentClassType = await request.json();
 
   try {
-    const res = await supabase.from('tb_course_enrollment').insert([data]);
-    console.log(res.error?.message);
-    if (res.error) {
-      console.log(res.error);
-      throw res.error;
+    await supabase.from('tb_course_enrollment').insert([data]);
+
+    const res = await supabase.from('tb_course_enrollment').select('*').eq('class_id', data.class_id).eq('student_id', data.student_id).eq('semester', data.semester);
+
+    const course= res.data;
+    if(course){
+      const data2={
+        course_enrollment_id: course[0].id
+      };
+      await supabase.from('tb_grades').insert([data2]);
     }
+
     return new Response(JSON.stringify({ message: 'تم ارسال المواد بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });
