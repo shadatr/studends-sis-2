@@ -1,3 +1,4 @@
+import { StudentClassType } from '@/app/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -20,14 +21,19 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const data = await request.json();
+  const data:StudentClassType = await request.json();
 
-    const res=await supabase
+  if(!(data.class_work||data.midterm||data.final)){
+    await supabase
+      .from('tb_grades')
+      .delete()
+      .eq('course_enrollment_id', data.id);
+
+    await supabase
       .from('tb_course_enrollment')
       .delete()
-      .eq('id', data.id);
-
-      if(res.error){return new Response(
+      .eq('id', data.id);}
+      else{return new Response(
         JSON.stringify({ message: 'لا يمكنك مسح المادة' }),
         { headers: { 'content-type': 'application/json' }, status: 400 }
       );}

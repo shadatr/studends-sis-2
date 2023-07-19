@@ -13,14 +13,21 @@ export async function POST(request: Request) {
   try {
     await supabase.from('tb_course_enrollment').insert([data]);
 
-    const res = await supabase.from('tb_course_enrollment').select('*').eq('class_id', data.class_id).eq('student_id', data.student_id).eq('semester', data.semester);
+    const enrollment = await supabase
+      .from('tb_course_enrollment')
+      .select('*')
+      .eq('class_id', data.class_id)
+      .eq('student_id', data.student_id);
 
-    const course= res.data;
-    if(course){
-      const data2={
-        course_enrollment_id: course[0].id
+    const course = enrollment.data;
+    console.log(course);
+    console.log(data);
+    if (course) {
+      const data2 = {
+        course_enrollment_id: course[0].id,
       };
-      await supabase.from('tb_grades').insert([data2]);
+      const res = await supabase.from('tb_grades').insert([data2]);
+      console.log(res);
     }
 
     return new Response(JSON.stringify({ message: 'تم ارسال المواد بنجاح' }), {

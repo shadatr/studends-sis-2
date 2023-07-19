@@ -9,8 +9,8 @@ import {
   CheckedType,
   GetPermissionType,
   CourseInfoType,
-  StudentClassType,
   PersonalInfoType,
+  StudentClassType,
 } from '@/app/types/types';
 import { useReactToPrint } from 'react-to-print';
 import { toast } from 'react-toastify';
@@ -388,12 +388,9 @@ const Page = ({ params }: { params: { id: number } }) => {
     setRefresh(!refresh);
   };
 
-  const handleDelete = (item?: number) => {
-    const data1 = {
-      id: item,
-    };
+  const handleDelete = (item?: StudentClassType) => {
     axios
-      .post(`/api/courseEnrollment/courseDelete`, data1)
+      .post(`/api/courseEnrollment/courseDelete`, item)
       .then((res) => {
         toast.success(res.data.message);
         const dataUsageHistory = {
@@ -407,7 +404,6 @@ const Page = ({ params }: { params: { id: number } }) => {
         toast.error(err.response.data.message);
       });
     setRefresh(!refresh);
-
   };
 
   const handlePrint = useReactToPrint({
@@ -803,7 +799,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                       <BsXCircleFill
                         className="cursor-pointer"
                         onClick={() =>
-                          handleDelete(course.courseEnrollements.id)
+                          handleDelete(course.courseEnrollements)
                         }
                       />
                     </td>
