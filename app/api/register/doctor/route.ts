@@ -16,9 +16,14 @@ export async function POST(request: Request) {
     const doctors = await supabase
       .from('tb_doctors')
       .select('*')
-      .eq('name', data.name)
-      .eq('surname', data.surname);
+      .eq('email', data.email);
 
+    if (doctors.data && doctors.data.length > 0) {
+      return new Response(
+        JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الحساب' }),
+        { headers: { 'content-type': 'application/json' }, status: 400 }
+      );
+    }
 
     const doctor = doctors.data;
     if (doctor) {

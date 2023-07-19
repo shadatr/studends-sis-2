@@ -191,16 +191,13 @@ export type ClassesType = {
   id?: number;
   doctor_id?: number;
   section_id?: number;
-  mid_publish?: boolean;
-  final_publish?: boolean;
-  class_work_publish?: boolean;
-  result_publish?: boolean;
+  publish_grades?: boolean;
   semester: string;
   day: string;
   starts_at: number;
   ends_at: number;
   location: string;
-  active:boolean;
+  active: boolean;
 };
 
 export type ClassesInfoType = {
@@ -209,9 +206,7 @@ export type ClassesInfoType = {
     doctor_id?: number;
     section_id?: number;
     mid_publish?: boolean;
-    final_publish?: boolean;
-    class_work_publish?: boolean;
-    result_publish?: boolean;
+    publish_grades?: boolean;
     semester: string;
     day: string;
     starts_at: number;
@@ -312,10 +307,7 @@ export type CourseInfoType = {
     id: number;
     doctor_id?: number;
     section_id?: number;
-    mid_publish?: boolean;
-    final_publish?: boolean;
-    class_work_publish?: boolean;
-    result_publish?: boolean;
+    publish_grades?: boolean;
     semester: string;
     day: string;
     starts_at: number;
@@ -381,10 +373,7 @@ export type StudenCourseType = {
     id: number;
     doctor_id?: number;
     section_id?: number;
-    mid_publish?: boolean;
-    final_publish?: boolean;
-    class_work_publish?: boolean;
-    result_publish?: boolean;
+    publish_grades?: boolean;
     semester: string;
     day: string;
     starts_at: number;
@@ -444,10 +433,7 @@ export type StudenCourseGPAType = {
     id: number;
     doctor_id?: number;
     section_id?: number;
-    mid_publish?: boolean;
-    final_publish?: boolean;
-    class_work_publish?: boolean;
-    result_publish?: boolean;
+    publish_grades?: boolean;
     semester: string;
     day: string;
     starts_at: number;
@@ -564,10 +550,7 @@ export type ClassEnrollmentsType = {
     id: number;
     doctor_id?: number;
     section_id?: number;
-    mid_publish?: boolean;
-    final_publish?: boolean;
-    class_work_publish?: boolean;
-    result_publish?: boolean;
+    publish_grades?: boolean;
     semester: string;
     day: string;
     starts_at: number;

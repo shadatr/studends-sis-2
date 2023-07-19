@@ -12,18 +12,19 @@ export async function POST(request: Request) {
 
 
   try {
-    const res = await supabase.from('tb_students').insert([data]);
     const students = await supabase
       .from('tb_students')
       .select('*')
-      .eq('name', data.name)
-      .eq('surname', data.surname)
-      .eq('major', data.major)
       .eq('email', data.email);
 
-      console.log(res.error?.message);
 
-
+    if (students.data && students.data.length > 0) {
+      return new Response(
+        JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الحساب' }),
+        { headers: { 'content-type': 'application/json' }, status: 400 }
+      );
+    }
+    
       const student = students.data;
       if (student){
       const data1= {
@@ -31,8 +32,7 @@ export async function POST(request: Request) {
         student_id: student[0].id,
       };
       const res2 = await supabase.from('tb_student_perms').insert([data1]);
-      console.log(res2);}
-
+    }
 
     return new Response(JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }), {
       headers: { 'content-type': 'application/json' },

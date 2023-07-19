@@ -446,7 +446,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       </button>
       <form onSubmit={(e) => e.preventDefault()}>
         {perms.map((item) => {
-          if (item.permission_id === 21 && item.active) {
+          if (item.permission_id === 21 && item.active && !course?.class[0].publish_grades) {
             return (
               <>
                 <button

@@ -52,12 +52,13 @@ const page = () => {
         setAllCourses(message);
         setAllCourses2(message);
       });
-
-      const response = await axios.get(
-        `/api/allPermission/admin/selectedPerms/${user?.id}`
-      );
-      const messagePer: GetPermissionType[] = response.data.message;
-      setPerms(messagePer);
+      if(user){
+        const response = await axios.get(
+          `/api/allPermission/admin/selectedPerms/${user?.id}`
+        );
+        const messagePer: GetPermissionType[] = response.data.message;
+        setPerms(messagePer);
+      }
 
       const responseActive = await axios.get('/api/allPermission/courseRegPer');
       const messageActive: AssignPermissionType[] = responseActive.data.message;
@@ -82,7 +83,7 @@ const page = () => {
 
     const result = parseInt(mid) + parseInt(final) + parseInt(classWork);
 
-    if (result!=100) {
+    if (result != 100) {
       toast.error('توزيع الدرجات غير صحيح');
       return;
     }
@@ -276,9 +277,7 @@ const page = () => {
                   <button
                     className="m-2 bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
                     type="submit"
-                    onClick={() =>
-                      edit ? handleSubmit() : setEdit(!edit)
-                    }
+                    onClick={() => (edit ? handleSubmit() : setEdit(!edit))}
                   >
                     {edit ? 'ارسال' : 'تعديل'}
                   </button>
@@ -391,19 +390,19 @@ const page = () => {
                       />
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                        <input
-                          dir="rtl"
-                          type="text"
-                          value={item2?.course_name}
-                          className="w-[150px] "
-                          onChange={(e) =>
-                            handleInputChangeCourses(
-                              e.target.value,
-                              'course_name',
-                              item.id
-                            )
-                          }
-                        />
+                      <input
+                        dir="rtl"
+                        type="text"
+                        value={item2?.course_name}
+                        className="w-[150px] "
+                        onChange={(e) =>
+                          handleInputChangeCourses(
+                            e.target.value,
+                            'course_name',
+                            item.id
+                          )
+                        }
+                      />
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
                       <input

@@ -438,16 +438,16 @@ const Page = ({ params }: { params: { id: number } }) => {
       });
   };
 
-  const handleApprove = (name: string) => {
+  const handleApprove = () => {
     if (typeof window !== 'undefined') {
       axios
-        .post(`/api/exams/submitGrades/${params.id}/${name}`, 'true')
+        .post(`/api/exams/submitGrades/${params.id}/publish_grades`, 'true')
         .then(() => {
           toast.success('تم موافقة على الدرجات بنجاح');
           const dataUsageHistory = {
             id: user?.id,
             type: 'admin',
-            action: ' موافقة على الدرجات'+ course?.section[0].name,
+            action: ' موافقة على الدرجات' + course?.section[0].name,
           };
           axios.post('/api/usageHistory', dataUsageHistory);
         })
@@ -480,40 +480,13 @@ const Page = ({ params }: { params: { id: number } }) => {
             return (
               <>
                 <button
-                  className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
-                  type="submit"
-                  onClick={() => handleApprove('result_publish')}
-                >
-                  {course?.class[0].result_publish
-                    ? 'لقد وافق على النتيجة النهائية'
-                    : 'موافقة النتيجة النهائية'}
-                </button>
-                <button
-                  className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-1 rounded-md w-[200px]"
-                  type="submit"
-                  onClick={() => handleApprove('class_work_publish')}
-                >
-                  {course?.class[0].class_work_publish
-                    ? 'لقد وافقت على درجات اعمال السنة'
-                    : ' موافقة على درجات اعمال السنة'}
-                </button>
-                <button
                   className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-1 rounded-md w-[250px]"
                   type="submit"
-                  onClick={() => handleApprove('final_publish')}
+                  onClick={handleApprove}
                 >
-                  {course?.class[0].final_publish
-                    ? 'لقد وافقت على درجات الامتحان النهائي'
-                    : ' موافقة على درجات الامتحان النهائي'}
-                </button>
-                <button
-                  className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-1 rounded-md w-[250px]"
-                  type="submit"
-                  onClick={() => handleApprove('mid_publish')}
-                >
-                  {course?.class[0].mid_publish
-                    ? 'لقد وافقت على درجات الامتحان النصفي'
-                    : ' موافقة على درجات الامتحان النصفي'}
+                  {course?.class[0].publish_grades
+                    ? 'لقد وافقت على درجات '
+                    : ' موافقة على درجات '}
                 </button>
               </>
             );

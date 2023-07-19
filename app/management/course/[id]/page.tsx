@@ -77,7 +77,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [isOptional, SetIsOptional] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('Tab 1');
   const [edit, setEdit] = useState(false);
-  const [section, setSection] = useState<string>();
+  const section = useRef<HTMLSelectElement>(null);
   const [doctor, setDoctor] = useState<string>();
   const [selectedCourse, setSelecetedCourse] = useState<string>();
   const [selectedStartHour, setSelecetedStartHour] = useState<string>();
@@ -90,6 +90,26 @@ const Page = ({ params }: { params: { id: number } }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       if (user) {
+        const resMajorCourses = await axios.get(
+          `/api/course/courseMajorReg/${params.id}`
+        );
+        const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
+          .message;
+        setMajorCourses(messageMajorCour);
+        const response = await axios.get(
+          `/api/allPermission/admin/selectedPerms/${user?.id}`
+        );
+        const message: GetPermissionType[] = response.data.message;
+        setPerms(message);
+
+        const sectionsPromises = messageMajorCour.map(async (course) => {
+          const responseReq = await axios.get(
+            `/api/getAll/getAllSections/${course.course_id}`
+          );
+          const { message: secMessage }: { message: SectionType[] } =
+            responseReq.data;
+          return secMessage;
+        });
         axios.get(`/api/getAll/doctor`).then((resp) => {
           const message: PersonalInfoType[] = resp.data.message;
           setDoctors(message);
@@ -105,25 +125,11 @@ const Page = ({ params }: { params: { id: number } }) => {
         const messageMaj: MajorRegType[] = responseMaj.data.message;
         setMajor(messageMaj[0].major_name);
 
-        const resMajorCourses = await axios.get(
-          `/api/course/courseMajorReg/${params.id}`
-        );
-        const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
-          .message;
-        setMajorCourses(messageMajorCour);
-
-        const sectionsPromises = messageMajorCour.map(async (course) => {
-          const responseReq = await axios.get(
-            `/api/getAll/getAllSections/${course.course_id}`
-          );
-          const { message: secMessage }: { message: SectionType[] } =
-            responseReq.data;
-          return secMessage;
-        });
 
         const sectionData = await Promise.all(sectionsPromises);
         const sections = sectionData.flat();
         setSections(sections);
+        console.log(sections);
 
         const classPromises = sections.map(async (section) => {
           const responseReq = await axios.get(
@@ -145,11 +151,6 @@ const Page = ({ params }: { params: { id: number } }) => {
         setYear(messageYear);
         setYear(messageYear);
 
-        const response = await axios.get(
-          `/api/allPermission/admin/selectedPerms/${user?.id}`
-        );
-        const message: GetPermissionType[] = response.data.message;
-        setPerms(message);
       }
     };
     fetchPosts();
@@ -233,7 +234,9 @@ const Page = ({ params }: { params: { id: number } }) => {
 
     const doctorId = doctors.find((item) => item.name === doctor);
 
-    const sectionId = sections.find((item) => item.name === section);
+    const sectionId = sections.find(
+      (item) => item.name === section.current?.value
+    );
 
     const hasConflictingClass = classes.some(
       (cls) =>
@@ -373,7 +376,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       {activeTab === 'Tab 1' && (
         <>
           {perms.map((permItem, idx) => {
-            if (permItem.permission_id === 6 && permItem.active) {
+            if (permItem.permission_id == 6 && permItem.active) {
               return (
                 <div
                   className="flex flex-row-reverse items-center justify-center  w-[100%] m-10 "
@@ -388,7 +391,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   >
                     <option disabled>المادة</option>
                     {courses.map((item, index) => (
-                      <option key={index}>{item.course_name}</option>
+                      <option key={index+15}>{item.course_name}</option>
                     ))}
                   </select>
 
@@ -419,7 +422,14 @@ const Page = ({ params }: { params: { id: number } }) => {
           <table className="w-[800px]  ">
             <thead>
               <tr>
-                <th className="py-2 px-4 bg-gray-200 text-gray-700"></th>
+                {perms.map((permItem, idx) => {
+                  if (permItem.permission_id === 6 && permItem.active) {
+                    return (
+                      <th key={idx+7} className="py-2 px-4 bg-gray-200 text-gray-700"></th>
+                    );
+                  }
+                  return null;
+                })}
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">
                   اجباري/اختياري
                 </th>
@@ -443,7 +453,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         return (
                           <td
                             className="border border-gray-300 px-4 py-2"
-                            key={idx}
+                            key={idx+9}
                           >
                             <BsXCircleFill
                               onClick={() => handleDeleteCourse(item.id)}
@@ -490,7 +500,7 @@ const Page = ({ params }: { params: { id: number } }) => {
               return (
                 <div
                   className="border-2 border-grey m-4 rounded-5 p-5 flex w-[100%] justify-center items-center rounded-md"
-                  key={idx}
+                  key={idx+5}
                 >
                   <button
                     onClick={handleSubmit}
@@ -514,7 +524,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   >
                     <option disabled>وقت الانتهاء</option>
                     {hours.map((hour, index) => (
-                      <option key={index}>{hour}</option>
+                      <option key={index+14}>{hour}</option>
                     ))}
                   </select>
                   <select
@@ -526,7 +536,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   >
                     <option disabled>وقت البدأ</option>
                     {hours.map((hour, index) => (
-                      <option key={index}>{hour}</option>
+                      <option key={index+2}>{hour}</option>
                     ))}
                   </select>
                   <select
@@ -538,7 +548,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   >
                     <option disabled>اليوم</option>
                     {days.map((day, index) => (
-                      <option key={index}>{day.name}</option>
+                      <option key={index+10}>{day.name}</option>
                     ))}
                   </select>
 
@@ -552,19 +562,19 @@ const Page = ({ params }: { params: { id: number } }) => {
                     <option disabled>الدكتور</option>
                     {doctors.map((doc, index) => {
                       if (doc.active)
-                        return <option key={index}>{doc.name}</option>;
+                        return <option key={index+11}>{doc.name}</option>;
                     })}
                   </select>
                   <select
                     id="dep"
                     dir="rtl"
-                    onChange={(e) => setSection(e.target.value)}
+                    ref={section}
                     className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4  w-[150px]"
                     defaultValue="المجموعة"
                   >
                     <option disabled>المجموعة</option>
                     {selectedSections.map((course, index) => (
-                      <option key={index}>{course.name}</option>
+                      <option key={index+12}>{course.name}</option>
                     ))}
                   </select>
                   <select
@@ -576,7 +586,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   >
                     <option disabled>المادة</option>
                     {selectedMajorCourse.map((course, index) => (
-                      <option key={index}>{course.course_name}</option>
+                      <option key={index+13}>{course.course_name}</option>
                     ))}
                   </select>
                 </div>
@@ -636,7 +646,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   (hour) => hour.id == Class.class?.ends_at
                 );
                 return (
-                  <tr key={index}>
+                  <tr key={index+1}>
                     <td className="border border-gray-300 px-4 py-2">
                       <BsXCircleFill
                         className="cursor-pointer"
