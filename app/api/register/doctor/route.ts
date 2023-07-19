@@ -11,19 +11,19 @@ export async function POST(request: Request) {
   const data = await request.json();
 
   try {
-    await supabase.from('tb_doctors').insert([data]);
-
+    
     const doctors = await supabase
-      .from('tb_doctors')
-      .select('*')
-      .eq('email', data.email);
-
+    .from('tb_doctors')
+    .select('*')
+    .eq('email', data.email);
+    
     if (doctors.data && doctors.data.length > 0) {
       return new Response(
         JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الحساب' }),
         { headers: { 'content-type': 'application/json' }, status: 400 }
-      );
-    }
+        );
+      }
+      await supabase.from('tb_doctors').insert([data]);
 
     const doctor = doctors.data;
     if (doctor) {

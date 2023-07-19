@@ -17,19 +17,19 @@ export async function POST(request: Request) {
   }
 
   try {
-    await supabase.from('tb_admins').insert([data]);
-
+    
     const admins = await supabase
-      .from('tb_admins')
-      .select('*')
-      .eq('email', data.email);
-
+    .from('tb_admins')
+    .select('*')
+    .eq('email', data.email);
+    
     if (admins.data && admins.data.length > 0) {
       return new Response(
         JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الحساب' }),
         { headers: { 'content-type': 'application/json' }, status: 400 }
-      );
-    }
+        );
+      }
+      await supabase.from('tb_admins').insert([data]);
 
     const data3 = await supabase
       .from('tb_all_permissions')
