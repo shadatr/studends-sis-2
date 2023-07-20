@@ -46,6 +46,8 @@ export async function GET() {
       .from('tb_courses')
       .select('*');
 
+      console.log(data);
+
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,

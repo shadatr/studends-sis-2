@@ -216,7 +216,7 @@ const page = () => {
                       placeholder="ادخل اسم المادة"
                       type="text"
                       className="w-[600px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
-                      onChange={(e) => setNewItemCourse(e.target.value)}
+                      onChange={(e) => setNewItemCourse(e.target.value.trim())}
                     />
                     <input
                       ref={course}

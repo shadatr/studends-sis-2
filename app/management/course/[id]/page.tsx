@@ -72,13 +72,13 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [sections, setSections] = useState<SectionType[]>([]);
   const [classes, setClasses] = useState<ClassesInfoType[]>([]);
   const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
-  const [course, setCourse] = useState<string>('');
+  const [course, setCourse] = useState<number>();
   const [loadCourses, setLoadCourse] = useState(false);
   const [isOptional, SetIsOptional] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('Tab 1');
   const [edit, setEdit] = useState(false);
   const section = useRef<HTMLSelectElement>(null);
-  const [doctor, setDoctor] = useState<string>();
+  const [doctor, setDoctor] = useState<number>();
   const [selectedCourse, setSelecetedCourse] = useState<string>();
   const [selectedStartHour, setSelecetedStartHour] = useState<string>();
   const [selectedEndHour, setSelecetedEndHour] = useState<string>();
@@ -129,7 +129,6 @@ const Page = ({ params }: { params: { id: number } }) => {
         const sectionData = await Promise.all(sectionsPromises);
         const sections = sectionData.flat();
         setSections(sections);
-        console.log(sections);
 
         const classPromises = sections.map(async (section) => {
           const responseReq = await axios.get(
@@ -137,7 +136,6 @@ const Page = ({ params }: { params: { id: number } }) => {
           );
           const { message: classMessage }: { message: ClassesInfoType[] } =
             responseReq.data;
-          console.log(classMessage);
           return classMessage;
         });
 
@@ -157,8 +155,8 @@ const Page = ({ params }: { params: { id: number } }) => {
   }, [params, user, loadCourses, edit]);
 
   const handleRegisterCourse = () => {
-    const courseId = courses.find((item) => item.course_name == course);
 
+    console.log(course);
     if (!(course && isOptional)) {
       toast.error('يجب ملئ جميع الحقول');
       return;
@@ -167,7 +165,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     let duplicateFound = false;
 
     majorCourses.forEach((item) => {
-      if (item.course_id == courseId?.id) {
+      if (item.course_id == course) {
         duplicateFound = true;
         return;
       }
@@ -180,27 +178,29 @@ const Page = ({ params }: { params: { id: number } }) => {
 
     const opt = isOptional == 'اختياري' ? true : false;
 
-    const data = {
-      major_id: params.id,
-      course_id: courseId?.id,
-      isOptional: opt,
-    };
+    if (course) {
+      const data = {
+        major_id: params.id,
+        course_id: course,
+        isOptional: opt,
+      };
 
-    axios
-      .post(`/api/course/courseMajorReg/1`, data)
-      .then((res) => {
-        toast.success(res.data.message);
-        setLoadCourse(!loadCourses);
-        const dataUsageHistory = {
-          id: user?.id,
-          type: 'admin',
-          action: ' تعديل مواد تخصص' + major,
-        };
-        axios.post('/api/usageHistory', dataUsageHistory);
-      })
-      .catch((err) => {
-        toast.error(err.response.data.message);
-      });
+      axios
+        .post(`/api/course/courseMajorReg/1`, data)
+        .then((res) => {
+          toast.success(res.data.message);
+          setLoadCourse(!loadCourses);
+          const dataUsageHistory = {
+            id: user?.id,
+            type: 'admin',
+            action: ' تعديل مواد تخصص' + major,
+          };
+          axios.post('/api/usageHistory', dataUsageHistory);
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message);
+        });
+    }
   };
 
   const handleTabClick = (tab: string) => {
@@ -232,15 +232,13 @@ const Page = ({ params }: { params: { id: number } }) => {
       (hour) => hour.name === selectedEndHour
     );
 
-    const doctorId = doctors.find((item) => item.name === doctor);
-
     const sectionId = sections.find(
       (item) => item.name === section.current?.value
     );
 
     const hasConflictingClass = classes.some(
       (cls) =>
-        cls.class.doctor_id === doctorId?.id &&
+        cls.class.doctor_id === doctor &&
         findEndTime &&
         findStartTime &&
         cls.class.day === findDay?.day &&
@@ -274,7 +272,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       return;
     }
     const data = {
-      doctor_id: doctorId?.id,
+      doctor_id: doctor,
       section_id: sectionId?.id,
       semester: `${year[0].AA}-${year[0].BA}`,
       day: findDay?.day,
@@ -385,13 +383,15 @@ const Page = ({ params }: { params: { id: number } }) => {
                   <select
                     id="dep"
                     dir="rtl"
-                    onChange={(e) => setCourse(e.target.value)}
-                    className="p-4 bg-lightBlue "
+                    onChange={(e) => setCourse(parseInt(e.target.value, 10))}
+                    className="p-4 bg-lightBlue"
                     defaultValue="المادة"
                   >
                     <option disabled>المادة</option>
-                    {courses.map((item, index) => (
-                      <option key={index+15}>{item.course_name}</option>
+                    {courses.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.course_name}
+                      </option>
                     ))}
                   </select>
 
@@ -500,7 +500,7 @@ const Page = ({ params }: { params: { id: number } }) => {
               return (
                 <div
                   className="border-2 border-grey m-4 rounded-5 p-5 flex w-[100%] justify-center items-center rounded-md"
-                  key={idx+5}
+                  key={idx + 5}
                 >
                   <button
                     onClick={handleSubmit}
@@ -524,7 +524,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   >
                     <option disabled>وقت الانتهاء</option>
                     {hours.map((hour, index) => (
-                      <option key={index+14}>{hour}</option>
+                      <option key={index + 14}>{hour}</option>
                     ))}
                   </select>
                   <select
@@ -536,7 +536,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   >
                     <option disabled>وقت البدأ</option>
                     {hours.map((hour, index) => (
-                      <option key={index+2}>{hour}</option>
+                      <option key={index + 2}>{hour}</option>
                     ))}
                   </select>
                   <select
@@ -548,21 +548,21 @@ const Page = ({ params }: { params: { id: number } }) => {
                   >
                     <option disabled>اليوم</option>
                     {days.map((day, index) => (
-                      <option key={index+10}>{day.name}</option>
+                      <option key={index + 10}>{day.name}</option>
                     ))}
                   </select>
 
                   <select
                     id="dep"
                     dir="rtl"
-                    onChange={(e) => setDoctor(e.target.value)}
+                    onChange={(e) => setDoctor(parseInt(e.target.value))}
                     className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
                     defaultValue="الدكتور"
                   >
                     <option disabled>الدكتور</option>
                     {doctors.map((doc, index) => {
                       if (doc.active)
-                        return <option key={index+11}>{doc.name}</option>;
+                        return <option key={index + 11} value={doc.id}>{doc.name}</option>;
                     })}
                   </select>
                   <select
@@ -574,7 +574,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   >
                     <option disabled>المجموعة</option>
                     {selectedSections.map((course, index) => (
-                      <option key={index+12}>{course.name}</option>
+                      <option key={index + 12}>{course.name}</option>
                     ))}
                   </select>
                   <select
@@ -586,7 +586,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   >
                     <option disabled>المادة</option>
                     {selectedMajorCourse.map((course, index) => (
-                      <option key={index+13}>{course.course_name}</option>
+                      <option key={index}>{course.course_name}</option>
                     ))}
                   </select>
                 </div>
