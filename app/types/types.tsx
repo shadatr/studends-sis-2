@@ -205,7 +205,6 @@ export type ClassesInfoType = {
     id?: number;
     doctor_id?: number;
     section_id?: number;
-    mid_publish?: boolean;
     publish_grades?: boolean;
     semester: string;
     day: string;
@@ -246,6 +245,19 @@ export type ClassesInfoType = {
     active?: boolean;
     head_of_deparment_id?: number;
   };
+  courseEnrollements: {
+    id: number;
+    student_id: number;
+    class_id?: number;
+    semester?: number;
+    class_work?: number;
+    midterm: number;
+    final?: number;
+    pass?: boolean;
+    result?: number;
+    can_repeat?: boolean;
+    approved?: boolean;
+  }[]
 };
 
 export type StudentClassType = {

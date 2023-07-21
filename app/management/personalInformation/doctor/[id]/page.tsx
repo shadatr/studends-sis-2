@@ -131,7 +131,7 @@ const page = ({ params }: { params: { id: number } }) => {
       <div>
         <Link
           className="m-5 bg-green-800 hover:bg-green-600  text-secondary p-3 rounded-md w-[200px]"
-          href={`/management/doctors/students/${params.id}`}
+          href={`/management/doctors/studentsAdvisor/${params.id}`}
         >
           الاشراف علي الطلاب
         </Link>

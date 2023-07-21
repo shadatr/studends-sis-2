@@ -10,8 +10,7 @@ export async function POST(request: Request) {
   const data: AddCourseType = await request.json();
 
   try {
-    const res=await supabase.from('tb_major_courses').insert([data]);
-    console.log(res);
+    await supabase.from('tb_major_courses').insert([data]);
 
     return new Response(JSON.stringify({ message: 'تم تسجيل المادة بنجاح' }), {
       headers: { 'content-type': 'application/json' },

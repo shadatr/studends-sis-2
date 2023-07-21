@@ -33,8 +33,6 @@ const Page = ({
   useEffect(() => {
     const fetchPosts = async () => {
       if (user) {
-        console.log(user);
-
         const response = await axios.get(
           `/api/allPermission/admin/selectedPerms/${user?.id}`
         );

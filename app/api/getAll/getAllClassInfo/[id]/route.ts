@@ -24,22 +24,39 @@ export async function GET(
 
     const dataCourse = await supabase.from('tb_courses').select('*');
 
-    const [classResponse, sectionResponse, courseResponse, doctorResponse] =await Promise.all([dataClass, dataSection, dataDoctors, dataCourse]);
+     const dataCourseEnroll = await supabase.from('tb_course_enrollment').select('*');
+
+    const [
+      classResponse,
+      sectionResponse,
+      courseResponse,
+      doctorResponse,
+      CourseEnrollResopnese
+    ] = await Promise.all([
+      dataClass,
+      dataSection,
+      dataDoctors,
+      dataCourse,
+      dataCourseEnroll,
+    ]);
     
     const classes = classResponse.data;
     const sections = sectionResponse.data;
     const doctors = courseResponse.data;
     const courses = doctorResponse.data;
+    const CourseEnrolls = CourseEnrollResopnese.data;
 
     const data = classes?.map((cls) => {
       const secInfo = sections?.find((sec) => cls.section_id === sec.id);
       const docto = doctors?.find((doc) => doc.id === cls.doctor_id);
       const cours = courses?.find((co) => co.id === secInfo?.course_id);
+      const coursEnr = CourseEnrolls?.filter((co) => co.class_id === cls.id);
       return {
         class: cls,
         course: cours,
         doctor: docto,
         section: secInfo,
+        courseEnrollements: coursEnr
       };
     });
 

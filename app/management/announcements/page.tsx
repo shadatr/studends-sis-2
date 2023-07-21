@@ -27,7 +27,6 @@ const Page = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       axios.get('/api/announcements/uniAnnouncements').then((resp) => {
-        console.log(resp.data);
         const message: AnnouncmentsMangType[] = resp.data.message;
         setAnnouncements(message);
       });

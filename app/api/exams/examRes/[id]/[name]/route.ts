@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { ClassesType, StudentClassType } from '@/app/types/types';
+import {  StudentClassType } from '@/app/types/types';
 
 const supabase = createClient(
   process.env.SUPABASE_URL || '',
@@ -56,8 +56,7 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
-  { params }: { params: { id: number; name: string } }
+  request: Request
 ) {
 
   const data1 = await request.json();

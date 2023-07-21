@@ -375,11 +375,12 @@ const Page = ({ params }: { params: { id: number } }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       const response = await axios.get(
-        `/api/exams/examRes/${params.id}/section`
+        `/api/exams/examRes/${params.id}/${`section`}`
       );
       const message: ClassEnrollmentsType = response.data.message;
       setGrades(message);
       setCourse(message);
+      console.log(message);
     };
     fetchPosts();
   }, [edit, editMid, editFinal, editHw, params.id]);
