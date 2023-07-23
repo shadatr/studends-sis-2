@@ -61,84 +61,88 @@ const Page = () => {
   return (
     <div className="flex absolute flex-col w-[80%] justify-center items-center mt-10">
       {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 9 && permItem.active) {
+        if (permItem.permission_id === 2 && permItem.see) {
           return (
-            <Link
-              key={idx}
-              className="btn_base w-[200px] mb-3"
-              href={'/management/doctors/register'}
-            >
-              اضافة عضو
-            </Link>
+            <div key={idx}>
+              {permItem.add && (
+                <Link
+                  key={idx}
+                  className="btn_base w-[200px] mb-3"
+                  href={'/management/doctors/register'}
+                >
+                  اضافة عضو
+                </Link>
+              )}
+              <SearchBar />
+              <table className="border-collapse w-[1100px]">
+                <thead>
+                  <tr className="bg-gray-200">
+                    {permItem.edit && (
+                      <th className="border border-gray-300 px-4 py-2">
+                        ايقاف/تفعيل
+                      </th>
+                    )}
+                    <th className="border border-gray-300 px-4 py-2">
+                      المعلومات الشخصية
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2">
+                      تاريخ الانشاء
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2">لقب</th>
+                    <th className="border border-gray-300 px-4 py-2">اسم</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {doctors.map((user, index) => (
+                    <tr
+                      key={index}
+                      className={index % 2 === 0 ? 'bg-gray-100' : ''}
+                    >
+                      {permItem.edit && (
+                        <td
+                          className="border border-gray-300 px-4 py-2"
+                          key={idx}
+                        >
+                          <button
+                            onClick={() => {
+                              handleActivate(user.id, !user.active);
+                            }}
+                            className={`text-white py-1 px-2 rounded ${
+                              user.active
+                                ? 'bg-red-500 hover:bg-red-600'
+                                : 'bg-green-600 hover:bg-green-700'
+                            }`}
+                          >
+                            {user.active ? 'ايقاف' : 'تفعيل'}
+                          </button>
+                        </td>
+                      )}
+                      <td className="border border-gray-300 px-4 py-2">
+                        <Link
+                          className=" bg-blue-500  hover:bg-blue-600 p-2 text-white rounded-md  justify-center items-center"
+                          href={`/management/personalInformation/doctor/${user.id}`}
+                        >
+                          الملف الشخصي
+                        </Link>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {user.enrollment_date}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {user.surname}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {user.name}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           );
         }
         return null;
       })}
-      <SearchBar />
-      <table className="border-collapse w-[1100px]">
-        <thead>
-          <tr className="bg-gray-200">
-            {perms.map((permItem, idx) => {
-              if (permItem.permission_id === 5 && permItem.active) {
-                return (
-                  <th key={idx} className="border border-gray-300 px-4 py-2">
-                    ايقاف/تفعيل
-                  </th>
-                );
-              }
-              return null;
-            })}
-            <th className="border border-gray-300 px-4 py-2">
-              المعلومات الشخصية
-            </th>
-            <th className="border border-gray-300 px-4 py-2">تاريخ الانشاء</th>
-            <th className="border border-gray-300 px-4 py-2">لقب</th>
-            <th className="border border-gray-300 px-4 py-2">اسم</th>
-          </tr>
-        </thead>
-        <tbody>
-          {doctors.map((user, index) => (
-            <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
-              {perms.map((permItem, idx) => {
-                if (permItem.permission_id === 5 && permItem.active) {
-                  return (
-                    <td className="border border-gray-300 px-4 py-2" key={idx}>
-                      <button
-                        onClick={() => {
-                          handleActivate(user.id, !user.active);
-                        }}
-                        className={`text-white py-1 px-2 rounded ${
-                          user.active
-                            ? 'bg-red-500 hover:bg-red-600'
-                            : 'bg-green-600 hover:bg-green-700'
-                        }`}
-                      >
-                        {user.active ? 'ايقاف' : 'تفعيل'}
-                      </button>
-                    </td>
-                  );
-                }
-                return null;
-              })}
-              <td className="border border-gray-300 px-4 py-2">
-                <Link
-                  className=" bg-blue-500  hover:bg-blue-600 p-2 text-white rounded-md  justify-center items-center"
-                  href={`/management/personalInformation/doctor/${user.id}`}
-                >
-                  الملف الشخصي
-                </Link>
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {user.enrollment_date}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {user.surname}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">{user.name}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 };

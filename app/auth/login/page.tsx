@@ -4,74 +4,75 @@ import {  signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
-const LoginPage = () => {
+const LoginPage = ({ params }: { params: { name: string } }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [type, setType] = useState('طالب');
   const router = useRouter();
-   const { data: session } = useSession();
+  const { data: session } = useSession();
 
-   useEffect(() => {
-     // Check if the user is already signed in
-     if (session?.user) {
-       const userType = session.user.userType;
+  useEffect(() => {
+    // Check if the user is already signed in
+    if (session?.user) {
+      const userType = session.user.userType;
 
-       if (userType === 'admin' && type === 'موظف') {
-         router.push('/management/announcements');
-       } else if (userType === 'doctor' && type === 'دكتور') {
-         router.push('/doctor/announcements');
-       } else if (userType === 'student' && type === 'طالب') {
-         router.push('/student/announcements');
-       }
-     }
-   }, [session, type,router]);
+      if (userType === 'admin' && type === 'موظف') {
+        router.push('/management/announcements');
+      } else if (userType === 'doctor' && type === 'دكتور') {
+        router.push('/doctor/announcements');
+      } else if (userType === 'student' && type === 'طالب') {
+        router.push('/student/announcements');
+      }
+    }
+  }, [session, type, router]);
 
-   const handleLogin = async () => {
-     let providerName = '';
+  const handleLogin = async () => {
+    let providerName = '';
 
-     if (type === 'طالب') {
-       providerName = 'student';
-     } else if (type === 'دكتور') {
-       providerName = 'professor';
-     } else if (type === 'موظف') {
-       providerName = 'admin';
-     }
+    if (type === 'طالب') {
+      providerName = 'student';
+    } else if (type === 'دكتور') {
+      providerName = 'professor';
+    } else if (type === 'موظف') {
+      providerName = 'admin';
+    }
 
-     if (providerName) {
-       const result = await signIn(providerName, {
-         email,
-         password,
-         redirect: false,
-       });
+    if (providerName) {
+      const result = await signIn(providerName, {
+        email,
+        password,
+        redirect: false,
+      });
 
-       if (result?.error) {
+      if (result?.error) {
         console.log(result.error);
-        if (result.error == 'CredentialsSignin') toast.error('هناك خطأ في البيانات');
-       } else {
-         if (type === 'موظف') {
-           router.push('/management/announcements');
-         } else if (type === 'دكتور') {
-           router.push('/doctor/announcements');
-         } else if (type === 'طالب') {
-           router.push('/student/announcements');
-         }
-       }
-     }
-   };
+        if (result.error == 'CredentialsSignin')
+          toast.error('هناك خطأ في البيانات');
+      } else {
+        if (type === 'موظف') {
+          router.push('/management/announcements');
+        } else if (type === 'دكتور') {
+          router.push('/doctor/announcements');
+        } else if (type === 'طالب') {
+          router.push('/student/announcements');
+        }
+      }
+    }
+  };
 
   return (
     <div className="h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-[20px] flex items-center justify-center flex-col shadow-lg w-[500px] h-[550px]">
-        <h1 className="text-[30px] font-bold m-3">تسجيل الدخول</h1>
+        <h1 className="text-[30px] font-bold m-3">تسجيل الدخول {params.name}</h1>
         <span className="w-[450px] items-right flex justify-end">
-        <select
-          className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md m-4 items-right flex justify-end"
-          onChange={(e) => setType(e.target.value)}
-        >
-          <option>طالب</option>
-          <option>دكتور</option>
-          <option>موظف</option>
-        </select>
+          <select
+            className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md m-4 items-right flex justify-end"
+            onChange={(e) => setType(e.target.value)}
+          >
+            <option>طالب</option>
+            <option>دكتور</option>
+            <option>موظف</option>
+          </select>
         </span>
         <div className="mb-4">
           <input

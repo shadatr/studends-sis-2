@@ -142,7 +142,7 @@ const page = ({ params }: { params: { id: number } }) => {
           المواد و جدول المحاضرات
         </Link>
         {permsAdmin.map((permItem, idx) => {
-          if (permItem.permission_id === 9 && permItem.active) {
+          if (permItem.permission_id === 2 && permItem.edit) {
             return (
               <button
                 key={idx}
@@ -290,7 +290,7 @@ const page = ({ params }: { params: { id: number } }) => {
         </tbody>
       </table>
       {permsAdmin.map((permItem, idx) => {
-        if (permItem.permission_id === 9 && permItem.active) {
+        if (permItem.permission_id === 2 && permItem.edit) {
           return (
             <div key={idx}>
               <table className="border-collapse mt-8 w-[800px]">

@@ -67,7 +67,6 @@ const Page = ({ params }: { params: { id: number } }) => {
         const resp = await axios.get(`/api/getAll/student`);
         const personalInfoMessage: PersonalInfoType[] = resp.data.message;
         setStudentsNames(personalInfoMessage);
-        
 
         const updatedLetters = message.courseEnrollements.map((grade) => {
           const student = personalInfoMessage.find(
@@ -361,12 +360,7 @@ const Page = ({ params }: { params: { id: number } }) => {
           return grade;
         });
 
-        axios.post(
-          `/api/exams/examRes/${params.id}/a`,
-          updatedResults
-        );
-
-        
+        axios.post(`/api/exams/examRes/${params.id}/a`, updatedResults);
       }
     };
     fetchPosts();
@@ -418,7 +412,6 @@ const Page = ({ params }: { params: { id: number } }) => {
     setEditFinal(false);
     setEditHw(false);
     setEdit(!edit);
-    console.log(grades?.courseEnrollements);
 
     axios
       .post(
@@ -430,7 +423,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         const dataUsageHistory = {
           id: user?.id,
           type: 'admin',
-          action: 'تعديل الدرجات'+ course?.section[0].name,
+          action: 'تعديل الدرجات' + course?.section[0].name,
         };
         axios.post('/api/usageHistory', dataUsageHistory);
       })
@@ -458,381 +451,396 @@ const Page = ({ params }: { params: { id: number } }) => {
     }
   };
 
-    const printableContentRef = useRef<HTMLDivElement>(null);
+  const printableContentRef = useRef<HTMLDivElement>(null);
 
-    const handlePrint = useReactToPrint({
-      content: () => printableContentRef.current,
-    });
+  const handlePrint = useReactToPrint({
+    content: () => printableContentRef.current,
+  });
 
   return (
     <div className="flex absolute flex-col w-[80%] justify-center items-center">
-      <h1 className="flex justify-center items-center text-sm w-[100%]">
-        درجات مادة {course?.section[0].name}
-      </h1>
-      <button
-        onClick={handlePrint}
-        className="flex bg-green-500 hover:bg-green-600 p-1 m-2 text-white rounded-md w-[200px] justify-center items-center"
-      >
-        طباعة درجات
-      </button>
-      <div className="flex ">
-        {perms.map((item) => {
-          if (item.permission_id === 24 && item.active) {
-            return (
-              <>
-                <button
-                  className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-1 rounded-md w-[250px]"
-                  type="submit"
-                  onClick={handleApprove}
-                >
-                  {course?.class[0].publish_grades
-                    ? 'لقد وافقت على درجات '
-                    : ' موافقة على درجات '}
-                </button>
-              </>
-            );
-          }
-        })}
-      </div>
-      <div>
-        <form onSubmit={(e) => e.preventDefault()}>
-          {perms.map((item) => {
-            if (item.permission_id === 24 && item.active) {
-              return (
-                <>
-                  <button
-                    className="m-7 bg-blue-500 hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px] "
-                    type="submit"
-                    onClick={() =>
-                      editHw ? handleSubmit('class_work') : setEditHw(!editHw)
+      {perms.map((item, idx) => {
+        if (item.permission_id === 11 && item.see) {
+          return (
+            <div key={idx}>
+              <h1 className="flex justify-center items-center text-sm w-[100%]">
+                درجات مادة {course?.section[0].name}
+              </h1>
+              <button
+                onClick={handlePrint}
+                className="flex bg-green-500 hover:bg-green-600 p-1 m-2 text-white rounded-md w-[200px] justify-center items-center"
+              >
+                طباعة درجات
+              </button>
+              <div className="flex ">
+                {perms.map((item) => {
+                  if (item.permission_id === 11 && item.approve) {
+                    return (
+                      <>
+                        <button
+                          className="m-2 bg-darkBlue hover:bg-blue-800  text-secondary p-1 rounded-md w-[250px]"
+                          type="submit"
+                          onClick={handleApprove}
+                        >
+                          {course?.class[0].publish_grades
+                            ? 'لقد وافقت على درجات '
+                            : ' موافقة على درجات '}
+                        </button>
+                      </>
+                    );
+                  }
+                })}
+              </div>
+              <div>
+                <form onSubmit={(e) => e.preventDefault()}>
+                  {perms.map((item) => {
+                    if (item.permission_id === 11 && item.edit) {
+                      return (
+                        <>
+                          <button
+                            className="m-7 bg-blue-500 hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px] "
+                            type="submit"
+                            onClick={() =>
+                              editHw
+                                ? handleSubmit('class_work')
+                                : setEditHw(!editHw)
+                            }
+                          >
+                            {editHw ? 'ارسال' : ' تعديل درجات اعمال السنة'}
+                          </button>
+                          <button
+                            className="m-7 bg-blue-500 hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
+                            type="submit"
+                            onClick={() =>
+                              editFinal
+                                ? handleSubmit('final')
+                                : setEditFinal(!editFinal)
+                            }
+                          >
+                            {editFinal
+                              ? 'ارسال'
+                              : 'تعديل درجات الامتحان النهائي'}
+                          </button>
+                          <button
+                            className="m-7 bg-blue-500 hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
+                            type="submit"
+                            onClick={() =>
+                              editMid
+                                ? handleSubmit('midterm')
+                                : setEditMid(!editMid)
+                            }
+                          >
+                            {editMid ? 'ارسال' : 'تعديل درجات الامتحان النصفي'}
+                          </button>
+                        </>
+                      );
                     }
-                  >
-                    {editHw ? 'ارسال' : ' تعديل درجات اعمال السنة'}
-                  </button>
-                  <button
-                    className="m-7 bg-blue-500 hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
-                    type="submit"
-                    onClick={() =>
-                      editFinal
-                        ? handleSubmit('final')
-                        : setEditFinal(!editFinal)
-                    }
-                  >
-                    {editFinal ? 'ارسال' : 'تعديل درجات الامتحان النهائي'}
-                  </button>
-                  <button
-                    className="m-7 bg-blue-500 hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
-                    type="submit"
-                    onClick={() =>
-                      editMid ? handleSubmit('midterm') : setEditMid(!editMid)
-                    }
-                  >
-                    {editMid ? 'ارسال' : 'تعديل درجات الامتحان النصفي'}
-                  </button>
-                </>
-              );
-            }
-          })}
+                  })}
 
-          <table className="border-collapse mt-8 w-[1100px]">
-            <thead>
-              <tr>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  الملف الشخصي
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  النتيجة
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  المجموع
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  النسبة
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  اعمال السنة
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  النسبة
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  الامتحان الانهائي
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  النسبة
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  الامتحان النصفي
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  رقم الطالب
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  اللقب
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  اسم الطالب
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  رقم الطالب
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {course?.courseEnrollements.map((user, index) => {
-                const item = perms.find((per) => per.permission_id == 24);
-                const letter = courseLetter.find(
-                  (item) => item.course_enrollment_id == user.id
-                );
-                const student = studentsNames.find(
-                  (student) => student.id === user.student_id
-                );
-                return (
-                  <tr key={index}>
-                    <td className="border border-gray-300 px-4 py-2">
-                      <Link
-                        href={`/management/personalInformation/student/${user.student_id}`}
-                        className="bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-md inline-block"
-                      >
-                        الملف الشخصي
-                      </Link>
-                    </td>
-                    <td
-                      className={`border border-gray-300 px-4 py-2 ${
-                        user.pass
-                          ? 'text-green-600 hover:text-green-700'
-                          : 'text-red-500 hover:text-red-600'
-                      }`}
-                    >
-                      {user.pass == null
-                        ? ''
-                        : user.pass
-                        ? `${letter?.letter_grade} ناجح`
-                        : `${letter?.letter_grade} راسب`}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2  ">
-                      {user.result}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {course.course[0].class_work}%
-                    </td>
-                    {editHw && item?.active ? (
-                      <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                        <input
-                          className="text-right px-4 py-2 bg-lightBlue w-[60px]"
-                          key={user.student_id}
-                          value={
-                            grades?.courseEnrollements.find(
-                              (gradeObj) =>
-                                gradeObj.student_id === user.student_id
-                            )?.class_work || ''
-                          }
-                          onChange={(e) => {
-                            handleGradeChange(
-                              user.student_id,
-                              'class_work',
-                              e.target.value
-                            );
-                          }}
-                          placeholder="ادخل الدرجة"
-                        />
-                      </td>
-                    ) : (
-                      <td className="border border-gray-300 px-4 py-2">
-                        {user.class_work}
-                      </td>
-                    )}
-                    <td className="border border-gray-300 px-4 py-2">
-                      {course.course[0].final}%
-                    </td>
-                    {editFinal && item?.active ? (
-                      <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                        <input
-                          className="text-right px-4 py-2 bg-lightBlue w-[60px]"
-                          key={user.student_id}
-                          value={
-                            grades?.courseEnrollements.find(
-                              (gradeObj) =>
-                                gradeObj.student_id === user.student_id
-                            )?.final || ''
-                          }
-                          onChange={(e) => {
-                            handleGradeChange(
-                              user.student_id,
-                              'final',
-                              e.target.value
-                            );
-                          }}
-                          placeholder="ادخل الدرجة"
-                        />
-                      </td>
-                    ) : (
-                      <td className="border border-gray-300 px-4 py-2">
-                        {user.final}
-                      </td>
-                    )}
-                    <td className="border border-gray-300 px-4 py-2">
-                      {course.course[0].midterm}%
-                    </td>
-                    {editMid && item?.active ? (
-                      <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                        <input
-                          className="text-right px-4 py-2 bg-lightBlue w-[60px]"
-                          key={user.student_id}
-                          value={
-                            grades?.courseEnrollements.find(
-                              (gradeObj) =>
-                                gradeObj.student_id === user.student_id
-                            )?.midterm || ''
-                          }
-                          onChange={(e) => {
-                            handleGradeChange(
-                              user.student_id,
-                              'midterm',
-                              e.target.value
-                            );
-                          }}
-                          placeholder="ادخل الدرجة"
-                        />
-                      </td>
-                    ) : (
-                      <td className="border border-gray-300 px-4 py-2">
-                        {user.midterm}
-                      </td>
-                    )}
-                    <td className="border border-gray-300 px-4 py-2">
-                      {student?.id}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {student?.surname}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {student?.name}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {student?.number}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </form>
-      </div>
-      <div style={{ position: 'absolute', top: '-9999px' }}>
-        <div ref={printableContentRef} className="m-5">
-          <h1 className="flex justify-center items-center text-sm w-[100%]">
-            درجات مادة {course?.section[0].name}
-          </h1>
-          <table className="border-collapse mt-8 w-[1100px]">
-            <thead>
-              <tr>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  النتيجة
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  المجموع
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  النسبة
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  اعمال السنة
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  النسبة
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  الامتحان الانهائي
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  النسبة
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  الامتحان النصفي
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  رقم الطالب
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  اللقب
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  اسم الطالب
-                </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  رقم الطالب
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {course?.courseEnrollements.map((user, index) => {
-                const letter = courseLetter.find(
-                  (item) => item.course_enrollment_id == user.id
-                );
-                const student = studentsNames.find(
-                  (student) => student.id === user.student_id
-                );
-                return (
-                  <tr key={index}>
-                    <td
-                      className={`border border-gray-300 px-4 py-2 ${
-                        user.pass
-                          ? 'text-green-600 hover:text-green-700'
-                          : 'text-red-500 hover:text-red-600'
-                      }`}
-                    >
-                      {user.pass == null
-                        ? ''
-                        : user.pass
-                        ? `${letter?.letter_grade} ناجح`
-                        : `${letter?.letter_grade} راسب`}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2  ">
-                      {user.result}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {course.course[0].class_work}%
-                    </td>
+                  <table className="border-collapse mt-8 w-[1100px]">
+                    <thead>
+                      <tr>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          الملف الشخصي
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          النتيجة
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          المجموع
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          النسبة
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          اعمال السنة
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          النسبة
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          الامتحان الانهائي
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          النسبة
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          الامتحان النصفي
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          رقم الطالب
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          اللقب
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          اسم الطالب
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          رقم الطالب
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {course?.courseEnrollements.map((user, index) => {
+                        const item = perms.find(
+                          (per) => per.permission_id == 24
+                        );
+                        const letter = courseLetter.find(
+                          (item) => item.course_enrollment_id == user.id
+                        );
+                        const student = studentsNames.find(
+                          (student) => student.id === user.student_id
+                        );
+                        return (
+                          <tr key={index}>
+                            <td className="border border-gray-300 px-4 py-2">
+                              <Link
+                                href={`/management/personalInformation/student/${user.student_id}`}
+                                className="bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-md inline-block"
+                              >
+                                الملف الشخصي
+                              </Link>
+                            </td>
+                            <td
+                              className={`border border-gray-300 px-4 py-2 ${
+                                user.pass
+                                  ? 'text-green-600 hover:text-green-700'
+                                  : 'text-red-500 hover:text-red-600'
+                              }`}
+                            >
+                              {user.pass == null
+                                ? ''
+                                : user.pass
+                                ? `${letter?.letter_grade} ناجح`
+                                : `${letter?.letter_grade} راسب`}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2  ">
+                              {user.result}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {course.course[0].class_work}%
+                            </td>
+                            {editHw && item?.active ? (
+                              <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
+                                <input
+                                  className="text-right px-4 py-2 bg-lightBlue w-[60px]"
+                                  key={user.student_id}
+                                  value={
+                                    grades?.courseEnrollements.find(
+                                      (gradeObj) =>
+                                        gradeObj.student_id === user.student_id
+                                    )?.class_work || ''
+                                  }
+                                  onChange={(e) => {
+                                    handleGradeChange(
+                                      user.student_id,
+                                      'class_work',
+                                      e.target.value
+                                    );
+                                  }}
+                                  placeholder="ادخل الدرجة"
+                                />
+                              </td>
+                            ) : (
+                              <td className="border border-gray-300 px-4 py-2">
+                                {user.class_work}
+                              </td>
+                            )}
+                            <td className="border border-gray-300 px-4 py-2">
+                              {course.course[0].final}%
+                            </td>
+                            {editFinal && item?.active ? (
+                              <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
+                                <input
+                                  className="text-right px-4 py-2 bg-lightBlue w-[60px]"
+                                  key={user.student_id}
+                                  value={
+                                    grades?.courseEnrollements.find(
+                                      (gradeObj) =>
+                                        gradeObj.student_id === user.student_id
+                                    )?.final || ''
+                                  }
+                                  onChange={(e) => {
+                                    handleGradeChange(
+                                      user.student_id,
+                                      'final',
+                                      e.target.value
+                                    );
+                                  }}
+                                  placeholder="ادخل الدرجة"
+                                />
+                              </td>
+                            ) : (
+                              <td className="border border-gray-300 px-4 py-2">
+                                {user.final}
+                              </td>
+                            )}
+                            <td className="border border-gray-300 px-4 py-2">
+                              {course.course[0].midterm}%
+                            </td>
+                            {editMid && item?.active ? (
+                              <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
+                                <input
+                                  className="text-right px-4 py-2 bg-lightBlue w-[60px]"
+                                  key={user.student_id}
+                                  value={
+                                    grades?.courseEnrollements.find(
+                                      (gradeObj) =>
+                                        gradeObj.student_id === user.student_id
+                                    )?.midterm || ''
+                                  }
+                                  onChange={(e) => {
+                                    handleGradeChange(
+                                      user.student_id,
+                                      'midterm',
+                                      e.target.value
+                                    );
+                                  }}
+                                  placeholder="ادخل الدرجة"
+                                />
+                              </td>
+                            ) : (
+                              <td className="border border-gray-300 px-4 py-2">
+                                {user.midterm}
+                              </td>
+                            )}
+                            <td className="border border-gray-300 px-4 py-2">
+                              {student?.id}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {student?.surname}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {student?.name}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {student?.number}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </form>
+              </div>
+              <div style={{ position: 'absolute', top: '-9999px' }}>
+                <div ref={printableContentRef} className="m-5">
+                  <h1 className="flex justify-center items-center text-sm w-[100%]">
+                    درجات مادة {course?.section[0].name}
+                  </h1>
+                  <table className="border-collapse mt-8 w-[1100px]">
+                    <thead>
+                      <tr>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          النتيجة
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          المجموع
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          النسبة
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          اعمال السنة
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          النسبة
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          الامتحان الانهائي
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          النسبة
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          الامتحان النصفي
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          رقم الطالب
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          اللقب
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          اسم الطالب
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2 bg-grey">
+                          رقم الطالب
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {course?.courseEnrollements.map((user, index) => {
+                        const letter = courseLetter.find(
+                          (item) => item.course_enrollment_id == user.id
+                        );
+                        const student = studentsNames.find(
+                          (student) => student.id === user.student_id
+                        );
+                        return (
+                          <tr key={index}>
+                            <td
+                              className={`border border-gray-300 px-4 py-2 ${
+                                user.pass
+                                  ? 'text-green-600 hover:text-green-700'
+                                  : 'text-red-500 hover:text-red-600'
+                              }`}
+                            >
+                              {user.pass == null
+                                ? ''
+                                : user.pass
+                                ? `${letter?.letter_grade} ناجح`
+                                : `${letter?.letter_grade} راسب`}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2  ">
+                              {user.result}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {course.course[0].class_work}%
+                            </td>
 
-                    <td className="border border-gray-300 px-4 py-2">
-                      {user.class_work}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {course.course[0].final}%
-                    </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {user.class_work}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {course.course[0].final}%
+                            </td>
 
-                    <td className="border border-gray-300 px-4 py-2">
-                      {user.final}
-                    </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {user.final}
+                            </td>
 
-                    <td className="border border-gray-300 px-4 py-2">
-                      {course.course[0].midterm}%
-                    </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {course.course[0].midterm}%
+                            </td>
 
-                    <td className="border border-gray-300 px-4 py-2">
-                      {user.midterm}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {student?.id}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {student?.surname}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {student?.name}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {student?.number}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      
+                            <td className="border border-gray-300 px-4 py-2">
+                              {user.midterm}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {student?.id}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {student?.surname}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {student?.name}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {student?.number}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          );
+        }
+      })}
     </div>
   );
 };

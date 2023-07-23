@@ -100,22 +100,28 @@ const Page = () => {
       const resp = await axios.get('/api/major/getMajors');
       const message: MajorRegType[] = resp.data.message;
       setMajors(message);
+
+      const response = await axios.get(
+        `/api/allPermission/admin/selectedPerms/${user?.id}`
+      );
+      const message2: GetPermissionType[] = response.data.message;
+      setPerms(message2);
     };
     fetchPosts();
-  }, []);
+  }, [user]);
 
   const handleChangeMajor = async () => {
     axios.get(`/api/major/majorStudents/${selectedMajor?.id}`).then((resp) => {
       const message: PersonalInfoType[] = resp.data.message;
       setStudents(message);
     });
-    
+
     const resMajorCourses = await axios.get(
       `/api/course/courseMajorReg/${selectedMajor?.id}`
-      );
-      const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
+    );
+    const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
       .message;
-      setMajorCourses(messageMajorCour);
+    setMajorCourses(messageMajorCour);
 
     const progClassPromises = messageMajorCour.map(async (course) => {
       const responseReq = await axios.get(`/api/examProg/${course.course_id}`);
@@ -144,20 +150,15 @@ const Page = () => {
       const responseReq = await axios.get(
         `/api/getAll/getAllClassInfo/${section.id}`
       );
-      const { message: classMessage }: { message: ClassesInfoType[] } =responseReq.data;
-        return classMessage;
+      const { message: classMessage }: { message: ClassesInfoType[] } =
+        responseReq.data;
+      return classMessage;
     });
 
     const classData = await Promise.all(classPromises);
     const classes = classData.flat();
 
     setClasses(classes);
-
-    const response = await axios.get(
-      `/api/allPermission/admin/selectedPerms/${user?.id}`
-    );
-    const message: GetPermissionType[] = response.data.message;
-    setPerms(message);
 
     axios.get(`/api/getAll/doctor`).then((resp) => {
       const message: PersonalInfoType[] = resp.data.message;
@@ -224,13 +225,13 @@ const Page = () => {
         .then((res) => {
           toast.success(res.data.message);
           setLoadCourse(!loadCourses);
+          handleChangeMajor();
           const dataUsageHistory = {
             id: user?.id,
             type: 'admin',
             action: ' تعديل مواد تخصص' + major,
           };
           axios.post('/api/usageHistory', dataUsageHistory);
-          handleChangeMajor();
         })
         .catch((err) => {
           toast.error(err.response.data.message);
@@ -331,13 +332,13 @@ const Page = () => {
       .post('/api/course/classRegister', data)
       .then((res) => {
         toast.success(res.data.message);
+        handleChangeMajor();
         const dataUsageHistory = {
           id: user?.id,
           type: 'admin',
           action: ' تعديل محاضرات تخصص' + major,
         };
         axios.post('/api/usageHistory', dataUsageHistory);
-        handleChangeMajor();
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -348,6 +349,7 @@ const Page = () => {
     axios
       .post(`/api/getAll/getAllClassInfo/1`, item)
       .then((res) => {
+        handleChangeMajor();
         toast.success(res.data.message);
         const dataUsageHistory = {
           id: user?.id,
@@ -355,7 +357,6 @@ const Page = () => {
           action: ' تعديل محاضرات تخصص' + major,
         };
         axios.post('/api/usageHistory', dataUsageHistory);
-        handleChangeMajor();
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -366,6 +367,7 @@ const Page = () => {
     axios
       .post(`/api/course/majorCourses/1`, item)
       .then((res) => {
+        handleChangeMajor();
         toast.success(res.data.message);
         const dataUsageHistory = {
           id: user?.id,
@@ -373,7 +375,6 @@ const Page = () => {
           action: `${major} تعديل مواد تخصص`,
         };
         axios.post('/api/usageHistory', dataUsageHistory);
-        handleChangeMajor();
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -421,11 +422,11 @@ const Page = () => {
           onClick={() => handleTabClick('Tab 1')}
           className={
             activeTab === 'Tab 1'
-              ? ' w-[200px] text-secondary flex bg-darkBlue p-2 justify-center'
-              : ' w-[200px]  flex bg-grey p-2 justify-center'
+              ? ' w-[200px] flex bg-darkBlue text-secondary p-2 justify-center'
+              : ' w-[200px] flex bg-grey p-2 justify-center'
           }
         >
-          المواد
+          جدول المحاضرات
         </button>
         <button
           onClick={() => handleTabClick('Tab 2')}
@@ -435,22 +436,12 @@ const Page = () => {
               : ' w-[200px] flex bg-grey p-2 justify-center'
           }
         >
-          جدول المحاضرات
+          الطلاب
         </button>
         <button
           onClick={() => handleTabClick('Tab 3')}
           className={
             activeTab === 'Tab 3'
-              ? ' w-[200px] flex bg-darkBlue text-secondary p-2 justify-center'
-              : ' w-[200px] flex bg-grey p-2 justify-center'
-          }
-        >
-          الطلاب
-        </button>
-        <button
-          onClick={() => handleTabClick('Tab 4')}
-          className={
-            activeTab === 'Tab 4'
               ? ' w-[300px] flex bg-darkBlue text-secondary p-2 justify-center'
               : ' w-[300px] flex bg-grey p-2 justify-center'
           }
@@ -458,9 +449,9 @@ const Page = () => {
           جميع محاضرات السنوات الماضية
         </button>
         <button
-          onClick={() => handleTabClick('Tab 5')}
+          onClick={() => handleTabClick('Tab 4')}
           className={
-            activeTab === 'Tab 5'
+            activeTab === 'Tab 4'
               ? ' w-[300px] flex bg-darkBlue text-secondary p-2 justify-center'
               : ' w-[300px] flex bg-grey p-2 justify-center'
           }
@@ -490,606 +481,531 @@ const Page = () => {
           ))}
         </select>
       </div>
-      {activeTab === 'Tab 1' && (
-        <>
-          {perms.map((permItem, idx) => {
-            if (permItem.permission_id == 6 && permItem.active) {
-              return (
-                <div
-                  className="flex flex-row-reverse items-center justify-center  w-[100%] m-10 "
-                  key={idx}
-                >
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    onChange={(e) => setCourse(parseInt(e.target.value, 10))}
-                    className="p-4 bg-lightBlue"
-                    defaultValue="المادة"
-                  >
-                    <option disabled>المادة</option>
-                    {courses.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.course_name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    onChange={(e) => SetIsOptional(e.target.value)}
-                    className="p-4  bg-lightBlue "
-                    defaultValue="اجباري/اختياري"
-                  >
-                    <option disabled> اجباري/اختياري</option>
-                    <option>اختياري </option>
-                    <option> اجباري</option>
-                  </select>
-                  <button
-                    className="bg-darkBlue text-secondary p-3 w-[200px] rounded-[5px]"
-                    type="submit"
-                    onClick={handleRegisterCourse}
-                  >
-                    سجل
-                  </button>
-                </div>
+      
+      {activeTab === 'Tab 1' &&
+        perms.find((per) => per.permission_id == 8 && per.see) && (
+          <>
+            {perms.map((permItem, idx) => {
+              const selectedMajorCourse = courses.filter((item1) =>
+                majorCourses.find((item2) => item1.id === item2.course_id)
               );
-            }
-            return null;
-          })}
-
-          <table className="w-[800px]  ">
-            <thead>
-              <tr>
-                {perms.map((permItem, idx) => {
-                  if (permItem.permission_id === 6 && permItem.active) {
-                    return (
-                      <th
-                        key={idx + 7}
-                        className="py-2 px-4 bg-gray-200 text-gray-700"
-                      ></th>
-                    );
-                  }
-                  return null;
-                })}
-                <th className="py-2 px-4 bg-gray-200 text-gray-700">
-                  اجباري/اختياري
-                </th>
-                <th className="py-2 px-4 bg-gray-200 text-gray-700">
-                  اسم المادة
-                </th>
-                <th className="py-2 px-4 bg-gray-200 text-gray-700">
-                  رقم المادة
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {majorCourses.map((item, index) => {
-                const selectedCourse = courses.find(
-                  (course) => course.id == item.course_id
-                );
-                return (
-                  <tr key={index}>
-                    {perms.map((permItem, idx) => {
-                      if (permItem.permission_id === 6 && permItem.active) {
-                        return (
-                          <td
-                            className="border border-gray-300 px-4 py-2"
-                            key={idx + 9}
-                          >
-                            <BsXCircleFill
-                              onClick={() => handleDeleteCourse(item.id)}
-                            />
-                          </td>
-                        );
-                      }
-                      return null;
-                    })}
-                    <td className="border border-gray-300 px-4 py-2">
-                      {item.isOptional ? 'اختياري' : 'اجباري'}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      <Link
-                        href={`/management/course/managementWork/section/${item.course_id}`}
-                      >
-                        {selectedCourse?.course_name}
-                      </Link>
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {selectedCourse?.course_number}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </>
-      )}
-      {activeTab === 'Tab 2' && (
-        <>
-          {perms.map((permItem, idx) => {
-            const selectedMajorCourse = courses.filter((item1) =>
-              majorCourses.find((item2) => item1.id === item2.course_id)
-            );
-            const courseId = selectedMajorCourse.find(
-              (item) => item.course_name === selectedCourse
-            );
-            const selectedSections = sections.filter(
-              (item1) => item1.course_id === courseId?.id
-            );
-
-            if (permItem.permission_id === 9 && permItem.active) {
-              return (
-                <div
-                  className="border-2 border-grey m-4 rounded-5 p-5 flex w-[100%] justify-center items-center rounded-md"
-                  key={idx + 5}
-                >
-                  <button
-                    onClick={handleSubmit}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md"
-                  >
-                    اضافة
-                  </button>
-                  <input
-                    dir="rtl"
-                    placeholder=" الموقع "
-                    type="text"
-                    className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                    onChange={(e) => setLocation(e.target.value)}
-                  />
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    onChange={(e) => setSelecetedEndHour(e.target.value)}
-                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                    defaultValue="وقت الانتهاء"
-                  >
-                    <option disabled>وقت الانتهاء</option>
-                    {hours.map((hour, index) => (
-                      <option key={index + 14}>{hour}</option>
-                    ))}
-                  </select>
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    onChange={(e) => setSelecetedStartHour(e.target.value)}
-                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                    defaultValue="وقت البدأ"
-                  >
-                    <option disabled>وقت البدأ</option>
-                    {hours.map((hour, index) => (
-                      <option key={index + 2}>{hour}</option>
-                    ))}
-                  </select>
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    onChange={(e) => setSelecetedDay(e.target.value)}
-                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                    defaultValue="اليوم"
-                  >
-                    <option disabled>اليوم</option>
-                    {days.map((day, index) => (
-                      <option key={index + 10}>{day.name}</option>
-                    ))}
-                  </select>
-
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    onChange={(e) => setDoctor(parseInt(e.target.value))}
-                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                    defaultValue="الدكتور"
-                  >
-                    <option disabled>الدكتور</option>
-                    {doctors.map((doc, index) => {
-                      if (doc.active)
-                        return (
-                          <option key={index + 11} value={doc.id}>
-                            {doc.name}
-                          </option>
-                        );
-                    })}
-                  </select>
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    ref={section}
-                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4  w-[150px]"
-                    defaultValue="المجموعة"
-                  >
-                    <option disabled>المجموعة</option>
-                    {selectedSections.map((course, index) => (
-                      <option key={index + 12}>{course.name}</option>
-                    ))}
-                  </select>
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    onChange={(e) => setSelecetedCourse(e.target.value)}
-                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4 w-[150px]"
-                    defaultValue="المادة"
-                  >
-                    <option disabled>المادة</option>
-                    {selectedMajorCourse.map((course, index) => (
-                      <option key={index}>{course.course_name}</option>
-                    ))}
-                  </select>
-                </div>
+              const courseId = selectedMajorCourse.find(
+                (item) => item.course_name === selectedCourse
               );
-            }
-            return null;
-          })}
-          <button
-            onClick={handlePrint}
-            className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
-          >
-            طباعة جدول المحاضرات
-          </button>
-          <h1 className="flex justify-center items-center text-sm w-[100%] m-4">
-            جدول محاضرات تخصص {major}
-          </h1>
-          <table className="w-[1100px]">
-            <thead>
-              <tr>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2"></th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  الموقع
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  موعد الانتهاء
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  موعد البدأ
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  اليوم
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  الفصل الدراسي
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  الدكتور
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  المجموعة
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  المادة
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  رقم المادة
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {classes.map((Class, index) => {
-                const findDay = days.find((day) => day.day == Class.class?.day);
-                const findStartTime = hoursNames.find(
-                  (hour) => hour.id == Class.class?.starts_at
-                );
-                const findEndTime = hoursNames.find(
-                  (hour) => hour.id == Class.class?.ends_at
-                );
+              const selectedSections = sections.filter(
+                (item1) => item1.course_id === courseId?.id
+              );
+
+              if (permItem.permission_id === 8 && permItem.add) {
                 return (
-                  <tr key={index + 1}>
-                    <td className="border border-gray-300 px-4 py-2">
-                      <BsXCircleFill
-                        className="cursor-pointer"
-                        onClick={() => handleDelete(Class.class.id)}
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {Class.class?.location}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {findEndTime?.name}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {findStartTime?.name}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {findDay?.name}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {Class.class?.semester}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {Class.doctor?.name}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      <Link
-                        href={`/management/course/managementWork/class/${Class.class.section_id}`}
-                      >
-                        {Class.section?.name}
-                      </Link>
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      <Link
-                        href={`/management/course/managementWork/class/${Class.class.section_id}`}
-                      >
-                        {Class.course?.course_name}
-                      </Link>
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {Class.course?.course_number}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </>
-      )}
-      {activeTab === 'Tab 3' && (
-        <div className="flex  flex-col justify-center items-center w-[80%]">
-          {selectedMajor && (<Link
-            className="bg-green-700 m-2 hover:bg-green-600 p-3 rounded-md text-white w-[200px]"
-            href={`/management/facultiesAndMajors/graduatedStudents/${selectedMajor?.id}`}
-          >
-            الخرجين
-          </Link>)}
-          <table className="border-collapse mt-8 w-[1100px]">
-            <thead>
-              <tr className="bg-gray-200">
-                {perms.map((permItem, idx) => {
-                  if (permItem.permission_id === 5 && permItem.active) {
-                    return (
-                      <th
-                        key={idx}
-                        className="border border-gray-300 px-4 py-2"
-                      >
-                        ايقاف/تفعيل
-                      </th>
-                    );
-                  }
-                  return null;
-                })}
-                <th className="border border-gray-300 px-4 py-2">
-                  المعلومات الشخصية
-                </th>
-                <th className="border border-gray-300 px-4 py-2">
-                  تاريخ الانشاء
-                </th>
-                <th className="border border-gray-300 px-4 py-2">لقب</th>
-                <th className="border border-gray-300 px-4 py-2">اسم</th>
-                <th className="border border-gray-300 px-4 py-2">رقم الطالب</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students ? (
-                students.map((user, index) => (
-                  <tr
-                    key={index}
-                    className={index % 2 === 0 ? 'bg-gray-100' : ''}
+                  <div
+                    className="border-2 border-grey m-4 rounded-5 p-5 flex w-[100%] justify-center items-center rounded-md"
+                    key={idx + 5}
                   >
-                    {perms.map((permItem, idx) => {
-                      if (permItem.permission_id === 5 && permItem.active) {
-                        return (
-                          <td
-                            className="border border-gray-300 px-4 py-2"
-                            key={idx}
-                          >
-                            <button
-                              onClick={() => {
-                                handleActivate(user.id, !user.active);
-                              }}
-                              className={`text-white py-1 px-2 rounded ${
-                                user.active
-                                  ? 'bg-red-500 hover:bg-red-600'
-                                  : 'bg-green-600 hover:bg-green-700'
-                              }`}
-                            >
-                              {user.active ? 'ايقاف' : 'تفعيل'}
-                            </button>
-                          </td>
-                        );
-                      }
-                      return null;
-                    })}
-                    <td className="border border-gray-300 px-4 py-2">
-                      <Link
-                        href={`/management/personalInformation/student/${user.id}`}
-                        className="bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-md justify-center items-center"
-                      >
-                        الملف الشخصي
-                      </Link>
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {user.enrollment_date}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {user.surname}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {user.name}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {user.number}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2">
-                    لا يوجد طلاب
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-      {activeTab === 'Tab 4' && (
-        <div className="flex flex-col  w-[90%]  items-center justify-center text-[16px]">
-          <div className="flex flex-row m-5">
+                    <button
+                      onClick={handleSubmit}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                    >
+                      اضافة
+                    </button>
+                    <input
+                      dir="rtl"
+                      placeholder=" الموقع "
+                      type="text"
+                      className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                      onChange={(e) => setLocation(e.target.value)}
+                    />
+                    <select
+                      id="dep"
+                      dir="rtl"
+                      onChange={(e) => setSelecetedEndHour(e.target.value)}
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                      defaultValue="وقت الانتهاء"
+                    >
+                      <option disabled>وقت الانتهاء</option>
+                      {hours.map((hour, index) => (
+                        <option key={index + 14}>{hour}</option>
+                      ))}
+                    </select>
+                    <select
+                      id="dep"
+                      dir="rtl"
+                      onChange={(e) => setSelecetedStartHour(e.target.value)}
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                      defaultValue="وقت البدأ"
+                    >
+                      <option disabled>وقت البدأ</option>
+                      {hours.map((hour, index) => (
+                        <option key={index + 2}>{hour}</option>
+                      ))}
+                    </select>
+                    <select
+                      id="dep"
+                      dir="rtl"
+                      onChange={(e) => setSelecetedDay(e.target.value)}
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                      defaultValue="اليوم"
+                    >
+                      <option disabled>اليوم</option>
+                      {days.map((day, index) => (
+                        <option key={index + 10}>{day.name}</option>
+                      ))}
+                    </select>
+
+                    <select
+                      id="dep"
+                      dir="rtl"
+                      onChange={(e) => setDoctor(parseInt(e.target.value))}
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                      defaultValue="الدكتور"
+                    >
+                      <option disabled>الدكتور</option>
+                      {doctors.map((doc, index) => {
+                        if (doc.active)
+                          return (
+                            <option key={index + 11} value={doc.id}>
+                              {doc.name}
+                            </option>
+                          );
+                      })}
+                    </select>
+                    <select
+                      id="dep"
+                      dir="rtl"
+                      ref={section}
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4  w-[150px]"
+                      defaultValue="المجموعة"
+                    >
+                      <option disabled>المجموعة</option>
+                      {selectedSections.map((course, index) => (
+                        <option key={index + 12}>{course.name}</option>
+                      ))}
+                    </select>
+                    <select
+                      id="dep"
+                      dir="rtl"
+                      onChange={(e) => setSelecetedCourse(e.target.value)}
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4 w-[150px]"
+                      defaultValue="المادة"
+                    >
+                      <option disabled>المادة</option>
+                      {selectedMajorCourse.map((course, index) => (
+                        <option key={index}>{course.course_name}</option>
+                      ))}
+                    </select>
+                  </div>
+                );
+              }
+              return null;
+            })}
             <button
-              onClick={handleAllClasses}
-              className="bg-green-700 m-2 hover:bg-green-600 p-3 rounded-md text-white w-[150px]"
+              onClick={handlePrint}
+              className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
             >
-              بحث
+              طباعة جدول المحاضرات
             </button>
-            <input
-              dir="rtl"
-              placeholder=" السنة"
-              type="text"
-              className="w-20 px-4 py-1 bg-gray-200 border-2 border-black rounded-md ml-4"
-              onChange={(e) => setYear2(e.target.value)}
-            />
-            <select
-              id="dep"
-              dir="rtl"
-              onChange={(e) => setSemester2(e.target.value)}
-              className="px-4 py-1 bg-gray-200 border-2 border-black rounded-md ml-4"
-              defaultValue="الفصل"
-            >
-              <option disabled>الفصل</option>
-              <option>خريف</option>
-              <option>ربيع</option>
-            </select>
-          </div>
-          <table className="w-[1000px]">
-            <thead>
-              <tr>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  الموقع
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  موعد الانتهاء
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  موعد البدأ
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  اليوم
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  الفصل الدراسي
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  الدكتور
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  المجموعة
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  المادة
-                </th>
-                <th className="border border-gray-300 bg-gray-200 px-4 py-2">
-                  رقم المادة
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {classes2.map((Class, index) => {
-                const findDay = days.find((day) => day.day == Class.class?.day);
-                const findStartTime = hoursNames.find(
-                  (hour) => hour.id == Class.class?.starts_at
-                );
-                const findEndTime = hoursNames.find(
-                  (hour) => hour.id == Class.class?.ends_at
-                );
-                return (
-                  <tr key={index}>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {Class.class?.location}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {findEndTime?.name}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {findStartTime?.name}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {findDay?.name}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {Class.class?.semester}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {Class.doctor?.name}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      <Link
-                        href={`/management/course/AllClassesInfo/${Class.class.section_id}//${semester2}-${year}`}
-                      >
-                        {Class.section?.name}
-                      </Link>
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      <Link
-                        href={`/management/course/AllClassesInfo/${Class.class.section_id}//${semester2}-${year}`}
-                      >
-                        {Class.course?.course_name}
-                      </Link>
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {Class.course?.course_number}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
-      {activeTab === 'Tab 5' && (
-        <div className="flex flex-col  w-[80%] mt-7 items-center justify-center ">
-          <button
-            onClick={handlePrint}
-            className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
-          >
-            طباعة جدول الامتحانات
-          </button>
-          <div ref={printableContentRef}>
-            <h1 className="flex justify-center items-center text-[30px] w-[1000px] m-5">
-              جدول الامتحانات تخصص {major}
+            <h1 className="flex justify-center items-center text-sm w-[100%] m-4">
+              جدول محاضرات تخصص {major}
             </h1>
-            <table className="w-full bg-white shadow-md rounded-md">
+            <table className="w-[1100px]">
               <thead>
                 <tr>
-                  <th className="py-2 px-4 bg-gray-200 text-gray-700">
-                    القاعة
+                  {perms.map((permItem, idx) => {
+                    if (permItem.permission_id === 8 && permItem.Delete) {
+                      return (
+                        <th className="border border-gray-300 bg-gray-200 px-4 py-2" key={idx}></th>
+                      );
+                    }
+                    return null;
+                  })}
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    الموقع
                   </th>
-                  <th className="py-2 px-4 bg-gray-200 text-gray-700">
-                    مدة الامتحان
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    موعد الانتهاء
                   </th>
-                  <th className="py-2 px-4 bg-gray-200 text-gray-700">
-                    الساعة
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    موعد البدأ
                   </th>
-                  <th className="py-2 px-4 bg-gray-200 text-gray-700">
-                    اسم المادة
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    اليوم
                   </th>
-                  <th className="py-2 px-4 bg-gray-200 text-gray-700">
-                    التاريخ
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    الفصل الدراسي
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    الدكتور
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    المجموعة
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    المادة
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    رقم المادة
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {examProg.map((item, index) => {
-                  const selectMajorCourse = majorCourses.find(
-                    (course) => course.course_id == item.course_id
+                {classes.map((Class, index) => {
+                  const findDay = days.find(
+                    (day) => day.day == Class.class?.day
                   );
-                  const selectcourse = courses.find(
-                    (course) => course.id == selectMajorCourse?.course_id
+                  const findStartTime = hoursNames.find(
+                    (hour) => hour.id == Class.class?.starts_at
+                  );
+                  const findEndTime = hoursNames.find(
+                    (hour) => hour.id == Class.class?.ends_at
+                  );
+                  return (
+                    <tr key={index + 1}>
+                      {perms.map((permItem, idx) => {
+                        if (permItem.permission_id === 8 && permItem.Delete) {
+                          return (
+                            <td
+                              className="border border-gray-300 px-4 py-2"
+                              key={idx}
+                            >
+                              <BsXCircleFill
+                                className="cursor-pointer"
+                                onClick={() => handleDelete(Class.class.id)}
+                              />
+                            </td>
+                          );
+                        }
+                        return null;
+                      })}
+                      <td className="border border-gray-300 px-4 py-2">
+                        {Class.class?.location}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {findEndTime?.name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {findStartTime?.name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {findDay?.name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {Class.class?.semester}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {Class.doctor?.name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <Link
+                          href={`/management/course/managementWork/class/${Class.class.section_id}`}
+                        >
+                          {Class.section?.name}
+                        </Link>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <Link
+                          href={`/management/course/managementWork/class/${Class.class.section_id}`}
+                        >
+                          {Class.course?.course_name}
+                        </Link>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {Class.course?.course_number}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </>
+        )}
+      {activeTab === 'Tab 2' &&
+        perms.find((per) => per.permission_id == 1 && per.see) && (
+          <div className="flex  flex-col justify-center items-center w-[80%]">
+            {perms.map((permItem, idx) => {
+              if (
+                permItem.permission_id === 17 &&
+                permItem.see &&
+                selectedMajor
+              ) {
+                return (
+                  <Link
+                    key={idx}
+                    className="bg-green-700 m-2 hover:bg-green-600 p-3 rounded-md text-white w-[200px]"
+                    href={`/management/students/graduatedStudents/${selectedMajor?.id}`}
+                  >
+                    الخرجين
+                  </Link>
+                );
+              }
+              return null;
+            })}
+            <table className="border-collapse mt-8 w-[1100px]">
+              <thead>
+                <tr className="bg-gray-200">
+                  {perms.map((permItem, idx) => {
+                    if (permItem.permission_id === 1 && permItem.edit) {
+                      return (
+                        <th
+                          key={idx}
+                          className="border border-gray-300 px-4 py-2"
+                        >
+                          ايقاف/تفعيل
+                        </th>
+                      );
+                    }
+                    return null;
+                  })}
+                  <th className="border border-gray-300 px-4 py-2">
+                    المعلومات الشخصية
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2">
+                    تاريخ الانشاء
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2">لقب</th>
+                  <th className="border border-gray-300 px-4 py-2">اسم</th>
+                  <th className="border border-gray-300 px-4 py-2">
+                    رقم الطالب
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {students ? (
+                  students.map((user, index) => (
+                    <tr
+                      key={index}
+                      className={index % 2 === 0 ? 'bg-gray-100' : ''}
+                    >
+                      {perms.map((permItem, idx) => {
+                        if (permItem.permission_id === 1 && permItem.edit) {
+                          return (
+                            <td
+                              className="border border-gray-300 px-4 py-2"
+                              key={idx}
+                            >
+                              <button
+                                onClick={() => {
+                                  handleActivate(user.id, !user.active);
+                                }}
+                                className={`text-white py-1 px-2 rounded ${
+                                  user.active
+                                    ? 'bg-red-500 hover:bg-red-600'
+                                    : 'bg-green-600 hover:bg-green-700'
+                                }`}
+                              >
+                                {user.active ? 'ايقاف' : 'تفعيل'}
+                              </button>
+                            </td>
+                          );
+                        }
+                        return null;
+                      })}
+                      <td className="border border-gray-300 px-4 py-2">
+                        <Link
+                          href={`/management/personalInformation/student/${user.id}`}
+                          className="bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-md justify-center items-center"
+                        >
+                          الملف الشخصي
+                        </Link>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {user.enrollment_date}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {user.surname}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {user.name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {user.number}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td className="border border-gray-300 px-4 py-2">
+                      لا يوجد طلاب
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      {activeTab === 'Tab 3' &&
+        perms.find((per) => per.permission_id == 8 && per.see) && (
+          <div className="flex flex-col  w-[90%]  items-center justify-center text-[16px]">
+            <div className="flex flex-row m-5">
+              <button
+                onClick={handleAllClasses}
+                className="bg-green-700 m-2 hover:bg-green-600 p-3 rounded-md text-white w-[150px]"
+              >
+                بحث
+              </button>
+              <input
+                dir="rtl"
+                placeholder=" السنة"
+                type="text"
+                className="w-20 px-4 py-1 bg-gray-200 border-2 border-black rounded-md ml-4"
+                onChange={(e) => setYear2(e.target.value)}
+              />
+              <select
+                id="dep"
+                dir="rtl"
+                onChange={(e) => setSemester2(e.target.value)}
+                className="px-4 py-1 bg-gray-200 border-2 border-black rounded-md ml-4"
+                defaultValue="الفصل"
+              >
+                <option disabled>الفصل</option>
+                <option>خريف</option>
+                <option>ربيع</option>
+              </select>
+            </div>
+            <table className="w-[1000px]">
+              <thead>
+                <tr>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    الموقع
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    موعد الانتهاء
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    موعد البدأ
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    اليوم
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    الفصل الدراسي
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    الدكتور
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    المجموعة
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    المادة
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    رقم المادة
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {classes2.map((Class, index) => {
+                  const findDay = days.find(
+                    (day) => day.day == Class.class?.day
+                  );
+                  const findStartTime = hoursNames.find(
+                    (hour) => hour.id == Class.class?.starts_at
+                  );
+                  const findEndTime = hoursNames.find(
+                    (hour) => hour.id == Class.class?.ends_at
                   );
                   return (
                     <tr key={index}>
-                      <td className="py-2 px-4 border-b">{item.location}</td>
-                      <td className="py-2 px-4 border-b">{item.duration}</td>
-                      <td className="py-2 px-4 border-b">{item.hour}</td>
-                      <td className="py-2 px-4 border-b">
-                        {selectcourse?.course_name}
+                      <td className="border border-gray-300 px-4 py-2">
+                        {Class.class?.location}
                       </td>
-                      <td className="py-2 px-4 border-b">{item.date}</td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {findEndTime?.name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {findStartTime?.name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {findDay?.name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {Class.class?.semester}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {Class.doctor?.name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <Link
+                          href={`/management/course/AllClassesInfo/${Class.class.section_id}//${semester2}-${year}`}
+                        >
+                          {Class.section?.name}
+                        </Link>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <Link
+                          href={`/management/course/AllClassesInfo/${Class.class.section_id}//${semester2}-${year}`}
+                        >
+                          {Class.course?.course_name}
+                        </Link>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {Class.course?.course_number}
+                      </td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        )}
+      {activeTab === 'Tab 4' &&
+        perms.find((per) => per.permission_id == 9 && per.see) && (
+          <div className="flex flex-col  w-[80%] mt-7 items-center justify-center ">
+            <button
+              onClick={handlePrint}
+              className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
+            >
+              طباعة جدول الامتحانات
+            </button>
+            <div ref={printableContentRef}>
+              <h1 className="flex justify-center items-center text-[30px] w-[1000px] m-5">
+                جدول الامتحانات تخصص {major}
+              </h1>
+              <table className="w-full bg-white shadow-md rounded-md">
+                <thead>
+                  <tr>
+                    <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                      القاعة
+                    </th>
+                    <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                      مدة الامتحان
+                    </th>
+                    <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                      الساعة
+                    </th>
+                    <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                      اسم المادة
+                    </th>
+                    <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                      التاريخ
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {examProg.map((item, index) => {
+                    const selectMajorCourse = majorCourses.find(
+                      (course) => course.course_id == item.course_id
+                    );
+                    const selectcourse = courses.find(
+                      (course) => course.id == selectMajorCourse?.course_id
+                    );
+                    return (
+                      <tr key={index}>
+                        <td className="py-2 px-4 border-b">{item.location}</td>
+                        <td className="py-2 px-4 border-b">{item.duration}</td>
+                        <td className="py-2 px-4 border-b">{item.hour}</td>
+                        <td className="py-2 px-4 border-b">
+                          {selectcourse?.course_name}
+                        </td>
+                        <td className="py-2 px-4 border-b">{item.date}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       <div style={{ position: 'absolute', top: '-9999px' }}>
         <div ref={printableContentRef} className="m-5">
           <h1 className="flex justify-center items-center text-sm w-[100%] m-4">

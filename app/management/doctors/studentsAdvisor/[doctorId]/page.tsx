@@ -130,7 +130,7 @@ const Page = ({ params }: { params: { doctorId: number } }) => {
         </select>
       </div>
       {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 9 && permItem.active) {
+        if (permItem.permission_id === 2 && permItem.edit) {
           return (
             <button
               key={idx}

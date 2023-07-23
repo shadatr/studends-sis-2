@@ -14,15 +14,12 @@ export async function GET(
   console.log(params.searchType);
 
   const tableName = `tb_${params.searchType}`;
-  console.log(typeof params.searchBy);
-  // const num = parseInt(params.searchBy);
-  console.log(!isNaN(Number(params.searchBy)));
 
   if (!isNaN(Number(params.searchBy))) {
     const data = await supabase
       .from(tableName)
       .select('*')
-      .eq('student_number', params.searchBy);
+      .eq('number', params.searchBy);
     console.log(data);
     console.log(data.error?.message);
     const data2 = JSON.stringify(data.data);

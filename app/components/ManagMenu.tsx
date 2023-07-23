@@ -8,12 +8,12 @@ const item: MenuItemType[] = [
   { id: 2, link: 'students', name: 'الطلاب' },
   { id: 3, link: 'doctors', name: ' اعضاء هيئة التدريس' },
   { id: 4, link: 'managers', name: 'موظفين الادارة' },
-  { id: 5, link: 'courseReg', name: ' مواد الجامعة' },
+  { id: 5, link: 'ExamProgram', name: ' جدول الامتحانات' },
   { id: 8, link: 'major', name: 'التخصصات' },
   { id: 10, link: 'grades', name: 'الدرجات' },
-  { id: 6, link: 'facultiesAndMajors', name: 'اضافة الاقسام و التخصصات' },
   { id: 7, link: 'semesterManagement', name: 'ادارة الفصل الدراسي ' },
   { id: 9, link: 'usageHistory', name: 'سجل الاستخدام' },
+  { id: 11, link: 'sittings', name: 'الاعدادات' },
 ];
 
 function ManagMenu() {

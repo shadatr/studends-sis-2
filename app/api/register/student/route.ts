@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 export async function GET() {
   try {
     const data = await supabase.from('tb_students').select('*');
-    console.log(data.data);
+
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,

@@ -34,6 +34,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [newData, setNewData] = useState<PersonalInfoType[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
+    const [perms2, setPerms2] = useState<GetPermissionType[]>([]);
   const [adminPerms, setAdminPerms] = useState<GetPermissionType[]>([]);
   const [refresh, setRefresh] = useState(false);
   const [edit, setEdit] = useState(false);
@@ -72,11 +73,25 @@ const Page = ({ params }: { params: { id: number } }) => {
 
 
 
-  const handleActivate = (id: number, parmId: number, active: boolean) => {
-    const data = { id, parmId, active };
-    axios
-      .post(`/api/allPermission/admin/selectedPerms/${params.id}`, data)
-      .then((res) => {
+const handleChangePerms = (
+  per: keyof GetPermissionType,
+  value: boolean,
+  id: number,
+  permId:number
+) => {
+  const updatedPerms = adminPerms.map((perm) => {
+    if (perm.id == id && perm.permission_id == permId) {
+      return {
+        ...perm,
+        [per]: value,
+      };
+    }
+    return perm;
+  });
+  axios
+    .post(`/api/allPermission/admin/selectedPerms/${params.id}`, updatedPerms)
+    .then((res) => {
+      if (res.data.message === 'تم تغيير حالة صلاحية الموظف بنجاح') {
         toast.success(res.data.message);
         setRefresh(!refresh);
         const dataUsageHistory = {
@@ -85,8 +100,16 @@ const Page = ({ params }: { params: { id: number } }) => {
           action: ' تغيير صلاحية موظف',
         };
         axios.post('/api/usageHistory', dataUsageHistory);
-      });
-  };
+      } else {
+        toast.error('فشل في تغيير صلاحية الموظف.');
+      }
+    })
+    .catch((error) => {
+      toast.error('حدث خطأ أثناء تحديث صلاحية الموظف.');
+      console.error(error);
+    });
+};
+
 
 
   const handleInputChange = (e: string, field: keyof PersonalInfoType) => {
@@ -121,8 +144,8 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   return (
     <div className="flex absolute text-sm w-[80%] justify-center items-center flex-col m-10">
-      {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 3 && permItem.active) {
+      {perms.map((permItemm, idx) => {
+        if (permItemm.permission_id === 4 && permItemm.edit) {
           return (
             <div key={idx}>
               <button
@@ -255,48 +278,152 @@ const Page = ({ params }: { params: { id: number } }) => {
               ))}
         </tbody>
       </table>
-      {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 1 && permItem.active) {
+      {perms.map((permItemm, idx) => {
+        if (permItemm.permission_id === 5 && permItemm.edit) {
           return (
             <div key={idx}>
               <table className="border-collapse mt-8 w-[800px]">
                 <thead>
                   <tr className="bg-gray-200">
-                    <th className="border border-gray-300 px-4 py-2">
-                      ايقاف/تفعيل
-                    </th>
+                    <th className="border border-gray-300 px-4 py-2">اطلاع</th>
+                    <th className="border border-gray-300 px-4 py-2">اضافة</th>
+                    <th className="border border-gray-300 px-4 py-2">موافقة</th>
+                    <th className="border border-gray-300 px-4 py-2">حذف</th>
+                    <th className="border border-gray-300 px-4 py-2">تعديل</th>
                     <th className="border border-gray-300 px-4 py-2">
                       اسم الصلاحية
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {adminPerms.map((per, index) =>{ 
-                  const selectedPer=checkList.find((item)=> item.id==per.permission_id);
-                  return (
-                    <tr
-                      key={index}
-                      className={index % 2 === 0 ? 'bg-gray-100' : ''}
-                    >
-                      <td className="border border-gray-300 px-4 py-2">
-                        <button
-                          onClick={() => {
-                            handleActivate(per.permission_id, params.id, !per.active);
-                          }}
-                          className={`w-[50px]  text-white py-1 px-2 rounded ${
-                            per.active
-                              ? 'bg-red-500 hover:bg-red-600'
-                              : 'bg-green-600 hover:bg-green-700'
-                          }`}
-                        >
-                          {per.active ? 'ايقاف' : 'تفعيل'}
-                        </button>
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {selectedPer?.name}
-                      </td>
-                    </tr>
-                  );})}
+                  {adminPerms.map((permItem, index)=> {
+                  
+                    const selectedPer = checkList.find(
+                      (item) => item.id == permItem.permission_id
+                    );
+                    
+                    return (
+                      <tr
+                        key={index}
+                        className={index % 2 === 0 ? 'bg-gray-100' : ''}
+                      >
+                        <td className="border border-gray-300 px-4 py-2">
+                          {![5, 15, 17,14].includes(permItem.permission_id) && (
+                            <button
+                              onClick={() =>
+                                handleChangePerms(
+                                  'see',
+                                  !permItem.see,
+                                  permItem.id,
+                                  permItem.permission_id
+                                )
+                              }
+                              className={`w-[50px]  text-white py-1 px-2 rounded ${
+                                permItem.see
+                                  ? 'bg-red-500 hover:bg-red-600'
+                                  : 'bg-green-600 hover:bg-green-700'
+                              }`}
+                            >
+                              {permItem.see ? 'ايقاف' : 'تفعيل'}
+                            </button>
+                          )}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {![5, 13, 14, 15, 16, 11, 17].includes(
+                            permItem.permission_id
+                          ) && (
+                            <button
+                              onClick={() =>
+                                handleChangePerms(
+                                  'add',
+                                  !permItem.add,
+                                  permItem.id,
+                                  permItem.permission_id
+                                )
+                              }
+                              className={`w-[50px]  text-white py-1 px-2 rounded ${
+                                permItem.add
+                                  ? 'bg-red-500 hover:bg-red-600'
+                                  : 'bg-green-600 hover:bg-green-700'
+                              }`}
+                            >
+                              {permItem.add ? 'ايقاف' : 'تفعيل'}
+                            </button>
+                          )}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {[17, 12, 11].includes(permItem.permission_id) && (
+                            <button
+                              onClick={() =>
+                                handleChangePerms(
+                                  'approve',
+                                  !permItem.approve,
+                                  permItem.id,
+                                  permItem.permission_id
+                                )
+                              }
+                              className={`w-[50px]  text-white py-1 px-2 rounded ${
+                                permItem.approve
+                                  ? 'bg-red-500 hover:bg-red-600'
+                                  : 'bg-green-600 hover:bg-green-700'
+                              }`}
+                            >
+                              {permItem.approve ? 'ايقاف' : 'تفعيل'}
+                            </button>
+                          )}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {[3, 7, 9, 12, 8].includes(
+                            permItem.permission_id
+                          ) && (
+                            <button
+                              onClick={() =>
+                                handleChangePerms(
+                                  'Delete',
+                                  !permItem.Delete,
+                                  permItem.id,
+                                  permItem.permission_id
+                                )
+                              }
+                              className={`w-[50px]  text-white py-1 px-2 rounded ${
+                                permItem.Delete
+                                  ? 'bg-red-500 hover:bg-red-600'
+                                  : 'bg-green-600 hover:bg-green-700'
+                              }`}
+                            >
+                              {permItem.Delete ? 'ايقاف' : 'تفعيل'}
+                            </button>
+                          )}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {![3, 7, 9, 12, 16].includes(
+                            permItem.permission_id
+                          ) && (
+                            <button
+                              onClick={() =>
+                                handleChangePerms(
+                                  'edit',
+                                  !permItem.edit,
+                                  permItem.id,
+                                  permItem.permission_id
+                                )
+                              }
+                              className={`w-[50px]  text-white py-1 px-2 rounded ${
+                                permItem.edit
+                                  ? 'bg-red-500 hover:bg-red-600'
+                                  : 'bg-green-600 hover:bg-green-700'
+                              }`}
+                            >
+                              {permItem.edit ? 'ايقاف' : 'تفعيل'}
+                            </button>
+                          )}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {selectedPer?.name}
+                        </td>
+                      </tr>
+                    );
+                    })}
                 </tbody>
               </table>
             </div>

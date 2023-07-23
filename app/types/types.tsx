@@ -148,12 +148,16 @@ export type AssignCourseType = {
   name: string;
 };
 
-export type GetPermissionType={
+export type GetPermissionType = {
   id: number;
   permission_id: number;
   admin_id: number;
-  active: boolean;
-}
+  edit?: boolean;
+  add?: boolean;
+  see?: boolean;
+  Delete?: boolean;
+  approve?: boolean;
+};
 
 export type GetPermissionStudentType = {
   permission_id: number;
@@ -164,7 +168,12 @@ export type GetPermissionStudentType = {
 export type GetPermissionDoctorType = {
   permission_id?: number;
   doctor_id?: number;
-  active?: boolean;
+  active: boolean;
+  edit?: boolean;
+  add?: boolean;
+  see?: boolean;
+  Delete?: boolean;
+  approve?: boolean;
 };
 
 export type CheckedType={

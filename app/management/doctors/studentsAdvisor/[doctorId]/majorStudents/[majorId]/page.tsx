@@ -93,7 +93,7 @@ const Page = ({
   return (
     <div className="flex absolute flex-col w-[80%]">
       {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 9 && permItem.active) {
+        if (permItem.permission_id === 2 && permItem.edit) {
           return (
             <button
               key={idx}

@@ -60,7 +60,6 @@ const Page = () => {
 
     const classData = await Promise.all(classPromises);
     const classes = classData.flat();
-    console.log(classes);
 
     const clss: ClassesInfoType[] = [];
     classes.forEach((cls) => {
