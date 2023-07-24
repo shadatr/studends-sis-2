@@ -38,6 +38,7 @@ export async function POST(request: Request) {
         data.password,
         data.address,
         data.birth_date,
+        data.number
       ];
       const result = await client.query(insertQuery, insertValues);
       console.log(result);
