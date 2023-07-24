@@ -1,15 +1,18 @@
 import { createHash } from 'crypto';
 
+import { Client } from 'pg';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import NextAuth from 'next-auth';
 import type { NextAuthOptions } from 'next-auth';
-import { createClient } from '@supabase/supabase-js';
-import { Database } from '@/app/types/supabase';
 
-const supabase = createClient<Database>(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_KEY || ''
-);
+const client = new Client({
+  user: process.env.DB_USERNAME || '',
+  password: process.env.DB_PASSWORD || '',
+  host: process.env.DB_HOST || '',
+  database: process.env.DB_NAME || '',
+  port: Number(process.env.DB_PORT),
+});
+
 
 const authOptions: NextAuthOptions = {
   providers: [

@@ -55,7 +55,7 @@ export async function POST(
     `;
     const values = [data.col1, data.col2, params.id];
 
-    const result = await client.query(query, values);
+    await client.query(query, values);
 
     await client.end();
 

@@ -29,33 +29,14 @@ export async function GET(
     const doctorResult = await client.query(doctorQuery);
     const doctors = doctorResult.rows;
 
-<<<<<<< HEAD
-    const courseQuery = `SELECT * FROM tb_courses`;
+    const courseQuery = `SELECT * FROM tb_doctors`;
     const courseResult = await client.query(courseQuery);
     const courses = courseResult.rows;
-=======
-     const dataCourseEnroll = await supabase.from('tb_course_enrollment').select('*');
 
-    const [
-      classResponse,
-      sectionResponse,
-      courseResponse,
-      doctorResponse,
-      CourseEnrollResopnese
-    ] = await Promise.all([
-      dataClass,
-      dataSection,
-      dataDoctors,
-      dataCourse,
-      dataCourseEnroll,
-    ]);
-    
-    const classes = classResponse.data;
-    const sections = sectionResponse.data;
-    const doctors = courseResponse.data;
-    const courses = doctorResponse.data;
-    const CourseEnrolls = CourseEnrollResopnese.data;
->>>>>>> c89937b3b40845b90f7474c63f0891238bded96b
+    const courseEnrollQuery = `SELECT * FROM tb_doctors`;
+    const courseEnrollResult = await client.query(courseEnrollQuery);
+    const CourseEnrolls = courseEnrollResult.rows;
+
 
     const data = classes?.map((cls) => {
       const secInfo = sections?.find((sec) => cls.section_id === sec.id);

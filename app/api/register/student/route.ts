@@ -14,59 +14,50 @@ export async function POST(request: Request) {
   const data = await request.json();
 
   try {
-<<<<<<< HEAD
     await client.connect();
 
-    const insertQuery = `
-      INSERT INTO tb_students (name, surname, major, email)
-      VALUES ($1, $2, $3, $4)
-      RETURNING id
-    `;
-    const insertValues = [data.name, data.surname, data.major, data.email];
-    const insertResult = await client.query(insertQuery, insertValues);
-    const studentId = insertResult.rows[0].id;
+    const students = `SELECT * FROM tb_students WHERE email = ${data.email} `;
+     const fetchResult = await client.query(students);
 
-    const data1 = {
-      permission_id: 20,
-      student_id: studentId,
-    };
-    const insertQuery2 = `
-      INSERT INTO tb_student_perms (permission_id, student_id)
-      VALUES ($1, $2)
-    `;
-    const insertValues2 = [data1.permission_id, data1.student_id];
-    await client.query(insertQuery2, insertValues2);
-
-    await client.end();
-
-    return new Response(JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }), {
-      headers: { 'content-type': 'application/json' },
-    });
-=======
-    const students = await supabase
-      .from('tb_students')
-      .select('*')
-      .eq('email', data.email);
-
-    if (students.data && students.data.length > 0) {
+    if (fetchResult.rows && fetchResult.rows.length > 0) {
       return new Response(
         JSON.stringify({ message: 'يوجد هذا البريد من قبل' }),
         { headers: { 'content-type': 'application/json' }, status: 400 }
       );
     } else {
-      await supabase.from('tb_students').insert([data]);
-      const students = await supabase
-        .from('tb_students')
-        .select('*')
-        .eq('email', data.email);
-      const student = students.data;
-      if (student) {
-        const data1 = {
-          permission_id: 20,
-          student_id: student[0].id,
-        };
-        await supabase.from('tb_student_perms').insert([data1]);
-      }
+      const insertQuery = `
+      INSERT INTO tb_students (name, surname, major, email, password, phone, address,birth_date,number, enrollement_date)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id
+    `;
+      const insertValues = [
+        data.name,
+        data.surname,
+        data.major,
+        data.email,
+        data.password,
+        data.phone,
+        data.address,
+        data.birth_date,
+        data.number,
+        data.enrollement_date,
+      ];
+
+      const insertResult = await client.query(insertQuery, insertValues);
+      const studentId = insertResult.rows[0].id;
+
+      const data1 = {
+        permission_id: 20,
+        student_id: studentId,
+      };
+      const insertQuery2 = `
+      INSERT INTO tb_student_perms (permission_id, student_id)
+      VALUES ($1, $2)
+    `;
+      const insertValues2 = [data1.permission_id, data1.student_id];
+      await client.query(insertQuery2, insertValues2);
+
+      await client.end();
 
       return new Response(
         JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }),
@@ -75,7 +66,7 @@ export async function POST(request: Request) {
         }
       );
     }
->>>>>>> c89937b3b40845b90f7474c63f0891238bded96b
+   
   } catch (error) {
     return new Response(
       JSON.stringify({ message: 'حدث خطأ أثناء تسجيل الحساب' }),
@@ -86,17 +77,7 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-<<<<<<< HEAD
     await client.connect();
-=======
-    const data = await supabase.from('tb_students').select('*');
-
-    if (data.error) {
-      return new Response(JSON.stringify({ message: 'an error occured' }), {
-        status: 403,
-      });
-    }
->>>>>>> c89937b3b40845b90f7474c63f0891238bded96b
 
     const fetchQuery = `SELECT * FROM tb_students`;
     const fetchResult = await client.query(fetchQuery);

@@ -12,7 +12,17 @@ export async function POST(request: Request) {
   const data = await request.json();
 
   try {
-    await supabase.from('tb_major_courses').insert([data]);
+    await client.connect();
+    const insertQuery = `
+      INSERT INTO tb_major_courses (course_id, major_id)
+      VALUES ($1, $2) RETURNING *;
+    `;
+
+    const values = [data.course_id, data.major_id];
+
+    await client.query(insertQuery, values);
+
+    await client.end();
 
     return new Response(JSON.stringify({ message: 'تم تسجيل المادة بنجاح' }), {
       headers: { 'content-type': 'application/json' },

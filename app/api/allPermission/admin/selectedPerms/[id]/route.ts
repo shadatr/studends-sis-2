@@ -1,53 +1,98 @@
-import { createClient } from "@supabase/supabase-js";
-import {GetPermissionType} from '@/app/types/types';
+import { Client } from 'pg';
+import { GetPermissionType } from '@/app/types/types';
 
-const supabase = createClient(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "");
+const client = new Client({
+  user: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  port: Number(process.env.DB_PORT),
+});
 
 export async function POST(request: Request) {
   const data: GetPermissionType[] = await request.json();
-  const res = await Promise.all(
-    data.map(async (i) => {
+
+  try {
+    await client.connect();
+
+    const updates = data.map(async (i) => {
       try {
-        const ress = await supabase
-          .from('tb_admin_perms')
-          .update(i)
-          .eq('permission_id', i.permission_id)
-          .eq('id', i.id);
-        console.log(ress.error?.message);
-        return ress;
+        // Update records in tb_admin_perms based on permission_id and id
+        const updateQuery = `
+          UPDATE tb_admin_perms 
+          SET see = $1, edit = $2 , approve= $3, add=$4, Delete=$5
+          WHERE permission_id = $6 AND id = $7
+          RETURNING *;
+        `;
+
+        const values = [
+          i.see, // Replace with the actual value for column1
+          i.edit,
+          i.approve,
+          i.add,
+          i.Delete,
+          i.permission_id,
+          i.id,
+        ];
+
+        const result = await client.query(updateQuery, values);
+
+        console.log(result.rows); // Log the updated rows to the console
+
+        return result;
       } catch (error) {
         return { error };
       }
-    })
-  );
-  if (res){
-    return new Response(JSON.stringify({ message: "تم تغيير حالة صلاحية الموظف بنجاح" }), {
-      headers: { "content-type": "application/json" },
     });
+
+    await Promise.all(updates);
+
+    await client.end();
+
+    return new Response(
+      JSON.stringify({ message: 'تم تغيير حالة صلاحية الموظف بنجاح' }),
+      { headers: { 'content-type': 'application/json' } }
+    );
+  } catch (error) {
+    console.error(error);
+    return new Response(
+      JSON.stringify({ message: 'حدث خطأ أثناء تغيير حالة صلاحية الموظف' }),
+      { headers: { 'content-type': 'application/json' }, status: 400 }
+    );
   }
 }
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: number } }){
-  const data = await supabase
-    .from('tb_admin_perms')
-    .select('*')
-    .eq('admin_id', params.id)
-    .order('id', { ascending: false });
+  { params }: { params: { id: number } }
+) {
+  try {
+    await client.connect();
 
-    try {
-    if (data.error) {
-      return new Response(JSON.stringify({ message: 'an error occured' }), {
-        status: 403,
-      });
-    }
+    // Retrieve records from tb_admin_perms based on admin_id
+    const query = `
+      SELECT *
+      FROM tb_admin_perms
+      WHERE admin_id = $1
+      ORDER BY id DESC;
+    `;
 
-    return new Response(JSON.stringify({ message: queryResult.rows }));
-  } catch (error) {
+    const values = [params.id];
 
-    return new Response(JSON.stringify({ message: 'An error occurred' }), {
-      status: 403,
+    const result = await client.query(query, values);
+
+    const data = result.rows;
+
+    await client.end();
+
+    return new Response(JSON.stringify({ message: data }), {
+      headers: { 'content-type': 'application/json' },
     });
+  } catch (error) {
+    console.error(error);
+    return new Response(
+      JSON.stringify({ message: 'حدث خطأ أثناء استعلام صلاحية الموظف' }),
+      { headers: { 'content-type': 'application/json' }, status: 403 }
+    );
   }
 }

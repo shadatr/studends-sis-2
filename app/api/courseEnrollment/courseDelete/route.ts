@@ -1,5 +1,5 @@
 import { StudentClassType } from '@/app/types/types';
-import { createClient } from '@supabase/supabase-js';
+import { Client } from 'pg';
 
 const client = new Client({
   user: process.env.DB_USERNAME || '',
@@ -33,23 +33,43 @@ export async function GET() {
   }
 }
 
+
 export async function POST(request: Request) {
-  const data:StudentClassType = await request.json();
+  const data: StudentClassType = await request.json();
 
-  if(!(data.class_work||data.midterm||data.final)){
-    await supabase
-      .from('tb_grades')
-      .delete()
-      .eq('course_enrollment_id', data.id);
+  try {
+    await client.connect();
 
-    await supabase
-      .from('tb_course_enrollment')
-      .delete()
-      .eq('id', data.id);}
-      else{return new Response(
-        JSON.stringify({ message: 'لا يمكنك مسح المادة' }),
-        { headers: { 'content-type': 'application/json' }, status: 400 }
-      );}
+    if (!(data.class_work || data.midterm || data.final)) {
+      // Delete records from tb_grades based on course_enrollment_id
+      const deleteGradesQuery = `
+        DELETE FROM tb_grades WHERE course_enrollment_id = $1;
+      `;
+
+      const deleteGradesValues = [data.id];
+
+      await client.query(deleteGradesQuery, deleteGradesValues);
+
+      // Delete records from tb_course_enrollment based on id
+      const deleteCourseEnrollmentQuery = `
+        DELETE FROM tb_course_enrollment WHERE id = $1;
+      `;
+
+      const deleteCourseEnrollmentValues = [data.id];
+
+      await client.query(
+        deleteCourseEnrollmentQuery,
+        deleteCourseEnrollmentValues
+      );
+    } else {
+      return new Response(JSON.stringify({ message: 'لا يمكنك مسح المادة' }), {
+        headers: { 'content-type': 'application/json' },
+        status: 400,
+      });
+    }
+
+    await client.end();
+
     return new Response(JSON.stringify({ message: 'تم مسح المادة بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });

@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 import { Client } from 'pg';
 import { StudentClassType } from '@/app/types/types';
-=======
-import { createClient } from '@supabase/supabase-js';
-import {  StudentClassType } from '@/app/types/types';
->>>>>>> c89937b3b40845b90f7474c63f0891238bded96b
 
 const client = new Client({
   user: process.env.DB_USERNAME || '',
@@ -96,15 +91,13 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request
+  request: Request,
+  { params }: { params: { id: number; name: string } }
 ) {
-<<<<<<< HEAD
   const data = await request.json();
 
   try {
     await client.connect();
-=======
->>>>>>> c89937b3b40845b90f7474c63f0891238bded96b
 
     const classesQuery = `
       SELECT *
@@ -113,11 +106,10 @@ export async function POST(
     `;
     const classesValues = [params.id];
 
-<<<<<<< HEAD
     const classesResult = await client.query(classesQuery, classesValues);
     const classesData = classesResult.rows;
 
-    const res = await Promise.all(
+    await Promise.all(
       data.map(async (item: StudentClassType) => {
         const updateQuery = `
           UPDATE tb_course_enrollment
@@ -150,18 +142,4 @@ export async function POST(
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }
-=======
-  const res=await Promise.all(
-    data1.map(async (item: StudentClassType) => {
-      const data = await supabase
-        .from('tb_course_enrollment')
-        .update([item])
-        .eq('student_id', item.student_id)
-        .eq('class_id', item.class_id);
-      return data;
-    })
-  );
-  console.log(res);
-  return new Response(JSON.stringify({ message: 'تم حذف الاعلان بنجاح' }));
->>>>>>> c89937b3b40845b90f7474c63f0891238bded96b
 }
