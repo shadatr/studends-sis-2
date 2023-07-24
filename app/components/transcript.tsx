@@ -93,11 +93,7 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
   return (
     <div className="absolute w-[85%] flex flex-col p-10 justify-content items-center">
       <h1 className="bg-grey p-2 m-1">
-        {studentInfo[0]?.can_graduate ? (
-          <>{studentInfo[0].final_gpa}: المجموع النهائي</>
-        ) : (
-          ''
-        )}
+       {studentInfo[0]?.final_gpa}: المجموع النهائي
       </h1>
       <h1 className="bg-green-300 p-2 m-1">
         {majorCredit} :الكريدت المطلوبه لتخرج
@@ -150,7 +146,7 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
                           : 'text-red-500 hover:text-red-600'
                       }`}
                     >
-                      {course.class?.result_publish
+                      {course.class?.publish_grades
                         ? course.courseEnrollements.pass
                           ? `${letter?.letter_grade} `
                           : `${letter?.letter_grade} `

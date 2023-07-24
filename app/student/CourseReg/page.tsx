@@ -9,7 +9,7 @@ import {
   DayOfWeekType,
   GetPermissionStudentType,
   StudenCourseType,
-  StudentClassType,
+  StudentClassType
 } from '@/app/types/types';
 import { redirect } from 'next/navigation';
 import { BsXCircleFill } from 'react-icons/bs';
@@ -90,7 +90,6 @@ const Page = () => {
           const messageCourse: StudenCourseType[] = responseCourse.data.message;
           setSelectedCourses(messageCourse);
 
-          console.log(selectedCourses);
 
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -173,9 +172,10 @@ const Page = () => {
         });
 
         if (done == course.prerequisites.length) {
+          // console.log(course);
           if (
             course?.courseEnrollements?.length != 0 &&
-            course?.courseEnrollements
+            course?.courseEnrollements 
           ) {
             const enrollments = course.courseEnrollements.filter(
               (co) => co.student_id == user?.id
@@ -243,15 +243,15 @@ const Page = () => {
     });
     const uniqueCourseIds = new Set();
     const uniqueCourses:any = [];
-
-
+    
     updatedCheckList.forEach((item) => {
       if (!uniqueCourseIds.has(item.course.id)) {
         uniqueCourseIds.add(item.course.id);
         uniqueCourses.push(item);
       }
     });
-
+    
+    console.log(uniqueCourses);
     setRepeat(repeatList);
     setUnableCourses(updatedCheckList2);
     setCheckList(uniqueCourses);
@@ -298,21 +298,17 @@ const Page = () => {
     setSubmit(!submit);
   };
 
-    const handleDelete = (item?: number) => {
-      const data1 = {
-        id: item,
-      };
-      axios
-        .post(`/api/courseEnrollment/courseDelete`, data1)
-        .then((res) => {
-          toast.success(res.data.message);
-        })
-        .catch((err) => {
-          toast.error(err.response.data.message);
-        });
-      setSubmit(!submit);
-    };
-
+const handleDelete = (item?: StudentClassType) => {
+  axios
+    .post(`/api/courseEnrollment/courseDelete`, item)
+    .then((res) => {
+      toast.success(res.data.message);
+    })
+    .catch((err) => {
+      toast.error(err.response.data.message);
+    });
+  setRefresh(!refresh);
+};
 
   return (
     <div className="absolute w-[80%] flex p-10 justify-center flex-col items-center ">
@@ -328,9 +324,6 @@ const Page = () => {
                   <th className="border border-gray-300 px-4 py-2 bg-grey"></th>
                   <th className="border border-gray-300 px-4 py-2 bg-grey">
                     الكريدت
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
-                    درجة النجاح
                   </th>
                   <th className="border border-gray-300 px-4 py-2 bg-grey">
                     الساعات
@@ -353,6 +346,7 @@ const Page = () => {
                 </tr>
               </thead>
               <tbody>
+                
                 {checkList.map((item, inde) =>
                   item.class.map((cls) => {
                     if (
@@ -388,9 +382,6 @@ const Page = () => {
 
                           <td className="border border-gray-300 px-4 py-2">
                             {item.course.credits}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-2">
-                            {item.course.passing_percentage}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
                             {item.course.hours}
@@ -437,9 +428,6 @@ const Page = () => {
                     الكريدت
                   </th>
                   <th className="border border-gray-300 px-4 py-2 bg-grey">
-                    درجة النجاح
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
                     الساعات
                   </th>
                   <th className="border border-gray-300 px-4 py-2 bg-grey">
@@ -473,9 +461,6 @@ const Page = () => {
                           {item.course.credits}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
-                          {item.course.passing_percentage}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
                           {item.course.hours}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
@@ -504,9 +489,6 @@ const Page = () => {
                   <th className="border border-gray-300 px-4 py-2 bg-grey"></th>
                   <th className="border border-gray-300 px-4 py-2 bg-grey">
                     الكريدت
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
-                    درجة النجاح
                   </th>
                   <th className="border border-gray-300 px-4 py-2 bg-grey">
                     الساعات
@@ -546,15 +528,12 @@ const Page = () => {
                           <BsXCircleFill
                             className="cursor-pointer"
                             onClick={() =>
-                              handleDelete(item.courseEnrollements.id)
+                              handleDelete(item.courseEnrollements)
                             }
                           />
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           {item.course.credits}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {item.course.passing_percentage}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           {item.course.hours}

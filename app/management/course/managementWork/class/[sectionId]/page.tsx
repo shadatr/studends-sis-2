@@ -4,6 +4,7 @@ import {
   DayOfWeekType,
   ClassesInfoType,
   PersonalInfoType,
+  GetPermissionType,
 } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
@@ -63,14 +64,10 @@ const Tabs = ({ params }: { params: { sectionId: number } }) => {
   const [editClasses, setEditClasses] = useState<ClassesInfoType[]>([]);
   const [edit, setEdit] = useState(false);
   const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
+  const [perms, setPerms] = useState<GetPermissionType[]>([]);
 
   useEffect(() => {
     const fetchdata = async () => {
-      axios.get(`/api/getAll/doctor`).then((resp) => {
-        const message: PersonalInfoType[] = resp.data.message;
-        setDoctors(message);
-      });
-
       const responseReq = await axios.get(
         `/api/getAll/getAllClassInfo/${params.sectionId}`
       );
@@ -78,9 +75,21 @@ const Tabs = ({ params }: { params: { sectionId: number } }) => {
 
       setClasses(classMessage);
       setEditClasses(classMessage);
+      axios.get(`/api/getAll/doctor`).then((resp) => {
+        const message: PersonalInfoType[] = resp.data.message;
+        setDoctors(message);
+      });
+      if(user){
+        const response = await axios.get(
+          `/api/allPermission/admin/selectedPerms/${user?.id}`
+        );
+        const message: GetPermissionType[] = response.data.message;
+        setPerms(message);
+      }
+
     };
     fetchdata();
-  }, [params.sectionId, edit]);
+  }, [params.sectionId, edit, user]);
 
   const handleInputChange = (
     e: string,
@@ -166,7 +175,6 @@ const Tabs = ({ params }: { params: { sectionId: number } }) => {
 
   const handleSubmitInfo = () => {
     setEdit(false);
-    console.log(editClasses[0].class);
     axios
       .post(`/api/course/editClass`, editClasses)
       .then((res) => {
@@ -174,7 +182,7 @@ const Tabs = ({ params }: { params: { sectionId: number } }) => {
         const dataUsageHistory = {
           id: user?.id,
           type: 'admin',
-          action: 'تعديل بيانات محاضرة '+ classes[0]?.section.name,
+          action: 'تعديل بيانات محاضرة ' + classes[0]?.section.name,
         };
         axios.post('/api/usageHistory', dataUsageHistory);
       })
@@ -191,13 +199,21 @@ const Tabs = ({ params }: { params: { sectionId: number } }) => {
       >
         الطلاب و الدرجات
       </Link>
-      <button
-        className="m-5  bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
-        type="submit"
-        onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
-      >
-        {edit ? 'ارسال' : 'تعديل'}
-      </button>
+      {perms.map((permItem, idx) => {
+        if (permItem.permission_id === 8 && permItem.edit) {
+          return (
+              <button key={idx}
+                className="m-5  bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
+                type="submit"
+                onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
+              >
+                {edit ? 'ارسال' : 'تعديل'}
+              </button>
+          );
+        }
+        return null;
+      })}
+
       {classes.map((item, index) =>
         editClasses.map((item2) => {
           const findDay = days.find((day) => day.day == item.class?.day);

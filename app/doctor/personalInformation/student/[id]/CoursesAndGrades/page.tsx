@@ -173,7 +173,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             (courseEnroll) =>
               prerequisiteCourse.class.find(
                 (classItem) =>
-                  courseEnroll.student_id === params.id &&
+                  courseEnroll.student_id == params.id &&
                   classItem.id === courseEnroll.class_id
               )
           );
@@ -283,7 +283,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     for (const item of checked2) {
       const registeredBefore = courseEnrollements.find(
         (enrollment) =>
-          enrollment.class_id === item && enrollment.student_id === params?.id
+          enrollment.class_id === item && enrollment.student_id == params?.id
       );
 
       if (registeredBefore) {
@@ -368,12 +368,9 @@ const Page = ({ params }: { params: { id: number } }) => {
     setRefresh(!refresh);
   };
 
-  const handleDelete = (item?: number) => {
-    const data1 = {
-      id: item,
-    };
+  const handleDelete = (item?: StudentClassType) => {
     axios
-      .post(`/api/courseEnrollment/courseDelete`, data1)
+      .post(`/api/courseEnrollment/courseDelete`, item)
       .then((res) => {
         toast.success(res.data.message);
       })
@@ -523,9 +520,6 @@ const Page = ({ params }: { params: { id: number } }) => {
               الكريدت
             </th>
             <th className="border border-gray-300 px-4 py-2 bg-grey">
-              درجة النجاح
-            </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
               الساعات
             </th>
             <th className="border border-gray-300 px-4 py-2 bg-grey">
@@ -584,9 +578,6 @@ const Page = ({ params }: { params: { id: number } }) => {
                       {item.course.credits}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {item.course.passing_percentage}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
                       {item.course.hours}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
@@ -628,9 +619,6 @@ const Page = ({ params }: { params: { id: number } }) => {
               الكريدت
             </th>
             <th className="border border-gray-300 px-4 py-2 bg-grey">
-              درجة النجاح
-            </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
               الساعات
             </th>
             <th className="border border-gray-300 px-4 py-2 bg-grey">
@@ -660,9 +648,6 @@ const Page = ({ params }: { params: { id: number } }) => {
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {item.course.credits}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {item.course.passing_percentage}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {item.course.hours}
@@ -746,7 +731,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                       <BsXCircleFill
                         className="cursor-pointer"
                         onClick={() =>
-                          handleDelete(course.courseEnrollements.id)
+                          handleDelete(course.courseEnrollements)
                         }
                       />
                     </td>
@@ -757,14 +742,14 @@ const Page = ({ params }: { params: { id: number } }) => {
                           : 'text-red-500 hover:text-red-600'
                       }`}
                     >
-                      {course.class?.result_publish
+                      {course.class?.publish_grades
                         ? course.courseEnrollements.pass
                           ? `${letter?.letter_grade} ناجح`
                           : `${letter?.letter_grade} راسب`
                         : ''}
                     </td>
                     <td className="border border-gray-300 px-4 py-2 ">
-                      {course.class?.result_publish
+                      {course.class?.publish_grades
                         ? course.courseEnrollements.result
                         : ''}
                     </td>
@@ -772,7 +757,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                       {course.course.class_work}%
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {course.class?.class_work_publish
+                      {course.class?.publish_grades
                         ? course.course.class_work
                         : ''}
                     </td>
@@ -780,7 +765,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                       {course.course.final}%
                     </td>
                     <td className="border border-gray-300 px-4 py-2 ">
-                      {course.class?.final_publish
+                      {course.class?.publish_grades
                         ? course.courseEnrollements.final
                         : ' '}
                     </td>
@@ -788,7 +773,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                       {course.course.midterm}%
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {course.class?.mid_publish
+                      {course.class?.publish_grades
                         ? course.courseEnrollements.midterm
                         : ''}
                     </td>
@@ -880,14 +865,14 @@ const Page = ({ params }: { params: { id: number } }) => {
                             : 'text-red-500 hover:text-red-600'
                         }`}
                       >
-                        {course.class?.result_publish
+                        {course.class?.publish_grades
                           ? course.courseEnrollements.pass
                             ? `${letter?.letter_grade} ناجح`
                             : `${letter?.letter_grade} راسب`
                           : ''}
                       </td>
                       <td className="border border-gray-300 px-4 py-2 ">
-                        {course.class?.result_publish
+                        {course.class?.publish_grades
                           ? course.courseEnrollements.result
                           : ''}
                       </td>
@@ -895,7 +880,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         {course.course.class_work}%
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {course.class?.class_work_publish
+                        {course.class?.publish_grades
                           ? course.course.class_work
                           : ''}
                       </td>
@@ -903,7 +888,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         {course.course.final}%
                       </td>
                       <td className="border border-gray-300 px-4 py-2 ">
-                        {course.class?.final_publish
+                        {course.class?.publish_grades
                           ? course.courseEnrollements.final
                           : ' '}
                       </td>
@@ -911,7 +896,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         {course.course.midterm}%
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {course.class?.mid_publish
+                        {course.class?.publish_grades
                           ? course.courseEnrollements.midterm
                           : ''}
                       </td>

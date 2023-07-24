@@ -391,6 +391,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       return gradeObj;
     });
 
+    
     if (updatedGrades) {
       const updatedGradesData = {
         ...grades,
@@ -399,7 +400,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         section: grades?.section || [],
         class: grades?.class || [],
       };
-
+      
       setGrades(updatedGradesData);
     }
   };
@@ -413,9 +414,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     axios.post(
       `/api/exams/examRes/${params.id}/${name}`,
       grades?.courseEnrollements
-    );
-    axios
-      .post(`/api/exams/submitGrades/${params.id}/${name}`, 'false')
+    )
       .then(() => {
         toast.success('تم نشر الدرجات بنجاح');
         const dataUsageHistory = {
@@ -445,7 +444,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       </button>
       <form onSubmit={(e) => e.preventDefault()}>
         {perms.map((item) => {
-          if (item.permission_id === 21 && item.active) {
+          if (item.permission_id === 21 && item.active && !course?.class[0].publish_grades) {
             return (
               <>
                 <button

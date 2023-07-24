@@ -9,8 +9,8 @@ import {
   CheckedType,
   GetPermissionType,
   CourseInfoType,
-  StudentClassType,
   PersonalInfoType,
+  StudentClassType,
 } from '@/app/types/types';
 import { useReactToPrint } from 'react-to-print';
 import { toast } from 'react-toastify';
@@ -183,7 +183,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             (courseEnroll) =>
               prerequisiteCourse.class.find(
                 (classItem) =>
-                  courseEnroll.student_id === params.id &&
+                  courseEnroll.student_id == params.id &&
                   classItem.id === courseEnroll.class_id
               )
           );
@@ -293,7 +293,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     for (const item of checked2) {
       const registeredBefore = courseEnrollements.find(
         (enrollment) =>
-          enrollment.class_id === item && enrollment.student_id === params?.id
+          enrollment.class_id === item && enrollment.student_id == params?.id
       );
 
       if (registeredBefore) {
@@ -342,6 +342,7 @@ const Page = ({ params }: { params: { id: number } }) => {
           id: check?.courseEnrollements.id,
           approved: true,
           section_id: check?.section.id,
+          course_id: check?.course.id,
         },
         grade: { course_enrollment_id: check?.courseEnrollements.id },
       };
@@ -389,12 +390,9 @@ const Page = ({ params }: { params: { id: number } }) => {
     setRefresh(!refresh);
   };
 
-  const handleDelete = (item?: number) => {
-    const data1 = {
-      id: item,
-    };
+  const handleDelete = (item?: StudentClassType) => {
     axios
-      .post(`/api/courseEnrollment/courseDelete`, data1)
+      .post(`/api/courseEnrollment/courseDelete`, item)
       .then((res) => {
         toast.success(res.data.message);
         const dataUsageHistory = {
@@ -408,7 +406,6 @@ const Page = ({ params }: { params: { id: number } }) => {
         toast.error(err.response.data.message);
       });
     setRefresh(!refresh);
-
   };
 
   const handlePrint = useReactToPrint({
@@ -424,7 +421,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         طباعة درجات الطالب
       </button>
       {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 5 && permItem.active) {
+        if (permItem.permission_id === 12 && permItem.approve) {
           return (
             <form
               key={idx}
@@ -542,7 +539,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                 )}
               </div>
               {perms.map((item) =>
-                item.permission_id == 5 && item.active ? (
+                item.permission_id == 12 && item.add ? (
                   <>
                     <h1 className="text-sm bg-lightBlue rounded-md p-3 px-12 m-3">
                       اضف مواد اضافية لطالب
@@ -554,9 +551,6 @@ const Page = ({ params }: { params: { id: number } }) => {
                             <th className="border border-gray-300 px-4 py-2 bg-grey"></th>
                             <th className="border border-gray-300 px-4 py-2 bg-grey">
                               الكريدت
-                            </th>
-                            <th className="border border-gray-300 px-4 py-2 bg-grey">
-                              درجة النجاح
                             </th>
                             <th className="border border-gray-300 px-4 py-2 bg-grey">
                               الساعات
@@ -580,12 +574,12 @@ const Page = ({ params }: { params: { id: number } }) => {
                         </thead>
                         <tbody>
                           {checkList2.map((item, inde) =>
-                            item.class.map((cls) => {
+                            item.class?.map((cls) => {
                               if (
                                 cls.active &&
                                 item.class &&
                                 !studentCourses.find(
-                                  (item) => cls.id === item.class.id
+                                  (item) => cls.id === item.class?.id
                                 )
                               ) {
                                 const selectedSec = item.section.find(
@@ -619,9 +613,6 @@ const Page = ({ params }: { params: { id: number } }) => {
 
                                     <td className="border border-gray-300 px-4 py-2">
                                       {item.course.credits}
-                                    </td>
-                                    <td className="border border-gray-300 px-4 py-2">
-                                      {item.course.passing_percentage}
                                     </td>
                                     <td className="border border-gray-300 px-4 py-2">
                                       {item.course.hours}
@@ -682,9 +673,6 @@ const Page = ({ params }: { params: { id: number } }) => {
                               الكريدت
                             </th>
                             <th className="border border-gray-300 px-4 py-2 bg-grey">
-                              درجة النجاح
-                            </th>
-                            <th className="border border-gray-300 px-4 py-2 bg-grey">
                               الساعات
                             </th>
                             <th className="border border-gray-300 px-4 py-2 bg-grey">
@@ -716,9 +704,6 @@ const Page = ({ params }: { params: { id: number } }) => {
                                 </td>
                                 <td className="border border-gray-300 px-4 py-2">
                                   {item.course.credits}
-                                </td>
-                                <td className="border border-gray-300 px-4 py-2">
-                                  {item.course.passing_percentage}
                                 </td>
                                 <td className="border border-gray-300 px-4 py-2">
                                   {item.course.hours}
@@ -755,133 +740,162 @@ const Page = ({ params }: { params: { id: number } }) => {
         }
         return null;
       })}
-      <h1 className="text-sm bg-lightBlue rounded-md p-3 px-12 m-3">
-        الدرجات و المواد
-      </h1>
-      <div>
-        <table className="m-10 w-[1100px]">
-          <thead>
-            <tr>
-              <th className="border border-gray-300 px-4 py-2 bg-grey"></th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
-                النتيجة
-              </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
-                المجموع
-              </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
-                النسبة
-              </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
-                اعمال السنة
-              </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
-                النسبة
-              </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
-                الامتحان الانهائي
-              </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
-                النسبة
-              </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
-                الامتحان النصفي
-              </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
-                اسم الدكتور
-              </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
-                اسم المجموعة
-              </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
-                اسم المادة
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {studentCourses.map((course, index) => {
-              if (
-                course.class &&
-                course.course &&
-                course.section &&
-                course.courseEnrollements
-              ) {
-                const letter = courseLetter.find(
-                  (item) =>
-                    item.course_enrollment_id == course.courseEnrollements.id
-                );
-                return (
-                  <tr key={index}>
-                    <td className="border border-gray-300 px-4 py-2">
-                      <BsXCircleFill
-                        className="cursor-pointer"
-                        onClick={() =>
-                          handleDelete(course.courseEnrollements.id)
-                        }
-                      />
-                    </td>
-                    <td
-                      className={`border border-gray-300 px-4 py-2 ${
-                        course.courseEnrollements.pass
-                          ? 'text-green-600 hover:text-green-700'
-                          : 'text-red-500 hover:text-red-600'
-                      }`}
-                    >
-                      {course.class?.result_publish
-                        ? course.courseEnrollements.pass
-                          ? `${letter?.letter_grade} ناجح`
-                          : `${letter?.letter_grade} راسب`
-                        : ''}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2 ">
-                      {course.class?.result_publish
-                        ? course.courseEnrollements.result
-                        : ''}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {course.course.class_work}%
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {course.class?.class_work_publish
-                        ? course.course.class_work
-                        : ''}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {course.course.final}%
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2 ">
-                      {course.class?.final_publish
-                        ? course.courseEnrollements.final
-                        : ' '}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {course.course.midterm}%
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {course.class?.mid_publish
-                        ? course.courseEnrollements.midterm
-                        : ''}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {course.doctor.name} {course.doctor.surname}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {course.section?.name}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {course.course.course_name}
-                    </td>
+
+      {perms.map((permItem, idx) => {
+        if (permItem.permission_id === 12 && permItem.see) {
+          return (
+            <div key={idx}>
+              <h1 className="text-sm bg-lightBlue rounded-md p-3 px-12 m-3">
+                الدرجات و المواد
+              </h1>
+              <table className="m-10 w-[1100px]">
+                <thead>
+                  <tr>
+                    {perms.map((permItem, idx) => {
+                      if (permItem.permission_id === 12 &&permItem.Delete ) {
+                        return (
+                          <th className="border border-gray-300 px-4 py-2 bg-grey" key={idx}></th>
+                        );
+                      }
+                      return null;
+                    })}
+                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                      النتيجة
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                      المجموع
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                      النسبة
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                      اعمال السنة
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                      النسبة
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                      الامتحان الانهائي
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                      النسبة
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                      الامتحان النصفي
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                      اسم الدكتور
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                      اسم المجموعة
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                      اسم المادة
+                    </th>
                   </tr>
-                );
-              } else {
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2 ">لا يوجد</td>
-                </tr>;
-              }
-            })}
-          </tbody>
-        </table>
-      </div>
+                </thead>
+                <tbody>
+                  {studentCourses.map((course, index) => {
+                    if (
+                      course.class &&
+                      course.course &&
+                      course.section &&
+                      course.courseEnrollements
+                    ) {
+                      const letter = courseLetter.find(
+                        (item) =>
+                          item.course_enrollment_id ==
+                          course.courseEnrollements.id
+                      );
+                      return (
+                        <tr key={index}>
+                          {perms.map((permItem, idx) => {
+                            if (
+                              permItem.permission_id === 12 &&
+                              permItem.Delete
+                            ) {
+                              return (
+                                <td className="border border-gray-300 px-4 py-2" key={idx}>
+                                  <BsXCircleFill
+                                    className="cursor-pointer"
+                                    onClick={() =>
+                                      handleDelete(course.courseEnrollements)
+                                    }
+                                  />
+                                </td>
+                              );
+                            }
+                            return null;
+                          })}
+                          <td
+                            className={`border border-gray-300 px-4 py-2 ${
+                              course.courseEnrollements.pass
+                                ? 'text-green-600 hover:text-green-700'
+                                : 'text-red-500 hover:text-red-600'
+                            }`}
+                          >
+                            {course.class?.publish_grades
+                              ? course.courseEnrollements.pass
+                                ? `${letter?.letter_grade} ناجح`
+                                : `${letter?.letter_grade} راسب`
+                              : ''}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2 ">
+                            {course.class?.publish_grades
+                              ? course.courseEnrollements.result
+                              : ''}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {course.course.class_work}%
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {course.class?.publish_grades
+                              ? course.course.class_work
+                              : ''}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {course.course.final}%
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2 ">
+                            {course.class?.publish_grades
+                              ? course.courseEnrollements.final
+                              : ' '}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {course.course.midterm}%
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {course.class?.publish_grades
+                              ? course.courseEnrollements.midterm
+                              : ''}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {course.doctor.name} {course.doctor.surname}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {course.section?.name}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {course.course.course_name}
+                          </td>
+                        </tr>
+                      );
+                    } else {
+                      <tr>
+                        <td className="border border-gray-300 px-4 py-2 ">
+                          لا يوجد
+                        </td>
+                      </tr>;
+                    }
+                  })}
+                </tbody>
+              </table>
+            </div>
+          );
+        }
+        return null;
+      })}
+
       <div style={{ position: 'absolute', top: '-9999px' }}>
         <div ref={printableContentRef} className="m-5">
           <h1>{student[0]?.name} :الاسم</h1>
@@ -946,14 +960,14 @@ const Page = ({ params }: { params: { id: number } }) => {
                             : 'text-red-500 hover:text-red-600'
                         }`}
                       >
-                        {course.class?.result_publish
+                        {course.class?.publish_grades
                           ? course.courseEnrollements.pass
                             ? `${letter?.letter_grade} ناجح`
                             : `${letter?.letter_grade} راسب`
                           : ''}
                       </td>
                       <td className="border border-gray-300 px-4 py-2 ">
-                        {course.class?.result_publish
+                        {course.class?.publish_grades
                           ? course.courseEnrollements.result
                           : ''}
                       </td>
@@ -961,7 +975,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         {course.course.class_work}%
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {course.class?.class_work_publish
+                        {course.class?.publish_grades
                           ? course.course.class_work
                           : ''}
                       </td>
@@ -969,7 +983,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         {course.course.final}%
                       </td>
                       <td className="border border-gray-300 px-4 py-2 ">
-                        {course.class?.final_publish
+                        {course.class?.publish_grades
                           ? course.courseEnrollements.final
                           : ' '}
                       </td>
@@ -977,7 +991,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         {course.course.midterm}%
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {course.class?.mid_publish
+                        {course.class?.publish_grades
                           ? course.courseEnrollements.midterm
                           : ''}
                       </td>

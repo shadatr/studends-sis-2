@@ -148,12 +148,16 @@ export type AssignCourseType = {
   name: string;
 };
 
-export type GetPermissionType={
+export type GetPermissionType = {
   id: number;
   permission_id: number;
   admin_id: number;
-  active: boolean;
-}
+  edit?: boolean;
+  add?: boolean;
+  see?: boolean;
+  Delete?: boolean;
+  approve?: boolean;
+};
 
 export type GetPermissionStudentType = {
   permission_id: number;
@@ -164,7 +168,12 @@ export type GetPermissionStudentType = {
 export type GetPermissionDoctorType = {
   permission_id?: number;
   doctor_id?: number;
-  active?: boolean;
+  active: boolean;
+  edit?: boolean;
+  add?: boolean;
+  see?: boolean;
+  Delete?: boolean;
+  approve?: boolean;
 };
 
 export type CheckedType={
@@ -191,16 +200,13 @@ export type ClassesType = {
   id?: number;
   doctor_id?: number;
   section_id?: number;
-  mid_publish?: boolean;
-  final_publish?: boolean;
-  class_work_publish?: boolean;
-  result_publish?: boolean;
+  publish_grades?: boolean;
   semester: string;
   day: string;
   starts_at: number;
   ends_at: number;
   location: string;
-  active:boolean;
+  active: boolean;
 };
 
 export type ClassesInfoType = {
@@ -208,10 +214,7 @@ export type ClassesInfoType = {
     id?: number;
     doctor_id?: number;
     section_id?: number;
-    mid_publish?: boolean;
-    final_publish?: boolean;
-    class_work_publish?: boolean;
-    result_publish?: boolean;
+    publish_grades?: boolean;
     semester: string;
     day: string;
     starts_at: number;
@@ -251,6 +254,19 @@ export type ClassesInfoType = {
     active?: boolean;
     head_of_deparment_id?: number;
   };
+  courseEnrollements: {
+    id: number;
+    student_id: number;
+    class_id?: number;
+    semester?: number;
+    class_work?: number;
+    midterm: number;
+    final?: number;
+    pass?: boolean;
+    result?: number;
+    can_repeat?: boolean;
+    approved?: boolean;
+  }[]
 };
 
 export type StudentClassType = {
@@ -312,10 +328,7 @@ export type CourseInfoType = {
     id: number;
     doctor_id?: number;
     section_id?: number;
-    mid_publish?: boolean;
-    final_publish?: boolean;
-    class_work_publish?: boolean;
-    result_publish?: boolean;
+    publish_grades?: boolean;
     semester: string;
     day: string;
     starts_at: number;
@@ -381,10 +394,7 @@ export type StudenCourseType = {
     id: number;
     doctor_id?: number;
     section_id?: number;
-    mid_publish?: boolean;
-    final_publish?: boolean;
-    class_work_publish?: boolean;
-    result_publish?: boolean;
+    publish_grades?: boolean;
     semester: string;
     day: string;
     starts_at: number;
@@ -444,10 +454,7 @@ export type StudenCourseGPAType = {
     id: number;
     doctor_id?: number;
     section_id?: number;
-    mid_publish?: boolean;
-    final_publish?: boolean;
-    class_work_publish?: boolean;
-    result_publish?: boolean;
+    publish_grades?: boolean;
     semester: string;
     day: string;
     starts_at: number;
@@ -564,10 +571,7 @@ export type ClassEnrollmentsType = {
     id: number;
     doctor_id?: number;
     section_id?: number;
-    mid_publish?: boolean;
-    final_publish?: boolean;
-    class_work_publish?: boolean;
-    result_publish?: boolean;
+    publish_grades?: boolean;
     semester: string;
     day: string;
     starts_at: number;

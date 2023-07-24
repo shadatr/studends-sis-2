@@ -1,4 +1,5 @@
-import { Client } from 'pg';
+import { StudentClassType } from '@/app/types/types';
+import { createClient } from '@supabase/supabase-js';
 
 const client = new Client({
   user: process.env.DB_USERNAME || '',
@@ -33,28 +34,22 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const data = await request.json();
+  const data:StudentClassType = await request.json();
 
-  try {
-    await client.connect();
+  if(!(data.class_work||data.midterm||data.final)){
+    await supabase
+      .from('tb_grades')
+      .delete()
+      .eq('course_enrollment_id', data.id);
 
-    const deleteQuery = `
-      DELETE FROM tb_course_enrollment
-      WHERE id = $1
-    `;
-    const deleteValues = [data.id];
-
-    const deleteResult = await client.query(deleteQuery, deleteValues);
-
-    await client.end();
-
-    if (deleteResult.rowCount === 0) {
-      return new Response(JSON.stringify({ message: 'لا يمكنك مسح المادة' }), {
-        headers: { 'content-type': 'application/json' },
-        status: 400,
-      });
-    }
-
+    await supabase
+      .from('tb_course_enrollment')
+      .delete()
+      .eq('id', data.id);}
+      else{return new Response(
+        JSON.stringify({ message: 'لا يمكنك مسح المادة' }),
+        { headers: { 'content-type': 'application/json' }, status: 400 }
+      );}
     return new Response(JSON.stringify({ message: 'تم مسح المادة بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });

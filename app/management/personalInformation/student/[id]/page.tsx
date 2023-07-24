@@ -50,7 +50,6 @@ const Page = ({ params }: { params: { id: number } }) => {
   const printableContentRef = useRef<HTMLDivElement>(null);
   const user = session.data?.user;
 
-
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -92,9 +91,7 @@ const Page = ({ params }: { params: { id: number } }) => {
 
     };
     fetchPosts();
-  }, [refresh, params.id,user, edit]);
-
-
+  }, [refresh, params.id, user, edit]);
 
   const handleActivate = (parmId: number, id: number, active: boolean) => {
     const data = { student_id: id, permission_id: parmId, active: active };
@@ -123,20 +120,20 @@ const Page = ({ params }: { params: { id: number } }) => {
     setNewData(updatedData);
   };
 
-    const handleInputChangeDoctor = (
-      e: string,
-      field: keyof PersonalInfoType
-    ) => {
-      const value = doctors.find((item) => item.name === e);
-      const updatedData = newData.map((data) => {
-        return {
-          ...data,
-          [field]: value?.id,
-        };
-      });
+  const handleInputChangeDoctor = (
+    e: string,
+    field: keyof PersonalInfoType
+  ) => {
+    const value = doctors.find((item) => item.name === e);
+    const updatedData = newData.map((data) => {
+      return {
+        ...data,
+        [field]: value?.id,
+      };
+    });
 
-      setNewData(updatedData);
-    };
+    setNewData(updatedData);
+  };
 
   const handleSubmitInfo = () => {
     setEdit(false);
@@ -175,13 +172,21 @@ const Page = ({ params }: { params: { id: number } }) => {
         >
           مواد و درجات الطالب
         </Link>
-        <button
-          className="m-5  bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
-          type="submit"
-          onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
-        >
-          {edit ? 'ارسال' : 'تعديل'}
-        </button>
+        {adminPerms.map((permItem, idx) => {
+          if (permItem.permission_id === 1 && permItem.edit) {
+            return (
+              <button
+                className="m-5  bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
+                key={idx}
+                type="submit"
+                onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
+              >
+                {edit ? 'ارسال' : 'تعديل'}
+              </button>
+            );
+          }
+          return null;
+        })}
       </div>
       <table className="flex-row-reverse flex text-sm  border-collapse">
         <thead>
@@ -364,7 +369,7 @@ const Page = ({ params }: { params: { id: number } }) => {
       </table>
       <div>
         {adminPerms.map((permItem, idx) => {
-          if (permItem.permission_id === 5 && permItem.active) {
+          if (permItem.permission_id === 1 && permItem.edit) {
             return (
               <table className="border-collapse mt-8 w-[700px]" key={idx}>
                 <thead>

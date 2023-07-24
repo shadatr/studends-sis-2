@@ -124,7 +124,7 @@ const page = ({ params }: { params: { id: number } }) => {
       <div>
         <Link
           className="m-5 bg-green-800 hover:bg-green-600  text-secondary p-3 rounded-md w-[200px]"
-          href={`/management/doctors/students/${params.id}`}
+          href={`/management/doctors/studentsAdvisor/${params.id}`}
         >
           الاشراف علي الطلاب
         </Link>
@@ -135,7 +135,7 @@ const page = ({ params }: { params: { id: number } }) => {
           المواد و جدول المحاضرات
         </Link>
         {permsAdmin.map((permItem, idx) => {
-          if (permItem.permission_id === 9 && permItem.active) {
+          if (permItem.permission_id === 2 && permItem.edit) {
             return (
               <button
                 key={idx}
@@ -283,7 +283,7 @@ const page = ({ params }: { params: { id: number } }) => {
         </tbody>
       </table>
       {permsAdmin.map((permItem, idx) => {
-        if (permItem.permission_id === 9 && permItem.active) {
+        if (permItem.permission_id === 2 && permItem.edit) {
           return (
             <div key={idx}>
               <table className="border-collapse mt-8 w-[800px]">

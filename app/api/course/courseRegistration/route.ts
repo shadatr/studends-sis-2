@@ -9,18 +9,28 @@ const client = new Client({
 });
 
 export async function POST(request: Request) {
-  const data = await request.json();
-
+  const data: AddCourseType = await request.json();
+  
   try {
-    await client.connect();
+    await supabase.from('tb_courses').insert([data]);
+    const course= await supabase
+      .from('tb_courses')
+      .select('*').eq("course_name",data.course_name);
 
-    await client.query(
-      'INSERT INTO tb_courses (course_name, course_code) VALUES ($1, $2)',
-      [data.course_name, data.course_code]
-    );
-
-    await client.end();
-
+      if (course.data && course.data.length > 0) {
+        const res = course.data[0];
+        const data2 = {
+          name: res.course_name + `(مجموعة1)`,
+          course_id: res.id,
+        };
+        await supabase.from('tb_section').insert([data2]);
+      } else {
+        return new Response(
+          JSON.stringify({ message: 'حدث خطأ اثناء تسجيل المادة' }),
+          { headers: { 'content-type': 'application/json' }, status: 400 }
+        );
+      }
+   
     return new Response(JSON.stringify({ message: 'تم تسجيل المادة بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });

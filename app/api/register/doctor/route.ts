@@ -12,6 +12,7 @@ export async function POST(request: Request) {
   const data = await request.json();
 
   try {
+<<<<<<< HEAD
     await client.connect();
 
     const insertQuery = `INSERT INTO tb_doctors (name, surname) VALUES ($1, $2) RETURNING id`;
@@ -33,8 +34,47 @@ export async function POST(request: Request) {
     return new Response(JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });
+=======
+    const doctors = await supabase
+      .from('tb_doctors')
+      .select('*')
+      .eq('email', data.email);
+
+    if (doctors.data && doctors.data.length > 0) {
+      return new Response(
+        JSON.stringify({ message: 'يوجد هذا البريد من قبل' }),
+        {
+          headers: { 'content-type': 'application/json' },
+          status: 400,
+        }
+      );
+    } else {
+      await supabase.from('tb_doctors').insert([data]);
+      
+      const doctors = await supabase
+        .from('tb_doctors')
+        .select('*')
+        .eq('email', data.email);
+
+      const doctor = doctors.data;
+      if (doctor) {
+        const data1 = {
+          permission_id: 21,
+          doctor_id: doctor[0].id,
+        };
+        await supabase.from('tb_doctor_perms').insert([data1]);
+      }
+
+      return new Response(
+        JSON.stringify({ message: 'تم تسجيل الحساب بنجاح' }),
+        {
+          headers: { 'content-type': 'application/json' },
+        }
+      );
+    }
+>>>>>>> c89937b3b40845b90f7474c63f0891238bded96b
   } catch (error) {
-    // send a 400 response with an error happened during registration in Arabic
+    console.log(error);
     return new Response(
       JSON.stringify({ message: 'حدث خطأ أثناء تسجيل الحساب' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
@@ -44,7 +84,16 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
+<<<<<<< HEAD
     await client.connect();
+=======
+    const data = await supabase.from('tb_doctors').select('*');
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
+        status: 403,
+      });
+    }
+>>>>>>> c89937b3b40845b90f7474c63f0891238bded96b
 
     const fetchQuery = `SELECT * FROM tb_doctors`;
     const fetchResult = await client.query(fetchQuery);

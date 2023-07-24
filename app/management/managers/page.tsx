@@ -56,84 +56,106 @@ const Page = () => {
   return (
     <div className="flex absolute flex-col w-[80%] justify-center items-center">
       {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 3 && permItem.active) {
+        if (permItem.permission_id === 4 && permItem.see) {
           return (
-            <Link
-              key={idx}
-              className="bg-green-500 hover:bg-green-600 p-1 rounded-md text-white mt-20 justify-center flex w-[15%] text-sm items-center"
-              href="/management/managers/register"
-            >
-              سجل موظف جديد
-            </Link>
-          );
-        }
-        return null;
-      })}
-      <SearchBar />
-      <table className="border-collapse mt-8 w-[1000px]">
-        <thead>
-          <tr className="bg-gray-200">
-            {perms.map((permItem, idx) => {
-              if (permItem.permission_id === 3 && permItem.active) {
-                return (
-                  <th key={idx} className="border border-gray-300 px-4 py-2">
-                    ايقاف/تفعيل
-                  </th>
-                );
-              }
-              return null;
-            })}
-            <th className="border border-gray-300 px-4 py-2">
-              المعلومات الشخصية
-            </th>
-            <th className="border border-gray-300 px-4 py-2">تاريخ الانشاء</th>
-            <th className="border border-gray-300 px-4 py-2">لقب</th>
-            <th className="border border-gray-300 px-4 py-2">اسم</th>
-          </tr>
-        </thead>
-        <tbody>
-          {staff.map((user, index) => (
-            <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
+            <div key={idx}>
               {perms.map((permItem, idx) => {
-                if (permItem.permission_id === 3 && permItem.active) {
+                if (permItem.permission_id === 4 && permItem.add) {
                   return (
-                    <td className="border border-gray-300 px-4 py-2" key={idx}>
-                      <button
-                        onClick={() => {
-                          handleActivate(user.id, !user.active);
-                        }}
-                        className={`text-white py-1 px-2 rounded ${
-                          user.active
-                            ? 'bg-red-500 hover:bg-red-600'
-                            : 'bg-green-600 hover:bg-green-700'
-                        }`}
-                      >
-                        {user.active ? 'ايقاف' : 'تفعيل'}
-                      </button>
-                    </td>
+                    <Link
+                      key={idx}
+                      className="bg-green-500 hover:bg-green-600 p-1 rounded-md text-white mt-20 justify-center flex w-[15%] text-sm items-center"
+                      href="/management/managers/register"
+                    >
+                      سجل موظف جديد
+                    </Link>
                   );
                 }
                 return null;
               })}
-              <td className="border border-gray-300 px-4 py-2">
-                <Link
-                  href={`/management/personalInformation/admin/${user.id}`}
-                  className="bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-md justify-center items-center"
-                >
-                  الملف الشخصي
-                </Link>
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {user.createdAt}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {user.surname}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">{user.name}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              <SearchBar />
+              <table className="border-collapse mt-8 w-[1000px]">
+                <thead>
+                  <tr className="bg-gray-200">
+                    {perms.map((permItem, idx) => {
+                      if (permItem.permission_id === 4 && permItem.edit) {
+                        return (
+                          <th
+                            key={idx}
+                            className="border border-gray-300 px-4 py-2"
+                          >
+                            ايقاف/تفعيل
+                          </th>
+                        );
+                      }
+                      return null;
+                    })}
+                    <th className="border border-gray-300 px-4 py-2">
+                      المعلومات الشخصية
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2">
+                      تاريخ الانشاء
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2">لقب</th>
+                    <th className="border border-gray-300 px-4 py-2">اسم</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {staff.map((user, index) => (
+                    <tr
+                      key={index}
+                      className={index % 2 === 0 ? 'bg-gray-100' : ''}
+                    >
+                      {perms.map((permItem, idx) => {
+                        if (permItem.permission_id === 4 && permItem.edit) {
+                          return (
+                            <td
+                              className="border border-gray-300 px-4 py-2"
+                              key={idx}
+                            >
+                              <button
+                                onClick={() => {
+                                  handleActivate(user.id, !user.active);
+                                }}
+                                className={`text-white py-1 px-2 rounded ${
+                                  user.active
+                                    ? 'bg-red-500 hover:bg-red-600'
+                                    : 'bg-green-600 hover:bg-green-700'
+                                }`}
+                              >
+                                {user.active ? 'ايقاف' : 'تفعيل'}
+                              </button>
+                            </td>
+                          );
+                        }
+                        return null;
+                      })}
+                      <td className="border border-gray-300 px-4 py-2">
+                        <Link
+                          href={`/management/personalInformation/admin/${user.id}`}
+                          className="bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-md justify-center items-center"
+                        >
+                          الملف الشخصي
+                        </Link>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {user.createdAt}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {user.surname}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {user.name}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+        }
+        return null;
+      })}
     </div>
   );
 };

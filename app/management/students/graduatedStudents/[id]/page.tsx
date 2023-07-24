@@ -159,7 +159,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         <thead>
           <tr className="bg-gray-200">
             {perms.map((permItem, idx) => {
-              if (permItem.permission_id === 25 && permItem.active) {
+              if (permItem.permission_id === 17 && permItem.approve) {
                 if (approve) {
                   return (
                     <th
@@ -174,7 +174,7 @@ const Page = ({ params }: { params: { id: number } }) => {
               return null;
             })}
             {perms.map((permItem, idx) => {
-              if (permItem.permission_id === 25 && permItem.active) {
+              if (permItem.permission_id === 17 && permItem.edit) {
                 return (
                   <th key={idx} className="border border-gray-300 px-4 py-2">
                     ايقاف/تفعيل
@@ -201,7 +201,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             students.map((user, index) => (
               <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
                 {perms.map((permItem) => {
-                  if (permItem.permission_id === 25 && permItem.active) {
+                  if (permItem.permission_id === 17 && permItem.approve) {
                     if (approve) {
                       return (
                         <>
@@ -222,7 +222,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                 })}
 
                 {perms.map((permItem, idx) => {
-                  if (permItem.permission_id === 25 && permItem.active) {
+                  if (permItem.permission_id === 17 && permItem.edit) {
                     return (
                       <td
                         className="border border-gray-300 px-4 py-2"
