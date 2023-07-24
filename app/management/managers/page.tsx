@@ -28,16 +28,18 @@ const Page = () => {
         setStaff(message);
         console.log(message);
       });
-      const response = await axios.get(
-        `/api/allPermission/admin/selectedPerms/${user?.id}`
-      );
-      const message: GetPermissionType[] = response.data.message;
-      setPerms(message);
+      if(user){
+        const response = await axios.get(
+          `/api/allPermission/admin/selectedPerms/${user?.id}`
+        );
+        const message: GetPermissionType[] = response.data.message;
+        setPerms(message);
+      }
 
     };
 
     fetchPosts();
-  }, [user?.id, refresh]);
+  }, [user, refresh]);
 
   const handleActivate = (adminId: number, active: boolean) => {
     const data = { adminId, active };
