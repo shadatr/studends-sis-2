@@ -165,7 +165,7 @@ const Page = ({ params }: { params: { courseId: number } }) => {
       {activeTab === 'Tab 1' && (
         <>
           {perms.map((permItem, idx) => {
-            if (permItem.permission_id === 6 && permItem.active) {
+            if (permItem.permission_id === 6 && permItem.edit) {
               return (
                 <>
                   <button
@@ -205,7 +205,7 @@ const Page = ({ params }: { params: { courseId: number } }) => {
               (item) => item.id != params.courseId
             );
 
-            if (permItem.permission_id === 6 && permItem.active) {
+            if (permItem.permission_id === 6 && permItem.edit) {
               return (
                 <>
                   <select
