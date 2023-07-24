@@ -5,13 +5,6 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import NextAuth from 'next-auth';
 import type { NextAuthOptions } from 'next-auth';
 
-const client = new Client({
-  user: process.env.DB_USERNAME || '',
-  password: process.env.DB_PASSWORD || '',
-  host: process.env.DB_HOST || '',
-  database: process.env.DB_NAME || '',
-  port: Number(process.env.DB_PORT),
-});
 
 
 const authOptions: NextAuthOptions = {
@@ -30,11 +23,20 @@ const authOptions: NextAuthOptions = {
           type: 'password',
         },
       },
+      
       async authorize(credentials) {
         const { email, password } = credentials as any;
         const passwordHash = createHash('sha256')
           .update(password)
           .digest('hex');
+
+          const client = new Client({
+            user: process.env.DB_USERNAME || '',
+            password: process.env.DB_PASSWORD || '',
+            host: process.env.DB_HOST || '',
+            database: process.env.DB_NAME || '',
+            port: Number(process.env.DB_PORT),
+          });
 
         await client.connect();
 
@@ -76,6 +78,14 @@ const authOptions: NextAuthOptions = {
           .update(password)
           .digest('hex');
 
+          const client = new Client({
+            user: process.env.DB_USERNAME || '',
+            password: process.env.DB_PASSWORD || '',
+            host: process.env.DB_HOST || '',
+            database: process.env.DB_NAME || '',
+            port: Number(process.env.DB_PORT),
+          });
+
         await client.connect();
 
         const queryResult = await client.query(
@@ -116,6 +126,14 @@ const authOptions: NextAuthOptions = {
         const passwordHash = createHash('sha256')
           .update(password)
           .digest('hex');
+
+          const client = new Client({
+            user: process.env.DB_USERNAME || '',
+            password: process.env.DB_PASSWORD || '',
+            host: process.env.DB_HOST || '',
+            database: process.env.DB_NAME || '',
+            port: Number(process.env.DB_PORT),
+          });
 
        await client.connect();
 
