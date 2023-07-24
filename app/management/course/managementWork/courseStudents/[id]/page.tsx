@@ -417,7 +417,6 @@ const Page = ({ params }: { params: { id: number } }) => {
     setEditFinal(false);
     setEditHw(false);
     setEdit(!edit);
-    console.log(grades?.courseEnrollements);
 
     axios
       .post(
