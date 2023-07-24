@@ -1,14 +1,6 @@
 import { Client } from 'pg';
 import { PersonalInfoType } from '@/app/types/types';
 
-const client = new Client({
-  user: process.env.DB_USERNAME || '',
-  password: process.env.DB_PASSWORD || '',
-  host: process.env.DB_HOST || '',
-  database: process.env.DB_NAME || '',
-  port: Number(process.env.DB_PORT),
-});
-
 export async function POST(
   request: Request,
   { params }: { params: { id: number } }
@@ -18,6 +10,13 @@ export async function POST(
   const newData: PersonalInfoType = await request.json();
 
   try {
+    const client = new Client({
+      user: process.env.DB_USERNAME || '',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME || '',
+      port: Number(process.env.DB_PORT),
+    });
+    
     await client.connect();
 
     const updateQuery = `

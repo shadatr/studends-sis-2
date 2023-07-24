@@ -6,18 +6,19 @@ import {
 } from '@/app/types/types';
 import { Client } from 'pg';
 
-const client = new Client({
-  user: process.env.DB_USERNAME || '',
-  password: process.env.DB_PASSWORD || '',
-  host: process.env.DB_HOST || '',
-  database: process.env.DB_NAME || '',
-  port: Number(process.env.DB_PORT)});
 
 export async function GET(
   request: Request,
   { params }: { params: { id: number, name:string } }
 ) {
   try {
+    const client = new Client({
+      user: process.env.DB_USERNAME || '',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME || '',
+      port: Number(process.env.DB_PORT),
+    });
+    
     const classQuery = `SELECT * FROM tb_classes WHERE section_id = $1 AND semester = $2`;
     const classValues = [params.id, params.name];
     const classResult = await client.query(classQuery, classValues);

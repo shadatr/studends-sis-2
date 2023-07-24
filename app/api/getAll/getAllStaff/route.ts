@@ -1,5 +1,4 @@
 import { Client } from 'pg';
-import { AdminStaffType } from '@/app/types/types';
 
 
 export async function GET() {
@@ -19,15 +18,6 @@ export async function GET() {
 
     await client.end();
 
-    const resp: AdminStaffType[] = result.rows.map((row: any) => ({
-      id: row.id,
-      name: row.name,
-      surname: row.surname,
-      createdAt: row.enrollment_date,
-      active: row.active,
-    }));
-
-    console.log(result.rows);
 
     return new Response(JSON.stringify({ message: result.rows }), { status: 200 });
   } catch (error) {

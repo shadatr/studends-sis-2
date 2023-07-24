@@ -1,19 +1,18 @@
 import { Client } from 'pg';
 import { ClassesType, Section2Type } from '@/app/types/types';
 
-const client = new Client({
-  user: process.env.DB_USERNAME || '',
-  password: process.env.DB_PASSWORD || '',
-  host: process.env.DB_HOST || '',
-  database: process.env.DB_NAME || '',
-  port: Number(process.env.DB_PORT),
-});
-
 export async function GET(
   request: Request,
   { params }: { params: { id: number } }
 ) {
   try {
+    const client = new Client({
+      user: process.env.DB_USERNAME || '',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME || '',
+      port: Number(process.env.DB_PORT),
+    });
+
     await client.connect();
 
     const classesQueryResult = await client.query(

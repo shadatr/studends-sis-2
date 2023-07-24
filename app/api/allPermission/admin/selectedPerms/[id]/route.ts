@@ -5,11 +5,11 @@ import { GetPermissionType } from '@/app/types/types';
 
 export async function POST(request: Request) {
   const data: GetPermissionType[] = await request.json();
+
   const client = new Client({
-    user: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
+    user: process.env.DB_USERNAME || '',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || '',
     port: Number(process.env.DB_PORT),
   });
   try {
@@ -70,7 +70,6 @@ export async function GET(
     const client = new Client({
       user: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
-      host: process.env.DB_HOST,
       database: process.env.DB_NAME,
       port: Number(process.env.DB_PORT),
     });
