@@ -1,51 +1,49 @@
-import { Client } from 'pg';
+import { Database } from '@/app/types/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient<Database>(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET(
   request: Request,
   { params }: { params: { searchType: string; searchBy: string } }
 ) {
+  console.log(params.searchBy);
+  console.log(params.searchType);
+
   const tableName = `tb_${params.searchType}`;
-  const searchBy = params.searchBy.trim();
 
-  try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-    
-    await client.connect();
-
-    let data;
-
-    if (!isNaN(Number(searchBy))) {
-      const query = `SELECT * FROM ${tableName} WHERE number = $1`;
-      const values = [searchBy];
-      data = await client.query(query, values);
-    } else {
-      const query = `SELECT * FROM ${tableName} WHERE name ILIKE $1`;
-      const values = [`%${searchBy}%`];
-      data = await client.query(query, values);
-    }
-
-    await client.end();
-
-    if (data.rowCount === 0) {
+  if (!isNaN(Number(params.searchBy))) {
+    const data = await supabase
+      .from(tableName)
+      .select('*')
+      .eq('number', params.searchBy);
+    console.log(data);
+    console.log(data.error?.message);
+    const data2 = JSON.stringify(data.data);
+    if (data2.length == 0) {
       return new Response(JSON.stringify({ message: 'لا يوجد نتائج' }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
     }
-
-    return new Response(JSON.stringify({ message: data.rows }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ message: 'حدث خطأ أثناء البحث' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new Response(JSON.stringify({ message: data.data }));
+  } else {
+    const data = await supabase
+      .from(tableName)
+      .select('*')
+      .textSearch('name', (params.searchBy as string).split(' ')[0]);
+    console.log(data);
+    console.log(data.error?.message);
+    const data2 = JSON.stringify(data.data);
+    if (data2.length == 0) {
+      return new Response(JSON.stringify({ message: 'لا يوجد نتائج' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    return new Response(JSON.stringify({ message: data.data }));
   }
 }

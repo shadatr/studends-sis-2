@@ -1,72 +1,38 @@
-import { Client } from 'pg';
+import { AddCourseType } from '@/app/types/types';
+import { createClient } from '@supabase/supabase-js';
 
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function POST(request: Request) {
-  const data = await request.json();
+  const data: AddCourseType = await request.json();
 
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-
-    await client.connect();
-    const insertQuery = `
-      INSERT INTO tb_major_courses (course_id, major_id)
-      VALUES ($1, $2) RETURNING *;
-    `;
-
-    const values = [data.course_id, data.major_id];
-
-    await client.query(insertQuery, values);
-
-    await client.end();
+    await supabase.from('tb_major_courses').insert([data]);
 
     return new Response(JSON.stringify({ message: 'تم تسجيل المادة بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error occurred:', error);
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ أثناء تسجيل المادة' }),
+      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل المادة' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }
 }
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: number } }
-) {
+export async function GET(request: Request, { params }: { params: { id: number } }) {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-    
-    await client.connect();
+    const data = await supabase.from('tb_major_courses').select('*').eq('major_id', params.id);
 
-    const queryResult = await client.query(
-      'SELECT * FROM tb_major_courses WHERE major_id = $1',
-      [params.id]
-    );
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
+        status: 403,
+      });
+    }
 
-    const data = queryResult.rows;
-
-    await client.end();
-
-    return new Response(JSON.stringify({ message: data }), {
-      headers: { 'content-type': 'application/json' },
-    });
-  } catch (error) {
-    console.error('Error occurred:', error);
-    return new Response(JSON.stringify({ message: 'an error occured' }), {
-      headers: { 'content-type': 'application/json' },
-      status: 403,
-    });
-  }
+    return new Response(JSON.stringify({ message: data.data }));
+  } catch {}
 }

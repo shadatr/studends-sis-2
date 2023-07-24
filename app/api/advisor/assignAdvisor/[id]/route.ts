@@ -1,36 +1,29 @@
+import { createClient } from '@supabase/supabase-js';
 import { AssignAdvisorType } from '@/app/types/types';
-import { Client } from 'pg';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function POST(request: Request) {
   const data: AssignAdvisorType = await request.json();
+  console.log(data);
 
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-
-    await client.connect();
-
-    const queryResult = await client.query(
-      'UPDATE tb_students SET advisor = $1 WHERE id = $2',
-      [data.advisor, data.id]
-    );
-
-    await client.end();
-
-    console.log(queryResult);
-
-    return new Response(JSON.stringify({ message: 'تم تعيين الدكتور بنجاح' }), {
-      headers: { 'content-type': 'application/json' },
-    });
-  } catch (error) {
-    console.error('Error occurred:', error);
-
+    const res = await supabase.from('tb_students').update( {advisor: data.advisor} ).eq("id", data.id);
+    console.log(res);
+    
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ أثناء تعيين الدكتور' }),
+      JSON.stringify({ message: 'تم تعيين الدكتور بنجاح ' }),
+      {
+        headers: { 'content-type': 'application/json' },
+      }
+    );
+  } catch (error) {
+    console.log(error);
+    return new Response(
+      JSON.stringify({ message: 'حدث خطأ اثناء  تعيين الدكتور ' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }
@@ -41,34 +34,18 @@ export async function GET(
   { params }: { params: { id: number } }
 ) {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-    
-    await client.connect();
+    const data = await supabase
+      .from('tb_students')
+      .select('*')
+      .eq('advisor', params.id)
+      .eq('graduated', false);
 
-    const queryResult = await client.query(
-      'SELECT * FROM tb_students WHERE advisor = $1 AND graduated = false',
-      [params.id]
-    );
-
-    await client.end();
-
-    if (queryResult.rowCount === 0) {
-      return new Response(JSON.stringify({ message: 'No data found' }), {
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
       });
     }
 
-    return new Response(JSON.stringify({ message: queryResult.rows }));
-  } catch (error) {
-    console.error('Error occurred:', error);
-
-    return new Response(JSON.stringify({ message: 'An error occurred' }), {
-      status: 403,
-    });
-  }
+    return new Response(JSON.stringify({ message: data.data }));
+  } catch {}
 }

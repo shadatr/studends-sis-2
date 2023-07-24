@@ -1,50 +1,53 @@
-import { Client } from 'pg';
 import { ClassesType, Section2Type } from '@/app/types/types';
+import { createClient, PostgrestResponse } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET(
   request: Request,
   { params }: { params: { id: number } }
 ) {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
+    const data = await supabase
+      .from('tb_classes')
+      .select('*')
+      .eq('doctor_id', params.id);
 
-    await client.connect();
+    const parsedData = JSON.parse(JSON.stringify(data));
+    const messageData = parsedData.data;
+    const data3: ClassesType[] = messageData;
 
-    const classesQueryResult = await client.query(
-      'SELECT * FROM tb_classes WHERE doctor_id = $1',
-      [params.id]
-    );
+    const prerequisitePromises = data3.map(async (item) => {
+      const response: PostgrestResponse<{ [key: string]: any }> = await supabase
+        .from('tb_section')
+        .select('*')
+        .in('id', [item.section_id]); 
 
-    const classesData = classesQueryResult.rows as ClassesType[];
+      const data2: { [key: string]: any }[] = response.data || [];
 
-    const sectionPromises = classesData.map(async (classItem) => {
-      const sectionQueryResult = await client.query(
-        'SELECT * FROM tb_section WHERE id = $1',
-        [classItem.section_id]
-      );
-
-      const sectionData = sectionQueryResult.rows as Section2Type[];
-
-      return sectionData.map((sectionItem) => ({
-        class_id: classItem.id,
-        id: sectionItem.id,
-        course_id: sectionItem.course_id,
-        name: sectionItem.name,
-        students_num: sectionItem.students_num,
+      return data2.map((sectionData) => ({
+        class_id: item.id,
+        id: sectionData.id,
+        course_id: sectionData.course_id,
+        name: sectionData.name,
+        max_students: sectionData.max_students,
+        students_num: sectionData.students_num,
       }));
     });
 
-    const sectionData = await Promise.all(sectionPromises);
-    const sections: Section2Type[] = sectionData.flat();
+    const prerequisiteData = await Promise.all(prerequisitePromises);
+    const prerequisites: Section2Type[] = prerequisiteData.flat();
 
-    await client.end();
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'An error occurred' }), {
+        status: 403,
+      });
+    }
 
-    return new Response(JSON.stringify({ message: sections }), {
+    return new Response(JSON.stringify({ message: prerequisites }), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {

@@ -1,47 +1,39 @@
-import { Client } from 'pg';
+import { ClassesType } from '@/app/types/types';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: number; name: string } }
+  { params }: { params: { id: number, name: string } }
 ) {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-    
-    await client.connect();
+    const data = await supabase
+      .from('tb_classes')
+      .select('*')
+      .eq('section_id', params.id)
+      .eq('semester', params.name);
 
-    const classesQuery = `
-      SELECT *
-      FROM tb_classes
-      WHERE section_id = $1 AND semester = $2
-    `;
-    const classesValues = [params.id, params.name];
-    const classesResult = await client.query(classesQuery, classesValues);
-    const classesData = classesResult.rows;
+      
+      const parsedData = JSON.parse(JSON.stringify(data));
+      const messageData = parsedData.data;
+      const data3: ClassesType[] = messageData;
 
-    const courseEnrollmentQuery = `
-      SELECT *
-      FROM tb_course_enrollment
-      WHERE class_id = $1
-    `;
-    const courseEnrollmentValues = [classesData[0].id];
-    const courseEnrollmentResult = await client.query(
-      courseEnrollmentQuery,
-      courseEnrollmentValues
-    );
-    const courseEnrollmentData = courseEnrollmentResult.rows;
+      const data1 = await supabase
+      .from('tb_course_enrollment')
+      .select('*')
+      .eq('class_id', data3[0].id);
+      console.log(data1);
 
-    await client.end();
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
+        status: 403,
+      });
+    }
 
-    return new Response(JSON.stringify({ message: courseEnrollmentData }));
-  } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ message: 'An error occurred' }), {
-      status: 500,
-    });
-  }
+    return new Response(JSON.stringify({ message: data1.data }));
+  } catch {}
 }

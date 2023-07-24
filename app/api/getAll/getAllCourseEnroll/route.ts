@@ -1,65 +1,33 @@
-import { Client } from 'pg';
 import { StudentClassType } from '@/app/types/types';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
+
 
 export async function POST(request: Request) {
   const data: StudentClassType = await request.json();
 
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-    
-    await client.connect();
+    await supabase.from('tb_course_enrollment').insert([data]);
 
-    const query = `
-      INSERT INTO tb_course_enrollment (
-        student_id,
-        class_id,
-        semester,
-        class_work,
-        midterm,
-        final,
-        pass,
-        result,
-        can_repeat,
-        approved
-      )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-    `;
-    const values = [
-      data.student_id,
-      data.class_id,
-      data.semester,
-      data.class_work,
-      data.midterm,
-      data.final,
-      data.pass,
-      data.result,
-      data.can_repeat,
-      data.approved,
-    ];
-    await client.query(query, values);
+    const enrollment = await supabase
+      .from('tb_course_enrollment')
+      .select('*')
+      .eq('class_id', data.class_id)
+      .eq('student_id', data.student_id);
 
-    const courseQuery = `SELECT * FROM tb_course_enrollment`;
-    const courseResult = await client.query(courseQuery);
-    const course = courseResult.rows;
+    const course = enrollment.data;
 
     if (course) {
-      const insertQuery = `
-      INSERT INTO tb_majors (course_enrollment_id)
-      VALUES ($1)
-      `;
-      const insertValues = [
-        course[0].id,
-      ];
-      
-      await client.query(insertQuery, insertValues);
+      const data2 = {
+        course_enrollment_id: course[0].id,
+      };
+      const res = await supabase.from('tb_grades').insert([data2]);
+      console.log(res);
     }
-    
-    await client.end();
 
     return new Response(JSON.stringify({ message: 'تم ارسال المواد بنجاح' }), {
       headers: { 'content-type': 'application/json' },

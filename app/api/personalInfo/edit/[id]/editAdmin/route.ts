@@ -1,6 +1,9 @@
-import { Client } from 'pg';
-import { PersonalInfoType } from '@/app/types/types';
+import { createClient } from '@supabase/supabase-js';
 
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function POST(
   request: Request,
@@ -8,36 +11,15 @@ export async function POST(
 ) {
   // TODO: Maybe add some validation for security here
 
-  const newData: PersonalInfoType = await request.json();
+  const newData = await request.json();
 
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-    
-    await client.connect();
+    const updatePromises = await supabase
+      .from('tb_admins')
+      .update(newData)
+      .eq('id', params.id);
 
-    const updateQuery = `
-      UPDATE tb_admins
-      SET name = $1, surname = $2, address = $3, phone = $4, email = $5, birth_date = $6
-      WHERE id = $7
-    `;
-    const updateValues = [
-      newData.name,
-      newData.surname,
-      newData.address,
-      newData.phone,
-      newData.email,
-      newData.birth_date,
-      params.id,
-    ];
-
-    await client.query(updateQuery, updateValues);
-
-    await client.end();
+    console.log(updatePromises.error?.message);
 
     return new Response(
       JSON.stringify({ message: 'تم تحديث البيانات بنجاح' }),

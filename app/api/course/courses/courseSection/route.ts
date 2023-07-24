@@ -1,64 +1,29 @@
-import { Client } from 'pg';
+import { createClient } from '@supabase/supabase-js';
 
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET() {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
+    const data = await supabase
+      .from('tb_courses')
+      .select('*, tb_majors!inner(*)');
 
-    await client.connect();
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
+        status: 403,
+      });
+    }
 
-    const dataQueryResult = await client.query(
-      'SELECT c.*, m.* FROM tb_courses c INNER JOIN tb_majors m ON c.major_id = m.id'
-    );
-
-    const data = dataQueryResult.rows;
-
-    await client.end();
-
-    return new Response(JSON.stringify({ message: data }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ message: 'an error occurred' }), {
-      status: 403,
-    });
-  }
+    return new Response(JSON.stringify({ message: data.data }));
+  } catch {}
 }
 
+
 export async function POST(request: Request) {
-  try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-    
-    await client.connect();
-
-    const req = await request.json();
-
-    await client.query('DELETE FROM tb_courses WHERE id = $1', [req]);
-
-    await client.end();
-
-    return new Response(JSON.stringify({ message: 'تم حذف المادة بنجاح' }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    console.error(error);
-    return new Response(
-      JSON.stringify({ message: 'حدث خطأ أثناء حذف المادة' }),
-      {
-        headers: { 'Content-Type': 'application/json' },
-        status: 400,
-      }
-    );
-  }
+  const req = await request.json();
+  await supabase.from('tb_courses').delete().eq('id', req);
+  return new Response(JSON.stringify({ message: 'تم حذف المادة بنجاح' }));
 }

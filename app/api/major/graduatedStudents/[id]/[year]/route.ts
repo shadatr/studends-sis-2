@@ -1,38 +1,30 @@
-import { Client } from 'pg';
+import { createClient } from '@supabase/supabase-js';
 
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: number; year: string } }
+  { params }: { params: { id: number ,year: string} }
 ) {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
+    const data = await supabase
+      .from('tb_students')
+      .select('*')
+      .eq('major', params.id).eq('graduated', true).eq('graduation_year', params.year);
 
-    await client.connect();
+      console.log(data.data);
 
-    const { id, year } = params;
-    const query =
-      'SELECT * FROM tb_students WHERE major = $1 AND graduated = true AND graduation_year = $2';
-    const values = [id, year];
+      console.log(data.data);
 
-    const result = await client.query(query, values);
-    const data = result.rows;
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
+        status: 403,
+      });
+    }
 
-    await client.end();
-
-    return new Response(JSON.stringify({ message: data }), {
-      status: 200,
-      headers: { 'content-type': 'application/json' },
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ message: 'An error occurred' }), {
-      status: 500,
-      headers: { 'content-type': 'application/json' },
-    });
-  }
+    return new Response(JSON.stringify({ message: data.data }));
+  } catch {}
 }

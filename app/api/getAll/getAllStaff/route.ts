@@ -1,28 +1,27 @@
-import { Client } from 'pg';
+import { Database } from "@/app/types/supabase";
+import { AdminStaffType } from '@/app/types/types';
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient<Database>(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "");
 
 
 export async function GET() {
-  try {
+  const result = await supabase.from("tb_admins").select("*");
+  const resp: AdminStaffType[] = [];
 
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
+  if (result.error) {
+    return { status: 400, body: { message: "حدث خطا ما" } };
+  }
 
-    await client.connect();
-
-    const query = 'SELECT * FROM tb_admins';
-    const result = await client.query(query);
-
-    await client.end();
-
-
-    return new Response(JSON.stringify({ message: result.rows }), { status: 200 });
-  } catch (error) {
-    return new Response(JSON.stringify({ message: 'An error occurred' }), {
-      status: 500,
+  for (let i = 0; i < result.data.length; i++) {
+    resp.push({
+      id: result.data[i].id,
+      name: result.data[i].name,
+      surname: result.data[i].surname,
+      createdAt: result.data[i].enrollment_date,
+      active : result.data[i].active
     });
   }
+
+  return new Response(JSON.stringify({ message: resp }), { status: 200 });
 }

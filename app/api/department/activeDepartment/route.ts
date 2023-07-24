@@ -1,62 +1,28 @@
-import { Client } from 'pg';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function POST(request: Request) {
   const { depId, active } = await request.json();
+  const data = await supabase
+    .from('tb_departments')
+    .update({ active: active })
+    .eq('id', depId);
 
-  try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    }); 
-    
-    await client.connect();
+    await supabase
+      .from('tb_majors')
+      .update({ active: active })
+      .eq('department_id', depId);
 
-    const departmentUpdateQuery = `
-      UPDATE tb_departments
-      SET active = $1
-      WHERE id = $2
-    `;
-    const departmentUpdateValues = [active, depId];
-
-    const departmentUpdateResult = await client.query(
-      departmentUpdateQuery,
-      departmentUpdateValues
-    );
-
-    const majorUpdateQuery = `
-      UPDATE tb_majors
-      SET active = $1
-      WHERE department_id = $2
-    `;
-    const majorUpdateValues = [active, depId];
-
-    const majorUpdateResult = await client.query(
-      majorUpdateQuery,
-      majorUpdateValues
-    );
-
-    await client.end();
-
-    if (departmentUpdateResult.rowCount > 0 && majorUpdateResult.rowCount > 0) {
-      return new Response(
-        JSON.stringify({ message: 'تم تغيير حالة القسم بنجاح' }),
-        {
-          headers: { 'content-type': 'application/json' },
-        }
-      );
-    } else {
-      return new Response(
-        JSON.stringify({ message: 'حدث خطأ أثناء تغيير حالة القسم' }),
-        { headers: { 'content-type': 'application/json' }, status: 400 }
-      );
-    }
-  } catch (error) {
-    console.error(error);
+  if (!data.error) {
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ أثناء تغيير حالة القسم' }),
-      { headers: { 'content-type': 'application/json' }, status: 400 }
+      JSON.stringify({ message: 'تم تغيير حالة القسم بنجاح' }),
+      {
+        headers: { 'content-type': 'application/json' },
+      }
     );
   }
 }

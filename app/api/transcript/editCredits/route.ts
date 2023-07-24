@@ -1,43 +1,21 @@
-import { Client } from 'pg';
+import { createClient } from '@supabase/supabase-js';
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function POST(request: Request) {
-
   const data = await request.json();
 
-  try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-
-    await client.connect();
-
-    const updateQuery = `UPDATE tb_students SET credits = $1, can_graduate = $2, graduation_year = $3 WHERE id = $4`;
-    const updateParams = [
-      data.credits,
-      data.can_graduate,
-      data.graduation_year,
-      data.student_id,
-    ];
-    await client.query(updateQuery, updateParams);
-
-    await client.end();
-
-    return new Response(
-      JSON.stringify({ message: 'تم تحديث البيانات بنجاح' }),
+  await supabase
+    .from('tb_students')
+    .update([
       {
-        headers: { 'content-type': 'application/json' },
-      }
-    );
-  } catch (error) {
-    return new Response(
-      JSON.stringify({ message: 'حدث خطأ أثناء تحديث البيانات' }),
-      {
-        headers: { 'content-type': 'application/json' },
-        status: 400,
-      }
-    );
-  }
+        credits: data.credits,
+        can_graduate: data.can_graduate,
+        graduation_year: data.graduation_year,
+      },
+    ])
+    .eq('id', data.student_id);
+
 }

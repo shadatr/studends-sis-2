@@ -1,14 +1,10 @@
-import { Client } from 'pg';
-
+import { createClient } from '@supabase/supabase-js';
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function POST(request: Request) {
-  const client = new Client({
-    user: process.env.DB_USERNAME || '',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || '',
-    port: Number(process.env.DB_PORT),
-  });
-
   const data = await request.json();
 
   const currentDate = new Date();
@@ -17,64 +13,29 @@ export async function POST(request: Request) {
   const minutes = currentDate.getMinutes();
   const formattedTime = `${hours}:${minutes < 10 ? '0' + minutes : minutes}`;
 
-  try {
-    await client.connect();
-
-    const insertQuery = `INSERT INTO tb_usage_history (user_id, action, type, date) VALUES ($1, $2, $3, $4)`;
-    const insertValues = [
-      data.id,
-      data.action,
-      data.type,
-      currentDateValue + ' / ' + formattedTime,
-    ];
-    await client.query(insertQuery, insertValues);
-
-    await client.end();
-
-    return new Response(
-      JSON.stringify({ message: 'تم إدخال البيانات بنجاح' }),
-      {
-        headers: { 'content-type': 'application/json' },
-      }
-    );
-  } catch (error) {
-    return new Response(
-      JSON.stringify({ message: 'حدث خطأ أثناء إدخال البيانات' }),
-      {
-        headers: { 'content-type': 'application/json' },
-        status: 400,
-      }
-    );
-  }
+  await supabase.from('tb_usage_history').insert([
+    {
+      user_id: data.id,
+      action: data.action,
+      type: data.type,
+      date: currentDateValue + " / "+ formattedTime,
+    },
+  ]);
 }
 
 export async function GET() {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-    
-    await client.connect();
+    const data = await supabase
+      .from('tb_usage_history')
+      .select('*').order('id', { ascending: false });
 
-    const selectQuery = `SELECT * FROM tb_usage_history ORDER BY id DESC`;
-    const result = await client.query(selectQuery);
-    const data = result.rows;
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
+        status: 403,
+      });
+    }
 
-    await client.end();
-
-    return new Response(JSON.stringify({ message: data }), {
-      headers: { 'content-type': 'application/json' },
-    });
-  } catch (error) {
-    return new Response(
-      JSON.stringify({ message: 'حدث خطأ أثناء استعلام البيانات' }),
-      {
-        headers: { 'content-type': 'application/json' },
-        status: 400,
-      }
-    );
-  }
+    return new Response(JSON.stringify({ message: data.data }));
+  } catch {}
 }
+

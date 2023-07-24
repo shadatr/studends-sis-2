@@ -1,92 +1,45 @@
-import { Client } from 'pg';
+import { createClient } from '@supabase/supabase-js';
 
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET() {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
+    const data = await supabase.from('tb_course_enrollment').select('*');
 
-    await client.connect();
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
+        status: 403,
+      });
+    }
 
-    const query = `
-      SELECT * FROM tb_course_enrollment
-    `;
-
-    const result = await client.query(query);
-    const data = result.rows;
-
-    await client.end();
-
-    return new Response(JSON.stringify({ message: data }), {
-      headers: { 'content-type': 'application/json' },
-    });
-  } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ message: 'an error occured' }), {
-      status: 403,
-    });
-  }
+    return new Response(JSON.stringify({ message: data.data }));
+  } catch {}
 }
 
 export async function POST(request: Request) {
   const data = await request.json();
 
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
+      await supabase
+        .from('tb_course_enrollment')
+        .update({ approved: data.course.approved })
+        .eq('id', data.course.id);
+
+      await supabase
+        .from('tb_section')
+        .update({ students_num: data.course.students_num })
+        .eq('id', data.course.section_id);
+
+      await supabase.from('tb_grades').insert([data.grade]);
+
+
+    return new Response(JSON.stringify({ message: 'تم الموافقة على المواد بنجاح' }), {
+      headers: { 'content-type': 'application/json' },
     });
-    
-    await client.connect();
-
-    const updateQuery = `
-      UPDATE tb_course_enrollment
-      SET approved = $1
-      WHERE id = $2
-    `;
-    const updateValues = [data.course.approved, data.course.id];
-
-    const sectionUpdateQuery = `
-      UPDATE tb_section
-      SET students_num = $1
-      WHERE id = $2
-    `;
-    const sectionUpdateValues = [
-      data.course.students_num,
-      data.course.section_id,
-    ];
-
-    const insertQuery = `
-      INSERT INTO tb_grades (id, course_id, student_id, grade)
-      VALUES ($1, $2, $3, $4)
-    `;
-    const insertValues = [
-      data.grade.id,
-      data.grade.course_id,
-      data.grade.student_id,
-      data.grade.grade,
-    ];
-
-    await client.query(updateQuery, updateValues);
-    await client.query(sectionUpdateQuery, sectionUpdateValues);
-    await client.query(insertQuery, insertValues);
-
-    await client.end();
-
-    return new Response(
-      JSON.stringify({ message: 'تم الموافقة على المواد بنجاح' }),
-      {
-        headers: { 'content-type': 'application/json' },
-      }
-    );
   } catch (error) {
-    console.error(error);
     return new Response(
       JSON.stringify({ message: 'حدث خطأ اثناء الموافقة على المواد' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }

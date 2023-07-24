@@ -1,28 +1,23 @@
-import { Client } from 'pg';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET() {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-    
-    await client.connect();
+    const data = await supabase
+      .from('tb_classes')
+      .select('*')
+      .eq('active', true);
 
-    const query = `SELECT * FROM tb_classes WHERE active = true`;
-    const result = await client.query(query);
-    const classes = result.rows;
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
+        status: 403,
+      });
+    }
 
-    await client.end();
-
-    return new Response(JSON.stringify({ message: classes }), {
-      status: 200,
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ message: 'An error occurred' }), {
-      status: 500,
-    });
-  }
+    return new Response(JSON.stringify({ message: data.data }));
+  } catch {}
 }

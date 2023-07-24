@@ -1,62 +1,66 @@
-import { Client } from 'pg';
+import { createClient } from '@supabase/supabase-js';
 
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET(
   request: Request,
   { params }: { params: { id: number } }
 ) {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
     
-    await client.connect();
+    const dataCourseEnroll = supabase.from('tb_course_enrollment').select('*').eq('student_id', params.id).eq('approved',true);
+    
+    const dataClasses = await supabase.from('tb_classes').select('*').eq('active', true);
+    
+    const dataSection = supabase.from('tb_section').select('*');
 
-    const courseEnrollQuery = `SELECT * FROM tb_course_enrollment WHERE student_id = ${params.id} AND approved = true`;
-    const classesQuery = `SELECT * FROM tb_classes WHERE active = true`;
-    const sectionQuery = `SELECT * FROM tb_section`;
-    const courseQuery = `SELECT * FROM tb_courses`;
-    const doctorQuery = `SELECT * FROM tb_doctors`;
+    const dataCourse = supabase.from('tb_courses').select('*');
+
+    const dataDoctor = await supabase.from('tb_doctors').select('*');
+
 
     const [
-      courseEnrollResult,
-      classesResult,
-      sectionResult,
-      courseResult,
-      doctorResult,
+      courseEnrollResponse,
+      classResponse,
+      sectionResponse,
+      courseResponse,
+      doctorResopnse,
     ] = await Promise.all([
-      client.query(courseEnrollQuery),
-      client.query(classesQuery),
-      client.query(sectionQuery),
-      client.query(courseQuery),
-      client.query(doctorQuery),
+      dataCourseEnroll,
+      dataClasses,
+      dataSection,
+      dataCourse,
+      dataDoctor
     ]);
 
-    const courseEnrollments = courseEnrollResult.rows;
-    const classes = classesResult.rows;
-    const sections = sectionResult.rows;
-    const courses = courseResult.rows;
-    const doctors = doctorResult.rows;
+    const classes = classResponse.data;
+    const courseEnrollements = courseEnrollResponse.data;
+    const sections = sectionResponse.data;
+    const courses = courseResponse.data;
+    const doctors = doctorResopnse.data;
 
-    const data = courseEnrollments.map((course) => {
-      const clas = classes.find((cl) => cl.id === course.class_id);
-      const secInfo = sections.find((sec) => sec.id === clas.section_id);
-      const doc = doctors.find((co) => clas.doctor_id === co.id);
-      const cour = courses.find((c) => secInfo.course_id === c.id);
+    const data = courseEnrollements?.map((course) => {
+
+      const clas = classes?.find((cl) => cl.id== course.class_id);
+
+      const secInfo = sections?.find((sec) => sec.id==clas?.section_id);
+
+      const doc = doctors?.find((co) =>clas?.doctor_id== co.id );
+
+      const cour = courses?.find((c) => secInfo?.course_id === c.id);
+
 
       return {
         class: clas,
         course: cour,
-        courseEnrollments: course,
+        courseEnrollements: course,
         section: secInfo,
         doctor: doc,
       };
     });
-
-    await client.end();
 
     return new Response(JSON.stringify({ message: data }), {
       status: 200,

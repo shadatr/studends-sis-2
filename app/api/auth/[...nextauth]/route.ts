@@ -1,11 +1,15 @@
 import { createHash } from 'crypto';
 
-import { Client } from 'pg';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import NextAuth from 'next-auth';
 import type { NextAuthOptions } from 'next-auth';
+import { createClient } from '@supabase/supabase-js';
+import { Database } from '@/app/types/supabase';
 
-
+const supabase = createClient<Database>(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -23,32 +27,20 @@ const authOptions: NextAuthOptions = {
           type: 'password',
         },
       },
-      
       async authorize(credentials) {
         const { email, password } = credentials as any;
         const passwordHash = createHash('sha256')
           .update(password)
           .digest('hex');
 
-          const client = new Client({
-            user: process.env.DB_USERNAME || '',
-            password: process.env.DB_PASSWORD || '',
-            database: process.env.DB_NAME || '',
-            port: Number(process.env.DB_PORT),
-          });
+        const { data, error } = await supabase
+          .from('tb_admins')
+          .select('*')
+          .eq('email', email)
+          .eq('password', passwordHash)
+          .eq('active', true);
 
-        await client.connect();
-
-        const queryResult = await client.query(
-          'SELECT * FROM tb_admins WHERE email = $1 AND password = $2 AND active = TRUE',
-          [email, passwordHash]
-        );
-
-        await client.end();
-
-        const data = queryResult.rows;
-
-        if ((!data ) || (data && data.length === 0)) {
+        if ((!data && error) || (data && data.length === 0)) {
           return null;
         } else {
           const userObj = data[0] as any;
@@ -77,25 +69,14 @@ const authOptions: NextAuthOptions = {
           .update(password)
           .digest('hex');
 
-          const client = new Client({
-            user: process.env.DB_USERNAME || '',
-            password: process.env.DB_PASSWORD || '',
-            database: process.env.DB_NAME || '',
-            port: Number(process.env.DB_PORT),
-          });
+        const { data, error } = await supabase
+          .from('tb_doctors')
+          .select('*')
+          .eq('email', email)
+          .eq('password', passwordHash)
+          .eq('active', true);
 
-        await client.connect();
-
-        const queryResult = await client.query(
-          'SELECT * FROM tb_doctors WHERE email = $1 AND password = $2 AND active = TRUE',
-          [email, passwordHash]
-        );
-
-        await client.end();
-
-        const data = queryResult.rows;
-
-        if ((!data) || (data && data.length === 0)) {
+        if ((!data && error) || (data && data.length === 0)) {
           return null;
         } else {
           const userObj = data[0] as any;
@@ -125,25 +106,14 @@ const authOptions: NextAuthOptions = {
           .update(password)
           .digest('hex');
 
-          const client = new Client({
-            user: process.env.DB_USERNAME || '',
-            password: process.env.DB_PASSWORD || '',
-            database: process.env.DB_NAME || '',
-            port: Number(process.env.DB_PORT),
-          });
+        const { data, error } = await supabase
+          .from('tb_students')
+          .select('*')
+          .eq('email', email)
+          .eq('password', passwordHash)
+          .eq('active', true);
 
-       await client.connect();
-
-       const queryResult = await client.query(
-         'SELECT * FROM tb_students WHERE email = $1 AND password = $2 AND active = TRUE',
-         [email, passwordHash]
-       );
-
-       await client.end();
-
-       const data = queryResult.rows;
-
-        if ((!data ) || (data && data.length === 0)) {
+        if ((!data && error) || (data && data.length === 0)) {
           return null;
         } else {
           const userObj = data[0] as any;
@@ -179,7 +149,6 @@ const authOptions: NextAuthOptions = {
       session.user.number = token.number as any;
       session.user.head_of_deparment_id = token.head_of_deparment_id as any;
       session.user.userType = token.userType as any;
-      session.user.graduated = token.graduated as any;
       return session;
     },
   },

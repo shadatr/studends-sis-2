@@ -1,43 +1,14 @@
-import { Client } from 'pg';
+import { createClient } from '@supabase/supabase-js';
 
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
-export async function POST(request: Request) {
+export async function POST(request : Request) {
   const req = await request.json();
-
-  try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-
-    await client.connect();
-
-    const deleteQuery = `
-      DELETE FROM tb_departments
-      WHERE name = $1
-    `;
-    const deleteValues = [req.item_name];
-
-    const deleteResult = await client.query(deleteQuery, deleteValues);
-
-    await client.end();
-
-    if (deleteResult.rowCount > 0) {
-      return new Response(JSON.stringify({ message: 'تم مسح الكلية بنجاح' }), {
-        headers: { 'content-type': 'application/json' },
-      });
-    } else {
-      return new Response(
-        JSON.stringify({ message: 'حدث خطأ أثناء مسح الكلية' }),
-        { headers: { 'content-type': 'application/json' }, status: 400 }
-      );
-    }
-  } catch (error) {
-    return new Response(
-      JSON.stringify({ message: 'حدث خطأ أثناء مسح الكلية' }),
-      { headers: { 'content-type': 'application/json' }, status: 400 }
-    );
-  }
+  console.log(req);
+  const deleteReq = await supabase.from("tb_departments").delete().eq("name" , req.item_name);
+  console.log(deleteReq.error);
+  return new Response(JSON.stringify({message : "تم مسح الكلية بنجاح"}));
 }

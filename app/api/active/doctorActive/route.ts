@@ -1,49 +1,20 @@
-import { Client } from 'pg';
+import { Database } from "@/app/types/supabase";
+import { createClient } from "@supabase/supabase-js";
 
+
+const supabase = createClient<Database>(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "");
 
 export async function POST(request: Request) {
+  // console.log("request", await request.json());
   const { doctorId, active } = await request.json();
-
-  try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
+  const data = await supabase
+    .from('tb_doctors')
+    .update({ active: active })
+    .eq('id', doctorId)
+    .order('id', { ascending: true });
+  if (!data.error){
+    return new Response(JSON.stringify({ message: "تم تغيير حالة الدكتور بنجاح" }), {
+      headers: { "content-type": "application/json" },
     });
-    await client.connect();
-
-    const queryResult = await client.query(
-      'UPDATE tb_doctors SET active = $1 WHERE id = $2',
-      [active, doctorId]
-    );
-
-    await client.end();
-
-    if (queryResult.rowCount === 0) {
-      return new Response(
-        JSON.stringify({ message: 'No matching rows found' }),
-        {
-          headers: { 'content-type': 'application/json' },
-          status: 400,
-        }
-      );
-    }
-
-    return new Response(
-      JSON.stringify({ message: 'تم تغيير حالة الدكتور بنجاح' }),
-      {
-        headers: { 'content-type': 'application/json' },
-      }
-    );
-  } catch (error) {
-    console.error('Error occurred:', error);
-    return new Response(
-      JSON.stringify({ message: 'حدث خطأ أثناء تغيير حالة الدكتور' }),
-      {
-        headers: { 'content-type': 'application/json' },
-        status: 400,
-      }
-    );
   }
 }

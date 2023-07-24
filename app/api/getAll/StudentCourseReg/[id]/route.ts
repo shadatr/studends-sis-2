@@ -1,77 +1,88 @@
-import { Client } from 'pg';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET(
   request: Request,
   { params }: { params: { id: number } }
 ) {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-    
-    await client.connect();
+    const dataCourse = supabase.from('tb_courses').select('*');
 
-    const fetchCourseQuery = 'SELECT * FROM tb_courses';
-    const fetchMajorCourseQuery =
-      'SELECT * FROM tb_major_courses WHERE major_id = $1';
-    const fetchSectionQuery = 'SELECT * FROM tb_section';
-    const fetchClassesQuery = 'SELECT * FROM tb_classes';
-    const fetchCourseEnrollmentQuery = 'SELECT * FROM tb_course_enrollment';
-    const fetchDoctorQuery = 'SELECT * FROM tb_doctors';
-    const fetchCoursePrerequisitesQuery =
-      'SELECT * FROM tb_prerequisites_courses';
+    const dataMajorCourse = supabase
+      .from('tb_major_courses')
+      .select('*')
+      .eq('major_id', params.id);
+
+    const dataSection = supabase.from('tb_section').select('*');
+
+    const dataClasses = await supabase.from('tb_classes').select('*');
+
+    const dataCourseEnroll = await supabase
+      .from('tb_course_enrollment')
+      .select('*');
+
+      const dataDoctor = await supabase
+        .from('tb_doctors')
+        .select('*');
+
+    const dataCoursePrerequisties = await supabase
+      .from('tb_prerequisites_courses')
+      .select('*');
 
     const [
-      courseResult,
-      majorCourseResult,
-      sectionResult,
-      classesResult,
-      courseEnrollmentResult,
-      doctorResult,
-      coursePrerequisitesResult,
+      classResponse,
+      courseEnrollResponse,
+      sectionResponse,
+      courseResponse,
+      coursePrerequistiesResoponse,
+      majorCourseResponse,
+      doctorResopnse,
     ] = await Promise.all([
-      client.query(fetchCourseQuery),
-      client.query(fetchMajorCourseQuery, [params.id]),
-      client.query(fetchSectionQuery),
-      client.query(fetchClassesQuery),
-      client.query(fetchCourseEnrollmentQuery),
-      client.query(fetchDoctorQuery),
-      client.query(fetchCoursePrerequisitesQuery),
+      dataClasses,
+      dataCourseEnroll,
+      dataSection,
+      dataCourse,
+      dataCoursePrerequisties,
+      dataMajorCourse,
+      dataDoctor
     ]);
 
-    const courses = courseResult.rows;
-    const majorCourses = majorCourseResult.rows;
-    const sections = sectionResult.rows;
-    const classes = classesResult.rows;
-    const courseEnrollments = courseEnrollmentResult.rows;
-    const doctors = doctorResult.rows;
-    const coursePrerequisites = coursePrerequisitesResult.rows;
+    const classes = classResponse.data;
+    const courseEnrollements = courseEnrollResponse.data;
+    const sections = sectionResponse.data;
+    const courses = courseResponse.data;
+    const coursePrerequisties = coursePrerequistiesResoponse.data;
+    const majorCourses = majorCourseResponse.data;
+    const doctors = doctorResopnse.data;
 
-    const data = majorCourses.map((course) => {
-      const coPre = coursePrerequisites.filter(
-        (co) => co.course_id === course.course_id
+    const data = majorCourses?.map((course) => {
+      const coPre = coursePrerequisties?.filter(
+        (co) => co.course_id == course.course_id
       );
-      const secInfo = sections.filter(
+      const secInfo = sections?.filter(
         (sec) => course.course_id === sec.course_id
       );
-      const clas = classes.filter((cl) =>
-        secInfo.some((sc) => cl.section_id === sc.id)
+      const clas = classes?.filter((cl) =>
+        secInfo?.some((sc) => cl.section_id === sc.id)
       );
-      const coEnroll = courseEnrollments.filter((co) =>
-        clas.some((cl) => co.class_id === cl.id)
+      const coEnroll = courseEnrollements?.filter((co) =>
+        clas?.some((cl) => co.class_id === cl.id)
       );
-      const doc = doctors.filter((co) =>
-        clas.map((cl) => co.id === cl.doctor_id)
+
+      const doc = doctors?.filter((co) =>
+        clas?.map((cl) => co.id === cl.doctor_id)
       );
-      const cour = courses.find((c) => course.course_id === c.id);
+      const cour = courses?.find((c) => course.course_id === c.id);
+
 
       return {
         class: clas,
         course: cour,
-        courseEnrollments: coEnroll,
+        courseEnrollements: coEnroll,
         section: secInfo,
         prerequisites: coPre,
         majorCourse: course,
@@ -79,16 +90,13 @@ export async function GET(
       };
     });
 
-    await client.end();
 
     return new Response(JSON.stringify({ message: data }), {
       status: 200,
-      headers: { 'content-type': 'application/json' },
     });
   } catch (error) {
     return new Response(JSON.stringify({ message: 'An error occurred' }), {
       status: 500,
-      headers: { 'content-type': 'application/json' },
     });
   }
 }

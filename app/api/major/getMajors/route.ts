@@ -1,73 +1,37 @@
-import { Client } from 'pg';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 
 export async function GET() {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
+    const data = await supabase.from('tb_majors').select('*, tb_departments!inner(*)');
 
-    await client.connect();
-
-    const query = `
-      SELECT tb_majors.*, tb_departments.*
-      FROM tb_majors
-      INNER JOIN tb_departments ON tb_majors.department_id = tb_departments.id
-    `;
-
-    const result = await client.query(query);
-    const data = result.rows;
-
-    await client.end();
-
-    return new Response(JSON.stringify({ message: data }), {
-      headers: { 'content-type': 'application/json' },
-    });
-  } catch (error) {
-    return new Response(
-      JSON.stringify({
-        message: 'An error occurred while retrieving the data',
-      }),
-      { status: 403, headers: { 'content-type': 'application/json' } }
-    );
-  }
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
+        status: 403,
+      });
+    }
+    return new Response(JSON.stringify({ message: data.data }));
+  } catch {}
 }
 
 export async function POST(request: Request) {
-  try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-    
-    await client.connect();
+  const { majorId, active } = await request.json();
+  const data = await supabase
+    .from('tb_majors')
+    .update({ active: active })
+    .eq('id', majorId);
 
-    const { majorId, active } = await request.json();
-
-    const updateQuery = `
-      UPDATE tb_majors
-      SET active = $1
-      WHERE id = $2
-    `;
-    const updateValues = [active, majorId];
-
-    await client.query(updateQuery, updateValues);
-
-    await client.end();
-
+  if (!data.error) {
     return new Response(
       JSON.stringify({ message: 'تم تغيير حالة التخصص بنجاح' }),
-      { headers: { 'content-type': 'application/json' } }
-    );
-  } catch (error) {
-    return new Response(
-      JSON.stringify({ message: 'حدث خطأ أثناء تحديث حالة التخصص' }),
-      { status: 400, headers: { 'content-type': 'application/json' } }
+      {
+        headers: { 'content-type': 'application/json' },
+      }
     );
   }
 }

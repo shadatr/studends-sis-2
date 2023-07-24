@@ -1,82 +1,55 @@
 import { TranscriptType } from '@/app/types/types';
-import { Client } from 'pg';
+import { createClient } from '@supabase/supabase-js';
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET(
   request: Request,
   { params }: { params: { id: number } }
 ) {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-    
-    await client.connect();
+    const data = await supabase
+      .from('tb_transcript')
+      .select('*')
+      .eq('student_id', params.id);
 
-    const query = 'SELECT * FROM tb_transcript WHERE student_id = $1';
-    const values = [params.id];
-    const result = await client.query(query, values);
-
-    await client.end();
-
-    if (result.rowCount === 0) {
-      return new Response(JSON.stringify({ message: 'an error occurred' }), {
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
       });
     }
 
-    return new Response(JSON.stringify({ message: result.rows }), {
-      status: 200,
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ message: 'an error occurred' }), {
-      status: 500,
-    });
-  }
+    return new Response(JSON.stringify({ message: data.data }));
+  } catch {}
 }
 
 export async function POST(request: Request) {
   const data: TranscriptType = await request.json();
 
-  try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-    
-    await client.connect();
+  console.log(data);
 
-    const insertQuery =
-      'INSERT INTO tb_transcript (gpa, semester, student_id, credits) VALUES ($1, $2, $3, $4)';
-    const insertValues = [
-      data.gpa,
-      data.semester,
-      data.student_id,
-      data.credits,
-    ];
-    await client.query(insertQuery, insertValues);
+  await supabase.from('tb_transcript').insert([
+    {
+      gpa: data.gpa,
+      semester: data.semester,
+      student_id: data.student_id,
+      credits: data.credits,
+    },
+  ]);
 
-    const updateQuery = 'UPDATE tb_students SET semester = $1 WHERE id = $2';
-    const updateValues = [data.studentSemester + 1, data.student_id];
-    await client.query(updateQuery, updateValues);
+  await supabase
+    .from('tb_students')
+    .update({
+      semester: data.studentSemester + 1,
+    })
+    .eq('id', data.student_id);
 
-    const updateClassesQuery =
-      'UPDATE tb_classes SET active = false WHERE semester = $1';
-    const updateClassesValues = [data.semester];
-    await client.query(updateClassesQuery, updateClassesValues);
+  const data5 = await supabase
+    .from('tb_classes')
+    .update({ active: false })
+    .eq('semester', data.semester);
 
-    await client.end();
-
-    return new Response(JSON.stringify({ message: 'success' }), {
-      status: 200,
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ message: 'an error occurred' }), {
-      status: 500,
-    });
-  }
+  console.log(data5.error?.message);
 }

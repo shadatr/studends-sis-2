@@ -1,83 +1,88 @@
-import { Client } from 'pg';
+import { createClient } from '@supabase/supabase-js';
 
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET(
   request: Request,
   { params }: { params: { id: number } }
 ) {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-    
-    await client.connect();
 
-    const fetchStudentQuery = `SELECT * FROM tb_students WHERE id = ${params.id}`;
-    const fetchCourseEnrollQuery = `SELECT * FROM tb_course_enrollment WHERE student_id = ${params.id} AND approved = true`;
-    const fetchClassesQuery = `SELECT * FROM tb_classes`;
-    const fetchSectionQuery = `SELECT * FROM tb_section`;
-    const fetchCourseQuery = `SELECT * FROM tb_courses`;
-    const fetchMajorQuery = `SELECT * FROM tb_majors`;
-    const fetchDoctorQuery = `SELECT * FROM tb_doctors`;
+    const dataStudent = supabase.from('tb_students').select('*').eq('id', params.id);
+    
+    const dataCourseEnroll = supabase.from('tb_course_enrollment').select('*').eq('student_id', params.id).eq('approved',true);
+    
+    const dataClasses = await supabase.from('tb_classes').select('*');
+    
+    const dataSection = supabase.from('tb_section').select('*');
+
+    const dataCourse = supabase.from('tb_courses').select('*');
+
+    const dataMajor = supabase.from('tb_majors').select('*');
+
+    const dataDoctor = await supabase.from('tb_doctors').select('*');
+
 
     const [
-      studentResult,
-      courseEnrollResult,
-      classesResult,
-      sectionResult,
-      courseResult,
-      majorResult,
-      doctorResult,
+      courseEnrollResponse,
+      classResponse,
+      sectionResponse,
+      courseResponse,
+      doctorResopnse,
+      studentResponse,
+      majorResponse,
     ] = await Promise.all([
-      client.query(fetchStudentQuery),
-      client.query(fetchCourseEnrollQuery),
-      client.query(fetchClassesQuery),
-      client.query(fetchSectionQuery),
-      client.query(fetchCourseQuery),
-      client.query(fetchMajorQuery),
-      client.query(fetchDoctorQuery),
+      dataCourseEnroll,
+      dataClasses,
+      dataSection,
+      dataCourse,
+      dataDoctor,
+      dataStudent,
+      dataMajor,
     ]);
 
-    const student = studentResult.rows;
-    const courseEnrollments = courseEnrollResult.rows;
-    const classes = classesResult.rows;
-    const sections = sectionResult.rows;
-    const courses = courseResult.rows;
-    const majors = majorResult.rows;
-    const doctors = doctorResult.rows;
+    const classes = classResponse.data;
+    const courseEnrollements = courseEnrollResponse.data;
+    const sections = sectionResponse.data;
+    const courses = courseResponse.data;
+    const doctors = doctorResopnse.data;
+    const student = studentResponse.data;
+    const major = majorResponse.data;
 
-    const data = courseEnrollments?.map((course) => {
-      const clas = classes.find((cl) => cl.id === course.class_id);
-      const secInfo = sections.find((sec) => sec.id === clas?.section_id);
-      const doc = doctors.find((co) => clas?.doctor_id === co.id);
-      const cour = courses.find((c) => secInfo?.course_id === c.id);
-      const stu = student.find((s) => s.id === params.id);
-      const maj = majors.find((m) => stu?.major === m.id);
+    const data = courseEnrollements?.map((course) => {
+
+      const clas = classes?.find((cl) => cl.id== course.class_id);
+
+      const secInfo = sections?.find((sec) => sec.id==clas?.section_id);
+
+      const doc = doctors?.find((co) =>clas?.doctor_id== co.id );
+
+      const cour = courses?.find((c) => secInfo?.course_id === c.id);
+
+      const stu = student?.find((c) => c.id);
+
+      const maj = major?.find((c) => stu?.major === c.id);
 
       return {
         class: clas,
         course: cour,
-        courseEnrollments: course,
+        courseEnrollements: course,
         section: secInfo,
         doctor: doc,
         student: stu,
-        major: maj,
+        major:maj
       };
     });
 
-    await client.end();
-
     return new Response(JSON.stringify({ message: data }), {
       status: 200,
-      headers: { 'content-type': 'application/json' },
     });
   } catch (error) {
     return new Response(JSON.stringify({ message: 'An error occurred' }), {
       status: 500,
-      headers: { 'content-type': 'application/json' },
     });
   }
 }

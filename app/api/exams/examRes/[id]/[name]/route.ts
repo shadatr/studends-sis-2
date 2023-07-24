@@ -1,89 +1,54 @@
-import { Client } from 'pg';
-import { StudentClassType } from '@/app/types/types';
+import { createClient } from '@supabase/supabase-js';
+import {  StudentClassType } from '@/app/types/types';
 
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET(
   request: Request,
   { params }: { params: { id: number; name: string } }
 ) {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
+    const { data: classes } = await supabase
+      .from('tb_classes')
+      .select('*')
+      .eq('section_id', params.id)
+      .eq('active', true);
 
-    await client.connect();
+    const { data: sections } = await supabase
+      .from('tb_section')
+      .select('*')
+      .eq('id', params.id);
 
-    const classesQuery = `
-      SELECT *
-      FROM tb_classes
-      WHERE section_id = $1 AND active = true
-    `;
-    const classesValues = [params.id];
-
-    const sectionsQuery = `
-      SELECT *
-      FROM tb_section
-      WHERE id = $1
-    `;
-    const sectionsValues = [params.id];
-
-    const [classesResult, sectionsResult] = await Promise.all([
-      client.query(classesQuery, classesValues),
-      client.query(sectionsQuery, sectionsValues),
-    ]);
-
-    const classesData = classesResult.rows;
-    const sectionsData = sectionsResult.rows;
-
-    if (classesData.length > 0 && sectionsData.length > 0) {
-      const classId = classesData[0].id;
-      const courseEnrollmentsQuery = `
-        SELECT *
-        FROM tb_course_enrollment
-        WHERE approved = true AND class_id = $1
-      `;
-      const courseEnrollmentsValues = [classId];
-
-      const courseQuery = `
-        SELECT *
-        FROM tb_courses
-        WHERE id = $1
-      `;
-      const courseValues = [sectionsData[0].course_id];
-
-      const [courseEnrollmentsResult, courseResult] = await Promise.all([
-        client.query(courseEnrollmentsQuery, courseEnrollmentsValues),
-        client.query(courseQuery, courseValues),
-      ]);
-
-      const courseEnrollmentsData = courseEnrollmentsResult.rows;
-      const courseData = courseResult.rows;
-
-      const data = {
-        courseEnrollments: courseEnrollmentsData,
-        course: courseData,
-        section: sectionsData,
-        class: classesData,
-      };
-
-      await client.end();
-
+    if (classes && sections) {
+      
+      const { data: courseEnrollments } = await supabase
+        .from('tb_course_enrollment')
+        .select('*')
+        .eq('approved', true)
+        .eq('class_id', classes[0].id);
+  
+      const { data: course } = await supabase
+        .from('tb_courses')
+        .select('*')
+        .eq('id', sections[0].course_id);
+  
+        
+        const data = {
+          courseEnrollements: courseEnrollments,
+          course: course,
+          section: sections,
+          class: classes
+        };
+  
       return new Response(JSON.stringify({ message: data }), {
         status: 200,
       });
-    }
+    }else{ console.log("not found");}
 
-    await client.end();
-    console.log('not found');
-
-    return new Response(JSON.stringify({ message: 'Not found' }), {
-      status: 404,
-    });
   } catch (error) {
-    console.error(error);
     return new Response(JSON.stringify({ message: 'An error occurred' }), {
       status: 500,
     });
@@ -91,61 +56,21 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
-  { params }: { params: { id: number; name: string } }
+  request: Request
 ) {
-  const data = await request.json();
 
-  try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
+  const data1 = await request.json();
 
-    await client.connect();
-
-    const classesQuery = `
-      SELECT *
-      FROM tb_classes
-      WHERE section_id = $1
-    `;
-    const classesValues = [params.id];
-
-    const classesResult = await client.query(classesQuery, classesValues);
-    const classesData = classesResult.rows;
-
-    await Promise.all(
-      data.map(async (item: StudentClassType) => {
-        const updateQuery = `
-          UPDATE tb_course_enrollment
-          SET
-            student_id = $1,
-            class_id = $2
-          WHERE
-            student_id = $3
-            AND class_id = $4
-        `;
-        const updateValues = [
-          item.student_id,
-          classesData[0].id,
-          item.student_id,
-          classesData[0].id,
-        ];
-
-        const result = await client.query(updateQuery, updateValues);
-        return result;
-      })
-    );
-
-    await client.end();
-
-    return new Response(JSON.stringify({ message: 'تم حذف الاعلان بنجاح' }));
-  } catch (error) {
-    return new Response(
-      JSON.stringify({ message: 'حدث خطأ أثناء تحديث بيانات الاعلان' }),
-      { headers: { 'content-type': 'application/json' }, status: 400 }
-    );
-  }
+  const res=await Promise.all(
+    data1.map(async (item: StudentClassType) => {
+      const data = await supabase
+        .from('tb_course_enrollment')
+        .update([item])
+        .eq('student_id', item.student_id)
+        .eq('class_id', item.class_id);
+      return data;
+    })
+  );
+  console.log(res);
+  return new Response(JSON.stringify({ message: 'تم حذف الاعلان بنجاح' }));
 }

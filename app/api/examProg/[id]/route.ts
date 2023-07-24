@@ -1,26 +1,16 @@
-import { ExamProgramType } from '@/app/types/types';
-import { Client } from 'pg';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function POST(request: Request) {
-  const data: ExamProgramType = await request.json();
+  const data = await request.json();
 
   try {
-    const bg = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
-
-    await bg.connect();
-
-    await bg.query(
-      'INSERT INTO tb_exam_program (course_id, date, hour, duration, location) VALUES ($1, $2, $3, $4, $5)',
-      [data.course_id, data.date, data.hour, data.duration, data.location]
-    );
-
-
-    await bg.end();
+    const res = await supabase.from('tb_exam_program').insert([data]);
+    console.log(res.error?.message);
 
     return new Response(
       JSON.stringify({ message: 'تم تسجيل الامتحان بنجاح' }),
@@ -29,9 +19,9 @@ export async function POST(request: Request) {
       }
     );
   } catch (error) {
-    console.error('Error occurred:', error);
+    // send a 400 response with an error happened during registration in arabic
     return new Response(
-      JSON.stringify({ message: 'حدث خطأ أثناء تسجيل الامتحان' }),
+      JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الامتحان' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
     );
   }
@@ -42,32 +32,17 @@ export async function GET(
   { params }: { params: { id: number } }
 ) {
   try {
-    const bg = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
+    const data = await supabase
+      .from('tb_exam_program')
+      .select('*')
+      .eq('course_id', params.id).order('date', { ascending: true });
 
-    await bg.connect();
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
+        status: 403,
+      });
+    }
 
-    const queryResult = await bg.query(
-      'SELECT * FROM tb_exam_program WHERE course_id = $1 ORDER BY date ASC',
-      [params.id]
-    );
-
-    const data = queryResult.rows;
-
-    await bg.end();
-
-    return new Response(JSON.stringify({ message: data }), {
-      headers: { 'content-type': 'application/json' },
-    });
-  } catch (error) {
-    console.error('Error occurred:', error);
-    return new Response(JSON.stringify({ message: 'an error occurred' }), {
-      status: 403,
-    });
-  }
+    return new Response(JSON.stringify({ message: data.data }));
+  } catch {}
 }
-

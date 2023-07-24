@@ -1,61 +1,38 @@
-import { Client } from 'pg';
+import { ClassesType } from '@/app/types/types';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export async function GET(
   request: Request,
   { params }: { params: { id: number } }
 ) {
   try {
-    const client = new Client({
-      user: process.env.DB_USERNAME || '',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || '',
-      port: Number(process.env.DB_PORT),
-    });
+    const data = await supabase
+      .from('tb_classes')
+      .select('*')
+      .eq('section_id', params.id).eq('active', true).order('id', { ascending: true });
 
-    await client.connect();
+    const parsedData = JSON.parse(JSON.stringify(data));
+    const messageData = parsedData.data;
+    const data3: ClassesType[] = messageData;
+    
+    const data1 = await supabase
+      .from('tb_course_enrollment')
+      .select('*')
+      .eq('class_id', data3[0].id)
+      .eq('approved', true)
+      .order('id', { ascending: true });
 
-    const selectClassesQuery = `
-      SELECT *
-      FROM tb_classes
-      WHERE section_id = $1 AND active = true
-      ORDER BY id ASC
-    `;
-    const selectClassesValues = [params.id];
+    if (data.error) {
+      return new Response(JSON.stringify({ message: 'an error occured' }), {
+        status: 403,
+      });
+    }
 
-    const classesResult = await client.query(
-      selectClassesQuery,
-      selectClassesValues
-    );
-
-    const classesData = classesResult.rows;
-
-    const selectEnrollmentQuery = `
-      SELECT *
-      FROM tb_course_enrollment
-      WHERE class_id = $1 AND approved = true
-      ORDER BY id ASC
-    `;
-    const selectEnrollmentValues = [classesData[0].id];
-
-    const enrollmentResult = await client.query(
-      selectEnrollmentQuery,
-      selectEnrollmentValues
-    );
-
-    await client.end();
-
-    const enrollmentData = enrollmentResult.rows;
-
-    return new Response(JSON.stringify({ message: enrollmentData }), {
-      headers: { 'content-type': 'application/json' },
-    });
-  } catch (error) {
-    console.error(error);
-    return new Response(
-      JSON.stringify({
-        message: 'حدث خطأ أثناء استرجاع بيانات التسجيل في المجموعة',
-      }),
-      { headers: { 'content-type': 'application/json' }, status: 400 }
-    );
-  }
+    return new Response(JSON.stringify({ message: data1.data }));
+  } catch {}
 }
