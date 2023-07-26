@@ -3,6 +3,8 @@ import { Database } from "@/app/types/supabase";
 
 const supabase = createClient<Database>( process.env.SUPABASE_URL || '', process.env.SUPABASE_KEY || '');
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const fetchDoctorsQuery = supabase.from('tb_doctors').select('*').order('id');
   const fetchDepartmentsQuery = supabase.from('tb_departments').select('*');
@@ -35,8 +37,8 @@ export async function GET() {
       department: department,
     };
   });
-  console.log(data);
-  return new Response(JSON.stringify({message : data}), {
-    headers: { 'content-type': 'application/json' },
+  return new Response(JSON.stringify({ message: data }), {
+    status: 200,
+    headers: { revalidate: dynamic },
   });
 }

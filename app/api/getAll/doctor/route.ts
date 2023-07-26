@@ -6,6 +6,8 @@ const supabase = createClient<Database>(
   process.env.SUPABASE_KEY || ''
 );
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const data = await supabase.from('tb_doctors').select('*');
@@ -15,6 +17,9 @@ export async function GET() {
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }));
+    return new Response(JSON.stringify({ message: data.data }), {
+      status: 200,
+      headers: { revalidate: dynamic },
+    });
   } catch {}
 }

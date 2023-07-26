@@ -15,6 +15,7 @@ export async function POST(request: Request) {
           .update(i)
           .eq('permission_id', i.permission_id)
           .eq('id', i.id);
+        console.log(ress.error?.message);
         return ress;
       } catch (error) {
         return { error };
@@ -45,9 +46,6 @@ export async function GET(
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }), {
-      status: 403,
-      headers: { revalidate: dynamic },
-    });
+    return new Response(JSON.stringify({ message: data.data }));
   } catch {}
 }

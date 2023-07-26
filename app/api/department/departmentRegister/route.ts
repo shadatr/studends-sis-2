@@ -6,11 +6,11 @@ const supabase = createClient(
   process.env.SUPABASE_KEY || ''
 );
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
 
   const data: DepartmentRegType = await request.json();
-
-
   try {
     const res = await supabase.from('tb_departments').insert([data]);
     console.log(res.error?.message);
@@ -29,7 +29,6 @@ export async function POST(request: Request) {
   }
 }
 
-
 export async function GET() {
   try {
     const data = await supabase
@@ -42,7 +41,10 @@ export async function GET() {
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }));
+    return new Response(JSON.stringify({ message: data.data }), {
+      status: 200,
+      headers: { revalidate: dynamic },
+    });
   } catch {}
 }
 

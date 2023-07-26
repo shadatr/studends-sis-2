@@ -6,6 +6,8 @@ const supabase = createClient(
   process.env.SUPABASE_KEY || ''
 );
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   const data: MajorRegType = await request.json();
 
@@ -35,6 +37,9 @@ export async function GET() {
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }));
+    return new Response(JSON.stringify({ message: data.data }), {
+      status: 200,
+      headers: { revalidate: dynamic },
+    });
   } catch {}
 }

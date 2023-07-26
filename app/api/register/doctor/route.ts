@@ -5,6 +5,8 @@ const supabase = createClient(
   process.env.SUPABASE_KEY || ''
 );
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   // TODO: Maybe add some validation for security here
 
@@ -49,7 +51,6 @@ export async function POST(request: Request) {
       );
     }
   } catch (error) {
-    console.log(error);
     return new Response(
       JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الحساب' }),
       { headers: { 'content-type': 'application/json' }, status: 400 }
@@ -66,6 +67,9 @@ export async function GET() {
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }));
+    return new Response(JSON.stringify({ message: data.data }), {
+      status: 200,
+      headers: { revalidate: dynamic },
+    });
   } catch {}
 }

@@ -14,7 +14,7 @@ export async function POST(
 
   try {
     newData.map(async (data) => {
-      const updatePromises = await supabase.from('tb_majors').update(data).eq('id', data.id);
+      await supabase.from('tb_majors').update(data).eq('id', data.id);
     });
 
     return new Response(

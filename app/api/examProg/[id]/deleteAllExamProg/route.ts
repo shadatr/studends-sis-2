@@ -5,7 +5,7 @@ const supabase = createClient(
   process.env.SUPABASE_KEY || ''
 );
 
-export async function POST(request: Request) {
+export async function POST() {
 
   const deleteReq = await supabase.from('tb_exam_program').delete().gte('id', 0);
   console.log(deleteReq.error);

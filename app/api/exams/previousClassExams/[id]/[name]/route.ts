@@ -6,6 +6,8 @@ const supabase = createClient(
   process.env.SUPABASE_KEY || ''
 );
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: Request,
   { params }: { params: { id: number, name: string } }
@@ -26,7 +28,6 @@ export async function GET(
       .from('tb_course_enrollment')
       .select('*')
       .eq('class_id', data3[0].id);
-      console.log(data1);
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
@@ -34,6 +35,9 @@ export async function GET(
       });
     }
 
-    return new Response(JSON.stringify({ message: data1.data }));
+    return new Response(JSON.stringify({ message: data1.data }), {
+      status: 200,
+      headers: { revalidate: dynamic },
+    });
   } catch {}
 }

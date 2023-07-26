@@ -6,12 +6,12 @@ const supabase = createClient<Database>(
   process.env.SUPABASE_KEY || ''
 );
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: Request,
   { params }: { params: { searchType: string; searchBy: string } }
 ) {
-  console.log(params.searchBy);
-  console.log(params.searchType);
 
   const tableName = `tb_${params.searchType}`;
 
@@ -20,8 +20,7 @@ export async function GET(
       .from(tableName)
       .select('*')
       .eq('number', params.searchBy);
-    console.log(data);
-    console.log(data.error?.message);
+
     const data2 = JSON.stringify(data.data);
     if (data2.length == 0) {
       return new Response(JSON.stringify({ message: 'لا يوجد نتائج' }), {
@@ -35,8 +34,7 @@ export async function GET(
       .from(tableName)
       .select('*')
       .textSearch('name', (params.searchBy as string).split(' ')[0]);
-    console.log(data);
-    console.log(data.error?.message);
+
     const data2 = JSON.stringify(data.data);
     if (data2.length == 0) {
       return new Response(JSON.stringify({ message: 'لا يوجد نتائج' }), {
@@ -44,6 +42,9 @@ export async function GET(
         headers: { 'Content-Type': 'application/json' },
       });
     }
-    return new Response(JSON.stringify({ message: data.data }));
+    return new Response(JSON.stringify({ message: data.data }), {
+      status: 200,
+      headers: { revalidate: dynamic },
+    });
   }
 }

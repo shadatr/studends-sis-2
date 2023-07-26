@@ -6,7 +6,6 @@ const supabase = createClient(
   process.env.SUPABASE_KEY || ''
 );
 
-
 export async function POST(request: Request) {
   const data: StudentClassType = await request.json();
 

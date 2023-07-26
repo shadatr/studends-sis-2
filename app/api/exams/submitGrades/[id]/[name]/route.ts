@@ -9,12 +9,11 @@ export async function POST(
   { params }: { params: { id: number ; name: string} }
 ) {
   const data1 = await request.json();
-  const data2=await supabase
+  await supabase
     .from('tb_classes')
     .update({ [params.name]: data1 })
     .eq('section_id', params.id);
 
-  console.log(data2);
 
   return new Response(JSON.stringify({ message: 'تم حذف الاعلان بنجاح' }));
 }

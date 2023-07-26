@@ -19,5 +19,4 @@ export async function POST(request: Request) {
         repeated: true,
       })
       .eq('course_enrollment_id', data.course_enrollment_id);
-
 }

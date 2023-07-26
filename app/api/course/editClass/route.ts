@@ -13,14 +13,11 @@ export async function POST(request: Request) {
 
   try {
     newData.map(async (item)=>
-    {const updatePromises = await supabase
+    {await supabase
       .from('tb_classes')
       .update([item.class])
       .eq('id', item.class.id);}
     );
-
-    console.log(newData);
-
 
     return new Response(
       JSON.stringify({ message: 'تم تحديث البيانات بنجاح' }),

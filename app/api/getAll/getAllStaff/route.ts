@@ -5,6 +5,7 @@ const supabase = createClient<Database>(
   process.env.SUPABASE_URL || '',
   process.env.SUPABASE_KEY || ''
 );
+
 export const dynamic = 'force-dynamic';
 
 export async function GET() {

@@ -5,11 +5,16 @@ const supabase = createClient(
   process.env.SUPABASE_KEY || ''
 );
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const data = await supabase.from('tb_grades').select('*');
 
-    return new Response(JSON.stringify({ message: data.data }));
+    return new Response(JSON.stringify({ message: data.data }), {
+      status: 200,
+      headers: { revalidate: dynamic },
+    });
   } catch {}
 }
 
@@ -20,7 +25,7 @@ export async function POST(request: Request) {
   try {
     await Promise.all(
       data1.map(async (item: LetterGradesType) => {
-        const data = await supabase
+        await supabase
           .from('tb_grades')
           .update({
             letter_grade: item.letter_grade,
