@@ -254,7 +254,7 @@ const Page = () => {
     setUnableCourses(updatedCheckList2);
     setCheckList(uniqueCourses);
     
-  }, [user, refresh, courses]);
+  }, [user, refresh, courses, submit]);
 
   const handleCheck = (item: number) => {
     const isChecked = checked.includes(item);
