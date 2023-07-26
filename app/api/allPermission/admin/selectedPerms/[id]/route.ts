@@ -15,8 +15,8 @@ export async function POST(request: Request) {
           .update(i)
           .eq('permission_id', i.permission_id)
           .eq('id', i.id);
-        console.log(ress.error?.message);
-        return ress;
+
+          return ress;
       } catch (error) {
         return { error };
       }

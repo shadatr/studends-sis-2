@@ -30,6 +30,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [perms, setPerms] = useState<GetPermissionDoctorType[]>([]);
   const [course, setCourse] = useState<ClassEnrollmentsType>();
   const [courseLetter, setCourseLetter] = useState<LetterGradesType[]>([]);
+
   useEffect(() => {
     const fetchPosts = async () => {
       if (user) {
@@ -380,7 +381,10 @@ const Page = ({ params }: { params: { id: number } }) => {
     studentId: number,
     exam: string,
     grade: string
-  ) => {
+  ) => { 
+    if(parseInt(grade)<0 ||parseInt(grade)>100){
+      toast.error('لا يمكنك ادخال درجة اكثر من 100');
+    }
     const updatedGrades = grades?.courseEnrollements.map((gradeObj) => {
       if (gradeObj.student_id === studentId) {
         return {
@@ -406,10 +410,14 @@ const Page = ({ params }: { params: { id: number } }) => {
   };
 
   const handleSubmit = (name: string) => {
-    setEditMid(false);
-    setEditFinal(false);
-    setEditHw(false);
-    setEdit(!edit);
+
+    const moreavrg = grades?.courseEnrollements.find(
+      (grad) => grad?.class_work&&grad?.midterm&&grad?.final?( grad?.class_work > 100 || grad?.midterm > 100 || grad?.final > 100):''
+    );
+    if (moreavrg) {
+      toast.error('لا يمكنك ادخال درجة اكثر من 100');
+      return;
+    }
 
     axios.post(
       `/api/exams/examRes/${params.id}/${name}`,
@@ -417,6 +425,10 @@ const Page = ({ params }: { params: { id: number } }) => {
     )
       .then(() => {
         toast.success('تم نشر الدرجات بنجاح');
+            setEditMid(false);
+            setEditFinal(false);
+            setEditHw(false);
+            setEdit(!edit);
         const dataUsageHistory = {
           id: user?.id,
           type: 'doctor',

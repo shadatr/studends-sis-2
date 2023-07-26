@@ -43,36 +43,32 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
   const [edit, setEdit] = useState(false);
   const printableContentRef = useRef<HTMLDivElement>(null);
-  const [major, setMajor] = useState<string>();
-
+  const [major, setMajor] = useState<MajorRegType[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        
         const response = await axios.get('/api/allPermission/student');
         const message: AssignPermissionType[] = response.data.message;
         setCheckList(message);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
-      
+
       const response = await axios.get(
         `/api/allPermission/student/selectedPerms/${params.id}`
-        );
-        const message: GetPermissionStudentType[] = response.data.message;
-        setPerms(message);
-        
-        axios.get(`/api/personalInfo/student/${params.id}`).then(async (resp) => {
-          const message: PersonalInfoType[] = resp.data.message;
-          setMydata(message);
-          setNewData(message);
+      );
+      const message: GetPermissionStudentType[] = response.data.message;
+      setPerms(message);
 
-          const responseMaj = await axios.get(
-            `/api/majorEnrollment/${message[0].major}`
-          );
-          const messageMaj: MajorRegType[] = responseMaj.data.message;
-          setMajor(messageMaj[0].major_name);
+      axios.get(`/api/personalInfo/student/${params.id}`).then(async (resp) => {
+        const message: PersonalInfoType[] = resp.data.message;
+        setMydata(message);
+        setNewData(message);
+
+        const responseMaj = await axios.get(`/api/major/getMajors`);
+        const messageMaj: MajorRegType[] = responseMaj.data.message;
+        setMajor(messageMaj);
       });
 
       axios.get('/api/getAll/doctor').then((res) => {
@@ -81,15 +77,13 @@ const Page = ({ params }: { params: { id: number } }) => {
       });
     };
     fetchPosts();
-  }, [refresh, params.id,edit]);
-
+  }, [refresh, params.id, edit]);
 
   const selected: AssignPermissionType[] = perms.flatMap((item) =>
     checkList
       .filter((item2) => item.permission_id == item2.id)
       .map((item2) => ({ name: item2.name, id: item2.id, active: item.active }))
   );
-
 
   const handleActivate = (parmId: number, id: number, active: boolean) => {
     const data = { student_id: id, permission_id: parmId, active: active };
@@ -101,6 +95,31 @@ const Page = ({ params }: { params: { id: number } }) => {
       });
   };
 
+  const handleInputChangeDoctor = (
+    e: string,
+    field: keyof PersonalInfoType
+  ) => {
+    const value = doctors.find((item) => item.name === e);
+    const updatedData = newData.map((data) => {
+      return {
+        ...data,
+        [field]: value?.id,
+      };
+    });
+
+    setNewData(updatedData);
+  };
+
+  const handleInputChangeMajor = (e: string, field: keyof PersonalInfoType) => {
+    const value = major.find((item) => item.major_name == e);
+    const updatedData = newData.map((data) => {
+      return {
+        ...data,
+        [field]: value?.id,
+      };
+    });
+    setNewData(updatedData);
+  };
 
   const handleInputChange = (e: string, field: keyof PersonalInfoType) => {
     const updatedData = newData.map((data) => {
@@ -202,14 +221,28 @@ const Page = ({ params }: { params: { id: number } }) => {
                       />
                     </td>
                     <td className="flex w-[700px] p-2 justify-end">
-                      <input
-                        className=" w-[700px] text-right "
-                        type="text"
-                        value={item2.major}
+                      <select
+                        id="dep"
+                        dir="rtl"
                         onChange={(e) =>
-                          handleInputChange(e.target.value, 'major')
+                          handleInputChangeMajor(e.target.value, 'major')
                         }
-                      />
+                        className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
+                        defaultValue={
+                          item.major
+                            ? major.find((maj) => item.major == maj.id)
+                                ?.major_name
+                            : 'لا يوجد'
+                        }
+                      >
+                        <option disabled>الدكتور</option>
+                        {major.map((maj, index) => {
+                          if (maj.active)
+                            return (
+                              <option key={index}>{maj.major_name}</option>
+                            );
+                        })}
+                      </select>
                     </td>
                     <td className="flex w-[700px] p-2 justify-end">
                       <input
@@ -261,10 +294,28 @@ const Page = ({ params }: { params: { id: number } }) => {
                         }
                       />
                     </td>
+
                     <td className="flex w-[700px] p-2 justify-end">
-                      {item.advisor
-                        ? doctors.find((doc) => item.advisor == doc.id)?.name
-                        : 'لا يوجد'}
+                      <select
+                        id="dep"
+                        dir="rtl"
+                        onChange={(e) =>
+                          handleInputChangeDoctor(e.target.value, 'advisor')
+                        }
+                        className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
+                        defaultValue={
+                          item.advisor
+                            ? doctors.find((doc) => item.advisor == doc.id)
+                                ?.name
+                            : 'لا يوجد'
+                        }
+                      >
+                        <option disabled>الدكتور</option>
+                        {doctors.map((doc, index) => {
+                          if (doc.active)
+                            return <option key={index}>{doc.name}</option>;
+                        })}
+                      </select>
                     </td>
                   </tr>
                 ))
@@ -281,7 +332,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                     {item.birth_date}
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
-                    {major ? major : 'غير محدد'}
+                    {item.major
+                      ? major?.find((maj) => item.major == maj.id)?.major_name
+                      : 'لا يوجد'}
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
                     {item.semester}
@@ -341,20 +394,20 @@ const Page = ({ params }: { params: { id: number } }) => {
         </table>
         <div>
           {useMyData.length > 0 && (
-              <Transcript majorId={useMyData[0].major} user={params.id} />
+            <Transcript majorId={useMyData[0].major} user={params.id} />
           )}
         </div>
         <div style={{ position: 'absolute', top: '-9999px' }}>
-        <div ref={printableContentRef} className='m-5'>
-          {useMyData.length > 0 && (
-            <>
-              <h1>{useMyData[0].name} :الاسم</h1>
-              <h1>{useMyData[0].surname} :اللقب</h1>
-              <h1>{useMyData[0].number} : رقم الطالب</h1>
-              <Transcript majorId={useMyData[0].major} user={params.id} />
-            </>
-          )}
-        </div>
+          <div ref={printableContentRef} className="m-5">
+            {useMyData.length > 0 && (
+              <>
+                <h1>{useMyData[0].name} :الاسم</h1>
+                <h1>{useMyData[0].surname} :اللقب</h1>
+                <h1>{useMyData[0].number} : رقم الطالب</h1>
+                <Transcript majorId={useMyData[0].major} user={params.id} />
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

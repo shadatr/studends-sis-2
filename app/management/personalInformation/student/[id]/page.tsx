@@ -46,7 +46,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [refresh, setRefresh] = useState(false);
   const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
   const [edit, setEdit] = useState(false);
-  const [major, setMajor] = useState<string>();
+  const [major, setMajor] = useState<MajorRegType[]>();
   const printableContentRef = useRef<HTMLDivElement>(null);
   const user = session.data?.user;
 
@@ -77,11 +77,9 @@ const Page = ({ params }: { params: { id: number } }) => {
         setMydata(message);
         setNewData(message);
 
-        const responseMaj = await axios.get(
-          `/api/majorEnrollment/${message[0].major}`
-        );
+        const responseMaj = await axios.get(`/api/major/getMajors`);
         const messageMaj: MajorRegType[] = responseMaj.data.message;
-        setMajor(messageMaj[0].major_name);
+        setMajor(messageMaj);
       });
 
       axios.get('/api/getAll/doctor').then((res) => {
@@ -151,6 +149,17 @@ const Page = ({ params }: { params: { id: number } }) => {
       .catch(() => {
         toast.error('حدث خطأ أثناء تحديث البيانات');
       });
+  };
+
+  const handleInputChangeMajor = (e: string, field: keyof PersonalInfoType) => {
+    const value = major?.find((item) => item.major_name == e);
+    const updatedData = newData.map((data) => {
+      return {
+        ...data,
+        [field]: value?.id,
+      };
+    });
+    setNewData(updatedData);
   };
 
   const handlePrint = useReactToPrint({
@@ -247,7 +256,28 @@ const Page = ({ params }: { params: { id: number } }) => {
                       />
                     </td>
                     <td className="flex w-[700px] p-2 justify-end">
-                      {item2.major}
+                      <select
+                        id="dep"
+                        dir="rtl"
+                        onChange={(e) =>
+                          handleInputChangeMajor(e.target.value, 'major')
+                        }
+                        className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
+                        defaultValue={
+                          item.major
+                            ? major?.find((maj) => item.major == maj.id)
+                                ?.major_name
+                            : 'لا يوجد'
+                        }
+                      >
+                        <option disabled>الدكتور</option>
+                        {major?.map((maj, index) => {
+                          if (maj.active)
+                            return (
+                              <option key={index}>{maj.major_name}</option>
+                            );
+                        })}
+                      </select>
                     </td>
                     <td className="flex w-[700px] p-2 justify-end">
                       <input
@@ -339,7 +369,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                     {item.birth_date}
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
-                    {major ? major : 'غير محدد'}
+                    {item.major
+                      ? major?.find((maj) => item.major == maj.id)?.major_name
+                      : 'لا يوجد'}
                   </td>
 
                   <td className="flex w-[700px] p-2 justify-end">
@@ -362,7 +394,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                       ? doctors.find((doc) => item.advisor == doc.id)?.name
                       : 'لا يوجد'}
                   </td>
-                  <td className="flex w-[700px] p-2 justify-end">{user?.graduated ? 'تخرج' : 'لم يتخرج'}</td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {user?.graduated ? 'تخرج' : 'لم يتخرج'}
+                  </td>
                 </tr>
               ))}
         </tbody>

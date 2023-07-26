@@ -30,7 +30,7 @@ export async function GET(
         .from('tb_course_enrollment')
         .select('*')
         .eq('approved', true)
-        .eq('class_id', classes[0].id);
+        .eq('class_id', classes[0].id).order('id', { ascending: false });
   
       const { data: course } = await supabase
         .from('tb_courses')

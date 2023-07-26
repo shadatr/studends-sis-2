@@ -53,8 +53,8 @@ export type PersonalInfoType = {
 export type MajorRegType = {
   id?: number;
   major_name: string;
-  semesters?: number;
   department_id?: number;
+  active: boolean;
   credits_needed?: number;
   tb_departments?: {
     name: string;
