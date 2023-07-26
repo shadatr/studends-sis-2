@@ -30,13 +30,13 @@ const Page = () => {
       const data: AdminStaffType[] = responseData.message;
       setStaff(data);
       if(user){
-        const response = await axios.get(
-          `/api/allPermission/admin/selectedPerms/${user?.id}`
+        const response = await fetch(
+          `/api/allPermission/admin/selectedPerms/${user?.id}`, {next: { revalidate: 0 }}
         );
-        const message: GetPermissionType[] = response.data.message;
-        setPerms(message);
+        const responseData = await response.json();
+        const data: GetPermissionType[] = responseData.message;
+        setPerms(data);
       }
-
     };
 
     fetchPosts();
