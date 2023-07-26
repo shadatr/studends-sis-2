@@ -15,12 +15,9 @@ export async function GET() {
     return { status: 400, body: { message: 'there is an error' } };
   }
 
-  const response = new Response(JSON.stringify({ message: resp }), {
+  // Set revalidate to 0 to ensure always dynamic rendering, i.e., no caching
+  return new Response(JSON.stringify({ message: resp }), {
     status: 200,
+    headers: { revalidate: '0' },
   });
-
-  // Set the revalidate option to "force-dynamic"
-  (response as any).revalidate = 'force-dynamic';
-
-  return response;
 }
