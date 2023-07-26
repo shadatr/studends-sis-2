@@ -9,7 +9,6 @@ import {
   GetPermissionType,
   DepartmentRegType,
   MajorType,
-  AssignPermissionType,
 } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -414,6 +413,7 @@ const Page = () => {
       .catch((err) => {
         toast.error(err.response.data.message);
       });
+      setLoad(!load);
   };
 
   const handleInputChangeCourses = (
