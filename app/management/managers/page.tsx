@@ -29,7 +29,6 @@ const Page = () => {
       const responseData = await response.json();
       const data: AdminStaffType[] = responseData.message;
       setStaff(data);
-      console.log(data);
       if(user){
         const response = await axios.get(
           `/api/allPermission/admin/selectedPerms/${user?.id}`
