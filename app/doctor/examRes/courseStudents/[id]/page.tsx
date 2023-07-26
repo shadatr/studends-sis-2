@@ -381,8 +381,8 @@ const Page = ({ params }: { params: { id: number } }) => {
     studentId: number,
     exam: string,
     grade: string
-  ) => { 
-    if(parseInt(grade)<0 ||parseInt(grade)>100){
+  ) => {
+    if (parseInt(grade) < 0 || parseInt(grade) > 100) {
       toast.error('لا يمكنك ادخال درجة اكثر من 100');
     }
     const updatedGrades = grades?.courseEnrollements.map((gradeObj) => {
@@ -395,7 +395,6 @@ const Page = ({ params }: { params: { id: number } }) => {
       return gradeObj;
     });
 
-    
     if (updatedGrades) {
       const updatedGradesData = {
         ...grades,
@@ -404,31 +403,34 @@ const Page = ({ params }: { params: { id: number } }) => {
         section: grades?.section || [],
         class: grades?.class || [],
       };
-      
+
       setGrades(updatedGradesData);
     }
   };
 
   const handleSubmit = (name: string) => {
+    setEditMid(false);
+    setEditFinal(false);
+    setEditHw(false);
 
-    const moreavrg = grades?.courseEnrollements.find(
-      (grad) => grad?.class_work&&grad?.midterm&&grad?.final?( grad?.class_work > 100 || grad?.midterm > 100 || grad?.final > 100):''
+    const moreavrg = grades?.courseEnrollements.find((grad) =>
+      grad?.class_work && grad?.midterm && grad?.final
+        ? grad?.class_work > 100 || grad?.midterm > 100 || grad?.final > 100
+        : ''
     );
     if (moreavrg) {
       toast.error('لا يمكنك ادخال درجة اكثر من 100');
       return;
     }
 
-    axios.post(
-      `/api/exams/examRes/${params.id}/${name}`,
-      grades?.courseEnrollements
-    )
+    axios
+      .post(
+        `/api/exams/examRes/${params.id}/${name}`,
+        grades?.courseEnrollements
+      )
       .then(() => {
         toast.success('تم نشر الدرجات بنجاح');
-            setEditMid(false);
-            setEditFinal(false);
-            setEditHw(false);
-            setEdit(!edit);
+        setEdit(!edit);
         const dataUsageHistory = {
           id: user?.id,
           type: 'doctor',
@@ -456,7 +458,11 @@ const Page = ({ params }: { params: { id: number } }) => {
       </button>
       <form onSubmit={(e) => e.preventDefault()}>
         {perms.map((item) => {
-          if (item.permission_id === 21 && item.active && !course?.class[0].publish_grades) {
+          if (
+            item.permission_id === 21 &&
+            item.active &&
+            !course?.class[0].publish_grades
+          ) {
             return (
               <>
                 <button

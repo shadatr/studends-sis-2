@@ -411,6 +411,9 @@ const Page = ({ params }: { params: { id: number } }) => {
   };
 
   const handleSubmit = (name: string) => {
+    setEditMid(false);
+    setEditFinal(false);
+    setEditHw(false);
     const moreavrg = grades?.courseEnrollements.find((grad) =>
       grad?.class_work && grad?.midterm && grad?.final
         ? grad?.class_work > 100 || grad?.midterm > 100 || grad?.final > 100
@@ -428,10 +431,8 @@ const Page = ({ params }: { params: { id: number } }) => {
       )
       .then(() => {
         toast.success('تم نشر الدرجات بنجاح');
-        setEditMid(false);
-        setEditFinal(false);
-        setEditHw(false);
         setEdit(!edit);
+
         const dataUsageHistory = {
           id: user?.id,
           type: 'admin',
