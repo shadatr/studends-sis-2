@@ -26,8 +26,10 @@ const Page = () => {
       const response = await fetch('/api/getAll/getAllStaff', {
         next: { revalidate: 1 },
       });
-      const data: AdminStaffType[] = await response.json();
+      const responseData = await response.json();
+      const data: AdminStaffType[] = responseData.message;
       setStaff(data);
+      console.log(data);
       if(user){
         const response = await axios.get(
           `/api/allPermission/admin/selectedPerms/${user?.id}`
