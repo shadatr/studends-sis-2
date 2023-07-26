@@ -5,6 +5,10 @@ import Menu from "../components/studentMenu";
 import Footer from "../components/Footer";
 
 
+export const metadata = {
+  title: 'جامعة طرابلس | الطلاب',
+};
+
 export default function studentLayout({
   children,
 }: {
