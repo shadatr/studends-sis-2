@@ -96,9 +96,6 @@ const Page = () => {
                     <th className="border border-gray-300 px-4 py-2">
                       المعلومات الشخصية
                     </th>
-                    <th className="border border-gray-300 px-4 py-2">
-                      تاريخ الانشاء
-                    </th>
                     <th className="border border-gray-300 px-4 py-2">لقب</th>
                     <th className="border border-gray-300 px-4 py-2">اسم</th>
                   </tr>
@@ -140,9 +137,6 @@ const Page = () => {
                         >
                           الملف الشخصي
                         </Link>
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {user.createdAt}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
                         {user.surname}
