@@ -63,7 +63,7 @@ const LoginPage = ({ params }: { params: { name: string } }) => {
   return (
     <div className="h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-[20px] flex items-center justify-center flex-col shadow-lg w-[500px] h-[550px]">
-        <h1 className="text-[30px] font-bold m-3">تسجيل الدخول {params.name}</h1>
+        <h1 className="text-[30px] font-bold m-3">تسجيل الدخول </h1>
         <span className="w-[450px] items-right flex justify-end">
           <select
             className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md m-4 items-right flex justify-end"

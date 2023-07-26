@@ -23,9 +23,9 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await fetch('/api/getAll/getAllStaff', 
-        { cache: 'no-store' },
-      );
+      const response = await fetch('/api/getAll/getAllStaff', {
+        next: { revalidate: 2 },
+      });
       const responseData = await response.json();
       const data: AdminStaffType[] = responseData.message;
       setStaff(data);
