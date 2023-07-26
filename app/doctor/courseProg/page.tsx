@@ -20,7 +20,15 @@ const hoursNames: CheckedType[] = [
   { id: 19, name: '7:00' },
 ];
 
-const daysOfWeek = ['friday', 'thursday', 'wednesday', 'tuesday', 'monday'];
+const daysOfWeek = [
+  'friday',
+  'thursday',
+  'wednesday',
+  'tuesday',
+  'monday',
+  'sunday',
+  'saturday',
+];
 
 const Page = () => {
   const session = useSession({ required: true });
@@ -71,6 +79,8 @@ const Page = () => {
             <th className="py-2 px-4 bg-gray-200 text-gray-700">الاربعاء</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-700">الثلاثاء</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-700">الاثنين</th>
+            <th className="py-2 px-4 bg-gray-200 text-gray-700">الاحد</th>
+            <th className="py-2 px-4 bg-gray-200 text-gray-700">السبت</th>
             <th className="py-2 px-4 bg-gray-200 text-gray-700">الوقت</th>
           </tr>
         </thead>
