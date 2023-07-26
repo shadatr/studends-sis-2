@@ -3,6 +3,8 @@ import {GetPermissionType} from '@/app/types/types';
 
 const supabase = createClient(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "");
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   const data: GetPermissionType[] = await request.json();
   const res = await Promise.all(
@@ -13,7 +15,6 @@ export async function POST(request: Request) {
           .update(i)
           .eq('permission_id', i.permission_id)
           .eq('id', i.id);
-        console.log(ress.error?.message);
         return ress;
       } catch (error) {
         return { error };
@@ -40,9 +41,13 @@ export async function GET(
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
+        headers: { revalidate: dynamic },
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }));
+    return new Response(JSON.stringify({ message: data.data }), {
+      status: 403,
+      headers: { revalidate: dynamic },
+    });
   } catch {}
 }

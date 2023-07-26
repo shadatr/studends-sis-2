@@ -7,6 +7,8 @@ const supabase = createClient<Database>(
   process.env.SUPABASE_KEY || ''
 );
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request, { params }: { params: { name: string } }) {
   const data = await supabase
     .from('tb_all_permissions')
@@ -16,6 +18,7 @@ export async function GET(request: Request, { params }: { params: { name: string
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,
+        headers: { revalidate: dynamic },
       });
     }
 
@@ -29,7 +32,6 @@ export async function GET(request: Request, { params }: { params: { name: string
 
     try {
       const res = await supabase.from('tb_admin_perms').insert([data]);
-      console.log(res.error?.message);
       if (res.error) {
         throw res.error;
       }
@@ -40,7 +42,6 @@ export async function GET(request: Request, { params }: { params: { name: string
         }
       );
     } catch (error) {
-      console.log(error);
       return new Response(
         JSON.stringify({ message: 'حدث خطأ اثناء تسجيل الكلية' }),
         { headers: { 'content-type': 'application/json' }, status: 400 }

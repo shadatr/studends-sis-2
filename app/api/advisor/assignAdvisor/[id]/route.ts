@@ -6,9 +6,10 @@ const supabase = createClient(
   process.env.SUPABASE_KEY || ''
 );
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   const data: AssignAdvisorType = await request.json();
-  console.log(data);
 
   try {
     const res = await supabase.from('tb_students').update( {advisor: data.advisor} ).eq("id", data.id);
@@ -42,7 +43,8 @@ export async function GET(
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
-        status: 403,
+        status: 200,
+        headers: { revalidate: dynamic },
       });
     }
 

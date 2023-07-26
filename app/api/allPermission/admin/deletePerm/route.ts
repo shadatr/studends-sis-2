@@ -8,7 +8,7 @@ const supabase = createClient<Database>(
 
 export async function POST(request: Request) {
   const req = await request.json();
-  console.log(req);
+
   try {
     const deleteReq = await supabase
       .from('tb_admin_perms')
