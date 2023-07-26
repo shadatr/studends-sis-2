@@ -197,7 +197,6 @@ const Page = () => {
         };
         axios.post('/api/usageHistory', dataUsageHistory);
         toast.success(res.data.message);
-        toast.success(res.data.message);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -548,7 +547,7 @@ const Page = () => {
                         edit ? handleSubmitDepartment() : setEdit(!edit)
                       }
                     >
-                      {edit2 ? 'ارسال' : 'تعديل'}
+                      {edit ? 'ارسال' : 'تعديل'}
                     </button>
                   );
                 }
