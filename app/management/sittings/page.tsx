@@ -1211,7 +1211,7 @@ const Page = () => {
               </select>
             </div>
             {perms.map((permItem, idx) => {
-              if (permItem.permission_id == 7 && permItem.add) {
+              if (permItem.permission_id == 7 && permItem.add && selectedMajor) {
                 return (
                   <div
                     className="flex flex-row-reverse items-center justify-center  w-[100%] m-10 "

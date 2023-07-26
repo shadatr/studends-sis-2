@@ -534,13 +534,14 @@ const Page = () => {
                 type="text"
                 className="w-20 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
                 onChange={(e) => handleChangeYear('BA', e.target.value)}
+                value={year[0].BA}
               />
               <select
                 id="dep"
                 dir="rtl"
                 onChange={(e) => handleChangeYear('AA', e.target.value)}
                 className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                defaultValue="الفصل"
+                defaultValue={year[0].AA}
               >
                 <option disabled>الفصل</option>
                 <option>خريف</option>

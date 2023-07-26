@@ -52,6 +52,8 @@ const hoursNames: CheckedType[] = [
 ];
 
 const days: DayOfWeekType[] = [
+  { name: 'الاحد', day: 'sunday' },
+  { name: 'السبت', day: 'saturday' },
   { name: 'الجمعة', day: 'friday' },
   { name: 'الخميس', day: 'thursday' },
   { name: 'الاربعاء', day: 'wednesday' },
@@ -75,9 +77,6 @@ const Page = () => {
   const [courses, setCourses] = useState<AddCourseType[]>([]);
   const [sections, setSections] = useState<SectionType[]>([]);
   const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
-  const [course, setCourse] = useState<number>();
-  const [loadCourses, setLoadCourse] = useState(false);
-  const [isOptional, SetIsOptional] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('Tab 1');
   const section = useRef<HTMLSelectElement>(null);
   const [doctor, setDoctor] = useState<number>();
@@ -189,54 +188,6 @@ const Page = () => {
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
-  };
-
-  const handleRegisterCourse = () => {
-    if (!(course && isOptional)) {
-      toast.error('يجب ملئ جميع الحقول');
-      return;
-    }
-
-    let duplicateFound = false;
-
-    majorCourses.forEach((item) => {
-      if (item.course_id == course) {
-        duplicateFound = true;
-        return;
-      }
-    });
-
-    if (duplicateFound) {
-      toast.error('هذه المادة مسجلة بالفعل');
-      return;
-    }
-
-    const opt = isOptional == 'اختياري' ? true : false;
-
-    if (course) {
-      const data = {
-        major_id: selectedMajor?.id,
-        course_id: course,
-        isOptional: opt,
-      };
-
-      axios
-        .post(`/api/course/courseMajorReg/1`, data)
-        .then((res) => {
-          toast.success(res.data.message);
-          setLoadCourse(!loadCourses);
-          handleChangeMajor();
-          const dataUsageHistory = {
-            id: user?.id,
-            type: 'admin',
-            action: ' تعديل مواد تخصص' + major,
-          };
-          axios.post('/api/usageHistory', dataUsageHistory);
-        })
-        .catch((err) => {
-          toast.error(err.response.data.message);
-        });
-    }
   };
 
   const handleActivate = (studentId: number, active: boolean) => {
@@ -496,7 +447,11 @@ const Page = () => {
                 (item1) => item1.course_id === courseId?.id
               );
 
-              if (permItem.permission_id === 8 && permItem.add) {
+              if (
+                permItem.permission_id === 8 &&
+                permItem.add &&
+                selectedMajor
+              ) {
                 return (
                   <div
                     className="border-2 border-grey m-4 rounded-5 p-5 flex w-[100%] justify-center items-center rounded-md"
@@ -556,7 +511,7 @@ const Page = () => {
                       id="dep"
                       dir="rtl"
                       onChange={(e) => setDoctor(parseInt(e.target.value))}
-                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4  w-[150px]"
                       defaultValue="الدكتور"
                     >
                       <option disabled>الدكتور</option>
@@ -719,7 +674,7 @@ const Page = () => {
           </>
         )}
       {activeTab === 'Tab 2' &&
-        perms.find((per) => per.permission_id == 1 && per.see) && (
+        perms.find((per) => per.permission_id == 1 && per.see&&selectedMajor) && (
           <div className="flex  flex-col justify-center items-center w-[80%]">
             {perms.map((permItem, idx) => {
               if (
