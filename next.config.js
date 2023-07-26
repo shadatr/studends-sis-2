@@ -6,6 +6,7 @@ const nextConfig = {
   },
   reactStrictMode: true,
   generateEtags: false,
+  revalidate: 0,
 };
 
 module.exports = nextConfig;

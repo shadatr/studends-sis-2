@@ -77,7 +77,7 @@ const LoginPage = ({ params }: { params: { name: string } }) => {
         <div className="mb-4">
           <input
             type="text"
-            placeholder="Email"
+            placeholder="البريد الالكتروني"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className=" border w-[450px] border-gray-300 rounded-md px-3 py-2 h-[50px]"
@@ -86,7 +86,7 @@ const LoginPage = ({ params }: { params: { name: string } }) => {
         <div className="mb-4">
           <input
             type="password"
-            placeholder="Password"
+            placeholder="كلمة المرور"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-[450px] flex border border-gray-300 rounded-md px-3 py-2 h-[50px]"

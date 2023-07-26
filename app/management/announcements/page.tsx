@@ -152,6 +152,7 @@ const Page = () => {
                       <textarea
                         className="h-[150px] text-right border border-gray-300 px-4 py-2 bg-grey"
                         autoFocus
+                        dir="rtl"
                         ref={inputRef}
                         id="addItem"
                         placeholder="اكتب هنا"

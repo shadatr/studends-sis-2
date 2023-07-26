@@ -213,6 +213,7 @@ const AnnoPage = () => {
           placeholder="Add Item"
           required
           value={newItem}
+          dir="rtl"
           onChange={(e) => setNewItem(e.target.value)}
         />
         <button
