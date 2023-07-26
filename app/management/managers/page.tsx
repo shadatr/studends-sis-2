@@ -23,11 +23,11 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      axios.get('/api/getAll/getAllStaff').then((res) => {
-        const message: AdminStaffType[] = res.data.message;
-        setStaff(message);
-        console.log(message);
+      const response = await fetch('/api/getAll/getAllStaff', {
+        next: { revalidate: 1 },
       });
+      const data: AdminStaffType[] = await response.json();
+      setStaff(data);
       if(user){
         const response = await axios.get(
           `/api/allPermission/admin/selectedPerms/${user?.id}`
