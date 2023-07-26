@@ -172,7 +172,6 @@ const Page = () => {
         });
 
         if (done == course.prerequisites.length) {
-          // console.log(course);
           if (
             course?.courseEnrollements?.length != 0 &&
             course?.courseEnrollements 
@@ -251,7 +250,6 @@ const Page = () => {
       }
     });
     
-    console.log(uniqueCourses);
     setRepeat(repeatList);
     setUnableCourses(updatedCheckList2);
     setCheckList(uniqueCourses);
@@ -296,6 +294,7 @@ const Page = () => {
 
     setSubmitting(false);
     setSubmit(!submit);
+    setChecked([]);
   };
 
 const handleDelete = (item?: StudentClassType) => {
@@ -307,7 +306,7 @@ const handleDelete = (item?: StudentClassType) => {
     .catch((err) => {
       toast.error(err.response.data.message);
     });
-  setRefresh(!refresh);
+  setSubmit(!submit);
 };
 
   return (
