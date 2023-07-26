@@ -13,9 +13,8 @@ export async function GET() {
     return { status: 400, body: { message: 'there is an error' } };
   }
 
-  // Set revalidate to 0 to ensure always dynamic rendering, i.e., no caching
   return new Response(JSON.stringify({ message: result.data }), {
     status: 200,
-    headers: { revalidate: '0' },
+    headers: { revalidate: 'force-dynamic' },
   });
 }
