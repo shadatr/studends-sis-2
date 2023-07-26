@@ -9,7 +9,7 @@ interface Item {
 
 const item: Item[] = [
   { id: 1, link: 'announcements', name: 'الإعلانات' },
-  { id: 3, link: 'courses', name: 'المواد الدراسية' },
+  { id: 3, link: 'studentcourses', name: 'المواد الدراسية' },
   { id: 4, link: 'courseprogram', name: 'جدول المحاضرات' },
   { id: 6, link: 'examprogram', name: 'جدول الامتحانات' },
   { id: 7, link: 'examresults', name: 'نتائج الامتحانات' },
