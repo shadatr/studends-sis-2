@@ -596,9 +596,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                     </thead>
                     <tbody>
                       {course?.courseEnrollements.map((user, index) => {
-                        const item = perms.find(
-                          (per) => per.permission_id == 24
-                        );
+                        
                         const letter = courseLetter.find(
                           (item) => item.course_enrollment_id == user.id
                         );
@@ -634,7 +632,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                             <td className="border border-gray-300 px-4 py-2">
                               {course.course[0].class_work}%
                             </td>
-                            {editHw && item?.active ? (
+                            {editHw  ? (
                               <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
                                 <input
                                   className="text-right px-4 py-2 bg-lightBlue w-[60px]"
@@ -663,7 +661,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                             <td className="border border-gray-300 px-4 py-2">
                               {course.course[0].final}%
                             </td>
-                            {editFinal && item?.active ? (
+                            {editFinal  ? (
                               <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
                                 <input
                                   className="text-right px-4 py-2 bg-lightBlue w-[60px]"
@@ -692,7 +690,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                             <td className="border border-gray-300 px-4 py-2">
                               {course.course[0].midterm}%
                             </td>
-                            {editMid && item?.active ? (
+                            {editMid ? (
                               <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
                                 <input
                                   className="text-right px-4 py-2 bg-lightBlue w-[60px]"
