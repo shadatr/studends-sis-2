@@ -6,6 +6,7 @@ const supabase = createClient(
   process.env.SUPABASE_KEY || ''
 );
 
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request,
   { params }: { params: { id: number }} ) {
@@ -23,7 +24,10 @@ export async function GET(request: Request,
       });
     }
 
-    return new Response(JSON.stringify({ message: data.data }));
+    return new Response(JSON.stringify({ message: data.data }), {
+      status: 200,
+      headers: { revalidate: dynamic },
+    });
   } catch {}
 }
 

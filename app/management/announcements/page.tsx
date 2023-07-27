@@ -155,7 +155,7 @@ const Page = () => {
                         dir="rtl"
                         ref={inputRef}
                         id="addItem"
-                        placeholder="اكتب هنا"
+                        placeholder="اكتب نص الاعلان هنا"
                         required
                         value={newItem}
                         onChange={(e) => setNewItem(e.target.value)}

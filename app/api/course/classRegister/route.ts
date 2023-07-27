@@ -6,7 +6,6 @@ const supabase = createClient(
   process.env.SUPABASE_KEY || ''
 );
 
-export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   const data: ClassesType = await request.json();

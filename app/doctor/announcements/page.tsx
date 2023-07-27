@@ -206,11 +206,11 @@ const AnnoPage = () => {
           <h1>اضف اعلان للمواد</h1>
         </label>
         <textarea
-          className="h-[150px] text-right"
+          className="h-[150px] text-right p-3"
           autoFocus
           ref={inputRef}
           id="addItem"
-          placeholder="Add Item"
+          placeholder="اكتب نص الاعلان هنا"
           required
           value={newItem}
           dir="rtl"

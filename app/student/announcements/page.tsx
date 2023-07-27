@@ -90,7 +90,6 @@ const AnnoPage = () => {
                   Class.class && Class.class.id === item.posted_for_class_id
               );
               if (!clas) {
-                // Handle the case where 'clas' is undefined
                 return null;
               }
               return (

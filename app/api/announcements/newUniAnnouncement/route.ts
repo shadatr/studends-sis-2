@@ -12,7 +12,6 @@ export async function POST(request: Request) {
 
   try {
     const res = await supabase.from('tb_announcements').insert([data]);
-    console.log(res.error?.message);
     if (res.error) {
       throw res.error;
     }
