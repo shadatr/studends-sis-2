@@ -113,10 +113,6 @@ const Tabs = ({ params }: { params: { id: number, name:string } }) => {
                   <td> الفصل الدراسي</td>
                 </tr>
                 <tr>
-                  <td>{item.course.passing_percentage}</td>
-                  <td>درجة النجاح</td>
-                </tr>
-                <tr>
                   <td>
                     {item.doctor.name} {item.doctor.surname}
                   </td>

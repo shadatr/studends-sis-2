@@ -178,7 +178,6 @@ const Page = () => {
     const responseYear = await axios.get(`/api/exams/grading/4`);
     const messageYear: LettersType[] = responseYear.data.message;
     setYear(messageYear);
-    setYear(messageYear);
     setSelect(true);
 
   };
@@ -867,14 +866,14 @@ const Page = () => {
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
                         <Link
-                          href={`/management/course/AllClassesInfo/${Class.class.section_id}//${semester2}-${year}`}
+                          href={`/management/course/AllClassesInfo/${Class.class.section_id}/${semester2}-${year2}`}
                         >
                           {Class.section?.name}
                         </Link>
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
                         <Link
-                          href={`/management/course/AllClassesInfo/${Class.class.section_id}//${semester2}-${year}`}
+                          href={`/management/course/AllClassesInfo/${Class.class.section_id}/${semester2}-${year2}`}
                         >
                           {Class.course?.course_name}
                         </Link>
