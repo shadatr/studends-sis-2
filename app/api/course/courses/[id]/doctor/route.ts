@@ -16,7 +16,7 @@ export async function GET(
     const data = await supabase
       .from('tb_classes')
       .select('*')
-      .eq('doctor_id', params.id);
+      .eq('doctor_id', params.id).('active', true);
 
     const parsedData = JSON.parse(JSON.stringify(data));
     const messageData = parsedData.data;
