@@ -136,6 +136,13 @@ const Page = () => {
   const handleSubmit = () => {
     let allDataSent = true;
 
+    const missingGrade = courseLetter.find((item) =>item.points== null || item.letter_grade==null);
+
+    if(missingGrade){
+      toast.error('لا يمكنك نشر الدرجات، هنالك درجات لم يتم ارخالها');
+      return;
+    }
+
     students.forEach((student) => {
       let studentTotalGradePoints = 0;
       let studentTotalCredits = 0;
