@@ -24,8 +24,7 @@ export async function POST(request: Request) {
       const data2 = {
         course_enrollment_id: course[0].id,
       };
-      const res = await supabase.from('tb_grades').insert([data2]);
-      console.log(res);
+      await supabase.from('tb_grades').insert([data2]);
     }
 
     return new Response(JSON.stringify({ message: 'تم ارسال المواد بنجاح' }), {

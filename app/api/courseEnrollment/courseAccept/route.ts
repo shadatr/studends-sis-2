@@ -38,8 +38,6 @@ export async function POST(request: Request) {
         .update({ students_num: data.course.students_num })
         .eq('id', data.course.section_id);
 
-      await supabase.from('tb_grades').insert([data.grade]);
-
 
     return new Response(JSON.stringify({ message: 'تم الموافقة على المواد بنجاح' }), {
       headers: { 'content-type': 'application/json' },
