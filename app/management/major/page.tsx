@@ -314,23 +314,6 @@ const Page = () => {
       });
   };
 
-  const handleDeleteCourse = (item?: number) => {
-    axios
-      .post(`/api/course/majorCourses/1`, item)
-      .then((res) => {
-        handleChangeMajor();
-        toast.success(res.data.message);
-        const dataUsageHistory = {
-          id: user?.id,
-          type: 'admin',
-          action: `${major} تعديل مواد تخصص`,
-        };
-        axios.post('/api/usageHistory', dataUsageHistory);
-      })
-      .catch((err) => {
-        toast.error(err.response.data.message);
-      });
-  };
 
   const handleAllClasses = async () => {
     const resMajorCourses = await axios.get(

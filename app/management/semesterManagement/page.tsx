@@ -136,10 +136,19 @@ const Page = () => {
   const handleSubmit = () => {
     let allDataSent = true;
 
-    const missingGrade = courseLetter.find((item) =>item.points== null || item.letter_grade==null);
+    const missingGrade = courseLetter.find(
+      (item) => item.points == null || item.letter_grade == null
+    );
 
-    if(missingGrade){
-      toast.error('لا يمكنك نشر الدرجات، هنالك درجات لم يتم ارخالها');
+    const unAprrovedCourse = courses.find((item) => !item.class.publish_grades);
+
+    if (missingGrade) {
+      toast.error('لا يمكنك نشر الدرجات، هنالك درجات لم يتم ادخالها');
+      return;
+    }
+
+    if (unAprrovedCourse) {
+      toast.error('لا يمكنك نشر الدرجات، هنالك درجات لم يتم الموافقة عليها');
       return;
     }
 
@@ -519,7 +528,7 @@ const Page = () => {
       <div className="flex flex-col w-[500px] m-3">
         <div className="flex flex-row">
           {perms.map((permItem, idx) => {
-            if (permItem.permission_id === 15 && permItem.edit) {
+            if (permItem.permission_id === 15 && permItem.edit && courses) {
               return (
                 <button
                   key={idx}
