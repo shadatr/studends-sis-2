@@ -242,6 +242,7 @@ const Page = () => {
     });
     const uniqueCourseIds = new Set();
     const uniqueCourses:any = [];
+
     
     updatedCheckList.forEach((item) => {
       if (!uniqueCourseIds.has(item.course.id)) {
@@ -250,6 +251,7 @@ const Page = () => {
       }
     });
     
+    console.log(uniqueCourses);
     setRepeat(repeatList);
     setUnableCourses(updatedCheckList2);
     setCheckList(uniqueCourses);
@@ -345,7 +347,6 @@ const handleDelete = (item?: StudentClassType) => {
                 </tr>
               </thead>
               <tbody>
-                
                 {checkList.map((item, inde) =>
                   item.class.map((cls) => {
                     if (

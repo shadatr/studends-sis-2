@@ -54,7 +54,7 @@ const Page = () => {
 
   return (
     <div>
-      <div className=" w-[80%] items-center text-[10px] justify-center">
+      <div className=" w-[80%] items-center text-[10px] justify-center absolute">
         <div className="w-[500px] flex flex-row m-3">
           <h1 className="w-20 p-2 bg-gray-200 border-2 border-black rounded-md ml-4">
             {gpa[0]?.AA}
