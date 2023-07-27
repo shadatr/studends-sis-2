@@ -422,27 +422,27 @@ const Page = ({ params }: { params: { id: number } }) => {
     if (moreavrg) {
       toast.error('لا يمكنك ادخال درجة اكثر من 100');
       return;
+    }else{
+      axios
+        .post(
+          `/api/exams/examRes/${params.id}/${name}`,
+          grades?.courseEnrollements
+        )
+        .then(() => {
+          toast.success('تم نشر الدرجات بنجاح');
+          setEdit(!edit);
+  
+          const dataUsageHistory = {
+            id: user?.id,
+            type: 'admin',
+            action: 'تعديل الدرجات' + course?.section[0].name,
+          };
+          axios.post('/api/usageHistory', dataUsageHistory);
+        })
+        .catch(() => {
+          toast.error('حدث خطأ اثناء نشر الدرجات');
+        });
     }
-
-    axios
-      .post(
-        `/api/exams/examRes/${params.id}/${name}`,
-        grades?.courseEnrollements
-      )
-      .then(() => {
-        toast.success('تم نشر الدرجات بنجاح');
-        setEdit(!edit);
-
-        const dataUsageHistory = {
-          id: user?.id,
-          type: 'admin',
-          action: 'تعديل الدرجات' + course?.section[0].name,
-        };
-        axios.post('/api/usageHistory', dataUsageHistory);
-      })
-      .catch(() => {
-        toast.error('حدث خطأ اثناء نشر الدرجات');
-      });
   };
 
   const handleApprove = () => {
