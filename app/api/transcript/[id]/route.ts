@@ -15,7 +15,7 @@ export async function GET(
     const data = await supabase
       .from('tb_transcript')
       .select('*')
-      .eq('student_id', params.id);
+      .eq('student_id', params.id).order('id', { ascending: false });
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     })
     .eq('id', data.student_id);
 
-  const data5 = await supabase
+  await supabase
     .from('tb_classes')
     .update({ active: false })
     .eq('semester', data.semester);

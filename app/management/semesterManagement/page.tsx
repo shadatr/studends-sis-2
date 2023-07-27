@@ -336,8 +336,6 @@ const Page = () => {
                 )
             );
 
-            const selectedCourseIds = new Set();
-
             selectedmessageCourseLetter.forEach((i) => {
               const selectedCourse = messageCourse.find(
                 (course) =>
@@ -348,10 +346,8 @@ const Page = () => {
                 selectedCourse &&
                 selectedCourse.course.credits &&
                 i.points &&
-                !i.repeated &&
-                !selectedCourseIds.has(selectedCourse?.courseEnrollements.id)
+                !i.repeated 
               ) {
-                selectedCourseIds.add(selectedCourse?.courseEnrollements.id);
                 console.log(selectedCourse.course);
                 studentTotalCredits += selectedCourse?.course.credits;
                 totalQualityPoints += i.points * selectedCourse?.course.credits;
