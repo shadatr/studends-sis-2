@@ -32,6 +32,8 @@ const hoursNames: CheckedType[] = [
 ];
 
 const days: DayOfWeekType[] = [
+  { name: 'الاحد', day: 'sunday' },
+  { name: 'السبت', day: 'saturday' },
   { name: 'الجمعة', day: 'friday' },
   { name: 'الخميس', day: 'thursday' },
   { name: 'الاربعاء', day: 'wednesday' },

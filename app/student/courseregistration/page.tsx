@@ -30,12 +30,15 @@ const hoursNames: CheckedType[] = [
 ];
 
 const days: DayOfWeekType[] = [
+  { name: 'الاحد', day: 'sunday' },
+  { name: 'السبت', day: 'saturday' },
   { name: 'الجمعة', day: 'friday' },
   { name: 'الخميس', day: 'thursday' },
   { name: 'الاربعاء', day: 'wednesday' },
   { name: 'الثلثاء', day: 'tuesday' },
   { name: 'الاثنين', day: 'monday' },
 ];
+
 
 const Page = () => {
   const session = useSession({ required: true });
