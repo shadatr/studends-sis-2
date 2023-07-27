@@ -62,18 +62,21 @@ const Page = () => {
 
     const clss: ClassesInfoType[] = [];
     classes.forEach((cls) => {
-      if (type?.current?.value === '1') {
+      if (type?.current?.value === 'جميع المجموعات') {
         clss.push(cls);
       } else if (
-        type?.current?.value == '2' &&
+        type?.current?.value == 'في انتظار قبول الدرجات' &&
         cls.class.publish_grades == false &&
         !cls.courseEnrollements.find((c) => c.result == null)
       ) {
         clss.push(cls);
-      } else if (type?.current?.value === '3' && cls.class.publish_grades) {
+      } else if (
+        type?.current?.value === 'تم قبول الدرجات' &&
+        cls.class.publish_grades
+      ) {
         clss.push(cls);
       } else if (
-        type?.current?.value === '4' &&
+        type?.current?.value === 'لم يتم ادخال جميع الدرجات' &&
         cls.courseEnrollements.find((c) => c.result == null)
       ) {
         clss.push(cls);
@@ -97,10 +100,10 @@ const Page = () => {
           ref={type}
           className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4 w-[200px]"
         >
-          <option value={'1'}>جميع المجموعات</option>
-          <option value={'2'}>في انتظار قبول الدرجات</option>
-          <option value={'3'}>تم قبول الدرجات</option>
-          <option value={'4'}>لم يتم ادخال جميع الدرجات</option>
+          <option >جميع المجموعات</option>
+          <option >في انتظار قبول الدرجات</option>
+          <option >تم قبول الدرجات</option>
+          <option >لم يتم ادخال جميع الدرجات</option>
         </select>
         <select
           id="dep"
