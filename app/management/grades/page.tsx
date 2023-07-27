@@ -1,6 +1,6 @@
 'use client';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   MajorCourseType,
   SectionType,
@@ -20,7 +20,7 @@ const Page = () => {
   const [classes, setClasses] = useState<ClassesInfoType[]>([]);
   const [majors, setMajors] = useState<MajorRegType[]>([]);
   const [selectedMajor, setSelectedMajor] = useState<MajorRegType>();
-  const [type, setType] = useState<string>('1');
+  const type = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -35,8 +35,7 @@ const Page = () => {
     const resMajorCourses = await axios.get(
       `/api/course/courseMajorReg/${selectedMajor?.id}`
     );
-    const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
-      .message;
+    const messageMajorCour: MajorCourseType[] = await resMajorCourses.data.message;
 
     const sectionsPromises = messageMajorCour.map(async (course) => {
       const responseReq = await axios.get(
@@ -63,18 +62,18 @@ const Page = () => {
 
     const clss: ClassesInfoType[] = [];
     classes.forEach((cls) => {
-      if (type === '1') {
+      if (type?.current?.value === '1') {
         clss.push(cls);
       } else if (
-        type === '2' &&
+        type?.current?.value == '2' &&
         cls.class.publish_grades == false &&
         !cls.courseEnrollements.find((c) => c.result == null)
       ) {
         clss.push(cls);
-      } else if (type === '3' && cls.class.publish_grades) {
+      } else if (type?.current?.value === '3' && cls.class.publish_grades) {
         clss.push(cls);
       } else if (
-        type === '4' &&
+        type?.current?.value === '4' &&
         cls.courseEnrollements.find((c) => c.result == null)
       ) {
         clss.push(cls);
@@ -95,7 +94,7 @@ const Page = () => {
         <select
           id="dep"
           dir="rtl"
-          onChange={(e) => setType(e.target.value)}
+          ref={type}
           className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4 w-[200px]"
         >
           <option value={'1'}>جميع المجموعات</option>
