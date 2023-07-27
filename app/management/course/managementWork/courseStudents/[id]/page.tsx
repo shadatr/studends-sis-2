@@ -414,15 +414,23 @@ const Page = ({ params }: { params: { id: number } }) => {
     setEditMid(false);
     setEditFinal(false);
     setEditHw(false);
-    const moreavrg = grades?.courseEnrollements.find((grad) =>
-      grad?.class_work && grad?.midterm && grad?.final
-        ? grad?.class_work > 100 || grad?.midterm > 100 || grad?.final > 100
-        : ''
+    const hasInvalidGrades = grades?.courseEnrollements.some((grad) => {
+    const classWork = grad.class_work;
+    const final = grad.final;
+    const midterm = grad.midterm;
+    return (
+      classWork &&
+      midterm &&
+      final &&
+      (classWork > 100 || midterm > 100 || final > 100)
     );
-    if (moreavrg) {
-      toast.error('لا يمكنك ادخال درجة اكثر من 100');
-      return;
-    }else{
+  });
+
+  if (hasInvalidGrades) {
+    toast.error('لا يمكنك ادخال درجة اكثر من 100');
+    return;
+  }
+    else{
       axios
         .post(
           `/api/exams/examRes/${params.id}/${name}`,
