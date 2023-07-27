@@ -34,6 +34,7 @@ const Page = () => {
   const [credits, setCredits] = useState('');
   const [edit, setEdit] = useState(false);
   const [edit2, setEdit2] = useState(false);
+  const [select, setSelect] = useState(false);
   const department = useRef<HTMLInputElement>(null);
   const [departments, setDepartments] = useState<DepartmentRegType[]>([]);
   const [departments2, setDepartments2] = useState<DepartmentRegType[]>([]);
@@ -109,6 +110,7 @@ const Page = () => {
     const res = await axios.get(`/api/course/courseRegistration`);
     const messageCour: AddCourseType[] = await res.data.message;
     setCourses(messageCour);
+    setSelect(true);
   };
 
   const handleRegisterCourse = () => {
@@ -493,7 +495,9 @@ const Page = () => {
         </button>
       </div>
       {activeTab === 'Tab 1' &&
-        perms.find((per) => per.permission_id == 10 && per.see) && (
+        perms.find(
+          (per) => per.permission_id == 10 && per.see 
+        ) && (
           <>
             <div className="flex flex-col  items-center justify-center text-sm">
               <p className="flex text-md bg-lightBlue rounded-md p-4 w-[200px] justify-center m-5 items-center">
@@ -1211,7 +1215,11 @@ const Page = () => {
               </select>
             </div>
             {perms.map((permItem, idx) => {
-              if (permItem.permission_id == 7 && permItem.add && selectedMajor) {
+              if (
+                permItem.permission_id == 7 &&
+                permItem.add &&
+                selectedMajor && select
+              ) {
                 return (
                   <div
                     className="flex flex-row-reverse items-center justify-center  w-[100%] m-10 "

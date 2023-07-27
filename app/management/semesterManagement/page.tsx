@@ -353,8 +353,6 @@ const Page = () => {
                 totalQualityPoints += i.points * selectedCourse?.course.credits;
               }
             });
-            console.log(studentTotalCredits);
-            console.log(selectedCourses2);
 
             const data = {
               value: parseFloat(

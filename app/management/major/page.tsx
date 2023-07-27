@@ -78,6 +78,7 @@ const Page = () => {
   const [sections, setSections] = useState<SectionType[]>([]);
   const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
   const [activeTab, setActiveTab] = useState<string>('Tab 1');
+  const [select, setSelect] = useState(false);
   const section = useRef<HTMLSelectElement>(null);
   const [doctor, setDoctor] = useState<number>();
   const [selectedCourse, setSelecetedCourse] = useState<string>();
@@ -178,6 +179,8 @@ const Page = () => {
     const messageYear: LettersType[] = responseYear.data.message;
     setYear(messageYear);
     setYear(messageYear);
+    setSelect(true);
+
   };
 
   const printableContentRef = useRef<HTMLDivElement>(null);
@@ -433,7 +436,7 @@ const Page = () => {
               if (
                 permItem.permission_id === 8 &&
                 permItem.add &&
-                selectedMajor
+                selectedMajor && select
               ) {
                 return (
                   <div
