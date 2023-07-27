@@ -133,6 +133,147 @@ const Page = () => {
     });
   };
 
+
+  const handleSubmit3 = () =>{
+        if (user) {
+          students.map(async (student) => {
+            let totalQualityPoints = 0;
+            let studentTotalCredits = 0;
+
+            const responseCourseLetter = await axios.get(
+              `/api/exams/letterGrades`
+            );
+            const messageCourseLetter: LetterGradesType[] =
+              responseCourseLetter.data.message;
+            setCourseLetter(messageCourseLetter);
+
+            const responseCourse = await axios.get(
+              `/api/getAll/studentCoursesGpa/${student.id}`
+            );
+
+            const messageCourse: StudenCourseGPAType[] =
+              responseCourse.data.message;
+
+            const majCredit = messageCourse.find(
+              (c) => c.student?.id == student.id
+            );
+
+            if (majCredit) {
+              const messageMajCourse = await axios.get(
+                `/api/course/courseMajorReg/${majCredit?.major?.id}`
+              );
+              const responseCourseMaj: MajorCourseType[] =
+                messageMajCourse.data.message;
+
+              const responseTranscript = await axios.get(
+                `/api/transcript/${student.id}`
+              );
+              const messageTranscript: TranscriptType[] =
+                responseTranscript.data.message;
+
+              if (messageTranscript && messageCourseLetter && messageCourse) {
+                const enrollmentsData = messageTranscript.filter(
+                  (item) => item.student_id == student.id
+                );
+                const maxId = enrollmentsData.reduce(
+                  (max, { id }) => Math.max(max, id),
+                  0
+                );
+
+                const graduationYear = messageTranscript?.find(
+                  (item) => item.id == maxId
+                );
+
+                const graduation = messageCourse.find((item) => item.major?.id);
+
+                let isGraduated = false;
+
+                const selectedCourses2 = courses.filter(
+                  (co) => co.courseEnrollements.student_id == student.id
+                );
+
+                const selectedmessageCourseLetter = messageCourseLetter.filter(
+                  (i) =>
+                    selectedCourses2.find(
+                      (i2) =>
+                        i.course_enrollment_id === i2.courseEnrollements.id
+                    )
+                );
+
+                selectedmessageCourseLetter.forEach((i) => {
+                  const selectedCourse = messageCourse.find(
+                    (course) =>
+                      i.course_enrollment_id === course.courseEnrollements.id
+                  );
+
+                  if (
+                    selectedCourse &&
+                    selectedCourse.course.credits &&
+                    i.points &&
+                    !i.repeated
+                  ) {
+                    studentTotalCredits += selectedCourse?.course.credits;
+                    totalQualityPoints +=
+                      i.points * selectedCourse?.course.credits;
+                  }
+                });
+
+                const data = {
+                  value: parseFloat(
+                    (totalQualityPoints / studentTotalCredits).toFixed(2)
+                  ),
+                  name: 'final_gpa',
+                  student_id: student.id,
+                };
+
+                axios.post('/api/transcript/approveGraduation', data);
+
+                if (
+                  graduation?.major.credits_needed &&
+                  studentTotalCredits >= graduation?.major.credits_needed &&
+                  parseFloat(gpa[0].AA) <=
+                    parseFloat(
+                      (totalQualityPoints / studentTotalCredits).toFixed(2)
+                    )
+                ) {
+                  isGraduated = true;
+                }
+
+                responseCourseMaj.map((majCo) => {
+                  const selecetedCourse = messageCourse.find(
+                    (c) =>
+                      c.course.id == majCo.course_id &&
+                      c.courseEnrollements.pass
+                  );
+
+                  if (
+                    selecetedCourse == undefined &&
+                    majCo.isOptional == false
+                  ) {
+                    isGraduated = false;
+                  }
+                });
+
+                if (
+                  studentTotalCredits &&
+                  student.id &&
+                  graduationYear?.semester
+                ) {
+                  const data = {
+                    credits: studentTotalCredits,
+                    student_id: student.id,
+                    can_graduate: isGraduated,
+                    graduation_year: graduationYear?.semester,
+                  };
+
+                  axios.post('/api/transcript/editCredits', data);
+                }
+              }
+            }
+          });
+        }
+  };
+
   const handleSubmit = () => {
     let allDataSent = true;
 
@@ -274,132 +415,7 @@ const Page = () => {
         }
       }
     });
-    if (user) {
-      students.map(async (student) => {
-        let totalQualityPoints = 0;
-        let studentTotalCredits = 0;
-
-        const responseCourseLetter = await axios.get(`/api/exams/letterGrades`);
-        const messageCourseLetter: LetterGradesType[] =
-          responseCourseLetter.data.message;
-        setCourseLetter(messageCourseLetter);
-
-        const responseCourse = await axios.get(
-          `/api/getAll/studentCoursesGpa/${student.id}`
-        );
-
-        const messageCourse: StudenCourseGPAType[] =
-          responseCourse.data.message;
-
-        const majCredit = messageCourse.find(
-          (c) => c.student?.id == student.id
-        );
-
-        if (majCredit) {
-          const messageMajCourse = await axios.get(
-            `/api/course/courseMajorReg/${majCredit?.major?.id}`
-          );
-          const responseCourseMaj: MajorCourseType[] =
-            messageMajCourse.data.message;
-
-          const responseTranscript = await axios.get(
-            `/api/transcript/${student.id}`
-          );
-          const messageTranscript: TranscriptType[] =
-            responseTranscript.data.message;
-
-          if (messageTranscript && messageCourseLetter && messageCourse) {
-            const enrollmentsData = messageTranscript.filter(
-              (item) => item.student_id == student.id
-            );
-            const maxId = enrollmentsData.reduce(
-              (max, { id }) => Math.max(max, id),
-              0
-            );
-
-            const graduationYear = messageTranscript?.find(
-              (item) => item.id == maxId
-            );
-
-            const graduation = messageCourse.find((item) => item.major?.id);
-
-            let isGraduated = false;
-
-            const selectedCourses2 = courses.filter(
-              (co) => co.courseEnrollements.student_id == student.id
-            );
-
-            const selectedmessageCourseLetter = messageCourseLetter.filter(
-              (i) =>
-                selectedCourses2.find(
-                  (i2) => i.course_enrollment_id === i2.courseEnrollements.id
-                )
-            );
-
-            selectedmessageCourseLetter.forEach((i) => {
-              const selectedCourse = messageCourse.find(
-                (course) =>
-                  i.course_enrollment_id === course.courseEnrollements.id
-              );
-
-              if (
-                selectedCourse &&
-                selectedCourse.course.credits &&
-                i.points &&
-                !i.repeated 
-              ) {
-                console.log(selectedCourse.course);
-                studentTotalCredits += selectedCourse?.course.credits;
-                totalQualityPoints += i.points * selectedCourse?.course.credits;
-              }
-            });
-
-            const data = {
-              value: parseFloat(
-                (totalQualityPoints / studentTotalCredits).toFixed(2)
-              ),
-              name: 'final_gpa',
-              student_id: student.id,
-            };
-
-            axios.post('/api/transcript/approveGraduation', data);
-
-            if (
-              graduation?.major.credits_needed &&
-              studentTotalCredits >= graduation?.major.credits_needed &&
-              parseFloat(gpa[0].AA) <=
-                parseFloat(
-                  (totalQualityPoints / studentTotalCredits).toFixed(2)
-                )
-            ) {
-              isGraduated = true;
-            }
-
-            responseCourseMaj.map((majCo) => {
-              const selecetedCourse = messageCourse.find(
-                (c) =>
-                  c.course.id == majCo.course_id && c.courseEnrollements.pass
-              );
-
-              if (selecetedCourse == undefined && majCo.isOptional == false) {
-                isGraduated = false;
-              }
-            });
-
-            if (studentTotalCredits && student.id && graduationYear?.semester) {
-              const data = {
-                credits: studentTotalCredits,
-                student_id: student.id,
-                can_graduate: isGraduated,
-                graduation_year: graduationYear?.semester,
-              };
-
-              axios.post('/api/transcript/editCredits', data);
-            }
-          }
-        }
-      });
-    }
+    handleSubmit3();
     if (allDataSent) {
       setRefresh(!refresh);
       toast.success('تم إرسال جميع البيانات بنجاح');
@@ -413,6 +429,7 @@ const Page = () => {
       toast.error('حدث خطأ اثناء نشر الدرجات');
     }
   };
+
 
   const handleChangePoints = (letter: string, value: string) => {
     const updatedPoints = points2.map((point) => {
