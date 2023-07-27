@@ -25,13 +25,14 @@ const hoursNames: CheckedType[] = [
 ];
 
 const days: DayOfWeekType[] = [
+  { name: 'الاحد', day: 'sunday' },
+  { name: 'السبت', day: 'saturday' },
   { name: 'الجمعة', day: 'friday' },
   { name: 'الخميس', day: 'thursday' },
   { name: 'الاربعاء', day: 'wednesday' },
   { name: 'الثلثاء', day: 'tuesday' },
   { name: 'الاثنين', day: 'monday' },
 ];
-
 const Page = () => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
@@ -68,9 +69,6 @@ const Page = () => {
               الكريدت
             </th>
             <th className="border border-gray-300 px-4 py-2 bg-grey">
-              درجة النجاح
-            </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
               الساعات
             </th>
             <th className="border border-gray-300 px-4 py-2 bg-grey">
@@ -102,9 +100,6 @@ const Page = () => {
                 <tr key={index}>
                   <td className="border border-gray-300 px-4 py-2">
                     {item.course.credits}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.course.passing_percentage}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {item.course.hours}
