@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     .eq('semester', data.semester)
     .eq('student_id', data.student_id),
     await supabase
-      .from('tb_students')
+      .from('tb_grades')
       .update({
         repeated: true,
       })

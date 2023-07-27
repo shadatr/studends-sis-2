@@ -307,17 +307,7 @@ const Page = () => {
               0
             );
 
-            let studentTotalCredits = 0;
-            messageCourseLetter.map((item) => {
-              const selectedCourse = messageCourse.find(
-                (course) =>
-                  item.course_enrollment_id === course.courseEnrollements.id &&
-                  item.repeated == false
-              );
-              if (selectedCourse?.course.credits) {
-                studentTotalCredits += selectedCourse?.course.credits;
-              }
-            });
+            
 
             const graduationYear = messageTranscript?.find(
               (item) => item.id == maxId
@@ -327,14 +317,33 @@ const Page = () => {
 
             let isGraduated = false;
 
+            
             let totalQualityPoints = 0;
+            let studentTotalCredits = 0;
 
-            for (let i = 0; i < enrollmentsData.length; i++) {
-              const gpa = enrollmentsData[i].gpa;
-              const creditHours = enrollmentsData[i].credits;
+            messageCourseLetter.forEach((i) => {
+              let credits = 0;
+              let gpa = 0;
 
-              totalQualityPoints += gpa * creditHours;
-            }
+              // Ensure the condition includes both points and not repeated
+              if (i.points && !i.repeated) {
+                gpa = i.points;
+              }
+
+              const selectedCourse = messageCourse.find(
+                (course) =>
+                  i.course_enrollment_id === course.courseEnrollements.id &&
+                  i.repeated === false
+              );
+
+              if (selectedCourse && selectedCourse.course.credits) {
+                credits = selectedCourse.course.credits;
+              }
+
+              studentTotalCredits += credits;
+              totalQualityPoints += gpa * credits;
+            });
+
             const data = {
               value: parseFloat(
                 (totalQualityPoints / studentTotalCredits).toFixed(2)
@@ -342,7 +351,9 @@ const Page = () => {
               name: 'final_gpa',
               student_id: user.id,
             };
+
             axios.post('/api/transcript/approveGraduation', data);
+
 
             if (
               graduation?.major.credits_needed &&
@@ -360,6 +371,7 @@ const Page = () => {
                 (c) =>
                   c.course.id == majCo.course_id && c.courseEnrollements.pass
               );
+
               if (selecetedCourse == undefined && majCo.isOptional == false) {
                 isGraduated = false;
               }
