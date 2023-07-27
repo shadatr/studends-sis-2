@@ -222,10 +222,6 @@ const Page = () => {
             studentResult?.points * selectedCourse?.course.credits;
           studentTotalCredits += selectedCourse?.course.credits;
         }
-        if (!studentResult?.points || !selectedCourse?.class.publish_grades) {
-          allDataSent = false;
-          return;
-        }
       });
 
       const gpaFound = transcript.find(
@@ -393,7 +389,7 @@ const Page = () => {
       };
       axios.post('/api/usageHistory', dataUsageHistory);
     } else {
-      toast.error('هنالك درجات لم يتم ادخالها');
+      toast.error('حدث خطأ اثناء نشر الدرجات');
     }
   };
 
