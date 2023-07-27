@@ -164,33 +164,38 @@ const Page = () => {
       );
 
       selectedCourses.map((selectedCourse) => {
-        const repeatedCourse = courses.filter(
-          (co) =>
-            co.courseEnrollements.student_id ===
-            selectedCourse?.courseEnrollements.student_id
+        const repeatedCourse = selectedCourses.filter(
+          (co) => co.course.id === selectedCourse?.course.id
         );
 
         if (repeatedCourse.length > 1) {
-          const repeat = repeatedCourse.find(
-            (co) => co.class?.semester != `${year[0].AA}-${year[0].BA}`
+          const repeat = repeatedCourse.find((co) =>
+            courseLetter.find(
+              (item) =>
+                co.class?.semester != `${year[0].AA}-${year[0].BA}` &&
+                !item.repeated
+            )
           );
 
-          const studentResult = courseLetter.find(
-            (item) =>
-              item.course_enrollment_id ===
-              selectedCourse?.courseEnrollements.id
-          );
+          console.log(repeat);
 
-          if (
-            selectedCourse?.course.credits &&
-            studentResult?.points &&
-            selectedCourse.class.semester === repeat?.class.semester &&
-            selectedCourse?.course.id != repeat?.course.id
-          ) {
-            studentTotalGradePoints2 +=
-              studentResult?.points * selectedCourse?.course.credits;
-            studentTotalCredits2 += selectedCourse?.course.credits;
-          }
+          selectedCourses.map((item) => {
+            if (
+              item.course.credits &&
+              item.class.semester === repeat?.class.semester &&
+              item.course.id != repeat?.course.id
+            ) {
+              const studentResult = courseLetter.find(
+                (item2) =>
+                  item2.course_enrollment_id === item.courseEnrollements.id
+              );
+              if (studentResult?.points) {
+                studentTotalGradePoints2 +=
+                  studentResult?.points * item.course.credits;
+                studentTotalCredits2 += item.course.credits;
+              }
+            }
+          });
 
           const data2 = {
             student_id: student.id,
@@ -270,20 +275,25 @@ const Page = () => {
       }
     });
     if (user) {
-      students.map(async (user) => {
+      students.map(async (student) => {
+        let totalQualityPoints = 0;
+        let studentTotalCredits = 0;
+
         const responseCourseLetter = await axios.get(`/api/exams/letterGrades`);
         const messageCourseLetter: LetterGradesType[] =
           responseCourseLetter.data.message;
         setCourseLetter(messageCourseLetter);
 
         const responseCourse = await axios.get(
-          `/api/getAll/studentCoursesGpa/${user.id}`
+          `/api/getAll/studentCoursesGpa/${student.id}`
         );
 
         const messageCourse: StudenCourseGPAType[] =
           responseCourse.data.message;
 
-        const majCredit = messageCourse.find((c) => c.student?.id == user.id);
+        const majCredit = messageCourse.find(
+          (c) => c.student?.id == student.id
+        );
 
         if (majCredit) {
           const messageMajCourse = await axios.get(
@@ -293,21 +303,19 @@ const Page = () => {
             messageMajCourse.data.message;
 
           const responseTranscript = await axios.get(
-            `/api/transcript/${user.id}`
+            `/api/transcript/${student.id}`
           );
           const messageTranscript: TranscriptType[] =
             responseTranscript.data.message;
 
           if (messageTranscript && messageCourseLetter && messageCourse) {
             const enrollmentsData = messageTranscript.filter(
-              (item) => item.student_id == user.id
+              (item) => item.student_id == student.id
             );
             const maxId = enrollmentsData.reduce(
               (max, { id }) => Math.max(max, id),
               0
             );
-
-            
 
             const graduationYear = messageTranscript?.find(
               (item) => item.id == maxId
@@ -317,43 +325,50 @@ const Page = () => {
 
             let isGraduated = false;
 
-            
-            let totalQualityPoints = 0;
-            let studentTotalCredits = 0;
+            const selectedCourses2 = courses.filter(
+              (co) => co.courseEnrollements.student_id == student.id
+            );
 
-            messageCourseLetter.forEach((i) => {
-              let credits = 0;
-              let gpa = 0;
+            const selectedmessageCourseLetter = messageCourseLetter.filter(
+              (i) =>
+                selectedCourses2.find(
+                  (i2) => i.course_enrollment_id === i2.courseEnrollements.id
+                )
+            );
 
-              // Ensure the condition includes both points and not repeated
-              if (i.points && !i.repeated) {
-                gpa = i.points;
-              }
+            const selectedCourseIds = new Set();
 
+            selectedmessageCourseLetter.forEach((i) => {
               const selectedCourse = messageCourse.find(
                 (course) =>
-                  i.course_enrollment_id === course.courseEnrollements.id &&
-                  i.repeated === false
+                  i.course_enrollment_id === course.courseEnrollements.id
               );
 
-              if (selectedCourse && selectedCourse.course.credits) {
-                credits = selectedCourse.course.credits;
+              if (
+                selectedCourse &&
+                selectedCourse.course.credits &&
+                i.points &&
+                !i.repeated &&
+                !selectedCourseIds.has(selectedCourse?.courseEnrollements.id)
+              ) {
+                selectedCourseIds.add(selectedCourse?.courseEnrollements.id);
+                console.log(selectedCourse.course);
+                studentTotalCredits += selectedCourse?.course.credits;
+                totalQualityPoints += i.points * selectedCourse?.course.credits;
               }
-
-              studentTotalCredits += credits;
-              totalQualityPoints += gpa * credits;
             });
+            console.log(studentTotalCredits);
+            console.log(selectedCourses2);
 
             const data = {
               value: parseFloat(
                 (totalQualityPoints / studentTotalCredits).toFixed(2)
               ),
               name: 'final_gpa',
-              student_id: user.id,
+              student_id: student.id,
             };
 
             axios.post('/api/transcript/approveGraduation', data);
-
 
             if (
               graduation?.major.credits_needed &&
@@ -377,10 +392,10 @@ const Page = () => {
               }
             });
 
-            if (studentTotalCredits && user.id && graduationYear?.semester) {
+            if (studentTotalCredits && student.id && graduationYear?.semester) {
               const data = {
                 credits: studentTotalCredits,
-                student_id: user.id,
+                student_id: student.id,
                 can_graduate: isGraduated,
                 graduation_year: graduationYear?.semester,
               };
