@@ -570,7 +570,7 @@ const Page = () => {
                 id="dep"
                 dir="rtl"
                 onChange={(e) => setDoctor(parseInt(e.target.value))}
-                className="lg:px-4 lg:py-2 sm:p-1 sm-[60x] lg:w-[150px] bg-gray-200 border-2 border-black rounded-md lg:ml-4 "
+                className="lg:px-4 lg:py-2 sm:p-1 sm:w-[60px] lg:w-[150px] bg-gray-200 border-2 border-black rounded-md lg:ml-4 "
                 defaultValue="الدكتور"
               >
                 <option disabled>الدكتور</option>
@@ -587,7 +587,7 @@ const Page = () => {
                 id="dep"
                 dir="rtl"
                 ref={section}
-                className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md lg:ml-4 sm:w-[60x] lg:w-[150px]"
+                className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md lg:ml-4 sm:w-[60px] lg:w-[150px]"
                 defaultValue="المجموعة"
               >
                 <option disabled>المجموعة</option>
@@ -606,7 +606,7 @@ const Page = () => {
                 id="dep"
                 dir="rtl"
                 onChange={(e) => setSelecetedCourse(e.target.value)}
-                className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md lg:ml-4 sm:w-[60x] lg:w-[150px]"
+                className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md lg:ml-4 sm:w-[60px] lg:w-[150px]"
                 defaultValue="المادة"
               >
                 <option disabled>المادة</option>
