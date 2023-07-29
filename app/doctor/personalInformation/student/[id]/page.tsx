@@ -19,6 +19,7 @@ import { redirect } from 'next/navigation';
 const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'الاسم' },
   { header: 'اللقب' },
+  { header: 'رقم الطالب' },
   { header: 'تاريخ الميلاد' },
   { header: 'التخصص' },
   { header: 'الفصل الدراسي' },
@@ -214,6 +215,16 @@ const Page = ({ params }: { params: { id: number } }) => {
                       <input
                         className=" lg:w-[700px] sm:w-[200px] text-right "
                         type="text"
+                        value={item2.surname}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'number')
+                        }
+                      />
+                    </td>
+                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
+                      <input
+                        className=" lg:w-[700px] sm:w-[200px] text-right "
+                        type="text"
                         value={item2.birth_date}
                         onChange={(e) =>
                           handleInputChange(e.target.value, 'birth_date')
@@ -327,6 +338,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                   </td>
                   <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.surname}
+                  </td>
+                  <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
+                    {item.number}
                   </td>
                   <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.birth_date}

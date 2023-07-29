@@ -177,7 +177,7 @@ const Page = () => {
               if (
                 selectedCourse &&
                 selectedCourse.course.credits &&
-                i.points &&
+                i.points!=null &&
                 !i.repeated
               ) {
                 studentTotalCredits += selectedCourse?.course.credits;
