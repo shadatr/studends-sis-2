@@ -90,7 +90,7 @@ const Navbar = () => {
                 </Link>
                 <Link
                   onClick={() => setIsOpen(false)}
-                  href="management/sittings/grading"
+                  href="/management/sittings/grading"
                   className="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white"
                 >
                   توزيع الدرجات
