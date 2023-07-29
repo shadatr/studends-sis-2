@@ -48,7 +48,7 @@ const Page = () => {
       }
     };
     fetchPosts();
-  }, [user, refresh]);
+  }, [user, refresh, isModalOpen]);
 
   const handleActivate = (doctorId: number, active: boolean) => {
     const data = { doctorId, active };
