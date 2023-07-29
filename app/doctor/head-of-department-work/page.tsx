@@ -464,7 +464,7 @@ const Page = () => {
         </button>
       </div>
       <div className="flex flex-row m-5 ">
-        {activeTab != 'Tab 5' || activeTab != 'Tab 3' && (
+        {activeTab != 'Tab 5' || 'Tab 3' && (
           <>
         <button
           onClick={handleChangeMajor}
