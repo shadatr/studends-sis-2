@@ -466,49 +466,48 @@ const Page = () => {
       <div className="flex flex-row m-5 ">
         {activeTab != 'Tab 5' && activeTab != 'Tab 3' && (
           <>
-        <button
-          onClick={handleChangeMajor}
-          className="bg-green-700 m-2 hover:bg-green-600 lg:p-3 sm:p-1 rounded-md text-white lg:w-[150px] sm:w-[60px]"
-        >
-          بحث
-        </button>
-          <select
-          id="dep"
-          dir="rtl"
-          onChange={(e) => {
-            const maj = majors.find((i) => i.major_name === e.target.value);
-            setSelectedMajor(maj);
-          }}
-          className="lg:px-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md ml-4 lg:w-[200px] sm:w-[100px]"
-        >
-          <option>اختر التخصص</option>
-          {majors.map((item) => (
-            <option key={item.id}>{item.major_name}</option>
-          ))}
-        </select>
-        </>
+            <button
+              onClick={handleChangeMajor}
+              className="bg-green-700 m-2 hover:bg-green-600 lg:p-3 sm:p-1 rounded-md text-white lg:w-[150px] sm:w-[60px]"
+            >
+              بحث
+            </button>
+            <select
+              id="dep"
+              dir="rtl"
+              onChange={(e) => {
+                const maj = majors.find((i) => i.major_name === e.target.value);
+                setSelectedMajor(maj);
+              }}
+              className="lg:px-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md ml-4 lg:w-[200px] sm:w-[100px]"
+            >
+              <option>اختر التخصص</option>
+              {majors.map((item) => (
+                <option key={item.id}>{item.major_name}</option>
+              ))}
+            </select>
+          </>
         )}
-        
-        {activeTab === 'Tab 5' && (
-          <div className='flex flex-row'>
-          <button
-          onClick={handleAllGrades}
-          className="bg-green-700 m-2 hover:bg-green-600 lg:p-3 sm:p-1 rounded-md text-white lg:w-[150px] sm:w-[60px]"
-        >
-          بحث
-        </button>
-          <select
-            id="dep"
-            dir="rtl"
-            ref={type}
-            className="lg:px-2 bg-gray-200 p-4 border-2 border-black rounded-md ml-4 lg:w-[200px] sm:w-[100px]"
-          >
-            <option>جميع المجموعات</option>
-            <option>في انتظار قبول الدرجات</option>
-            <option>تم قبول الدرجات</option>
-            <option>لم يتم ادخال جميع الدرجات</option>
-          </select>
 
+        {activeTab === 'Tab 5' && (
+          <div className="flex flex-row">
+            <button
+              onClick={handleAllGrades}
+              className="bg-green-700 m-2 hover:bg-green-600 lg:p-3 sm:p-1 rounded-md text-white lg:w-[150px] sm:w-[60px]"
+            >
+              بحث
+            </button>
+            <select
+              id="dep"
+              dir="rtl"
+              ref={type}
+              className="lg:px-2 bg-gray-200 p-4 border-2 border-black rounded-md ml-4 lg:w-[200px] sm:w-[100px]"
+            >
+              <option>جميع المجموعات</option>
+              <option>في انتظار قبول الدرجات</option>
+              <option>تم قبول الدرجات</option>
+              <option>لم يتم ادخال جميع الدرجات</option>
+            </select>
           </div>
         )}
       </div>
@@ -516,10 +515,10 @@ const Page = () => {
       {activeTab === 'Tab 1' && (
         <>
           {select && (
-            <div className="border-2 border-grey m-4 rounded-5 p-5 flex w-[100%] justify-center items-center rounded-md">
+            <div className="border-2 border-grey m-4 rounded-5 p-5 flex w-[100%] justify-center items-center rounded-md sm:text-[5px] lg:text-[16px]">
               <button
                 onClick={handleSubmit}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                className="plg:x-4 lg:py-2 sm:p-1 bg-blue-500 text-white rounded-md"
               >
                 اضافة
               </button>
@@ -527,14 +526,14 @@ const Page = () => {
                 dir="rtl"
                 placeholder=" الموقع "
                 type="text"
-                className="lg:w-48 sm:[60px] p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                className="lg:w-48 sm:w-[60px] lg:p-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md lg:ml-4"
                 onChange={(e) => setLocation(e.target.value)}
               />
               <select
                 id="dep"
                 dir="rtl"
                 onChange={(e) => setSelecetedEndHour(e.target.value)}
-                className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md ml-4"
+                className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md lg:ml-4"
                 defaultValue="وقت الانتهاء"
               >
                 <option disabled>وقت الانتهاء</option>
@@ -546,7 +545,7 @@ const Page = () => {
                 id="dep"
                 dir="rtl"
                 onChange={(e) => setSelecetedStartHour(e.target.value)}
-                className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md ml-4"
+                className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md lg:ml-4"
                 defaultValue="وقت البدأ"
               >
                 <option disabled>وقت البدأ</option>
@@ -558,7 +557,7 @@ const Page = () => {
                 id="dep"
                 dir="rtl"
                 onChange={(e) => setSelecetedDay(e.target.value)}
-                className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md ml-4"
+                className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md lg:ml-4"
                 defaultValue="اليوم"
               >
                 <option disabled>اليوم</option>
@@ -571,7 +570,7 @@ const Page = () => {
                 id="dep"
                 dir="rtl"
                 onChange={(e) => setDoctor(parseInt(e.target.value))}
-                className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md ml-4 "
+                className="lg:px-4 lg:py-2 sm:p-1 sm-[60x] lg:w-[150px] bg-gray-200 border-2 border-black rounded-md lg:ml-4 "
                 defaultValue="الدكتور"
               >
                 <option disabled>الدكتور</option>
@@ -588,7 +587,7 @@ const Page = () => {
                 id="dep"
                 dir="rtl"
                 ref={section}
-                className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md ml-4 sm:w-[60x] w-[150px]"
+                className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md lg:ml-4 sm:w-[60x] lg:w-[150px]"
                 defaultValue="المجموعة"
               >
                 <option disabled>المجموعة</option>
@@ -607,7 +606,7 @@ const Page = () => {
                 id="dep"
                 dir="rtl"
                 onChange={(e) => setSelecetedCourse(e.target.value)}
-                className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md ml-4 sm:w-[60x] w-[150px]"
+                className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md lg:ml-4 sm:w-[60x] lg:w-[150px]"
                 defaultValue="المادة"
               >
                 <option disabled>المادة</option>
