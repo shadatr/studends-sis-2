@@ -515,7 +515,7 @@ const Page = () => {
       {activeTab === 'Tab 1' && (
         <>
           {select && (
-            <div className="border-2 border-grey m-4 rounded-5 p-5 flex w-[100%] justify-center items-center rounded-md sm:text-[5px] lg:text-[16px]">
+            <div className="border-2 border-grey m-4 rounded-5 p-5 flex w-[100%] justify-center items-center rounded-md sm:text-[8px] lg:text-[16px]">
               <button
                 onClick={handleSubmit}
                 className="plg:x-4 lg:py-2 sm:p-1 bg-blue-500 text-white rounded-md"
