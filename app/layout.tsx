@@ -14,7 +14,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ar">
-      <head></head>
       <body>
         <SessionProvider session={session}>{children}</SessionProvider>
         <ToastContainer position="bottom-right" autoClose={2000} rtl={true} />
