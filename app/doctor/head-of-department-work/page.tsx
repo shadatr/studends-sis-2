@@ -526,7 +526,7 @@ const Page = () => {
                 dir="rtl"
                 placeholder=" الموقع "
                 type="text"
-                className="lg:w-48 sm:w-[60px] lg:p-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md lg:ml-4"
+                className="lg:w-48 sm:w-[45px] lg:p-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md lg:ml-4"
                 onChange={(e) => setLocation(e.target.value)}
               />
               <select
@@ -587,7 +587,7 @@ const Page = () => {
                 id="dep"
                 dir="rtl"
                 ref={section}
-                className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md lg:ml-4 sm:w-[60px] lg:w-[150px]"
+                className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md lg:ml-4 sm:w-[50px] lg:w-[150px]"
                 defaultValue="المجموعة"
               >
                 <option disabled>المجموعة</option>
@@ -606,7 +606,7 @@ const Page = () => {
                 id="dep"
                 dir="rtl"
                 onChange={(e) => setSelecetedCourse(e.target.value)}
-                className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md lg:ml-4 sm:w-[60px] lg:w-[150px]"
+                className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md lg:ml-4 sm:w-[50px] lg:w-[150px]"
                 defaultValue="المادة"
               >
                 <option disabled>المادة</option>
