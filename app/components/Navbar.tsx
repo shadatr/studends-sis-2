@@ -69,21 +69,21 @@ const Navbar = () => {
               <div className="absolute top-0 right-0 mt-[50px] py-2 bg-white border rounded shadow-lg text-[13px] w-[150px]">
                 <Link
                   onClick={() => setIsOpen(false)}
-                  href="management/sittings/majors-and-fac"
+                  href="/management/sittings/majors-and-fac"
                   className="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white"
                 >
                   التخصصات و الاقسام
                 </Link>
                 <Link
                   onClick={() => setIsOpen(false)}
-                  href="management/sittings/uni-courses"
+                  href="/management/sittings/uni-courses"
                   className="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white"
                 >
                   مواد الجامعة
                 </Link>
                 <Link
                   onClick={() => setIsOpen(false)}
-                  href="management/sittings/major-courses"
+                  href="/management/sittings/major-courses"
                   className="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white"
                 >
                   مواد التخصصات
@@ -97,7 +97,7 @@ const Navbar = () => {
                 </Link>
                 <Link
                   onClick={() => setIsOpen(false)}
-                  href="management/sittings/course-reg-and-gpa"
+                  href="/management/sittings/course-reg-and-gpa"
                   className="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white"
                 >
                   فتح تسجيل المواد/ارسال المجموع النهائي
