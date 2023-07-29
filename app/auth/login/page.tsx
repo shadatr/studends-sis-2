@@ -61,10 +61,12 @@ const LoginPage = ({ params }: { params: { name: string } }) => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-[20px] flex items-center justify-center flex-col shadow-lg w-[500px] h-[550px]">
-        <h1 className="text-[30px] font-bold m-3">تسجيل الدخول </h1>
-        <span className="w-[450px] items-right flex justify-end">
+    <div className="h-screen flex items-center justify-center bg-gray-100 ">
+      <div className="bg-white p-8 rounded-[20px] flex items-center justify-center flex-col shadow-lg lg:w-[500px] h-[550px] sm:w-[300px]">
+        <h1 className="lg:text-[30px] font-bold m-3 sm:text-[15px]">
+          تسجيل الدخول
+        </h1>
+        <span className="lg:w-[450px] sm:w-[270px] items-right flex justify-end">
           <select
             className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md m-4 items-right flex justify-end"
             onChange={(e) => setType(e.target.value)}
@@ -80,7 +82,7 @@ const LoginPage = ({ params }: { params: { name: string } }) => {
             placeholder="البريد الالكتروني"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className=" border w-[450px] border-gray-300 rounded-md px-3 py-2 h-[50px]"
+            className=" border lg:w-[450px] sm:w-[270px] border-gray-300 rounded-md px-3 py-2 h-[50px]"
           />
         </div>
         <div className="mb-4">
@@ -89,12 +91,12 @@ const LoginPage = ({ params }: { params: { name: string } }) => {
             placeholder="كلمة المرور"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-[450px] flex border border-gray-300 rounded-md px-3 py-2 h-[50px]"
+            className="lg:w-[450px] sm:w-[270px] flex border border-gray-300 rounded-md px-3 py-2 h-[50px]"
           />
         </div>
         <button
           onClick={handleLogin}
-          className="w-full bg-blue-500 text-white font-semibold px-4 py-2 rounded-md h-[50px]"
+          className="lg:w-full bg-blue-500 sm:w-[270px] text-white font-semibold px-4 py-2 rounded-md h-[50px]"
         >
           تسجيل
         </button>

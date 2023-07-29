@@ -387,10 +387,10 @@ const Page = ({ params }: { params: { id: number } }) => {
   });
 
   return (
-    <div className="absolute w-[80%] flex flex-col p-10 justify-content items-center ">
+    <div className="lg:absolute lg:w-[80%] sm:w-[100%] lg:text-[16px] sm:text-[8px] flex flex-col p-10 justify-content items-center ">
       <button
         onClick={handlePrint}
-        className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
+        className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md sm:w-[100px] lg:w-[200px] justify-center items-center"
       >
         طباعة درجات الطالب
       </button>
@@ -399,36 +399,36 @@ const Page = ({ params }: { params: { id: number } }) => {
         onSubmit={handleSubmit}
         className="flex-col w-screen flex justify-content items-center"
       >
-        <h1 className="text-sm bg-lightBlue rounded-md p-3 px-12 m-3">
+        <h1 className=" bg-lightBlue rounded-md p-3 lg:px-12 sm:px-2 m-3">
           : المواد التي اختارها الطالب اللتي يجب الموافقة عليها
         </h1>
 
         <div className="p-1 rounded-md mb-5">
           {checkList.length ? (
             <>
-              <table className="w-[1100px]">
+              <table className="lg:w-[1100px] sm:w-[350px]">
                 <thead>
                   <tr>
-                    <th className="border border-gray-300 px-4 py-2 bg-grey"></th>
-                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                    <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey"></th>
+                    <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                       الكريدت
                     </th>
-                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                    <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                       درجة النجاح
                     </th>
-                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                    <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                       الساعات
                     </th>
-                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                    <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                       التوقيت
                     </th>
-                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                    <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                       اسم الدكتور
                     </th>
-                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                    <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                       اسم المجموعة
                     </th>
-                    <th className="border border-gray-300 px-4 py-2 bg-grey">
+                    <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                       اسم المادة
                     </th>
                   </tr>
@@ -449,7 +449,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                     );
                     return (
                       <tr key={index}>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                           <input
                             type="checkbox"
                             onChange={() =>
@@ -460,26 +460,26 @@ const Page = ({ params }: { params: { id: number } }) => {
                             )}
                           />
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                           {item.course.credits}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                           {item.course.passing_percentage}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                           {item.course.hours}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                           {findDay?.name}/{findStartTime?.name}-
                           {findEndTime?.name}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                           {item.doctor?.name} {item.doctor?.surname}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                           {item.section.name}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                           {item.course.course_name}{' '}
                           {repeated?.course.id == item.course.id
                             ? '- اعادة'
@@ -501,7 +501,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             <table>
               <tbody>
                 <tr>
-                  <td className="border border-gray-300 px-4 py-2 w-[200px]">
+                  <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 w-[200px]">
                     لا يوجد
                   </td>
                 </tr>
@@ -511,32 +511,32 @@ const Page = ({ params }: { params: { id: number } }) => {
         </div>
       </form>
 
-      <h1 className="text-sm bg-lightBlue rounded-md p-3 px-12 m-3">
+      <h1 className=" bg-lightBlue rounded-md p-3 lg:px-12 sm:px-2 m-3">
         اضف مواد اضافية لطالب
       </h1>
-      <table className="w-[1100px] ">
+      <table className="lg:w-[1100px] sm:w-[350px]">
         <thead>
           <tr>
-            <th className="border border-gray-300 px-4 py-2 bg-grey"></th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey"></th>
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               الكريدت
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               الساعات
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               اجباري/اختياري
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               التوقيت
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               اسم الدكتور
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               اسم المجموعة
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               اسم المادة
             </th>
           </tr>
@@ -576,26 +576,26 @@ const Page = ({ params }: { params: { id: number } }) => {
                       />
                     </td>
 
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {item.course.credits}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {item.course.hours}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {item.majorCourse.isOptional ? 'اختياري' : 'اجباري'}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {findDay?.name}/ {findStartTime?.name}-{findEndTime?.name}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {selectedDoc?.name} {selectedDoc?.surname}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {selectedSec?.name}
                     </td>
                     <td
-                      className={`border border-gray-300 px-4 py-2 ${
+                      className={`border border-gray-300 lg:px-4 lg:py-2 sm:p-1 ${
                         repeated?.course.id == item.course.id
                           ? 'text-green-500'
                           : ''
@@ -614,19 +614,19 @@ const Page = ({ params }: { params: { id: number } }) => {
       <table className="m-10">
         <thead>
           <tr>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               المواد المشروطة
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               الكريدت
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               الساعات
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               اجباري/اختياري
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               اسم المادة
             </th>
           </tr>
@@ -640,7 +640,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             );
             return (
               <tr className="text-red-500" key={ind + 3}>
-                <td className="border border-gray-300 px-4 py-2">
+                <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                   {preCourses.map((preCourse) => (
                     <span key={preCourse?.course.id}>
                       {preCourse?.course.course_name}
@@ -648,16 +648,16 @@ const Page = ({ params }: { params: { id: number } }) => {
                     </span>
                   ))}
                 </td>
-                <td className="border border-gray-300 px-4 py-2">
+                <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                   {item.course.credits}
                 </td>
-                <td className="border border-gray-300 px-4 py-2">
+                <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                   {item.course.hours}
                 </td>
-                <td className="border border-gray-300 px-4 py-2">
+                <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                   {item.majorCourse.isOptional ? 'اختياري' : 'اجباري'}
                 </td>
-                <td className="border border-gray-300 px-4 py-2">
+                <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                   {item.course.course_name}
                 </td>
               </tr>
@@ -667,50 +667,50 @@ const Page = ({ params }: { params: { id: number } }) => {
       </table>
       <button
         onClick={handleSubmit2}
-        className="flex p-3 text-sm  bg-darkBlue text-secondary m-3 rounded-md"
+        className="flex p-3  bg-darkBlue text-secondary m-3 rounded-md"
       >
         اضافة
       </button>
 
-      <h1 className="text-sm bg-lightBlue rounded-md p-3 px-12 m-3">
+      <h1 className=" bg-lightBlue rounded-md p-3 lg:px-10 sm:px-5  m-3">
         الدرجات و المواد
       </h1>
       <div ref={printableContentRef}>
-        <table className="m-10 w-[1100px]">
+        <table className="m-10 lg:w-[1100px] sm:w-[350px]">
           <thead>
             <tr>
-              <th className="border border-gray-300 px-4 py-2 bg-grey"></th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey"></th>
+              <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                 النتيجة
               </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                 المجموع
               </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                 النسبة
               </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                 اعمال السنة
               </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                 النسبة
               </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                 الامتحان الانهائي
               </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                 النسبة
               </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                 الامتحان النصفي
               </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                 اسم الدكتور
               </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                 اسم المجموعة
               </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                 اسم المادة
               </th>
             </tr>
@@ -729,16 +729,14 @@ const Page = ({ params }: { params: { id: number } }) => {
                 );
                 return (
                   <tr key={index}>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       <BsXCircleFill
                         className="cursor-pointer"
-                        onClick={() =>
-                          handleDelete(course.courseEnrollements)
-                        }
+                        onClick={() => handleDelete(course.courseEnrollements)}
                       />
                     </td>
                     <td
-                      className={`border border-gray-300 px-4 py-2 ${
+                      className={`border border-gray-300 lg:px-4 lg:py-2 sm:p-1 ${
                         course.courseEnrollements.pass
                           ? 'text-green-600 hover:text-green-700'
                           : 'text-red-500 hover:text-red-600'
@@ -750,49 +748,49 @@ const Page = ({ params }: { params: { id: number } }) => {
                           : `${letter?.letter_grade} راسب`
                         : ''}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 ">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 ">
                       {course.class?.publish_grades
                         ? course.courseEnrollements.result
                         : ''}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {course.course.class_work}%
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {course.class?.publish_grades
                         ? course.course.class_work
                         : ''}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {course.course.final}%
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 ">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 ">
                       {course.class?.publish_grades
                         ? course.courseEnrollements.final
                         : ' '}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {course.course.midterm}%
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {course.class?.publish_grades
                         ? course.courseEnrollements.midterm
                         : ''}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {course.doctor.name} {course.doctor.surname}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {course.section?.name}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {course.course.course_name}
                     </td>
                   </tr>
                 );
               } else {
                 <tr>
-                  <td className="border border-gray-300 px-4 py-2 ">لا يوجد</td>
+                  <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 ">لا يوجد</td>
                 </tr>;
               }
             })}
@@ -801,18 +799,19 @@ const Page = ({ params }: { params: { id: number } }) => {
       </div>
       <div style={{ position: 'absolute', top: '-9999px' }}>
         <div ref={printableContentRef} className="m-5">
-          {student.length>0 && <>
-            <h1>{student[0].name} :الاسم</h1>
-            <h1>{student[0].surname} :اللقب</h1>
-            <h1>{student[0].number} : رقم الطالب</h1>
-          </> 
-          }
-          
+          {student.length > 0 && (
+            <>
+              <h1>{student[0].name} :الاسم</h1>
+              <h1>{student[0].surname} :اللقب</h1>
+              <h1>{student[0].number} : رقم الطالب</h1>
+            </>
+          )}
+
           <table className="m-10 w-[1100px]">
             <thead>
               <tr>
                 <th className="border border-gray-300 px-4 py-2 bg-grey">
-                  النتيجة
+                  النتيجة 
                 </th>
                 <th className="border border-gray-300 px-4 py-2 bg-grey">
                   المجموع

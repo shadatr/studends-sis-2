@@ -120,10 +120,11 @@ export type DoctorsWithDepartmentsType = {
   id: number;
   name: string;
   surname: string;
-  doctorSince: string;
+  enrollment_date: string;
   email: string;
   major: string;
   active: boolean;
+  head_of_department_id: number;
   department: {
       created_at: string | null;
       id: number;

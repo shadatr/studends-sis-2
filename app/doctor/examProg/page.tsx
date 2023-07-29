@@ -62,17 +62,17 @@ const Page = () => {
   }, [user]);
 
   return (
-    <div className="flex flex-col absolute w-[80%] mt-7 items-center justify-center ">
+    <div className="flex flex-col lg:absolute lg:w-[80%] sm:w-[100%] lg:mt-7 sm:mt-[100px] items-center lg:text-[16px] sm:text-[8px] justify-center ">
       <table className="w-full bg-white shadow-md rounded-md">
         <thead>
           <tr>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">القاعة</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">
+            <th className="lg:py-2 lg:px-4 sm:p-1 bg-gray-200 text-gray-700">القاعة</th>
+            <th className="lg:py-2 lg:px-4 sm:p-1 bg-gray-200 text-gray-700">
               مدة الامتحان
             </th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">الساعة</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">اسم المادة</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">التاريخ</th>
+            <th className="lg:py-2 lg:px-4 sm:p-1 bg-gray-200 text-gray-700">الساعة</th>
+            <th className="lg:py-2 lg:px-4 sm:p-1 bg-gray-200 text-gray-700">اسم المادة</th>
+            <th className="lg:py-2 lg:px-4 sm:p-1 bg-gray-200 text-gray-700">التاريخ</th>
           </tr>
         </thead>
         <tbody>
@@ -82,13 +82,17 @@ const Page = () => {
             );
             return (
               <tr key={index}>
-                <td className="py-2 px-4 border-b">{item.location}</td>
-                <td className="py-2 px-4 border-b">{item.duration}</td>
-                <td className="py-2 px-4 border-b">{item.hour}</td>
-                <td className="py-2 px-4 border-b">
+                <td className="lg:py-2 lg:px-4 sm:p-1 border-b">
+                  {item.location}
+                </td>
+                <td className="lg:py-2 lg:px-4 sm:p-1border-b">
+                  {item.duration}
+                </td>
+                <td className="lg:py-2 lg:px-4 sm:p-1 border-b">{item.hour}</td>
+                <td className="lg:py-2 lg:px-4 sm:p-1 border-b">
                   {selectcourse?.course.course_name}
                 </td>
-                <td className="py-2 px-4 border-b">{item.date}</td>
+                <td className="lg:py-2 lg:px-4 sm:p-1 border-b">{item.date}</td>
               </tr>
             );
           })}

@@ -1,8 +1,6 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 'use client';
 import {
   AddCourseType,
-  AssignPermissionType,
   GetPermissionType,
   ExamProgramType,
 } from '@/app/types/types';
@@ -20,7 +18,7 @@ import 'react-clock/dist/Clock.css';
 import { BsXCircleFill } from 'react-icons/bs';
 import { useReactToPrint } from 'react-to-print';
 
-const page = () => {
+const Page = () => {
   const session = useSession({ required: true });
   // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
@@ -28,11 +26,8 @@ const page = () => {
   }
 
   const user = session.data?.user;
-
-  const [active, setActive] = useState<boolean>();
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
   const [edit, setEdit] = useState(false);
-
   const [courses, setCourses] = useState<AddCourseType[]>([]);
   const [examProg, setExamProg] = useState<ExamProgramType[]>([]);
   const [selectedCourse, setSelecetedCourse] = useState<string>();
@@ -68,12 +63,9 @@ const page = () => {
         setPerms(messagePer);
       }
 
-      const responseActive = await axios.get('/api/allPermission/courseRegPer');
-      const messageActive: AssignPermissionType[] = responseActive.data.message;
-      setActive(messageActive[0].active);
     };
     fetchPosts();
-  }, [active, user, edit]);
+  }, [ user, edit]);
 
   const handleSubmitExam = () => {
     if (
@@ -114,7 +106,7 @@ const page = () => {
         toast.success(res.data.message);
         const dataUsageHistory = {
           id: user?.id,
-          type: 'admin',
+          type: 'doctor',
           action: ' تعديل جدول الامتحانات',
         };
         axios.post('/api/usageHistory', dataUsageHistory);
@@ -132,7 +124,7 @@ const page = () => {
         toast.success(res.data.message);
         const dataUsageHistory = {
           id: user?.id,
-          type: 'admin',
+          type: 'doctor',
           action: ' تعديل جدول الامتحانات',
         };
         axios.post('/api/usageHistory', dataUsageHistory);
@@ -150,7 +142,7 @@ const page = () => {
         toast.success(res.data.message);
         const dataUsageHistory = {
           id: user?.id,
-          type: 'admin',
+          type: 'doctor',
           action: ' تعديل جدول الامتحانات',
         };
         axios.post('/api/usageHistory', dataUsageHistory);
@@ -379,4 +371,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

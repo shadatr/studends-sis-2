@@ -16,8 +16,8 @@ export default function MangLayout({
   return (
     <>
       <Navbar />
-      {children}
       <DoctorMenu />
+      {children}
       <Footer />
     </>
   );

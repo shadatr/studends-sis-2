@@ -61,26 +61,26 @@ const Page = () => {
   }, [user]);
 
   return (
-    <div className="absolute w-[80%] flex flex-col p-10 justify-content items-center ">
-      <table className="w-[1100px] m-5">
+    <div className="lg:absolute lg:w-[80%] sm:w-[100%] flex flex-col p-10 justify-content items-center sm:text-[8px] lg:text-[16px]">
+      <table className="lg:w-[1100px] sm:w-[350px] m-5">
         <thead>
           <tr>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               الكريدت
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               الساعات
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               التوقيت
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               اسم الدكتور
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               اسم المجموعة
             </th>
-            <th className="border border-gray-300 px-4 py-2 bg-grey">
+            <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
               اسم المادة
             </th>
           </tr>
@@ -98,22 +98,22 @@ const Page = () => {
 
               return (
                 <tr key={index}>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                     {item.course.credits}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300lg :px-4 lg:py-2 sm:p-1">
                     {item.course.hours}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                     {findDay?.name}/{findStartTime?.name}-{findEndTime?.name}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                     {item.doctor?.name} {item.doctor?.surname}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                     {item.section.name}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                     {item.course.course_name}{' '}
                   </td>
                 </tr>

@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import { ClassesInfoType, ClassesType } from '@/app/types/types';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 const Page = () => {
   const session = useSession({ required: true });
@@ -45,8 +46,8 @@ const Page = () => {
   }, [user]);
 
   return (
-    <div className="absolute w-[80%] flex flex-col text-sm p-10 justify-content items-center ">
-      <table className="w-[900px] m-10">
+    <div className="absolute lg:w-[80%] sm:w-[100%] flex flex-col lg:text-sm sm:text-[10px] p-10 justify-content items-center ">
+      <table className="lg:w-[900px] sm:w-[350px] m-10">
         <thead>
           <tr>
             <th className="border border-gray-300 px-4 py-2 bg-grey">
@@ -61,10 +62,18 @@ const Page = () => {
           {classes.map((course, index) => (
             <tr key={index}>
               <td className="border border-gray-300 px-4 py-2">
-                {course.section?.name}
+                <Link
+                  href={`/doctor/courses-and-grades/courseStudents/${course.section.id}`}
+                >
+                  {course.section.name}
+                </Link>
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {course.course.course_name}
+                <Link
+                  href={`/doctor/courses-and-grades/courseStudents/${course.section.id}`}
+                >
+                  {course.course.course_name}
+                </Link>
               </td>
             </tr>
           ))}

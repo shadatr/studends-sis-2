@@ -315,36 +315,36 @@ const handleDelete = (item?: StudentClassType) => {
 };
 
   return (
-    <div className="absolute w-[80%] flex p-10 justify-center flex-col items-center ">
+    <div className="lg:bsolute lg:w-[80%] sm:w-[100%] mt-[70px]  sm:text-[8px] lg:text-[16px]  flex p-10 justify-center flex-col items-center ">
       {perms.map((item, index) =>
         item.permission_id == 20 && item.active ? (
           <>
-            <h1 className="flex p-3 text-sm  bg-lightBlue m-3 rounded-md">
+            <h1 className="flex p-3 lg:text-sm  bg-lightBlue m-3 rounded-md">
               اختر المواد
             </h1>
-            <table className="w-[1100px] ">
+            <table className="lg:w-[1100px] sm:w-[350px]">
               <thead>
                 <tr>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey"></th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey"></th>
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     الكريدت
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     الساعات
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     اجباري/اختياري
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     التوقيت
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     اسم الدكتور
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     اسم المجموعة
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     اسم المادة
                   </th>
                 </tr>
@@ -375,7 +375,7 @@ const handleDelete = (item?: StudentClassType) => {
 
                       return (
                         <tr key={inde + 1}>
-                          <td className="border border-gray-300 px-4 py-2">
+                          <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                             <input
                               type="checkbox"
                               onChange={() => handleCheck(cls.id)}
@@ -383,27 +383,27 @@ const handleDelete = (item?: StudentClassType) => {
                             />
                           </td>
 
-                          <td className="border border-gray-300 px-4 py-2">
+                          <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                             {item.course.credits}
                           </td>
-                          <td className="border border-gray-300 px-4 py-2">
+                          <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                             {item.course.hours}
                           </td>
-                          <td className="border border-gray-300 px-4 py-2">
+                          <td className="border border-gray-300lg:py-2 lg:px-4 sm:p-1">
                             {item.majorCourse.isOptional ? 'اختياري' : 'اجباري'}
                           </td>
-                          <td className="border border-gray-300 px-4 py-2">
+                          <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                             {findDay?.name}/ {findStartTime?.name}-
                             {findEndTime?.name}
                           </td>
-                          <td className="border border-gray-300 px-4 py-2">
+                          <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                             {selectedDoc?.name} {selectedDoc?.surname}
                           </td>
-                          <td className="border border-gray-300 px-4 py-2">
+                          <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                             {selectedSec?.name}
                           </td>
                           <td
-                            className={`border border-gray-300 px-4 py-2 ${
+                            className={`border border-gray-300 lg:py-2 lg:px-4 sm:p-1${
                               repeated?.course.id == item.course.id
                                 ? 'text-green-500'
                                 : ''
@@ -424,19 +424,19 @@ const handleDelete = (item?: StudentClassType) => {
             <table className="m-10">
               <thead>
                 <tr>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     المواد المشروطة
                   </th>
                   <th className="border border-gray-300 px-4 py-2 bg-grey">
                     الكريدت
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     الساعات
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     اجباري/اختياري
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     اسم المادة
                   </th>
                 </tr>
@@ -452,7 +452,7 @@ const handleDelete = (item?: StudentClassType) => {
                     );
                     return (
                       <tr className="text-red-500" key={ind + 3}>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                           {preCourses.map((preCourse) => (
                             <span key={preCourse?.course.id}>
                               {preCourse?.course.course_name}
@@ -460,16 +460,16 @@ const handleDelete = (item?: StudentClassType) => {
                             </span>
                           ))}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                           {item.course.credits}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                           {item.course.hours}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                           {item.majorCourse.isOptional ? 'اختياري' : 'اجباري'}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                           {item.course.course_name}
                         </td>
                       </tr>
@@ -479,33 +479,33 @@ const handleDelete = (item?: StudentClassType) => {
             </table>
             <button
               onClick={handleSubmit}
-              className="flex p-3 text-sm  bg-darkBlue text-secondary m-3 rounded-md"
+              className="flex p-3 lg:text-sm  bg-darkBlue text-secondary m-3 rounded-md"
             >
               اضافة
             </button>
-            <h1 className="flex p-3 text-sm  bg-lightBlue rounded-md m-5">
-               المواد التي تم اختيارها/ في انتظار موافقة المشرف
+            <h1 className="flex p-3 lg:text-sm  bg-lightBlue rounded-md m-5">
+              المواد التي تم اختيارها/ في انتظار موافقة المشرف
             </h1>
-            <table className="w-[1100px]">
+            <table className="lg:w-[1100px] sm:w-[350px]">
               <thead>
                 <tr>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey"></th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey"></th>
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     الكريدت
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     الساعات
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     التوقيت
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     اسم الدكتور
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     اسم المجموعة
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     اسم المادة
                   </th>
                 </tr>
@@ -527,7 +527,7 @@ const handleDelete = (item?: StudentClassType) => {
                     );
                     return (
                       <tr key={index}>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                           <BsXCircleFill
                             className="cursor-pointer"
                             onClick={() =>
@@ -535,23 +535,23 @@ const handleDelete = (item?: StudentClassType) => {
                             }
                           />
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                           {item.course.credits}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                           {item.course.hours}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                           {findDay?.name}/{findStartTime?.name}-
                           {findEndTime?.name}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                           {item.doctor?.name} {item.doctor?.surname}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                           {item.section.name}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                           {item.course.course_name}{' '}
                           {repeated?.course.id == item.course.id
                             ? '- اعادة'
@@ -568,7 +568,7 @@ const handleDelete = (item?: StudentClassType) => {
             key={index}
             className=" flex-col w-screen flex justify-content items-center"
           >
-            <p className="flex w-[400px]  text-sm justify-center items-center bg-lightBlue p-5 ">
+            <p className="flex lg:w-[400px] sm:w-[200px] justify-center items-center bg-lightBlue p-5 ">
               لقد تم اغلاق تسجيل المواد
             </p>
           </div>

@@ -17,14 +17,14 @@ declare module "next-auth" {
       major: number | null;
       name: string;
       phone: number | null;
+      head_of_department_id: number |null;
       semester: number | null;
       surname: string;
       speciality: string | null;
       admin: boolean;
-      head_of_deparment_id: number;
       advisor: number;
       number: number;
-      graduated:boolean;
+      graduated: boolean;
       userType: 'student' | 'doctor' | 'admin';
     };
   }

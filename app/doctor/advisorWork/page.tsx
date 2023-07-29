@@ -143,17 +143,17 @@ const Page = () => {
   };
 
   return (
-    <div className="flex absolute flex-col w-[80%]">
-      <span className="flex flex-row m-5">
+    <div className="flex lg:absolute flex-col lg:w-[80%] sm:w-[100%] sm:text-[8px] lg:text-[16px]">
+      <span className="flex flex-row m-5 ">
         <button
           onClick={handleSubmit}
-          className="bg-blue-500 hover:bg-blue-600  text-white font-bold py-2 px-4 rounded w-[150px]"
+          className="bg-blue-500 hover:bg-blue-600  text-white font-bold py-2 px-4 rounded sm:w-[100px] lg:w-[150px]"
         >
           ابحث
         </button>
         <select
           defaultValue="اختر النوع"
-          className="border border-gray-300 p-2 w-[250px]"
+          className="border border-gray-300 p-2 sm:w-[100px] lg:w-[250px]"
           onChange={(e) => setSelected(e.target.value)}
         >
           <option disabled>اختر النوع</option>

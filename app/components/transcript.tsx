@@ -65,9 +65,9 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
   }, [majorId, user]);
 
   return (
-    <div className="absolute w-[85%] flex flex-col p-10 justify-content items-center">
+    <div className="absolute lg:w-[85%] sm:w-[100%] flex flex-col p-10 justify-content items-center">
       <h1 className="bg-grey p-2 m-1">
-       {studentInfo[0]?.final_gpa}: المجموع النهائي
+        {studentInfo[0]?.final_gpa}: المجموع النهائي
       </h1>
       <h1 className="bg-green-300 p-2 m-1">
         {majorCredit} :الكريدت المطلوبه لتخرج
@@ -76,24 +76,24 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
         {studentCredit}: كريديت الطالب الحالية
       </h1>
       {transcript.map((tran, index) => (
-        <table key={index} className="m-10 w-[600px]">
+        <table key={index} className="m-10 lg:w-[600px] sm:[300px]">
           <thead>
             <tr>
-              <th className="flex justify-center items-center text-sm bg-darkBlue text-secondary">
+              <th className="flex justify-center items-center lg:text-sm sm:text-[8px] bg-darkBlue text-secondary">
                 {tran.semester}
               </th>
             </tr>
             <tr className="flex flex-row w-full">
-              <th className="border border-gray-300 px-4 py-2 bg-grey flex flex-row w-full items-center justify-center">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 p-1 bg-grey flex flex-row w-full items-center justify-center">
                 النتيجة
               </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey flex flex-row w-full items-center justify-center">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 p-1 bg-grey flex flex-row w-full items-center justify-center">
                 النقاط
               </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey flex flex-row w-full items-center justify-center">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 p-1 bg-grey flex flex-row w-full items-center justify-center">
                 كريديت
               </th>
-              <th className="border border-gray-300 px-4 py-2 bg-grey flex flex-row w-full items-center justify-center">
+              <th className="border border-gray-300 lg:px-4 lg:py-2 p-1 bg-grey flex flex-row w-full items-center justify-center">
                 اسم المادة
               </th>
             </tr>
@@ -114,7 +114,7 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
                     key={courseIndex}
                   >
                     <td
-                      className={`border border-gray-300 px-4 py-2 flex flex-row w-full items-center justify-center ${
+                      className={`border border-gray-300 lg:px-4 lg:py-2 p-1 flex flex-row w-full items-center justify-center ${
                         course.courseEnrollements.pass
                           ? 'text-green-600 hover:text-green-700'
                           : 'text-red-500 hover:text-red-600'
@@ -126,13 +126,13 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
                           : `${letter?.letter_grade} `
                         : ''}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 flex flex-row w-full items-center justify-center">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 p-1 flex flex-row w-full items-center justify-center">
                       {letter?.points}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 flex flex-row w-full items-center justify-center">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 p-1flex flex-row w-full items-center justify-center">
                       {course.course.credits}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 flex flex-row w-full items-center justify-center">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 p-1 flex flex-row w-full items-center justify-center">
                       {course.course.course_name}
                     </td>
                   </tr>

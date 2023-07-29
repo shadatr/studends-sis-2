@@ -57,18 +57,34 @@ const Page = () => {
 
 
   return (
-    <div className="absolute w-[80%] flex flex-col text-sm p-10 justify-content items-center">
+    <div className="lg:absolute lg:w-[80%] sm:w-[100%] flex flex-col lg:text-sm sm:text-[8px] p-5 mt-10 justify-content items-center">
       <table className="w-full bg-white shadow-md rounded-md">
         <thead>
           <tr>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">الجمعة</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">الخميس</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">الاربعاء</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">الثلاثاء</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">الاثنين</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">الاحد</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">السبت</th>
-            <th className="py-2 px-4 bg-gray-200 text-gray-700">الوقت</th>
+            <th className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 text-gray-700">
+              الجمعة
+            </th>
+            <th className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 text-gray-700">
+              الخميس
+            </th>
+            <th className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 text-gray-700">
+              الاربعاء
+            </th>
+            <th className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 text-gray-700">
+              الثلاثاء
+            </th>
+            <th className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 text-gray-700">
+              الاثنين
+            </th>
+            <th className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 text-gray-700">
+              الاحد
+            </th>
+            <th className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 text-gray-700">
+              السبت
+            </th>
+            <th className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 text-gray-700">
+              الوقت
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -90,7 +106,10 @@ const Page = () => {
 
                 if (matchingClasses.length > 0) {
                   return matchingClasses.map((matchingClass) => (
-                    <td key={hourIndex} className="py-2 px-4 border-b">
+                    <td
+                      key={hourIndex}
+                      className="lg:px-4 lg:py-2 sm:p-1 border-b"
+                    >
                       {matchingClass.section.name} -{' '}
                       {matchingClass.class.location}
                     </td>
@@ -99,7 +118,7 @@ const Page = () => {
 
                 return <td key={day} className="py-2 px-4 border-b"></td>;
               })}
-              <td className="py-2 px-4 border-b">{hour.name}</td>
+              <td className="lg:px-4 lg:py-2 sm:p-1 border-b">{hour.name}</td>
             </tr>
           ))}
         </tbody>

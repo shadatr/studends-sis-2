@@ -1,1325 +1,1108 @@
 'use client';
-import {
-  AssignPermissionType,
-  LetterGradesType,
-  LettersType,
-  PersonalInfoType,
-  StudenCourseType,
-  TranscriptType,
-  GetPermissionType,
-  StudenCourseGPAType,
-  MajorCourseType,
-} from '@/app/types/types';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useReactToPrint } from 'react-to-print';
+import {
+  MajorCourseType,
+  SectionType,
+  DayOfWeekType,
+  CheckedType,
+  ClassesInfoType,
+  MajorRegType,
+  PersonalInfoType,
+  AddCourseType,
+  GetPermissionType,
+  LettersType,
+  ExamProgramType,
+} from '@/app/types/types';
 import { useSession } from 'next-auth/react';
-import { toast } from 'react-toastify';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { BsXCircleFill } from 'react-icons/bs';
+import DatePicker from 'react-date-picker';
+import TimePicker from 'react-time-picker';
+import 'react-date-picker/dist/DatePicker.css';
+import 'react-calendar/dist/Calendar.css';
+import 'react-time-picker/dist/TimePicker.css';
+import 'react-clock/dist/Clock.css';
+
+const hours: string[] = [
+  '8:00',
+  '9:00',
+  '10:00',
+  '11:00',
+  '12:00',
+  '1:00',
+  '2:00',
+  '3:00',
+  '4:00',
+  '5:00',
+  '6:00',
+  '7:00',
+];
+
+const hoursNames: CheckedType[] = [
+  { id: 8, name: '8:00' },
+  { id: 9, name: '9:00' },
+  { id: 10, name: '10:00' },
+  { id: 11, name: '11:00' },
+  { id: 12, name: '12:00' },
+  { id: 13, name: '1:00' },
+  { id: 14, name: '2:00' },
+  { id: 15, name: '3:00' },
+  { id: 16, name: '4:00' },
+  { id: 17, name: '5:00' },
+  { id: 18, name: '6:00' },
+  { id: 19, name: '7:00' },
+];
+
+const days: DayOfWeekType[] = [
+  { name: 'الاحد', day: 'sunday' },
+  { name: 'السبت', day: 'saturday' },
+  { name: 'الجمعة', day: 'friday' },
+  { name: 'الخميس', day: 'thursday' },
+  { name: 'الاربعاء', day: 'wednesday' },
+  { name: 'الثلثاء', day: 'tuesday' },
+  { name: 'الاثنين', day: 'monday' },
+];
 
 const Page = () => {
   const session = useSession({ required: true });
-  // if user isn't a admin, throw an error
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
     redirect('/');
   }
 
   const user = session.data?.user;
 
-  const [edit, setEdit] = useState(false);
-  const [active, setActive] = useState<boolean>();
-  const [courses, setCourses] = useState<StudenCourseType[]>([]);
-  const [refresh, setRefresh] = useState(false);
-  const [students, setStudents] = useState<PersonalInfoType[]>([]);
-  const [transcript, setTranscript] = useState<TranscriptType[]>([]);
-  const [letters, setLetters] = useState<LettersType[]>([]);
-  const [points, setPoints] = useState<LettersType[]>([]);
-  const [letters2, setLetters2] = useState<LettersType[]>([]);
-  const [grades, setGrades] = useState<LettersType[]>([]);
-  const [grades2, setGrades2] = useState<LettersType[]>([]);
-  const [points2, setPoints2] = useState<LettersType[]>([]);
-  const [courseLetter, setCourseLetter] = useState<LetterGradesType[]>([]);
+  const [classes, setClasses] = useState<ClassesInfoType[]>([]);
+  const [classesGrade, setClassesGrade] = useState<ClassesInfoType[]>([]);
+  const [majors, setMajors] = useState<MajorRegType[]>([]);
+  const [selectedMajor, setSelectedMajor] = useState<MajorRegType>();
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
+  const [majorCourses, setMajorCourses] = useState<MajorCourseType[]>([]);
+  const [courses, setCourses] = useState<AddCourseType[]>([]);
+  const [sections, setSections] = useState<SectionType[]>([]);
+  const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
+  const [activeTab, setActiveTab] = useState<string>('Tab 1');
+  const [select, setSelect] = useState(false);
+  const section = useRef<HTMLSelectElement>(null);
+  const [doctor, setDoctor] = useState<number>();
+  const [selectedCourse, setSelecetedCourse] = useState<string>();
+  const [selectedStartHour, setSelecetedStartHour] = useState<string>();
+  const [selectedEndHour, setSelecetedEndHour] = useState<string>();
+  const [selectedDay, setSelecetedDay] = useState<string>();
   const [year, setYear] = useState<LettersType[]>([]);
-  const [results, setResult] = useState<LettersType[]>([]);
-  const [results2, setResult2] = useState<LettersType[]>([]);
-  const [gpa, setGpa] = useState<LettersType[]>([]);
+  const [Location, setLocation] = useState<string>();
+  const [major, setMajor] = useState<string>();
+  const type = useRef<HTMLSelectElement>(null);
+    const [edit, setEdit] = useState(false);
+    const [examProg, setExamProg] = useState<ExamProgramType[]>([]);
+    const [selectedCourse2, setSelecetedCourse2] = useState<string>();
+    const [selectedStartHour2, setSelecetedStartHour2] = useState('10:00');
+    const [duration, setDuration] = useState<string>();
+    const [selecetedDay2, setSelecetedDay2] = useState(new Date());
+    const [Location2, setLocation2] = useState<string>();
+    const printableContentRef2 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      if (user) {
-        const response = await axios.get(
-          `/api/allPermission/admin/selectedPerms/${user?.id}`
-        );
-        const messagePer: GetPermissionType[] = response.data.message;
-        setPerms(messagePer);
-      }
+      const resp = await axios.get('/api/major/getMajors');
+      const message: MajorRegType[] = resp.data.message;
+      setMajors(message);
 
-      const responsePoint = await axios.get(`/api/exams/grading/1`);
-      const messagePoint: LettersType[] = responsePoint.data.message;
-      setPoints(messagePoint);
-      setPoints2(messagePoint);
+      axios.get(`/api/course/courseRegistration`).then(async (resp) => {
+        const message: AddCourseType[] = resp.data.message;
+        setCourses(message);
 
-      const responseLetter = await axios.get(`/api/exams/grading/3`);
-      const messageLetter: LettersType[] = responseLetter.data.message;
-      setLetters(messageLetter);
-      setLetters2(messageLetter);
+        const progClassPromises = message.map(async (course) => {
+          const responseReq = await axios.get(`/api/examProg/${course.id}`);
+          const { message: courseMessage }: { message: ExamProgramType[] } =
+            responseReq.data;
+          return courseMessage;
+        });
 
-      const responseGrade = await axios.get(`/api/exams/grading/2`);
-      const messageGrade: LettersType[] = responseGrade.data.message;
-      setGrades(messageGrade);
-      setGrades2(messageGrade);
-
-      const responseYear = await axios.get(`/api/exams/grading/4`);
-      const messageYear: LettersType[] = responseYear.data.message;
-      setYear(messageYear);
-
-      const responseResult = await axios.get(`/api/exams/grading/5`);
-      const messageResult: LettersType[] = responseResult.data.message;
-      setResult2(messageResult);
-      setResult(messageResult);
-
-      const responseGPA = await axios.get(`/api/exams/grading/6`);
-      const messageGPA: LettersType[] = responseGPA.data.message;
-      setGpa(messageGPA);
-
-      const responseCourseLetter = await axios.get(`/api/exams/letterGrades`);
-      const messageCourseLetter: LetterGradesType[] =
-        responseCourseLetter.data.message;
-      setCourseLetter(messageCourseLetter);
-
-      const responseReq = await axios.get(`/api/getAll/student`);
-      const messagestudents: PersonalInfoType[] = responseReq.data.message;
-      setStudents(messagestudents);
-
-      const transccriptPromises = students.map(async (Class) => {
-        const responseReq = axios.get(`/api/transcript/${Class.id}`);
-        const { message: messageTranscript }: { message: TranscriptType[] } = (
-          await responseReq
-        ).data;
-        return messageTranscript;
+        const progClassData = await Promise.all(progClassPromises);
+        const programClass = progClassData.flat();
+        setExamProg(programClass);
       });
 
-      const tansData = await Promise.all(transccriptPromises);
-      const transcript = tansData.flat();
-      setTranscript(transcript);
-
-      const coursesPromises = students.map(async (student) => {
-        const responseReq = await axios.get(
-          `/api/getAll/studentCoursesGpa/${student.id}`
-        );
-        const { message: courseMessage }: { message: StudenCourseType[] } =
-          responseReq.data;
-        return courseMessage;
+      axios.get(`/api/getAll/doctor`).then((resp) => {
+        const message: PersonalInfoType[] = resp.data.message;
+        setDoctors(message);
       });
 
-      const courseData = await Promise.all(coursesPromises);
-      const courses = courseData.flat();
-      setCourses(courses);
-
-      const responseActive = await axios.get('/api/allPermission/courseRegPer');
-      const messageActive: AssignPermissionType[] = responseActive.data.message;
-      setActive(messageActive[0].active);
+      const response = await axios.get(
+        `/api/allPermission/admin/selectedPerms/${user?.id}`
+      );
+      const message2: GetPermissionType[] = response.data.message;
+      setPerms(message2);
     };
     fetchPosts();
-  }, [active, edit, refresh, user]);
+  }, [user,edit]);
 
-  const handleActivate = () => {
-    setActive(!active);
-    const data = { active: !active };
-    axios.post('/api/allPermission/student/courseRegActive', data);
+  const handleChangeMajor = async () => {
 
-    axios.post('/api/allPermission/courseRegPer', data).then((res) => {
-      toast.success(res.data.message);
+    const resMajorCourses = await axios.get(
+      `/api/course/courseMajorReg/${selectedMajor?.id}`
+    );
+    const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
+      .message;
+    setMajorCourses(messageMajorCour);
+
+    const progClassPromises = messageMajorCour.map(async (course) => {
+      const responseReq = await axios.get(`/api/examProg/${course.course_id}`);
+      const { message: courseMessage }: { message: ExamProgramType[] } =
+        responseReq.data;
+      return courseMessage;
     });
+
+    const progClassData = await Promise.all(progClassPromises);
+    const programClass = progClassData.flat();
+    setExamProg(programClass);
+
+    const sectionsPromises = messageMajorCour.map(async (course) => {
+      const responseReq = await axios.get(
+        `/api/getAll/getAllSections/${course.course_id}`
+      );
+      const { message: secMessage }: { message: SectionType[] } =
+        responseReq.data;
+      return secMessage;
+    });
+    const sectionData = await Promise.all(sectionsPromises);
+    const sections = sectionData.flat();
+    setSections(sections);
+
+    const classPromises = sections.map(async (section) => {
+      const responseReq = await axios.get(
+        `/api/getAll/getAllClassInfo/${section.id}`
+      );
+      const { message: classMessage }: { message: ClassesInfoType[] } =
+        responseReq.data;
+      return classMessage;
+    });
+
+    const classData = await Promise.all(classPromises);
+    const classes = classData.flat();
+
+    setClasses(classes);
+
+    const clss: ClassesInfoType[] = [];
+    classes.forEach((cls) => {
+      if (type?.current?.value === 'جميع المجموعات') {
+        clss.push(cls);
+      } else if (
+        type?.current?.value == 'في انتظار قبول الدرجات' &&
+        cls.class.publish_grades == false &&
+        !cls.courseEnrollements.find((c) => c.result == null)
+      ) {
+        clss.push(cls);
+      } else if (
+        type?.current?.value === 'تم قبول الدرجات' &&
+        cls.class.publish_grades
+      ) {
+        clss.push(cls);
+      } else if (
+        type?.current?.value === 'لم يتم ادخال جميع الدرجات' &&
+        cls.courseEnrollements.find((c) => c.result == null)
+      ) {
+        clss.push(cls);
+      }
+    });
+    setClassesGrade(clss);
+
+    axios.get(`/api/getAll/doctor`).then((resp) => {
+      const message: PersonalInfoType[] = resp.data.message;
+      setDoctors(message);
+    });
+
+    const res = await axios.get(`/api/course/courseRegistration`);
+    const messageCour: AddCourseType[] = await res.data.message;
+    setCourses(messageCour);
+
+    const responseMaj = await axios.get(
+      `/api/majorEnrollment/${selectedMajor?.id}`
+    );
+    const messageMaj: MajorRegType[] = responseMaj.data.message;
+    setMajor(messageMaj[0].major_name);
+
+    const responseYear = await axios.get(`/api/exams/grading/4`);
+    const messageYear: LettersType[] = responseYear.data.message;
+    setYear(messageYear);
+    setSelect(true);
   };
 
+  const printableContentRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit3 = () =>{
-        if (user) {
-          students.map(async (student) => {
-            let totalQualityPoints = 0;
-            let studentTotalCredits = 0;
+  const handlePrint = useReactToPrint({
+    content: () => printableContentRef.current,
+  });
 
-            const responseCourseLetter = await axios.get(
-              `/api/exams/letterGrades`
-            );
-            const messageCourseLetter: LetterGradesType[] =
-              responseCourseLetter.data.message;
-            setCourseLetter(messageCourseLetter);
-
-            const responseCourse = await axios.get(
-              `/api/getAll/studentCoursesGpa/${student.id}`
-            );
-
-            const messageCourse: StudenCourseGPAType[] =
-              responseCourse.data.message;
-
-            const majCredit = messageCourse.find(
-              (c) => c.student?.id == student.id
-            );
-
-            if (majCredit) {
-              const messageMajCourse = await axios.get(
-                `/api/course/courseMajorReg/${majCredit?.major?.id}`
-              );
-              const responseCourseMaj: MajorCourseType[] =
-                messageMajCourse.data.message;
-
-              const responseTranscript = await axios.get(
-                `/api/transcript/${student.id}`
-              );
-              const messageTranscript: TranscriptType[] =
-                responseTranscript.data.message;
-
-              if (messageTranscript && messageCourseLetter && messageCourse) {
-                const enrollmentsData = messageTranscript.filter(
-                  (item) => item.student_id == student.id
-                );
-                const maxId = enrollmentsData.reduce(
-                  (max, { id }) => Math.max(max, id),
-                  0
-                );
-
-                const graduationYear = messageTranscript?.find(
-                  (item) => item.id == maxId
-                );
-
-                const graduation = messageCourse.find((item) => item.major?.id);
-
-                let isGraduated = false;
-
-                const selectedCourses2 = courses.filter(
-                  (co) => co.courseEnrollements.student_id == student.id
-                );
-
-                const selectedmessageCourseLetter = messageCourseLetter.filter(
-                  (i) =>
-                    selectedCourses2.find(
-                      (i2) =>
-                        i.course_enrollment_id === i2.courseEnrollements.id
-                    )
-                );
-
-                selectedmessageCourseLetter.forEach((i) => {
-                  const selectedCourse = messageCourse.find(
-                    (course) =>
-                      i.course_enrollment_id === course.courseEnrollements.id
-                  );
-
-                  if (
-                    selectedCourse &&
-                    selectedCourse.course.credits &&
-                    i.points &&
-                    !i.repeated
-                  ) {
-                    studentTotalCredits += selectedCourse?.course.credits;
-                    totalQualityPoints +=
-                      i.points * selectedCourse?.course.credits;
-                  }
-                });
-
-                const data = {
-                  value: parseFloat(
-                    (totalQualityPoints / studentTotalCredits).toFixed(2)
-                  ),
-                  name: 'final_gpa',
-                  student_id: student.id,
-                };
-
-                axios.post('/api/transcript/approveGraduation', data);
-
-                if (
-                  graduation?.major.credits_needed &&
-                  studentTotalCredits >= graduation?.major.credits_needed &&
-                  parseFloat(gpa[0].AA) <=
-                    parseFloat(
-                      (totalQualityPoints / studentTotalCredits).toFixed(2)
-                    )
-                ) {
-                  isGraduated = true;
-                }
-
-                responseCourseMaj.map((majCo) => {
-                  const selecetedCourse = messageCourse.find(
-                    (c) =>
-                      c.course.id == majCo.course_id &&
-                      c.courseEnrollements.pass
-                  );
-
-                  if (
-                    selecetedCourse == undefined &&
-                    majCo.isOptional == false
-                  ) {
-                    isGraduated = false;
-                  }
-                });
-
-                if (
-                  studentTotalCredits &&
-                  student.id &&
-                  graduationYear?.semester
-                ) {
-                  const data = {
-                    credits: studentTotalCredits,
-                    student_id: student.id,
-                    can_graduate: isGraduated,
-                    graduation_year: graduationYear?.semester,
-                  };
-
-                  axios.post('/api/transcript/editCredits', data);
-                }
-              }
-            }
-          });
-        }
+  const handleTabClick = (tab: string) => {
+    setActiveTab(tab);
   };
+
 
   const handleSubmit = () => {
-    let allDataSent = true;
-
-    const missingGrade = courseLetter.find(
-      (item) => item.points == null || item.letter_grade == null
+    if (
+      !(
+        selectedDay &&
+        selectedCourse &&
+        selectedStartHour &&
+        selectedEndHour &&
+        location &&
+        doctor &&
+        section &&
+        `${year[0].AA}-${year[0].BA}` &&
+        year
+      )
+    ) {
+      toast.error('يجب ملئ جميع البيانات');
+      return;
+    }
+    const findDay = days.find((day) => day.name === selectedDay);
+    const findStartTime = hoursNames.find(
+      (hour) => hour.name === selectedStartHour
+    );
+    const findEndTime = hoursNames.find(
+      (hour) => hour.name === selectedEndHour
     );
 
-    const unAprrovedCourse = courses.find((item) => !item.class.publish_grades);
+    const sectionId = sections.find(
+      (item) => item.name === section.current?.value
+    );
 
-    if (missingGrade) {
-      toast.error('لا يمكنك نشر الدرجات، هنالك درجات لم يتم ادخالها');
+    const hasConflictingClass = classes.some(
+      (cls) =>
+        cls.class.doctor_id === doctor &&
+        findEndTime &&
+        findStartTime &&
+        cls.class.day === findDay?.day &&
+        ((cls.class.starts_at <= findStartTime.id &&
+          cls.class.ends_at > findStartTime.id) ||
+          (cls.class.starts_at <= findEndTime.id &&
+            cls.class.ends_at >= findEndTime.id) ||
+          (cls.class.starts_at >= findStartTime.id &&
+            cls.class.ends_at <= findEndTime.id))
+    );
+
+    if (hasConflictingClass) {
+      toast.error('يوجد محاضرة أخرى لدى الدكتور في الوقت المحدد');
       return;
     }
 
-    if (unAprrovedCourse) {
-      toast.error('لا يمكنك نشر الدرجات، هنالك درجات لم يتم الموافقة عليها');
-      return;
-    }
+    let duplicateFound = false;
 
-    students.forEach((student) => {
-      let studentTotalGradePoints = 0;
-      let studentTotalCredits = 0;
-
-      let studentTotalGradePoints2 = 0;
-      let studentTotalCredits2 = 0;
-
-      const selectedCourses = courses.filter(
-        (co) => co.courseEnrollements.student_id == student.id
-      );
-
-      selectedCourses.map((selectedCourse) => {
-        const repeatedCourse = selectedCourses.filter(
-          (co) => co.course.id === selectedCourse?.course.id
-        );
-
-        if (repeatedCourse.length > 1) {
-          const repeat = repeatedCourse.find((co) =>
-            courseLetter.find(
-              (item) =>
-                co.class?.semester != `${year[0].AA}-${year[0].BA}` &&
-                !item.repeated
-            )
-          );
-
-          console.log(repeat);
-
-          selectedCourses.map((item) => {
-            if (
-              item.course.credits &&
-              item.class.semester === repeat?.class.semester &&
-              item.course.id != repeat?.course.id
-            ) {
-              const studentResult = courseLetter.find(
-                (item2) =>
-                  item2.course_enrollment_id === item.courseEnrollements.id
-              );
-              if (studentResult?.points) {
-                studentTotalGradePoints2 +=
-                  studentResult?.points * item.course.credits;
-                studentTotalCredits2 += item.course.credits;
-              }
-            }
-          });
-
-          const data2 = {
-            student_id: student.id,
-            course_enrollment_id: repeat?.courseEnrollements.id,
-            semester: repeat?.class.semester,
-            gpa: parseFloat(
-              (studentTotalGradePoints2 / studentTotalCredits2).toFixed(2)
-            ),
-          };
-
-          if (studentTotalGradePoints2 && studentTotalCredits2) {
-            axios.post(`/api/transcript/transcriptUpdate`, data2).catch(() => {
-              allDataSent = false;
-            });
-          }
-        }
-
-        const studentResult = courseLetter.find(
-          (item) =>
-            item.course_enrollment_id === selectedCourse?.courseEnrollements.id
-        );
-
-        if (
-          selectedCourse?.course.credits &&
-          studentResult?.points &&
-          selectedCourse.class.semester === `${year[0].AA}-${year[0].BA}`
-        ) {
-          studentTotalGradePoints +=
-            studentResult?.points * selectedCourse?.course.credits;
-          studentTotalCredits += selectedCourse?.course.credits;
-        }
-      });
-
-      const gpaFound = transcript.find(
-        (item) =>
-          item.semester == `${year[0].AA}-${year[0].BA}` &&
-          student.id == item.student_id
-      );
-      if (gpaFound) {
+    classes.forEach((item) => {
+      if (
+        item.section.id == sectionId?.id &&
+        item.class.semester == `${year[0].AA}-${year[0].BA}`
+      ) {
+        duplicateFound = true;
         return;
       }
-      const data2 = {
-        student_id: student.id,
-        semester: `${year[0].AA}-${year[0].BA}`,
-        studentSemester: student.semester,
-        gpa: parseFloat(
-          (studentTotalGradePoints / studentTotalCredits).toFixed(2)
-        ),
-        credits: studentTotalCredits,
-      };
-
-      if (studentTotalGradePoints && studentTotalCredits && gpa[0].AA) {
-        axios.post(`/api/transcript/${1}`, data2).catch(() => {
-          allDataSent = false;
-        });
-        if (
-          (studentTotalGradePoints / studentTotalCredits).toFixed(2) < gpa[0].AA
-        ) {
-          const condCourses = courses.filter(
-            (co) =>
-              co.courseEnrollements.can_repeat == true &&
-              co.class.semester == `${year[0].AA}-${year[0].BA}` &&
-              co.courseEnrollements.student_id == student.id
-          );
-          const updatedCondCourses = condCourses.map((co) => {
-            return {
-              ...co.courseEnrollements,
-              pass: false,
-              can_repeat: false,
-            };
-          });
-          axios.post(
-            `/api/exams/updateUnconditionalPassing/${student.id}`,
-            updatedCondCourses
-          );
-        }
-      }
     });
-    handleSubmit3();
-    if (allDataSent) {
-      setRefresh(!refresh);
-      toast.success('تم إرسال جميع البيانات بنجاح');
-      const dataUsageHistory = {
-        id: user?.id,
-        type: 'admin',
-        action: ' ارسال المجموع النهائي في جميع التخصصات',
-      };
-      axios.post('/api/usageHistory', dataUsageHistory);
-    } else {
-      toast.error('حدث خطأ اثناء نشر الدرجات');
+
+    if (duplicateFound) {
+      toast.error('محاضرة هذه المجموعة مسجلة بالفعل');
+      return;
     }
-  };
+    const data = {
+      doctor_id: doctor,
+      section_id: sectionId?.id,
+      semester: `${year[0].AA}-${year[0].BA}`,
+      day: findDay?.day,
+      starts_at: findStartTime?.id,
+      ends_at: findEndTime?.id,
+      location: Location,
+    };
 
-
-  const handleChangePoints = (letter: string, value: string) => {
-    const updatedPoints = points2.map((point) => {
-      return {
-        ...point,
-        [letter]: value,
-      };
-    });
-    setPoints2(updatedPoints);
-  };
-
-  const handleChangeLetters = (letter: string, value: string) => {
-    const updatedLetters = letters2.map((point) => {
-      return {
-        ...point,
-        [letter]: value,
-      };
-    });
-    setLetters2(updatedLetters);
-  };
-
-  const handleChangeGrades = (letter: string, value: string) => {
-    const updatedLetters = grades2.map((point) => {
-      return {
-        ...point,
-        [letter]: value,
-      };
-    });
-    setGrades2(updatedLetters);
-  };
-
-  const handleChangeYear = (letter: string, value: string) => {
-    const updatedPoints = year.map((point) => {
-      return {
-        ...point,
-        [letter]: value,
-      };
-    });
-    setYear(updatedPoints);
-  };
-
-  const handleChangeResults = (letter: string, value: string) => {
-    const updatedPoints = results2.map((point) => {
-      return {
-        ...point,
-        [letter]: value,
-      };
-    });
-    setResult2(updatedPoints);
-  };
-
-  const handleChangeGPA = (letter: string, value: string) => {
-    const updatedPoints = gpa.map((point) => {
-      return {
-        ...point,
-        [letter]: value,
-      };
-    });
-    setGpa(updatedPoints);
-  };
-
-  const handleSubmit2 = () => {
-    setEdit(!edit);
-
-    axios.post(`/api/exams/grading/1`, points2);
-    axios.post(`/api/exams/grading/2`, grades2);
-    axios.post(`/api/exams/grading/3`, letters2);
-    axios.post(`/api/exams/grading/4`, year);
-    axios.post(`/api/exams/grading/5`, results2);
     axios
-      .post(`/api/exams/grading/6`, gpa)
-      .then(() => {
-        toast.success('تم التعديل بنجاح');
+      .post('/api/course/classRegister', data)
+      .then((res) => {
+        toast.success(res.data.message);
+        handleChangeMajor();
         const dataUsageHistory = {
           id: user?.id,
           type: 'admin',
-          action: ' تعديل توزيع الدراجات',
+          action: ' تعديل محاضرات تخصص' + major,
         };
         axios.post('/api/usageHistory', dataUsageHistory);
       })
-      .catch(() => {
-        toast.error('حدث خطأ اثناء التعديل');
+      .catch((err) => {
+        toast.error(err.response.data.message);
       });
   };
 
-  return (
-    <div className="absolute flex flex-col w-[80%] items-center justify-center">
-      {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 14 && permItem.edit) {
-          return (
-            <div
-              key={idx + 2}
-              className="w-[100px] flex justify-center items-center flex-col"
-            >
-              <button
-                onClick={() => {
-                  handleActivate();
-                }}
-                className={`p-3 rounded-md m-2 text-white w-[200px] ${
-                  active
-                    ? 'bg-red-600 hover:bg-red-500'
-                    : 'bg-green-600 hover:bg-green-500'
-                }`}
-              >
-                {active ? 'اغلاق تسجيل المواد' : ' فتح تسجيل المواد '}
-              </button>
-            </div>
-          );
-        } else {
-          return null;
-        }
-      })}
-      {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 13 && permItem.edit) {
-          return (
-            <button
-              key={idx}
-              className="m-2 bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
-              type="submit"
-              onClick={() => (edit ? handleSubmit2() : setEdit(!edit))}
-            >
-              {edit ? 'ارسال' : 'تعديل'}
-            </button>
-          );
-        } else {
-          return null;
-        }
-      })}
+  const handleDelete = (item?: number) => {
+    axios
+      .post(`/api/getAll/getAllClassInfo/1`, item)
+      .then((res) => {
+        handleChangeMajor();
+        toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل محاضرات تخصص' + major,
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      });
+  };
 
-      <div className="flex flex-col w-[500px] m-3">
-        <div className="flex flex-row">
-          {perms.map((permItem, idx) => {
-            if (permItem.permission_id === 15 && permItem.edit && courses) {
-              return (
-                <button
-                  key={idx}
-                  onClick={handleSubmit}
-                  className="bg-green-700 m-2 hover:bg-green-600 p-3 rounded-md text-white w-[300px]"
-                >
-                  ارسال المجموع النهائي في جميع التخصصات
-                </button>
-              );
-            } else {
-              return null;
-            }
-          })}
-          {edit ? (
-            <>
-              <input
-                dir="rtl"
-                placeholder=" السنة"
-                type="text"
-                className="w-20 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                onChange={(e) => handleChangeYear('BA', e.target.value)}
-                value={year[0].BA}
-              />
-              <select
-                id="dep"
-                dir="rtl"
-                onChange={(e) => handleChangeYear('AA', e.target.value)}
-                className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                defaultValue={year[0].AA}
-              >
-                <option disabled>الفصل</option>
-                <option>خريف</option>
-                <option>ربيع</option>
-              </select>
-            </>
-          ) : (
-            <>
-              {year && year.length > 0 ? (
-                <>
-                  <h1 className="w-20 p-2 bg-gray-200 border-2 border-black rounded-md ml-4 flex justify-center items-center">
-                    {year[0].BA ? year[0].BA : ''}
-                  </h1>
-                  <h1 className="w-20 p-2 bg-gray-200 border-2 border-black rounded-md ml-4 flex justify-center items-center">
-                    {year[0].AA ? year[0].AA : ''}
-                  </h1>
-                </>
-              ) : (
-                ''
-              )}
-            </>
-          )}
-        </div>
-      </div>
-      {gpa && gpa.length > 0 ? (
-        edit ? (
-          <div className="w-[500px] flex flex-row m-3">
-            <input
-              className="w-20 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-              value={gpa[0].AA || ''}
-              onChange={(e) => {
-                handleChangeGPA('AA', e.target.value);
-              }}
-              placeholder="ادخل الدرجة"
-              type="text"
-            />
-            <h1 className="w-[200px] p-2 bg-gray-200 rounded-md ml-4">
-              المجموع المطلوب لنجاح المشروط
-            </h1>
-          </div>
-        ) : (
-          <div className="w-[500px] flex flex-row m-3">
-            <h1 className="w-20 p-2 bg-gray-200 border-2 border-black rounded-md ml-4">
-              {gpa[0].AA}
-            </h1>
-            <h1 className="w-[200px] p-2 bg-gray-200 rounded-md ml-4 flex fex-end">
-              :المجموع المطلوب لنجاح المشروط
-            </h1>
-          </div>
+    const handleSubmitExam = () => {
+      if (
+        !(
+          selecetedDay2&&
+          selectedCourse2 &&
+          selectedStartHour2 &&
+          duration &&
+          Location2
         )
-      ) : (
-        ''
-      )}
+      ) {
+        toast.error('يجب ملئ جميع البيانات');
+        return;
+      }
 
-      {perms.map((permItem, idx) => {
-        if (permItem.permission_id === 13 && permItem.see) {
-          return (
-            <table className="w-[300px] h-[600px]" key={idx}>
+      const findClass = courses.find(
+        (course) => course.course_name == selectedCourse2
+      );
+      const exam = examProg.find((e) => e.course_id == findClass?.id);
+      if (exam) {
+        toast.error('هذه المادة مسجلة بالفعل');
+        return;
+      }
+
+      const data = {
+        course_id: findClass?.id,
+        hour: selectedStartHour2,
+        date: selecetedDay2.toLocaleString(),
+        duration: duration,
+        location: Location2,
+      };
+
+      axios
+        .post('/api/examProg/1', data)
+        .then((res) => {
+          toast.success(res.data.message);
+          const dataUsageHistory = {
+            id: user?.id,
+            type: 'admin',
+            action: ' تعديل جدول الامتحانات',
+          };
+          axios.post('/api/usageHistory', dataUsageHistory);
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message);
+        });
+      setEdit(!edit);
+    };
+
+    const handleDeleteExam = (item: ExamProgramType) => {
+      axios
+        .post('/api/examProg/1/deleteExamProg', item)
+        .then((res) => {
+          toast.success(res.data.message);
+          const dataUsageHistory = {
+            id: user?.id,
+            type: 'admin',
+            action: ' تعديل جدول الامتحانات',
+          };
+          axios.post('/api/usageHistory', dataUsageHistory);
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message);
+        });
+      setEdit(!edit);
+    };
+
+    const deleteAllProgram = () => {
+      axios
+        .post('/api/examProg/1/deleteAllExamProg')
+        .then((res) => {
+          toast.success(res.data.message);
+          const dataUsageHistory = {
+            id: user?.id,
+            type: 'admin',
+            action: ' تعديل جدول الامتحانات',
+          };
+          axios.post('/api/usageHistory', dataUsageHistory);
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message);
+        });
+      setEdit(!edit);
+    };
+
+    const handlePrint2 = useReactToPrint({
+      content: () => printableContentRef2.current,
+    });
+
+  return (
+    <div className="flex flex-col absolute w-[80%]  items-center justify-center text-[16px]">
+      <div className="text-sm flex flex-row ">
+        <button
+          onClick={() => handleTabClick('Tab 1')}
+          className={
+            activeTab === 'Tab 1'
+              ? ' w-[200px] flex bg-darkBlue text-secondary p-2 justify-center'
+              : ' w-[200px] flex bg-grey p-2 justify-center'
+          }
+        >
+          جدول المحاضرات
+        </button>
+        <button
+          onClick={() => handleTabClick('Tab 2')}
+          className={
+            activeTab === 'Tab 2'
+              ? ' w-[200px] flex bg-darkBlue text-secondary p-2 justify-center'
+              : ' w-[200px] flex bg-grey p-2 justify-center'
+          }
+        >
+          الدرجات
+        </button>
+        <button
+          onClick={() => handleTabClick('Tab 3')}
+          className={
+            activeTab === 'Tab 3'
+              ? ' w-[300px] flex bg-darkBlue text-secondary p-2 justify-center'
+              : ' w-[300px] flex bg-grey p-2 justify-center'
+          }
+        >
+          جدول الامتحانات
+        </button>
+      </div>
+      <div className="flex flex-row m-5">
+        <button
+          onClick={handleChangeMajor}
+          className="bg-green-700 m-2 hover:bg-green-600 p-3 rounded-md text-white w-[150px]"
+        >
+          بحث
+        </button>
+        <select
+          id="dep"
+          dir="rtl"
+          onChange={(e) => {
+            const maj = majors.find((i) => i.major_name === e.target.value);
+            setSelectedMajor(maj);
+          }}
+          className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4 w-[200px]"
+        >
+          <option>اختر التخصص</option>
+          {majors.map((item) => (
+            <option key={item.id}>{item.major_name}</option>
+          ))}
+        </select>
+        {activeTab === 'Tab 2' && (
+          <select
+            id="dep"
+            dir="rtl"
+            ref={type}
+            className="px-2 bg-gray-200 border-2 border-black rounded-md ml-4 w-[200px]"
+          >
+            <option>جميع المجموعات</option>
+            <option>في انتظار قبول الدرجات</option>
+            <option>تم قبول الدرجات</option>
+            <option>لم يتم ادخال جميع الدرجات</option>
+          </select>
+        )}
+      </div>
+
+      {activeTab === 'Tab 1' &&
+        perms.find((per) => per.permission_id == 8 && per.see) && (
+          <>
+            {perms.map((permItem, idx) => {
+              const selectedMajorCourse = courses.filter((item1) =>
+                majorCourses.find((item2) => item1.id === item2.course_id)
+              );
+              const courseId = selectedMajorCourse.find(
+                (item) => item.course_name === selectedCourse
+              );
+              const selectedSections = sections.filter(
+                (item1) => item1.course_id === courseId?.id
+              );
+
+              if (
+                permItem.permission_id === 8 &&
+                permItem.add &&
+                selectedMajor &&
+                select
+              ) {
+                return (
+                  <div
+                    className="border-2 border-grey m-4 rounded-5 p-5 flex w-[100%] justify-center items-center rounded-md"
+                    key={idx + 5}
+                  >
+                    <button
+                      onClick={handleSubmit}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                    >
+                      اضافة
+                    </button>
+                    <input
+                      dir="rtl"
+                      placeholder=" الموقع "
+                      type="text"
+                      className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                      onChange={(e) => setLocation(e.target.value)}
+                    />
+                    <select
+                      id="dep"
+                      dir="rtl"
+                      onChange={(e) => setSelecetedEndHour(e.target.value)}
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                      defaultValue="وقت الانتهاء"
+                    >
+                      <option disabled>وقت الانتهاء</option>
+                      {hours.map((hour, index) => (
+                        <option key={index + 14}>{hour}</option>
+                      ))}
+                    </select>
+                    <select
+                      id="dep"
+                      dir="rtl"
+                      onChange={(e) => setSelecetedStartHour(e.target.value)}
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                      defaultValue="وقت البدأ"
+                    >
+                      <option disabled>وقت البدأ</option>
+                      {hours.map((hour, index) => (
+                        <option key={index + 2}>{hour}</option>
+                      ))}
+                    </select>
+                    <select
+                      id="dep"
+                      dir="rtl"
+                      onChange={(e) => setSelecetedDay(e.target.value)}
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                      defaultValue="اليوم"
+                    >
+                      <option disabled>اليوم</option>
+                      {days.map((day, index) => (
+                        <option key={index + 10}>{day.name}</option>
+                      ))}
+                    </select>
+
+                    <select
+                      id="dep"
+                      dir="rtl"
+                      onChange={(e) => setDoctor(parseInt(e.target.value))}
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4  w-[150px]"
+                      defaultValue="الدكتور"
+                    >
+                      <option disabled>الدكتور</option>
+                      {doctors.map((doc, index) => {
+                        if (doc.active)
+                          return (
+                            <option key={index + 11} value={doc.id}>
+                              {doc.name}
+                            </option>
+                          );
+                      })}
+                    </select>
+                    <select
+                      id="dep"
+                      dir="rtl"
+                      ref={section}
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4  w-[150px]"
+                      defaultValue="المجموعة"
+                    >
+                      <option disabled>المجموعة</option>
+                      {selectedSections.map((course, index) => (
+                        <option key={index + 12}>{course.name}</option>
+                      ))}
+                    </select>
+                    <select
+                      id="dep"
+                      dir="rtl"
+                      onChange={(e) => setSelecetedCourse(e.target.value)}
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4 w-[150px]"
+                      defaultValue="المادة"
+                    >
+                      <option disabled>المادة</option>
+                      {selectedMajorCourse.map((course, index) => (
+                        <option key={index}>{course.course_name}</option>
+                      ))}
+                    </select>
+                  </div>
+                );
+              }
+              return null;
+            })}
+            <button
+              onClick={handlePrint}
+              className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
+            >
+              طباعة جدول المحاضرات
+            </button>
+            <h1 className="flex justify-center items-center text-sm w-[100%] m-4">
+              جدول محاضرات تخصص {major}
+            </h1>
+            <table className="w-[1100px]">
               <thead>
                 <tr>
-                  <th className="border border-gray-300 px-4 py-2 max-w-[120px] bg-grey">
-                    النقاط
+                  {perms.map((permItem, idx) => {
+                    if (permItem.permission_id === 8 && permItem.Delete) {
+                      return (
+                        <th
+                          className="border border-gray-300 bg-gray-200 px-4 py-2"
+                          key={idx}
+                        ></th>
+                      );
+                    }
+                    return null;
+                  })}
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    الموقع
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 max-w-[120px] bg-grey">
-                    الدرجة
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    موعد الانتهاء
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 max-w-[120px] bg-grey">
-                    الحرف
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    موعد البدأ
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 max-w-[120px] bg-grey">
-                    نجاح/رسوب
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    اليوم
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    الفصل الدراسي
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    الدكتور
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    المجموعة
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    المادة
+                  </th>
+                  <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                    رقم المادة
                   </th>
                 </tr>
               </thead>
-              {points.length > 0 &&
-                points.map((point, index) => {
-                  const grade = grades.find((l) => l);
-                  const grade2 = grades2.find((l) => l);
-                  const Point2 = points2.find((p) => p);
-                  const letter = letters.find((p) => p);
-                  const letter2 = letters2.find((p) => p);
-                  const result = results.find((p) => p);
-                  const result2 = results2.find((p) => p);
-                  return edit ? (
-                    <tbody key={index + 3}>
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2 "
-                          key={point.id}
+              <tbody>
+                {classes.map((Class, index) => {
+                  const findDay = days.find(
+                    (day) => day.day == Class.class?.day
+                  );
+                  const findStartTime = hoursNames.find(
+                    (hour) => hour.id == Class.class?.starts_at
+                  );
+                  const findEndTime = hoursNames.find(
+                    (hour) => hour.id == Class.class?.ends_at
+                  );
+                  return (
+                    <tr key={index + 1}>
+                      {perms.map((permItem, idx) => {
+                        if (permItem.permission_id === 8 && permItem.Delete) {
+                          return (
+                            <td
+                              className="border border-gray-300 px-4 py-2"
+                              key={idx}
+                            >
+                              <BsXCircleFill
+                                className="cursor-pointer"
+                                onClick={() => handleDelete(Class.class.id)}
+                              />
+                            </td>
+                          );
+                        }
+                        return null;
+                      })}
+                      <td className="border border-gray-300 px-4 py-2">
+                        {Class.class?.location}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {findEndTime?.name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {findStartTime?.name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {findDay?.name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {Class.class?.semester}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {Class.doctor?.name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <Link
+                          href={`/management/course/managementWork/class/${Class.class.section_id}`}
                         >
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={Point2?.AA || 0}
-                            onChange={(e) => {
-                              handleChangePoints('AA', e.target.value);
-                            }}
-                            placeholder="ادخل النقاط"
-                            type="number"
-                            step="any"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={grade2?.AA || 0}
-                            onChange={(e) => {
-                              handleChangeGrades('AA', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="number"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={letter2?.AA || ''}
-                            onChange={(e) => {
-                              handleChangeLetters('AA', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="text"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <select
-                            id="dep"
-                            dir="rtl"
-                            onChange={(e) =>
-                              handleChangeResults('AA', e.target.value)
-                            }
-                            className="text-right px-4 py-2 bg-lightBlue w-[100px]"
-                            defaultValue={result2?.AA}
-                          >
-                            <option>نجاح</option>
-                            <option>رسوب</option>
-                            <option>نجاح مشروط</option>
-                          </select>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2 "
-                          key={point.id}
+                          {Class.section?.name}
+                        </Link>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <Link
+                          href={`/management/course/managementWork/class/${Class.class.section_id}`}
                         >
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={Point2?.BA || 0}
-                            onChange={(e) => {
-                              handleChangePoints('BA', e.target.value);
-                            }}
-                            placeholder="ادخل النقاط"
-                            type="number"
-                            step="any"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={grade2?.BA || 0}
-                            onChange={(e) => {
-                              handleChangeGrades('BA', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="number"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={letter2?.BA || ''}
-                            onChange={(e) => {
-                              handleChangeLetters('BA', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="text"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <select
-                            id="dep"
-                            dir="rtl"
-                            onChange={(e) =>
-                              handleChangeResults('BA', e.target.value)
-                            }
-                            className="text-right px-4 py-2 bg-lightBlue w-[100px]"
-                            defaultValue={result2?.BA}
-                          >
-                            <option>نجاح</option>
-                            <option>رسوب</option>
-                            <option>نجاح مشروط</option>
-                          </select>
-                        </td>
-                      </tr>
-
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2 "
-                          key={point.id}
-                        >
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={Point2?.BB || 0}
-                            onChange={(e) => {
-                              handleChangePoints('BB', e.target.value);
-                            }}
-                            placeholder="ادخل النقاط"
-                            type="number"
-                            step="any"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={grade2?.BB || 0}
-                            onChange={(e) => {
-                              handleChangeGrades('BB', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="number"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={letter2?.BB || ''}
-                            onChange={(e) => {
-                              handleChangeLetters('BB', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="text"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <select
-                            id="dep"
-                            dir="rtl"
-                            onChange={(e) =>
-                              handleChangeResults('BB', e.target.value)
-                            }
-                            className="text-right px-4 py-2 bg-lightBlue w-[100px]"
-                            defaultValue={result2?.BB}
-                          >
-                            <option>نجاح</option>
-                            <option>رسوب</option>
-                            <option>نجاح مشروط</option>
-                          </select>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2 "
-                          key={point.id}
-                        >
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={Point2?.CB || 0}
-                            onChange={(e) => {
-                              handleChangePoints('CB', e.target.value);
-                            }}
-                            placeholder="ادخل النقاط"
-                            type="number"
-                            step="any"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={grade2?.CB || 0}
-                            onChange={(e) => {
-                              handleChangeGrades('CB', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="number"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={letter2?.CB || ''}
-                            onChange={(e) => {
-                              handleChangeLetters('CB', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="text"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <select
-                            id="dep"
-                            dir="rtl"
-                            onChange={(e) =>
-                              handleChangeResults('CB', e.target.value)
-                            }
-                            className="text-right px-4 py-2 bg-lightBlue w-[100px]"
-                            defaultValue={result2?.CB}
-                          >
-                            <option>نجاح</option>
-                            <option>رسوب</option>
-                            <option>نجاح مشروط</option>
-                          </select>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2 "
-                          key={point.id}
-                        >
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={Point2?.CC || 0}
-                            onChange={(e) => {
-                              handleChangePoints('CC', e.target.value);
-                            }}
-                            placeholder="ادخل النقاط"
-                            type="number"
-                            step="any"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={grade2?.CC || 0}
-                            onChange={(e) => {
-                              handleChangeGrades('CC', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="number"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={letter2?.CC || ''}
-                            onChange={(e) => {
-                              handleChangeLetters('CC', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="text"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <select
-                            id="dep"
-                            dir="rtl"
-                            onChange={(e) =>
-                              handleChangeResults('CC', e.target.value)
-                            }
-                            className="text-right px-4 py-2 bg-lightBlue w-[100px]"
-                            defaultValue={result2?.CC}
-                          >
-                            <option>نجاح</option>
-                            <option>رسوب</option>
-                            <option>نجاح مشروط</option>
-                          </select>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2 "
-                          key={point.id}
-                        >
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={Point2?.DC || 0}
-                            onChange={(e) => {
-                              handleChangePoints('DC', e.target.value);
-                            }}
-                            placeholder="ادخل النقاط"
-                            type="number"
-                            step="any"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={grade2?.DC || 0}
-                            onChange={(e) => {
-                              handleChangeGrades('DC', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="number"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={letter2?.DC || ''}
-                            onChange={(e) => {
-                              handleChangeLetters('DC', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="text"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <select
-                            id="dep"
-                            dir="rtl"
-                            onChange={(e) =>
-                              handleChangeResults('DC', e.target.value)
-                            }
-                            className="text-right px-4 py-2 bg-lightBlue w-[100px]"
-                            defaultValue={result2?.DC}
-                          >
-                            <option>نجاح</option>
-                            <option>رسوب</option>
-                            <option>نجاح مشروط</option>
-                          </select>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2 "
-                          key={point.id}
-                        >
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={Point2?.DD || 0}
-                            onChange={(e) => {
-                              handleChangePoints('DD', e.target.value);
-                            }}
-                            placeholder="ادخل النقاط"
-                            type="number"
-                            step="any"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={grade2?.DD || 0}
-                            onChange={(e) => {
-                              handleChangeGrades('DD', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="number"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={letter2?.DD || ''}
-                            onChange={(e) => {
-                              handleChangeLetters('DD', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="text"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <select
-                            id="dep"
-                            dir="rtl"
-                            onChange={(e) =>
-                              handleChangeResults('DD', e.target.value)
-                            }
-                            className="text-right px-4 py-2 bg-lightBlue w-[100px]"
-                            defaultValue={result2?.DD}
-                          >
-                            <option>نجاح</option>
-                            <option>رسوب</option>
-                            <option>نجاح مشروط</option>
-                          </select>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2 "
-                          key={point.id}
-                        >
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={Point2?.FD || 0}
-                            onChange={(e) => {
-                              handleChangePoints('FD', e.target.value);
-                            }}
-                            placeholder="ادخل النقاط"
-                            type="number"
-                            step="any"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={grade2?.FD || 0}
-                            onChange={(e) => {
-                              handleChangeGrades('FD', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="number"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={letter2?.FD || ''}
-                            onChange={(e) => {
-                              handleChangeLetters('FD', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="text"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <select
-                            id="dep"
-                            dir="rtl"
-                            onChange={(e) =>
-                              handleChangeResults('FD', e.target.value)
-                            }
-                            className="text-right px-4 py-2 bg-lightBlue w-[100px]"
-                            defaultValue={result2?.FD}
-                          >
-                            <option>نجاح</option>
-                            <option>رسوب</option>
-                            <option>نجاح مشروط</option>
-                          </select>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2 "
-                          key={point.id}
-                        >
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={Point2?.FF || 0}
-                            onChange={(e) => {
-                              handleChangePoints('FF', e.target.value);
-                            }}
-                            placeholder="ادخل النقاط"
-                            type="number"
-                            step="any"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={grade2?.FF || 0}
-                            onChange={(e) => {
-                              handleChangeGrades('FF', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="number"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[70px]"
-                            value={letter2?.FF || ''}
-                            onChange={(e) => {
-                              handleChangeLetters('FF', e.target.value);
-                            }}
-                            placeholder="ادخل الدرجة"
-                            type="text"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 ">
-                          <select
-                            id="dep"
-                            dir="rtl"
-                            onChange={(e) =>
-                              handleChangeResults('FF', e.target.value)
-                            }
-                            className="text-right px-4 py-2 bg-lightBlue w-[100px]"
-                            defaultValue={result2?.FF}
-                          >
-                            <option>نجاح</option>
-                            <option>رسوب</option>
-                            <option>نجاح مشروط</option>
-                          </select>
-                        </td>
-                      </tr>
-                    </tbody>
-                  ) : (
-                    <tbody>
-                      <tr>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {point.AA || ''}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {grade?.AA}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {letter?.AA}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {result?.AA}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {point.BA || ''}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {grade?.BA}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {letter?.BA}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {result?.BA}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {point.BB || ''}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {grade?.BB}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {letter?.BB}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {result?.BB}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2"
-                          key={point.id}
-                        >
-                          {point.CB || ''}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {grade?.CB}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {letter?.CB}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {result?.CB}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2"
-                          key={point.id}
-                        >
-                          {point.CC || ''}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {grade?.CC}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {letter?.CC}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px] ">
-                          {result?.CC}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2"
-                          key={point.id}
-                        >
-                          {point.DC || ''}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {grade?.DC}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {letter?.DC}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {result?.DC}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2"
-                          key={point.id}
-                        >
-                          {point.DD || ''}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {grade?.DD}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {letter?.DD}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {result?.DD}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2"
-                          key={point.id}
-                        >
-                          {point.FD || ''}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {grade?.FD}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {letter?.FD}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {result?.FD}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          className="border border-gray-300 px-4 py-2"
-                          key={point.id}
-                        >
-                          {point.FF || 0}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {grade?.FF}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {letter?.FF}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
-                          {result?.FF}
-                        </td>
-                      </tr>
-                    </tbody>
+                          {Class.course?.course_name}
+                        </Link>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {Class.course?.course_number}
+                      </td>
+                    </tr>
                   );
                 })}
+              </tbody>
             </table>
-          );
-        } else {
-          return null;
-        }
-      })}
+            <div style={{ position: 'absolute', top: '-9999px' }}>
+              <div ref={printableContentRef} className="m-5">
+                <h1 className="flex justify-center items-center text-sm w-[100%] m-4">
+                  جدول محاضرات تخصص {major}
+                </h1>
+                <table className="w-[1100px]">
+                  <thead>
+                    <tr>
+                      <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                        الموقع
+                      </th>
+                      <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                        موعد الانتهاء
+                      </th>
+                      <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                        موعد البدأ
+                      </th>
+                      <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                        اليوم
+                      </th>
+                      <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                        الفصل الدراسي
+                      </th>
+                      <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                        الدكتور
+                      </th>
+                      <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                        المجموعة
+                      </th>
+                      <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                        المادة
+                      </th>
+                      <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                        رقم المادة
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {classes.map((Class, index) => {
+                      const findDay = days.find(
+                        (day) => day.day == Class.class?.day
+                      );
+                      const findStartTime = hoursNames.find(
+                        (hour) => hour.id == Class.class?.starts_at
+                      );
+                      const findEndTime = hoursNames.find(
+                        (hour) => hour.id == Class.class?.ends_at
+                      );
+                      return (
+                        <tr key={index}>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {Class.class?.location}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {findEndTime?.name}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {findStartTime?.name}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {findDay?.name}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {Class.class?.semester}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {Class.doctor?.name}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            <Link
+                              href={`/management/course/managementWork/class/${Class.class.section_id}`}
+                            >
+                              {Class.section?.name}
+                            </Link>
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            <Link
+                              href={`/management/course/managementWork/class/${Class.class.section_id}`}
+                            >
+                              {Class.course?.course_name}
+                            </Link>
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {Class.course?.course_number}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
+      {activeTab === 'Tab 2' && (
+        <>
+          {selectedMajor && (
+            <div>
+              <table className="w-[1100px]">
+                <thead>
+                  <tr>
+                    <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                      الدكتور
+                    </th>
+                    <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                      المجموعة
+                    </th>
+                    <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                      المادة
+                    </th>
+                    <th className="border border-gray-300 bg-gray-200 px-4 py-2">
+                      رقم المادة
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {classesGrade.map((Class, index) => {
+                    return (
+                      <tr key={index + 1}>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {Class.doctor?.name}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <Link
+                            href={`/management/course/managementWork/courseStudents/${Class.class.section_id}`}
+                          >
+                            {Class.section?.name}
+                          </Link>
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <Link
+                            href={`/management/course/managementWork/courseStudents/${Class.class.section_id}`}
+                          >
+                            {Class.course?.course_name}
+                          </Link>
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {Class.course?.course_number}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
+      )}
+      {activeTab === 'Tab 3' &&
+        perms.find((per) => per.permission_id == 9 && per.see) && (
+          <div className=" w-[80%] items-center justify-center">
+            {perms.map((permItem, idx) => {
+              if (permItem.permission_id === 9 && permItem.add) {
+                return (
+                  <>
+                    <div
+                      key={idx}
+                      className="border-2 border-grey m-4 rounded-5 p-5 flex justify-center items-center rounded-md"
+                    >
+                      <button
+                        onClick={handleSubmitExam}
+                        className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                      >
+                        اضافة
+                      </button>
+                      <input
+                        dir="rtl"
+                        placeholder=" القاعة "
+                        type="text"
+                        className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                        onChange={(e) => setLocation2(e.target.value)}
+                      />
+                      <div>
+                        <input
+                          dir="rtl"
+                          placeholder=" الفترة "
+                          type="text"
+                          className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                          onChange={(e) => setDuration(e.target.value)}
+                        />
+                      </div>
+                      <TimePicker
+                        locale="ar"
+                        onChange={(e: any) => setSelecetedStartHour2(e)}
+                        value={selectedStartHour2}
+                        className=" p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                        closeClock
+                      />
+
+                      <DatePicker
+                        locale="ar"
+                        className="w-48 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                        onChange={(val: any) => setSelecetedDay2(val as any)}
+                        value={selecetedDay2}
+                      />
+
+                      <select
+                        id="dep"
+                        dir="rtl"
+                        onChange={(e) => setSelecetedCourse2(e.target.value)}
+                        className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                        defaultValue=""
+                      >
+                        <option disabled value="">
+                          المادة
+                        </option>
+                        {courses.map((course, index) => (
+                          <option key={index}>{course.course_name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </>
+                );
+              }
+            })}
+            <div className="flex flex-row m-3">
+              <button
+                onClick={handlePrint2}
+                className="flex bg-green-500 hover:bg-green-600 p-2 m-1 text-white rounded-md w-[200px] justify-center items-center"
+              >
+                طباعة جدول الامتحانات
+              </button>
+              {perms.map((permItem, idx) => {
+                if (permItem.permission_id === 9 && permItem.Delete) {
+                  return (
+                    <button
+                      className="px-4 py-2 m-1 bg-red-500 text-white rounded-md "
+                      onClick={deleteAllProgram}
+                      key={idx}
+                    >
+                      حذف كل الجدول
+                    </button>
+                  );
+                }
+                return null;
+              })}
+            </div>
+            <table className=" bg-white shadow-md rounded-md w-[1000px] ">
+              <thead>
+                <tr>
+                  {perms.map((permItem, idx) => {
+                    if (permItem.permission_id === 9 && permItem.Delete) {
+                      return (
+                        <th
+                          key={idx}
+                          className="py-2 px-4 bg-gray-200 text-gray-700"
+                        ></th>
+                      );
+                    }
+                    return null;
+                  })}
+                  <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                    القاعة
+                  </th>
+                  <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                    مدة الامتحان
+                  </th>
+                  <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                    الساعة
+                  </th>
+                  <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                    اسم المادة
+                  </th>
+                  <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                    التاريخ
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {examProg.map((item, index) => {
+                  const selectcourse = courses.find(
+                    (course) => course.id == item.course_id
+                  );
+                  return (
+                    <tr key={index}>
+                      {perms.map((permItem, idx) => {
+                        if (permItem.permission_id === 9 && permItem.Delete) {
+                          return (
+                            <td className="py-2 px-4 border-b" key={idx}>
+                              <BsXCircleFill
+                                onClick={() => handleDeleteExam(item)}
+                              />
+                            </td>
+                          );
+                        }
+                        return null;
+                      })}
+                      <td className="py-2 px-4 border-b">{item.location}</td>
+                      <td className="py-2 px-4 border-b">{item.duration}</td>
+                      <td className="py-2 px-4 border-b">{item.hour}</td>
+                      <td className="py-2 px-4 border-b">
+                        {selectcourse?.course_name}
+                      </td>
+                      <td className="py-2 px-4 border-b">{item.date}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <div style={{ position: 'absolute', top: '-9999px' }}>
+              <div ref={printableContentRef2} className="m-5">
+                <h1 className="flex justify-center items-center text-[30px] m-5">
+                  جدول الامتحانات
+                </h1>
+                <table className="w-full bg-white shadow-md rounded-md">
+                  <thead>
+                    <tr>
+                      <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                        القاعة
+                      </th>
+                      <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                        مدة الامتحان
+                      </th>
+                      <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                        الساعة
+                      </th>
+                      <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                        اسم المادة
+                      </th>
+                      <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                        التاريخ
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {examProg.map((item, index) => {
+                      const selectcourse = courses.find(
+                        (course) => course.id == item.course_id
+                      );
+                      return (
+                        <tr key={index}>
+                          <td className="py-2 px-4 border-b">
+                            {item.location}
+                          </td>
+                          <td className="py-2 px-4 border-b">
+                            {item.duration}
+                          </td>
+                          <td className="py-2 px-4 border-b">{item.hour}</td>
+                          <td className="py-2 px-4 border-b">
+                            {selectcourse?.course_name}
+                          </td>
+                          <td className="py-2 px-4 border-b">{item.date}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   );
 };

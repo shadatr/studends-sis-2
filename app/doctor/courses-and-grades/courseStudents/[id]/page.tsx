@@ -456,10 +456,10 @@ const Page = ({ params }: { params: { id: number } }) => {
   });
 
   return (
-    <div className="flex absolute flex-col w-[80%] justify-center items-center">
+    <div className="flex lg:absolute flex-col lg:w-[80%] sm:w-[100%] justify-center items-center sm:text-[8px] sm:mt-10">
       <button
         onClick={handlePrint}
-        className="flex bg-green-500 hover:bg-green-600 p-1 m-2 text-white rounded-md w-[200px] justify-center items-center"
+        className="flex bg-green-500 hover:bg-green-600 p-1 m-2 text-white rounded-md lg:w-[200px] sm:w-[80px] sm-hidden justify-center items-center"
       >
         طباعة درجات
       </button>
@@ -473,7 +473,7 @@ const Page = ({ params }: { params: { id: number } }) => {
             return (
               <>
                 <button
-                  className="m-10 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px] "
+                  className="lg:m-10 sm:m-1 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md lg:w-[200px] sm:w-[80px] "
                   type="submit"
                   onClick={() =>
                     editHw ? handleSubmit('class_work') : setEditHw(!editHw)
@@ -482,7 +482,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   {editHw ? 'ارسال' : ' تعديل درجات اعمال السنة'}
                 </button>
                 <button
-                  className="m-10 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
+                  className="lg:m-10 sm:m-1 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md lg:w-[200px] sm:w-[80px]"
                   type="submit"
                   onClick={() =>
                     editFinal ? handleSubmit('final') : setEditFinal(!editFinal)
@@ -491,7 +491,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   {editFinal ? 'ارسال' : 'تعديل درجات الامتحان النهائي'}
                 </button>
                 <button
-                  className="m-10 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md w-[200px]"
+                  className="lg:m-10 sm:m-1 bg-darkBlue hover:bg-blue-800  text-secondary p-3 rounded-md lg:w-[200px] sm:w-[80px]"
                   type="submit"
                   onClick={() =>
                     editMid ? handleSubmit('midterm') : setEditMid(!editMid)
@@ -504,44 +504,44 @@ const Page = ({ params }: { params: { id: number } }) => {
           }
         })}
         <div ref={printableContentRef}>
-          <h1 className="flex justify-center items-center text-sm w-[100%]">
+          <h1 className="flex justify-center items-center lg:text-sm sm:text-[15px] w-[100%]">
             درجات مادة {course?.section[0].name}
           </h1>
-          <table className="border-collapse mt-8 w-[1100px]">
+          <table className="border-collapse mt-8 lg:w-[1100px] sm:w-[200px]">
             <thead>
               <tr>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
+                <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                   النتيجة
                 </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
+                <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                   المجموع
                 </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
+                <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                   النسبة
                 </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
+                <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                   اعمال السنة
                 </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
+                <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                   النسبة
                 </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
+                <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                   الامتحان الانهائي
                 </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
+                <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                   النسبة
                 </th>
 
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
+                <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                   الامتحان النصفي
                 </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
+                <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                   رقم الطالب
                 </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
+                <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                   اللقب
                 </th>
-                <th className="border border-gray-300 px-4 py-2 bg-grey">
+                <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                   اسم الطالب
                 </th>
               </tr>
@@ -558,7 +558,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   return (
                     <tr key={index}>
                       <td
-                        className={`border border-gray-300 px-4 py-2 ${
+                        className={`border border-gray-300 lg:px-4 lg:py-2 sm:p-1 ${
                           user.pass
                             ? 'text-green-600 hover:text-green-700'
                             : 'text-red-500 hover:text-red-600'
@@ -570,16 +570,16 @@ const Page = ({ params }: { params: { id: number } }) => {
                           ? `${letter?.letter_grade} ناجح`
                           : `${letter?.letter_grade} راسب`}
                       </td>
-                      <td className="border border-gray-300 px-4 py-2  ">
+                      <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 ">
                         {user.result}
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                         {course.course[0].class_work}%
                       </td>
                       {editHw && item.permission_id == 21 ? (
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
+                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 ">
                           <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[60px]"
+                            className="text-right bg-lightBlue lg:w-[60px] sm:w-[25px] lg:px-4 lg:py-2 sm:p-1"
                             key={user.student_id}
                             value={
                               grades?.courseEnrollements.find(
@@ -598,17 +598,17 @@ const Page = ({ params }: { params: { id: number } }) => {
                           />
                         </td>
                       ) : (
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                           {user.class_work}
                         </td>
                       )}
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                         {course.course[0].final}%
                       </td>
                       {editFinal && item.permission_id == 21 ? (
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
+                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 max-w-[120px]">
                           <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[60px]"
+                            className="text-right lg:px-4 lg:py-2 sm:p-1 bg-lightBlue lg:w-[60px] sm:w-[25px]"
                             key={user.student_id}
                             value={
                               grades?.courseEnrollements.find(
@@ -627,17 +627,17 @@ const Page = ({ params }: { params: { id: number } }) => {
                           />
                         </td>
                       ) : (
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                           {user.final}
                         </td>
                       )}
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                         {course.course[0].midterm}%
                       </td>
                       {editMid && item.permission_id == 21 ? (
-                        <td className="border border-gray-300 px-4 py-2 max-w-[120px]">
+                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1max-w-[120px]">
                           <input
-                            className="text-right px-4 py-2 bg-lightBlue w-[60px]"
+                            className="text-right lg:px-4 lg:py-2 sm:p-1 bg-lightBlue lg:w-[60px] sm:w-[25px]"
                             key={user.student_id}
                             value={
                               grades?.courseEnrollements.find(
@@ -656,17 +656,17 @@ const Page = ({ params }: { params: { id: number } }) => {
                           />
                         </td>
                       ) : (
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                           {user.midterm}
                         </td>
                       )}
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                         {student?.id}
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                         {student?.surname}
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                         {student?.name}
                       </td>
                     </tr>

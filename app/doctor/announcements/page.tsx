@@ -111,12 +111,12 @@ const AnnoPage = () => {
   };
 
   return (
-    <div className=" flex w-[80%] justify-center items-center flex-col absolute mt-20">
+    <div className=" flex sm:w-[100%] lg:w-[80%] justify-center items-center flex-col lg:absolute mt-20 sm:text-[8px] lg:text-sm">
       <>
-        <table className="w-[860px] overflow-y-auto ">
+        <table className="lg:w-[860px] sm:w-[350px] overflow-y-auto ">
           <thead>
             <tr>
-              <th className="bg-darkBlue   text-secondary px-4 py-2 ">
+              <th className="bg-darkBlue   text-secondary px-4 py-2 sm:px-2">
                 اعلانات الجامعة
               </th>
             </tr>
@@ -139,7 +139,7 @@ const AnnoPage = () => {
         </table>
       </>
       <>
-        <table className="w-[860px] bg-grey max-h-[300px] mt-4 overflow-y-auto ">
+        <table className="lg:w-[860px] sm:w-[350px] bg-grey max-h-[300px] mt-4 overflow-y-auto ">
           <thead>
             <tr>
               <th className="p-1 bg-darkBlue text-secondary px-4 py-2 "></th>
@@ -182,18 +182,18 @@ const AnnoPage = () => {
       </>
 
       <form
-        className="flex flex-col mt-3 border-solid w-[860px] border-black border-2"
+        className="flex flex-col mt-3 border-solid lg:w-[860px] sm:w-[350px] border-black border-2"
         onSubmit={(e) => e.preventDefault()}
       >
         <label
           htmlFor="addItem"
-          className="p-2 bg-darkBlue text-secondary justify-between flex flex-row"
+          className="lg:p-2  bg-darkBlue text-secondary justify-between flex flex-row"
         >
           <select
             id="dep"
             dir="rtl"
             onChange={(e) => setSelectedSections(e.target.value)}
-            className="text-sm bg-darkBlue border border-gray-300 px-4 py-2"
+            className=" bg-darkBlue border border-gray-300 px-4 py-2"
             defaultValue=""
           >
             <option disabled value="">
@@ -218,7 +218,7 @@ const AnnoPage = () => {
         />
         <button
           type="submit"
-          className="p-2 bg-darkBlue text-secondary text-sm"
+          className="p-2 bg-darkBlue text-secondary "
           onClick={handleSubmit}
         >
           ارسال

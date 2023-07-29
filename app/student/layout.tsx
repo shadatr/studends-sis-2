@@ -16,8 +16,8 @@ export default function studentLayout({
   return (
     <>
       <Navbar />
-      {children}
       <Menu />
+      {children}
       <Footer />
     </>
   );

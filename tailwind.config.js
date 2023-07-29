@@ -12,24 +12,28 @@ module.exports = {
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
-      colors:{
-        "primary":"#00000",
-        "secondary": "#FFFFFF",
-        "darkBlue": "#132759",
-        "lightBlue": "#D3DCF2",
-        "grey": "#F2F3F5",
+      colors: {
+        primary: '#00000',
+        secondary: '#FFFFFF',
+        darkBlue: '#132759',
+        lightBlue: '#D3DCF2',
+        grey: '#F2F3F5',
       },
-      fontFamily:{
-        "fontFam": ['Noto Naskh Arabic', "serif"]
+      fontFamily: {
+        fontFam: ['Noto Naskh Arabic', 'serif'],
       },
       fontSize: {
-        "sm": '20px',
-        "md": '23px',
-        "lg":'36px',
+        sm: '20px',
+        md: '23px',
+        lg: '36px',
       },
-      screens: {
-      'lg': '1055px',
-      'sm': '400px',}
-  }},
-  plugins: [ ],
+    },
+    screens: {
+      sm: '200px',
+      md: '768px',
+      lg: '1300px',
+      xl: '1440px',
+    },
+  },
+  plugins: [],
 };

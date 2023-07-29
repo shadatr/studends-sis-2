@@ -53,8 +53,8 @@ const AnnoPage = () => {
   }, [user]);
 
   return (
-    <div className=" flex w-[800px] right-[464px]  flex-col absolute  top-[180px] text-sm  ">
-      <table className="w-[860px] overflow-y-auto ">
+    <div className=" flex lg:w-[80%] sm:w-[100%] justify-center items-center flex-col lg:absolute mt-[50px] sm:text-[8px] lg:text-sm  ">
+      <table className="lg:w-[860px] sm:w-[350px] overflow-y-auto ">
         <thead>
           <tr>
             <th className="bg-darkBlue   text-secondary   w-full flex items-center justify-end p-1">
@@ -75,7 +75,7 @@ const AnnoPage = () => {
           ))}
         </tbody>
       </table>
-      <table className="w-[860px] bg-grey max-h-[300px] mt-4 overflow-y-auto ">
+      <table className="lg:w-[860px] sm:w-[350px] bg-grey max-h-[300px] mt-4 overflow-y-auto ">
         <thead>
           <tr>
             <th className="p-1 bg-darkBlue text-secondary">اعلانات المواد</th>

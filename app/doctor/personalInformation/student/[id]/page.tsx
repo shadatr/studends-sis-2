@@ -150,34 +150,34 @@ const Page = ({ params }: { params: { id: number } }) => {
   });
 
   return (
-    <div className="absolute flex justify-center items-center w-[80%] flex-col m-10">
+    <div className="lg:absolute flex justify-center items-center lg:w-[80%] sm:w-[100%] flex-col mt-[80px] sm:text-[10px] lg:text-[16px]">
       <div className="flex flex-row ">
         <button
           onClick={handlePrint}
-          className="flex bg-green-500 hover:bg-green-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
+          className="flex bg-green-500 hover:bg-green-600lg:p-2 lg:m-5 sm:p-1 sm:m-1 text-white rounded-md lg:w-[200px] sm:w-[100px] justify-center items-center"
         >
           طباعة نتائج الطالب
         </button>
         <Link
-          className="flex bg-blue-500 hover:bg-blue-600 p-2 m-5 text-white rounded-md w-[200px] justify-center items-center"
+          className="flex bg-blue-500 hover:bg-blue-600 lg:p-2 lg:m-5 sm:p-1 sm:m-1 text-white rounded-md lg:w-[200px] sm:w-[100px] justify-center items-center"
           href={`/doctor/personalInformation/student/${params.id}/CoursesAndGrades`}
         >
           مواد و درجات الطالب
         </Link>
         <button
-          className="m-5  bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
+          className="lg:p-2 lg:m-5 sm:p-1 sm:m-1 bg-blue-500 hover:bg-blue-600  text-secondary rounded-md lg:w-[200px] sm:w-[100px]"
           type="submit"
           onClick={() => (edit ? handleSubmitInfo() : setEdit(!edit))}
         >
           {edit ? 'ارسال' : 'تعديل'}
         </button>
       </div>
-      <table className="flex-row-reverse flex text-sm  border-collapse">
+      <table className="flex-row-reverse flex sm:text-[8px] lg:text-sm border-collapse">
         <thead>
           <tr className="">
             {stuInfo.map((title, index) => (
               <th
-                className="flex p-2 justify-end bg-darkBlue text-secondary"
+                className="flex lg:p-2 sm:p-1 justify-end bg-darkBlue text-secondary"
                 key={index}
               >
                 {title.header}
@@ -185,14 +185,14 @@ const Page = ({ params }: { params: { id: number } }) => {
             ))}
           </tr>
         </thead>
-        <tbody className="">
+        <tbody>
           {edit
             ? newData.map((item2) =>
                 useMyData.map((item, index) => (
                   <tr key={index}>
-                    <td className="flex w-[700px] p-2 justify-end">
+                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                       <input
-                        className=" w-[700px] text-right "
+                        className=" lg:w-[700px] sm:w-[200px] text-right "
                         type="text"
                         value={item2.name}
                         onChange={(e) =>
@@ -200,9 +200,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                         }
                       />
                     </td>
-                    <td className="flex w-[700px] p-2 justify-end">
+                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                       <input
-                        className=" w-[700px] text-right "
+                        className=" lg:w-[700px] sm:w-[200px] text-right "
                         type="text"
                         value={item2.surname}
                         onChange={(e) =>
@@ -210,9 +210,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                         }
                       />
                     </td>
-                    <td className="flex w-[700px] p-2 justify-end">
+                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                       <input
-                        className=" w-[700px] text-right "
+                        className=" lg:w-[700px] sm:w-[200px] text-right "
                         type="text"
                         value={item2.birth_date}
                         onChange={(e) =>
@@ -220,7 +220,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         }
                       />
                     </td>
-                    <td className="flex w-[700px] p-2 justify-end">
+                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px]justify-end">
                       <select
                         id="dep"
                         dir="rtl"
@@ -244,9 +244,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                         })}
                       </select>
                     </td>
-                    <td className="flex w-[700px] p-2 justify-end">
+                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                       <input
-                        className=" w-[700px] text-right "
+                        className="  lg:w-[700px] sm:w-[200px] text-right "
                         type="text"
                         value={item2.semester}
                         onChange={(e) =>
@@ -254,9 +254,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                         }
                       />
                     </td>
-                    <td className="flex w-[700px] p-2 justify-end">
+                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                       <input
-                        className=" w-[700px] text-right "
+                        className=" lg:w-[700px] sm:w-[200px] text-right "
                         type="text"
                         value={item2.address}
                         onChange={(e) =>
@@ -264,9 +264,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                         }
                       />
                     </td>
-                    <td className="flex w-[700px] p-2 justify-end">
+                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                       <input
-                        className=" w-[700px] text-right "
+                        className="  lg:w-[700px] sm:w-[200px] text-right "
                         type="text"
                         value={item2.phone}
                         onChange={(e) =>
@@ -274,9 +274,9 @@ const Page = ({ params }: { params: { id: number } }) => {
                         }
                       />
                     </td>
-                    <td className="flex w-[700px] p-2 justify-end">
+                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                       <input
-                        className=" w-[700px] text-right "
+                        className="  lg:w-[700px] sm:w-[200px] text-right "
                         type="text"
                         value={item2.email}
                         onChange={(e) =>
@@ -286,7 +286,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                     </td>
                     <td className="flex w-[700px] p-2 justify-end">
                       <input
-                        className=" w-[700px] text-right "
+                        className="  lg:w-[700px] sm:w-[200px] text-right "
                         type="text"
                         value={item2.enrollment_date}
                         onChange={(e) =>
@@ -295,7 +295,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                       />
                     </td>
 
-                    <td className="flex w-[700px] p-2 justify-end">
+                    <td className="flex  lg:w-[700px] sm:w-[200px] lg:p-2 sm:p-1 sm:w-[200px]justify-end">
                       <select
                         id="dep"
                         dir="rtl"
@@ -322,36 +322,36 @@ const Page = ({ params }: { params: { id: number } }) => {
               )
             : useMyData.map((item, index) => (
                 <tr key={index}>
-                  <td className="flex w-[700px] p-2 justify-end">
+                  <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.name}
                   </td>
-                  <td className="flex w-[700px] p-2 justify-end">
+                  <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.surname}
                   </td>
-                  <td className="flex w-[700px] p-2 justify-end">
+                  <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.birth_date}
                   </td>
-                  <td className="flex w-[700px] p-2 justify-end">
+                  <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.major
                       ? major?.find((maj) => item.major == maj.id)?.major_name
                       : 'لا يوجد'}
                   </td>
-                  <td className="flex w-[700px] p-2 justify-end">
+                  <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.semester}
                   </td>
-                  <td className="flex w-[700px] p-2 justify-end">
+                  <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.address}
                   </td>
-                  <td className="flex w-[700px] p-2 justify-end">
+                  <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.phone}
                   </td>
-                  <td className="flex w-[700px] p-2 justify-end">
+                  <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.email}
                   </td>
-                  <td className="flex w-[700px] p-2 justify-end">
+                  <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.enrollment_date}
                   </td>
-                  <td className="flex w-[700px] p-2 justify-end">
+                  <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.advisor
                       ? doctors.find((doc) => item.advisor == doc.id)?.name
                       : 'لا يوجد'}
@@ -361,7 +361,7 @@ const Page = ({ params }: { params: { id: number } }) => {
         </tbody>
       </table>
       <div>
-        <table className="border-collapse mt-8 w-[700px]">
+        <table className="border-collapse mt-8 lg:w-[700px] sm:w-[350px]">
           <thead>
             <tr className="bg-gray-200">
               <th className="border border-gray-300 px-4 py-2">ايقاف/تفعيل</th>

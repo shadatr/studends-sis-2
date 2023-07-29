@@ -1,7 +1,8 @@
 'use client';
 import {
   GetPermissionType,
-  PersonalInfoType,
+  DoctorsWithDepartmentsType,
+  DepartmentRegType,
 } from '@/app/types/types';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -10,6 +11,7 @@ import { useSession } from 'next-auth/react';
 import SearchBar from '@/app/components/searchBar';
 import { redirect } from 'next/navigation';
 import { toast } from 'react-toastify';
+import AssignDepartment from '@/app/components/asignDepartment';
 
 const Page = () => {
   const session = useSession({ required: true });
@@ -20,9 +22,12 @@ const Page = () => {
 
   const user = session.data?.user;
 
-  const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [doctors, setDoctors] = useState<DoctorsWithDepartmentsType[]>([]);
   const [refresh, setRefresh] = useState(false);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
+  const [selectedDoctor, setSelectedDoctor] =useState<DoctorsWithDepartmentsType>();
+  const [departments, setDepartments] = useState<DepartmentRegType[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -33,12 +38,13 @@ const Page = () => {
         const message: GetPermissionType[] = response.data.message;
         setPerms(message);
 
-        fetch('/api/getAll/doctor')
-          .then((response) => response.json())
-          .then((data) => {
-            const message = data.message;
-            setDoctors(message);
-          });
+        const response2 = await axios.get(`/api/getAll/doctor`);
+        const message2: DoctorsWithDepartmentsType[] = response2.data.message;
+        setDoctors(message2);
+
+        const response3 = await axios.get('/api/getAll/getAllDepartments');
+        const message3: DepartmentRegType[] = response3.data.message;
+        setDepartments(message3);
       }
     };
     fetchPosts();
@@ -74,6 +80,13 @@ const Page = () => {
                 </Link>
               )}
               <SearchBar />
+              <AssignDepartment
+                isOpen={isModalOpen}
+                setIsOpen={setIsModalOpen}
+                selectedDoctor={selectedDoctor}
+                doctors={doctors}
+                setdoctors={setDoctors}
+              />
               <table className="border-collapse w-[1100px]">
                 <thead>
                   <tr className="bg-gray-200">
@@ -84,6 +97,9 @@ const Page = () => {
                     )}
                     <th className="border border-gray-300 px-4 py-2">
                       المعلومات الشخصية
+                    </th>
+                    <th className="border border-gray-300 px-4 py-2">
+                      رئيس قسم
                     </th>
                     <th className="border border-gray-300 px-4 py-2">
                       تاريخ الانشاء
@@ -125,6 +141,23 @@ const Page = () => {
                           الملف الشخصي
                         </Link>
                       </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <button
+                          className="bg-green-500 hover:bg-green-600 px-5 py-1 mr-3 rounded-md text-white"
+                          onClick={() => {
+                            setSelectedDoctor(user);
+                            setIsModalOpen(true);
+                          }}
+                        >
+                          تعيين
+                        </button>
+                        {user.head_of_department_id
+                          ? departments.find(
+                              (dep) => dep.id === user.head_of_department_id
+                            )?.name || 'لا يوجد'
+                          : 'لا يوجد'}
+                      </td>
+
                       <td className="border border-gray-300 px-4 py-2">
                         {user.enrollment_date}
                       </td>

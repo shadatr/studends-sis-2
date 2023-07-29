@@ -18,8 +18,6 @@ export default function AssignDepartment({
   isOpen,
   setIsOpen,
   selectedDoctor,
-  doctors,
-  setdoctors,
 }: AsignDepartmentProps) {
   function closeModal() {
     setIsOpen(false);
@@ -42,33 +40,18 @@ export default function AssignDepartment({
     } else {
       departmentId = selectedDepartment.current?.value;
     }
+    const data = {
+      department_id: departmentId,
+      doctor_id: selectedDoctor?.id,
+    };
     axios
-      .post('/api/assignDepartment', {
-        department_id: departmentId,
-        doctor_id: selectedDoctor?.id,
-      })
+      .post(`/api/department/assign`, data)
       .then(() => {
         toast.success('تم تعيين القسم بنجاح');
-        const newDoctors: DoctorsWithDepartmentsType[] = [];
-        const department = departments.find(
-          (department) => department.id == (departmentId as any)
-        );
-        doctors.forEach((doctor) => {
-          if (doctor.id === selectedDoctor?.id) {
-            newDoctors.push({
-              ...doctor,
-              department: department,
-            });
-          } else {
-            newDoctors.push(doctor);
-          }
-        });
-        setdoctors(newDoctors);
       })
       .catch(() => {
         toast.error('حدث خطأ ما');
       });
-
   };
 
   useEffect(() => {
