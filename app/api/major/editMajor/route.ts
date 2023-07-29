@@ -12,9 +12,12 @@ export async function POST(
 
   const newData: MajorType[] = await request.json();
 
+
   try {
     newData.map(async (data) => {
-      await supabase.from('tb_majors').update(data).eq('id', data.id);
+      const res=await supabase.from('tb_majors').update([data]).eq('id', data.id);
+      console.log(data);
+      console.log(res);
     });
 
     return new Response(

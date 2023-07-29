@@ -37,7 +37,7 @@ const Page = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const resp = await axios.get('/api/major/getMajors');
+      const resp = await axios.get('/api/major/majorReg');
       const message: MajorType[] = resp.data.message;
       setMajors(message);
       setMajors2(message);
@@ -173,6 +173,7 @@ const Page = () => {
       return i;
     });
 
+    console.log(updatedData);
     setMajors2(updatedData);
   };
 
@@ -596,10 +597,9 @@ const Page = () => {
                                   item.id
                                 )
                               }
-                              className="p-2 text-sm bg-lightBlue "
-                              defaultValue="اختر اسم الكلية"
+                              className="p-2 text-sm  "
+                              defaultValue={departments.find((dep)=> item.department_id==dep.id)?.name }
                             >
-                              <option disabled>اختر اسم الكلية</option>
                               {departments.map((item, index) => {
                                 if (item.active) {
                                   return (
