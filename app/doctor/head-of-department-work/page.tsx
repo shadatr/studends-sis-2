@@ -1008,14 +1008,14 @@ const Page = () => {
                     </td>
                     <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       <Link
-                        href={`/management/head-of-department-work/courseStudents/${Class.class.section_id}`}
+                        href={`/doctor/head-of-department-work/courseStudents/${Class.class.section_id}`}
                       >
                         {Class.section?.name}
                       </Link>
                     </td>
                     <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       <Link
-                        href={`/management/head-of-department-work/courseStudents/${Class.class.section_id}`}
+                        href={`/doctor/head-of-department-work/courseStudents/${Class.class.section_id}`}
                       >
                         {Class.course?.course_name}
                       </Link>

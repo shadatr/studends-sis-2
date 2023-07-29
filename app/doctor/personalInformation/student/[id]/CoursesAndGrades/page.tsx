@@ -492,7 +492,7 @@ const Page = ({ params }: { params: { id: number } }) => {
               </table>
               <button
                 type="submit"
-                className="flex w-[200px] p-3 text-sm justify-center items-center bg-darkBlue text-secondary"
+                className="flex w-[200px] p-3  justify-center items-center bg-darkBlue text-secondary"
               >
                 موافقة
               </button>
