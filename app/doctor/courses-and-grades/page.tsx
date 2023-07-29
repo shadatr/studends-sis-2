@@ -46,7 +46,7 @@ const Page = () => {
   }, [user]);
 
   return (
-    <div className="absolute lg:w-[80%] sm:w-[100%] flex flex-col lg:text-sm sm:text-[10px] p-10 justify-content items-center ">
+    <div className="lg:absolute lg:w-[80%] sm:w-[100%] flex flex-col lg:text-sm sm:text-[10px] p-10 justify-content items-center ">
       <table className="lg:w-[900px] sm:w-[350px] m-10">
         <thead>
           <tr>

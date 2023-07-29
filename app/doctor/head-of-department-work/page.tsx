@@ -100,13 +100,16 @@ const Page = () => {
       const resp = await axios.get('/api/major/getMajors');
       const message: MajorRegType[] = resp.data.message;
       console.log(user);
-      const selelectedMajors= message.filter((maj)=> maj.department_id==user?.token.head_of_department_id);
+      const selelectedMajors = message.filter(
+        (maj) => maj.department_id == user?.head_of_department_id
+      );
       setMajors(selelectedMajors);
     };
     fetchPosts();
   }, [user]);
 
   const handleChangeMajor = async () => {
+    setSelect(true);
     axios.get(`/api/major/majorStudents/${selectedMajor?.id}`).then((resp) => {
       const message: PersonalInfoType[] = resp.data.message;
       setStudents(message);
@@ -156,30 +159,6 @@ const Page = () => {
 
     setClasses(classes);
 
-    const clss: ClassesInfoType[] = [];
-    classes.forEach((cls) => {
-      if (type?.current?.value === 'جميع المجموعات') {
-        clss.push(cls);
-      } else if (
-        type?.current?.value == 'في انتظار قبول الدرجات' &&
-        cls.class.publish_grades == false &&
-        !cls.courseEnrollements.find((c) => c.result == null)
-      ) {
-        clss.push(cls);
-      } else if (
-        type?.current?.value === 'تم قبول الدرجات' &&
-        cls.class.publish_grades
-      ) {
-        clss.push(cls);
-      } else if (
-        type?.current?.value === 'لم يتم ادخال جميع الدرجات' &&
-        cls.courseEnrollements.find((c) => c.result == null)
-      ) {
-        clss.push(cls);
-      }
-    });
-    setClassesGrade(clss);
-
     axios.get(`/api/getAll/doctor`).then((resp) => {
       const message: PersonalInfoType[] = resp.data.message;
       setDoctors(message);
@@ -188,17 +167,19 @@ const Page = () => {
     const res = await axios.get(`/api/course/courseRegistration`);
     const messageCour: AddCourseType[] = await res.data.message;
     setCourses(messageCour);
-
     const responseMaj = await axios.get(
       `/api/majorEnrollment/${selectedMajor?.id}`
     );
+    setSelect(true);
+
     const messageMaj: MajorRegType[] = responseMaj.data.message;
     setMajor(messageMaj[0].major_name);
 
     const responseYear = await axios.get(`/api/exams/grading/4`);
     const messageYear: LettersType[] = responseYear.data.message;
     setYear(messageYear);
-    setSelect(true);
+
+    handleAllGrades();
   };
 
   const printableContentRef = useRef<HTMLDivElement>(null);
@@ -337,14 +318,14 @@ const Page = () => {
 
   const handleAllClasses = async () => {
     const resMajorCourses = await axios.get(
-      `/api/course/courseMajorReg/${selectedMajor?.id}`
+      `/api/course/departmentCourse/${user?.head_of_department_id}`
     );
-    const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
+    const messageMajorCour: AddCourseType[] = await resMajorCourses.data
       .message;
 
     const sectionsPromises = messageMajorCour.map(async (course) => {
       const responseReq = await axios.get(
-        `/api/getAll/getAllSections/${course.course_id}`
+        `/api/getAll/getAllSections/${course.id}`
       );
       const { message: secMessage }: { message: SectionType[] } =
         responseReq.data;
@@ -367,6 +348,65 @@ const Page = () => {
     const classes = classData.flat();
 
     setClasses2(classes);
+  };
+
+  const handleAllGrades = async () => {
+    const resMajorCourses = await axios.get(
+      `/api/course/departmentCourse/${user?.head_of_department_id}`
+    );
+    const messageMajorCour: AddCourseType[] = await resMajorCourses.data
+      .message;
+
+    const sectionsPromises = messageMajorCour.map(async (course) => {
+      const responseReq = await axios.get(
+        `/api/getAll/getAllSections/${course.id}`
+      );
+      const { message: secMessage }: { message: SectionType[] } =
+        responseReq.data;
+      return secMessage;
+    });
+
+    const sectionData = await Promise.all(sectionsPromises);
+    const sections = sectionData.flat();
+    setSections(sections);
+
+    const classPromises = sections.map(async (section) => {
+      const responseReq = await axios.get(
+        `/api/getAll/getAllClassInfo/${section.id}`
+      );
+      const { message: classMessage }: { message: ClassesInfoType[] } =
+        responseReq.data;
+      return classMessage;
+    });
+
+    const classData = await Promise.all(classPromises);
+    const classes = classData.flat();
+
+    setClasses(classes);
+
+    const clss: ClassesInfoType[] = [];
+    classes.forEach((cls) => {
+      if (type?.current?.value === 'جميع المجموعات') {
+        clss.push(cls);
+      } else if (
+        type?.current?.value == 'في انتظار قبول الدرجات' &&
+        cls.class.publish_grades == false &&
+        !cls.courseEnrollements.find((c) => c.result == null)
+      ) {
+        clss.push(cls);
+      } else if (
+        type?.current?.value === 'تم قبول الدرجات' &&
+        cls.class.publish_grades
+      ) {
+        clss.push(cls);
+      } else if (
+        type?.current?.value === 'لم يتم ادخال جميع الدرجات' &&
+        cls.courseEnrollements.find((c) => c.result == null)
+      ) {
+        clss.push(cls);
+      }
+    });
+    setClassesGrade(clss);
   };
 
   return (
@@ -424,13 +464,15 @@ const Page = () => {
         </button>
       </div>
       <div className="flex flex-row m-5 ">
+        {activeTab != 'Tab 5' && (
+          <>
         <button
           onClick={handleChangeMajor}
           className="bg-green-700 m-2 hover:bg-green-600 lg:p-3 sm:p-1 rounded-md text-white lg:w-[150px] sm:w-[60px]"
         >
           بحث
         </button>
-        <select
+          <select
           id="dep"
           dir="rtl"
           onChange={(e) => {
@@ -444,133 +486,142 @@ const Page = () => {
             <option key={item.id}>{item.major_name}</option>
           ))}
         </select>
+        </>
+        )}
+        
         {activeTab === 'Tab 5' && (
+          <div className='flex flex-row'>
+          <button
+          onClick={handleAllGrades}
+          className="bg-green-700 m-2 hover:bg-green-600 lg:p-3 sm:p-1 rounded-md text-white lg:w-[150px] sm:w-[60px]"
+        >
+          بحث
+        </button>
           <select
             id="dep"
             dir="rtl"
             ref={type}
-            className="lg:px-2 bg-gray-200 border-2 border-black rounded-md ml-4 lg:w-[200px] sm:w-[100px]"
+            className="lg:px-2 bg-gray-200 p-4 border-2 border-black rounded-md ml-4 lg:w-[200px] sm:w-[100px]"
           >
             <option>جميع المجموعات</option>
             <option>في انتظار قبول الدرجات</option>
             <option>تم قبول الدرجات</option>
             <option>لم يتم ادخال جميع الدرجات</option>
           </select>
+
+          </div>
         )}
       </div>
 
       {activeTab === 'Tab 1' && (
         <>
-          {() => {
-            const selectedMajorCourse = courses.filter((item1) =>
-              majorCourses.find((item2) => item1.id === item2.course_id)
-            );
-            const courseId = selectedMajorCourse.find(
-              (item) => item.course_name === selectedCourse
-            );
-            const selectedSections = sections.filter(
-              (item1) => item1.course_id === courseId?.id
-            );
+          {select && (
+            <div className="border-2 border-grey m-4 rounded-5 p-5 flex w-[100%] justify-center items-center rounded-md">
+              <button
+                onClick={handleSubmit}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md"
+              >
+                اضافة
+              </button>
+              <input
+                dir="rtl"
+                placeholder=" الموقع "
+                type="text"
+                className="lg:w-48 sm:[60px] p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                onChange={(e) => setLocation(e.target.value)}
+              />
+              <select
+                id="dep"
+                dir="rtl"
+                onChange={(e) => setSelecetedEndHour(e.target.value)}
+                className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md ml-4"
+                defaultValue="وقت الانتهاء"
+              >
+                <option disabled>وقت الانتهاء</option>
+                {hours.map((hour, index) => (
+                  <option key={index + 14}>{hour}</option>
+                ))}
+              </select>
+              <select
+                id="dep"
+                dir="rtl"
+                onChange={(e) => setSelecetedStartHour(e.target.value)}
+                className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md ml-4"
+                defaultValue="وقت البدأ"
+              >
+                <option disabled>وقت البدأ</option>
+                {hours.map((hour, index) => (
+                  <option key={index + 2}>{hour}</option>
+                ))}
+              </select>
+              <select
+                id="dep"
+                dir="rtl"
+                onChange={(e) => setSelecetedDay(e.target.value)}
+                className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md ml-4"
+                defaultValue="اليوم"
+              >
+                <option disabled>اليوم</option>
+                {days.map((day, index) => (
+                  <option key={index + 10}>{day.name}</option>
+                ))}
+              </select>
 
-            if (selectedMajor && select) {
-              return (
-                <div className="border-2 border-grey m-4 rounded-5 p-5 flex w-[100%] justify-center items-center rounded-md">
-                  <button
-                    onClick={handleSubmit}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md"
-                  >
-                    اضافة
-                  </button>
-                  <input
-                    dir="rtl"
-                    placeholder=" الموقع "
-                    type="text"
-                    className="lg:w-48 sm:[60px] p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                    onChange={(e) => setLocation(e.target.value)}
-                  />
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    onChange={(e) => setSelecetedEndHour(e.target.value)}
-                    className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md ml-4"
-                    defaultValue="وقت الانتهاء"
-                  >
-                    <option disabled>وقت الانتهاء</option>
-                    {hours.map((hour, index) => (
-                      <option key={index + 14}>{hour}</option>
-                    ))}
-                  </select>
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    onChange={(e) => setSelecetedStartHour(e.target.value)}
-                    className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md ml-4"
-                    defaultValue="وقت البدأ"
-                  >
-                    <option disabled>وقت البدأ</option>
-                    {hours.map((hour, index) => (
-                      <option key={index + 2}>{hour}</option>
-                    ))}
-                  </select>
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    onChange={(e) => setSelecetedDay(e.target.value)}
-                    className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md ml-4"
-                    defaultValue="اليوم"
-                  >
-                    <option disabled>اليوم</option>
-                    {days.map((day, index) => (
-                      <option key={index + 10}>{day.name}</option>
-                    ))}
-                  </select>
+              <select
+                id="dep"
+                dir="rtl"
+                onChange={(e) => setDoctor(parseInt(e.target.value))}
+                className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md ml-4 "
+                defaultValue="الدكتور"
+              >
+                <option disabled>الدكتور</option>
+                {doctors.map((doc, index) => {
+                  if (doc.active)
+                    return (
+                      <option key={index + 11} value={doc.id}>
+                        {doc.name}
+                      </option>
+                    );
+                })}
+              </select>
+              <select
+                id="dep"
+                dir="rtl"
+                ref={section}
+                className="lg:px-4 lg:py-2 sm:p-1 bg-gray-200 border-2 border-black rounded-md ml-4 sm:w-[60x] w-[150px]"
+                defaultValue="المجموعة"
+              >
+                <option disabled>المجموعة</option>
+                {sections
+                  .filter(
+                    (sec) =>
+                      sec.course_id ===
+                      courses.find((co) => selectedCourse == co.course_name)?.id
+                  )
+                  .map((course) => (
+                    <option key={course.id}>{course.name}</option>
+                  ))}
+              </select>
 
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    onChange={(e) => setDoctor(parseInt(e.target.value))}
-                    className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4  http://localhost:3000/doctor/head-of-department-work"
-                    defaultValue="الدكتور"
-                  >
-                    <option disabled>الدكتور</option>
-                    {doctors.map((doc, index) => {
-                      if (doc.active)
-                        return (
-                          <option key={index + 11} value={doc.id}>
-                            {doc.name}
-                          </option>
-                        );
-                    })}
-                  </select>
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    ref={section}
-                    className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md ml-4 sm:w-[60x] w-[150px]"
-                    defaultValue="المجموعة"
-                  >
-                    <option disabled>المجموعة</option>
-                    {selectedSections.map((course, index) => (
-                      <option key={index + 12}>{course.name}</option>
-                    ))}
-                  </select>
-                  <select
-                    id="dep"
-                    dir="rtl"
-                    onChange={(e) => setSelecetedCourse(e.target.value)}
-                    className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md ml-4 sm:w-[60x] w-[150px]"
-                    defaultValue="المادة"
-                  >
-                    <option disabled>المادة</option>
-                    {selectedMajorCourse.map((course, index) => (
-                      <option key={index}>{course.course_name}</option>
-                    ))}
-                  </select>
-                </div>
-              );
-            }
-            return null;
-          }}
+              <select
+                id="dep"
+                dir="rtl"
+                onChange={(e) => setSelecetedCourse(e.target.value)}
+                className="lg:px-4 lg:py-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md ml-4 sm:w-[60x] w-[150px]"
+                defaultValue="المادة"
+              >
+                <option disabled>المادة</option>
+                {courses
+                  .filter((item1) =>
+                    majorCourses.find((item2) => item1.id === item2.course_id)
+                  )
+                  .map((course, index) => (
+                    <option key={index}>{course.course_name}</option>
+                  ))}
+              </select>
+            </div>
+          )}
+
           <button
             onClick={handlePrint}
             className="flex bg-green-500 hover:bg-green-600 p-2 lg:m-5 text-white rounded-md lg:w-[200px] sm:w-[100px] justify-center items-center"
@@ -649,18 +700,10 @@ const Page = () => {
                       {Class.doctor?.name}
                     </td>
                     <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
-                      <Link
-                        href={`/doctor/head-of-department-work/class/${Class.class.section_id}`}
-                      >
-                        {Class.section?.name}
-                      </Link>
+                      {Class.section?.name}
                     </td>
                     <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
-                      <Link
-                        href={`/doctor/head-of-department-work/class/${Class.class.section_id}`}
-                      >
-                        {Class.course?.course_name}
-                      </Link>
+                      {Class.course?.course_name}
                     </td>
                     <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                       {Class.course?.course_number}

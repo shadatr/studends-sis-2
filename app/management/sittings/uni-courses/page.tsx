@@ -1,10 +1,10 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import {
-
   AddCourseType,
+  DepartmentRegType,
   GetPermissionType,
 } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
@@ -34,6 +34,8 @@ const Page = () => {
   const [classWork, setClassWork] = useState('');
   const [newItemCourse, setNewItemCourse] = useState('');
   const [courseNumber, setCourseNumber] = useState('');
+  const [departments, setDepartments] = useState<DepartmentRegType[]>([]);
+  const department = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -55,6 +57,10 @@ const Page = () => {
         const messagePer: GetPermissionType[] = response.data.message;
         setPerms(messagePer);
       }
+      axios.get('/api/department/departmentRegister').then((resp) => {
+        const message: DepartmentRegType[] = resp.data.message;
+        setDepartments(message);
+      });
     };
 
     fetchPosts();
@@ -102,6 +108,7 @@ const Page = () => {
       final: parseInt(final),
       class_work: parseInt(classWork),
       hours: parseInt(hours),
+      department_id: parseInt(department.current?.value ?? '0'),
     };
 
     axios
@@ -137,8 +144,22 @@ const Page = () => {
       return i;
     });
     setAllCourses2(updatedData);
-    if (field == 'course_name') {
-    }
+  };
+  const handleInputChangeDep = (
+    e: string,
+    field: keyof AddCourseType,
+    id?: number
+  ) => {
+    const updatedData = allCourses2.map((i) => {
+      if (i.id === id) {
+        return {
+          ...i,
+          [field]: parseInt(e),
+        };
+      }
+      return i;
+    });
+    setAllCourses2(updatedData);
   };
 
   const handleSubmit = () => {
@@ -190,6 +211,20 @@ const Page = () => {
                       className="w-[100px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
                       onChange={(e) => setCourseNumber(e.target.value)}
                     />
+                    <select
+                      id="dep"
+                      dir="rtl"
+                      ref={department}
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                      defaultValue="القسم"
+                    >
+                      <option disabled>القسم</option>
+                      {departments.map((dep, index) => (
+                        <option value={dep.id} key={index}>
+                          {dep.name}
+                        </option>
+                      ))}
+                    </select>
                     <select
                       id="dep"
                       dir="rtl"
@@ -274,6 +309,7 @@ const Page = () => {
                 </th>
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">الكريدت</th>
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">الساعات</th>
+                <th className="py-2 px-4 bg-gray-200 text-gray-700">القسم</th>
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">
                   اسم المادة
                 </th>
@@ -363,6 +399,31 @@ const Page = () => {
                       />
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
+                      <select
+                        id="dep"
+                        dir="rtl"
+                        className="w-[80px] "
+                        onChange={(e) =>
+                          handleInputChangeDep(
+                            e.target.value,
+                            'department_id',
+                            item.id
+                          )
+                        }
+                        defaultValue={
+                          departments?.find(
+                            (dep) => dep.id === item2?.department_id
+                          )?.id
+                        }
+                      >
+                        {departments.map((dep, index) => (
+                          <option value={dep.id} key={index}>
+                            {dep.name}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
                       <input
                         dir="rtl"
                         type="text"
@@ -382,7 +443,7 @@ const Page = () => {
                         dir="rtl"
                         type="text"
                         value={item2?.course_number}
-                        className="w-[80px] "
+                        className="w-[150px] "
                         onChange={(e) =>
                           handleInputChangeCourses(
                             e.target.value,
@@ -409,6 +470,11 @@ const Page = () => {
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
                       {item.hours}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {departments?.find(
+                        (dep) => dep.id === item2?.department_id
+                      )?.name || ''}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
                       <Link

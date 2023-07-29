@@ -54,17 +54,17 @@ const Page = () => {
 
   return (
     <div>
-      <div className=" w-[80%] items-center text-[10px] justify-center absolute">
+      <div className=" lg:w-[80%] sm:w-[100%] items-center text-[5px] justify-center lg:absolute ">
         <div className="w-[500px] flex flex-row m-3">
           <h1 className="w-20 p-2 bg-gray-200 border-2 border-black rounded-md ml-4">
             {gpa[0]?.AA}
           </h1>
-          <h1 className="w-[130px] p-2 bg-gray-200 rounded-md ml-4 flex fex-end">
+          <h1 className="lg:w-[130px] sm:w-[90px] p-2 bg-gray-200 rounded-md ml-4 flex fex-end">
             :المجموع المطلوب لنجاح المشروط
           </h1>
         </div>
 
-        <table className="w-[250px] h-[300px]">
+        <table className="lg:w-[250px] sm:w-[100px] lg:h-[300px] sm:h-[100px] ">
           <thead>
             <tr>
               <th className="border border-gray-300 px-4 py-2 max-w-[120px] bg-grey">

@@ -102,6 +102,7 @@ export type AddCourseType = {
   class_work?: number;
   midterm?: number;
   final?: number;
+  department_id:number;
 };
 
 export type MajorCourseType = {
