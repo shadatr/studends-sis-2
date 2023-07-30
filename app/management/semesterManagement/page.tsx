@@ -172,6 +172,8 @@ const Page = () => {
     const sections = sectionData.flat();
     setSections(sections);
 
+    console.log(sections);
+
     const classPromises = sections.map(async (section) => {
       const responseReq = await axios.get(
         `/api/getAll/getAllClassInfo/${section.id}`
@@ -608,9 +610,15 @@ const Page = () => {
                       defaultValue="المجموعة"
                     >
                       <option disabled>المجموعة</option>
-                      {selectedSections.map((course, index) => (
-                        <option key={index + 12}>{course.name}</option>
-                      ))}
+                      {sections
+                        .filter(
+                          (sec) =>
+                            selectedCourse&&sec.course_id ==
+                            parseInt(selectedCourse)
+                        )
+                        .map((course) => (
+                          <option key={course.id}>{course.name}</option>
+                        ))}
                     </select>
                     <select
                       id="dep"
@@ -621,7 +629,9 @@ const Page = () => {
                     >
                       <option disabled>المادة</option>
                       {selectedMajorCourse.map((course, index) => (
-                        <option key={index}>{course.course_name}</option>
+                        <option key={index} value={course.id}>
+                          {course.course_name}
+                        </option>
                       ))}
                     </select>
                   </div>
