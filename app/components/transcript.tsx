@@ -65,7 +65,7 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
   }, [majorId, user]);
 
   return (
-    <div className="absolute lg:w-[85%] sm:w-[100%] flex flex-col p-10 justify-content items-center">
+    <div className="absolute lg:w-[85%] sm:w-[100%] flex flex-col p-10 justify-content items-center lg:text-[16px] sm:text-[8px]">
       <h1 className="bg-grey p-2 m-1">
         {studentInfo[0]?.final_gpa}: المجموع النهائي
       </h1>
@@ -76,7 +76,7 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
         {studentCredit}: كريديت الطالب الحالية
       </h1>
       {transcript.map((tran, index) => (
-        <table key={index} className="m-10 lg:w-[600px] sm:[300px]">
+        <table key={index} className="lg:m-10 lg:w-[600px] sm:w-[300px]">
           <thead>
             <tr>
               <th className="flex justify-center items-center lg:text-sm sm:text-[8px] bg-darkBlue text-secondary">
@@ -129,7 +129,7 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
                     <td className="border border-gray-300 lg:px-4 lg:py-2 p-1 flex flex-row w-full items-center justify-center">
                       {letter?.points}
                     </td>
-                    <td className="border border-gray-300 lg:px-4 lg:py-2 p-1flex flex-row w-full items-center justify-center">
+                    <td className="border border-gray-300 lg:px-4 lg:py-2 p-1 flex flex-row w-full items-center justify-center">
                       {course.course.credits}
                     </td>
                     <td className="border border-gray-300 lg:px-4 lg:py-2 p-1 flex flex-row w-full items-center justify-center">
@@ -142,7 +142,7 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
               }
             })}
             <tr className="">
-              <td className="flex justify-center items-center text-sm bg-grey">
+              <td className="flex justify-center items-center lg:text-sm bg-grey">
                 {tran.gpa} :المجموع
               </td>
             </tr>
