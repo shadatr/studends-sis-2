@@ -43,7 +43,6 @@ const Page = () => {
         const message: MajorRegType[] = resp.data.message;
         setMajors(message);
       });
-
       
     };
     fetchPosts();
@@ -121,15 +120,15 @@ const Page = () => {
                 <option>اختر التخصص</option>
                 <option>جميع الطلاب</option>
                 {majors.map((item) => (
-                  <option key={item.id}>{item.major_name}</option>
+                  <option value={item.id}>{item.major_name}</option>
                 ))}
               </select>
               {selectedMajor && selectedMajor != 'جميع الطلاب' && (
                 <Link
                   className="bg-green-700 m-2 hover:bg-green-600 p-3 rounded-md text-white lg:w-[200px] sm:w-[80px]"
-                  href={`/management/students/graduatedStudents/${parseInt(
+                  href={`/management/students/graduatedStudents/${
                     selectedMajor
-                  )}`}
+                  }`}
                 >
                   الخرجين
                 </Link>
