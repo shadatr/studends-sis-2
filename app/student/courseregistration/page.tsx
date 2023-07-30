@@ -68,7 +68,7 @@ const Page = () => {
       if (user) {
         try {
           const response = await axios.get(
-            `/api/getAll/StudentCourseReg/${user?.major}`,
+            `/api/getAll/StudentCourseReg/${user?.major}/${user?.department_id}`
           );
           const message: CourseInfoType[] = response.data.message;
           setCourses(message);

@@ -25,6 +25,8 @@ export async function GET(
 
     const dataMajor = supabase.from('tb_majors').select('*');
 
+    const dataDep = supabase.from('tb_departments').select('*');
+
     const dataDoctor = await supabase.from('tb_doctors').select('*');
 
 
@@ -36,6 +38,7 @@ export async function GET(
       doctorResopnse,
       studentResponse,
       majorResponse,
+      depResponse,
     ] = await Promise.all([
       dataCourseEnroll,
       dataClasses,
@@ -44,6 +47,7 @@ export async function GET(
       dataDoctor,
       dataStudent,
       dataMajor,
+      dataDep,
     ]);
 
     const classes = classResponse.data;
@@ -53,6 +57,7 @@ export async function GET(
     const doctors = doctorResopnse.data;
     const student = studentResponse.data;
     const major = majorResponse.data;
+    const dep = depResponse.data;
 
     const data = courseEnrollements?.map((course) => {
 
@@ -68,6 +73,8 @@ export async function GET(
 
       const maj = major?.find((c) => stu?.major === c.id);
 
+      const de = dep?.find((c) => stu?.major === c.id);
+
       return {
         class: clas,
         course: cour,
@@ -75,7 +82,8 @@ export async function GET(
         section: secInfo,
         doctor: doc,
         student: stu,
-        major:maj
+        major:maj,
+        department:de
       };
     });
 

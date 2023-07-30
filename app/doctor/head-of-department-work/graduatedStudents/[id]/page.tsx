@@ -48,7 +48,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     };
 
     fetchPosts();
-  }, []);
+  }, [user?.head_of_department_id]);
 
   const handleActivate = (studentId: number, active: boolean) => {
     const data = { studentId, active };

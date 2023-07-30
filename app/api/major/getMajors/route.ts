@@ -9,7 +9,10 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const data = await supabase.from('tb_majors').select('*, tb_departments!inner(*)');
+    const data = await supabase
+      .from('tb_majors')
+      .select('*');
+    // const data = await supabase.from('tb_majors').select('*, tb_departments!inner(*)');
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {

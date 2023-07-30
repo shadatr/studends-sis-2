@@ -7,6 +7,7 @@ import {
   MajorRegType,
   GetPermissionType,
   PersonalInfoType,
+  DepartmentRegType,
 } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
@@ -24,6 +25,7 @@ const Page = () => {
   }
   const user = session.data?.user;
 
+  const [departments, setDepartments] = useState<DepartmentRegType[]>([]);
   const [selectedMajor, setSelectedMajor] = useState<string>();
   const [majors, setMajors] = useState<MajorRegType[]>([]);
   const [refresh, setRefresh] = useState<boolean>(false);
@@ -38,24 +40,25 @@ const Page = () => {
       const messagePer: GetPermissionType[] = responsePer.data.message;
       setPerms(messagePer);
 
+      axios.get('/api/department/departmentRegister').then((resp) => {
+        const message: DepartmentRegType[] = resp.data.message;
+        setDepartments(message);
+      });
 
       axios.get('/api/major/getMajors').then((resp) => {
         const message: MajorRegType[] = resp.data.message;
         setMajors(message);
       });
-      
     };
     fetchPosts();
   }, [user, refresh]);
 
   const handleMajor = () => {
     if (selectedMajor != 'جميع الطلاب' && selectedMajor) {
-      axios
-        .get(`/api/major/majorStudents/${selectedMajor}`)
-        .then((resp) => {
-          const message: PersonalInfoType[] = resp.data.message;
-          setStudents(message);
-        });
+      axios.get(`/api/major/majorStudents/${selectedMajor}`).then((resp) => {
+        const message: PersonalInfoType[] = resp.data.message;
+        setStudents(message);
+      });
     } else {
       axios.get('/api/getAll/student').then((resp) => {
         const message: PersonalInfoType[] = resp.data.message;
@@ -120,15 +123,15 @@ const Page = () => {
                 <option>اختر التخصص</option>
                 <option>جميع الطلاب</option>
                 {majors.map((item) => (
-                  <option value={item.id} key={item.id}>{item.major_name}</option>
+                  <option value={item.id} key={item.id}>
+                    {item.major_name}
+                  </option>
                 ))}
               </select>
               {selectedMajor && selectedMajor != 'جميع الطلاب' && (
                 <Link
                   className="bg-green-700 m-2 hover:bg-green-600 p-3 rounded-md text-white lg:w-[200px] sm:w-[80px]"
-                  href={`/management/students/graduatedStudents/${
-                    selectedMajor
-                  }`}
+                  href={`/management/students/graduatedStudents/${selectedMajor}`}
                 >
                   الخرجين
                 </Link>
@@ -161,10 +164,9 @@ const Page = () => {
                     <th className="border border-gray-300 px-4 py-2">
                       رقم الطالب
                     </th>
-                    <th className="border border-gray-300 px-4 py-2">
-                      {' '}
-                      التخصص
-                    </th>
+                    <th className="border border-gray-300 px-4 py-2">قسم</th>
+
+                    <th className="border border-gray-300 px-4 py-2">التخصص</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -217,6 +219,13 @@ const Page = () => {
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           {user.number}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {
+                            departments.find(
+                              (m) => m.id == user.department_id
+                            )?.name
+                          }
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           {majors.find((m) => m.id == user.major)?.major_name}

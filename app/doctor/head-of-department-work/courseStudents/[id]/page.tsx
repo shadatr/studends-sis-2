@@ -7,7 +7,6 @@ import {
 } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';

@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: number } }
+  { params }: { params: { majId: number; depId: number } }
 ) {
   try {
     const dataCourse = supabase.from('tb_courses').select('*');
@@ -17,7 +17,9 @@ export async function GET(
     const dataMajorCourse = supabase
       .from('tb_major_courses')
       .select('*')
-      .eq('major_id', params.id);
+      .eq('major_id', params.majId)
+      .eq('department_id', params.depId)
+      .eq('department_id', 0);
 
     const dataSection = supabase.from('tb_section').select('*');
 
@@ -27,9 +29,7 @@ export async function GET(
       .from('tb_course_enrollment')
       .select('*');
 
-      const dataDoctor = await supabase
-        .from('tb_doctors')
-        .select('*');
+    const dataDoctor = await supabase.from('tb_doctors').select('*');
 
     const dataCoursePrerequisties = await supabase
       .from('tb_prerequisites_courses')
@@ -50,7 +50,7 @@ export async function GET(
       dataCourse,
       dataCoursePrerequisties,
       dataMajorCourse,
-      dataDoctor
+      dataDoctor,
     ]);
 
     const classes = classResponse.data;
@@ -80,7 +80,6 @@ export async function GET(
       );
       const cour = courses?.find((c) => course.course_id === c.id);
 
-
       return {
         class: clas,
         course: cour,
@@ -91,7 +90,6 @@ export async function GET(
         doctor: doc,
       };
     });
-
 
     return new Response(JSON.stringify({ message: data }), {
       status: 200,

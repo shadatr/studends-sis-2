@@ -6,7 +6,7 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import { DatePicker } from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import { MajorType } from '@/app/types/types';
+import { MajorType, DepartmentRegType } from '@/app/types/types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
@@ -44,6 +44,8 @@ const Page = () => {
 
   const user = session.data?.user;
 
+  const [departments, setDepartments] = useState<DepartmentRegType[]>([]);
+  const department = useRef<HTMLSelectElement>(null);
   const [birthDate, setBirthDate] = useState(new Date());
   const name = useRef<HTMLInputElement>(null);
   const surname = useRef<HTMLInputElement>(null);
@@ -65,6 +67,11 @@ const Page = () => {
         const resp = await axios.get('/api/major/getMajors');
         const message: MajorType[] = resp.data.message;
         setMajors(message);
+
+        axios.get('/api/department/departmentRegister').then((resp) => {
+          const message: DepartmentRegType[] = resp.data.message;
+          setDepartments(message);
+        });
       } catch (error) {
         console.log(error);
       }
@@ -87,7 +94,8 @@ const Page = () => {
       !number.current?.value ||
       !selectedMajor ||
       !address.current?.value ||
-      !phone.current?.value
+      !phone.current?.value ||
+      !department.current?.value
     ) {
       toast.error('يجب ملئ جميع الحقول');
       return;
@@ -101,6 +109,7 @@ const Page = () => {
       name: name.current?.value,
       surname: surname.current?.value,
       major: selectedMajor?.id,
+      department_id: department.current?.value,
       phone: phone.current?.value,
       number: number.current?.value,
       address: address.current?.value,
@@ -155,11 +164,37 @@ const Page = () => {
           <option disabled selected>
             اختر التخصص
           </option>
-          {majors.map((item, index) =>{if(item.active){return(
-            <option key={index} value={item.major_name}>
-              {item.major_name}
-            </option>
-          );}})}
+          {majors.map((item, index) => {
+            if (item.active) {
+              return (
+                <option key={index} value={item.major_name}>
+                  {item.major_name}
+                </option>
+              );
+            }
+          })}
+        </select>
+        <label>اختر القسم</label>
+        <select
+          id="dep"
+          dir="rtl"
+          className="flex flex-col bg-slate-200 w-[400px] h-[50px] rounded-md p-2"
+          ref={department}
+        >
+          <option disabled selected>
+            اختر القسم
+          </option>
+          {departments
+            .filter((dep) => dep.major_id == selectedMajor?.id || dep.id==0)
+            .map((item, index) => {
+              if (item.active) {
+                return (
+                  <option key={index} value={item.id}>
+                    {item.name}
+                  </option>
+                );
+              }
+            })}
         </select>
         <InputBox
           label="رقم الهاتف"

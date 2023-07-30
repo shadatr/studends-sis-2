@@ -265,7 +265,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     setRepeat(repeatList);
     setUnableCourses(updatedCheckList2);
     setCheckList2(uniqueCourses);
-  }, [params,user, refresh, courses]);
+  }, [params, user, refresh, courses, checkList]);
 
   const handleCheck2 = (item: number) => {
     const isChecked = checked2.includes(item);

@@ -129,7 +129,7 @@ const Page = () => {
 
         if (majCredit) {
           const messageMajCourse = await axios.get(
-            `/api/course/courseMajorReg/${majCredit?.major?.id}`
+            `/api/course/courseMajorReg/${majCredit?.major?.id}/${majCredit?.major?.department_id}`
           );
           const responseCourseMaj: MajorCourseType[] =
             messageMajCourse.data.message;
@@ -197,7 +197,10 @@ const Page = () => {
 
             if (
               graduation?.major.credits_needed &&
-              studentTotalCredits >= graduation?.major.credits_needed &&
+              graduation?.department.credits_needed &&
+              studentTotalCredits >=(
+                graduation?.major.credits_needed +
+                  graduation?.department.credits_needed )&&
               parseFloat(gpa[0].AA) <=
                 parseFloat(
                   (totalQualityPoints / studentTotalCredits).toFixed(2)

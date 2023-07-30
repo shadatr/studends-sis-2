@@ -2,11 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import {
-  AddCourseType,
-  DepartmentRegType,
-  GetPermissionType,
-} from '@/app/types/types';
+import { AddCourseType, MajorType, GetPermissionType } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -34,8 +30,8 @@ const Page = () => {
   const [classWork, setClassWork] = useState('');
   const [newItemCourse, setNewItemCourse] = useState('');
   const [courseNumber, setCourseNumber] = useState('');
-  const [departments, setDepartments] = useState<DepartmentRegType[]>([]);
-  const department = useRef<HTMLSelectElement>(null);
+  const major = useRef<HTMLSelectElement>(null);
+  const [majors, setMajors] = useState<MajorType[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -57,10 +53,9 @@ const Page = () => {
         const messagePer: GetPermissionType[] = response.data.message;
         setPerms(messagePer);
       }
-      axios.get('/api/department/departmentRegister').then((resp) => {
-        const message: DepartmentRegType[] = resp.data.message;
-        setDepartments(message);
-      });
+      const resp = await axios.get('/api/major/majorReg');
+      const message: MajorType[] = resp.data.message;
+      setMajors(message);
     };
 
     fetchPosts();
@@ -108,7 +103,7 @@ const Page = () => {
       final: parseInt(final),
       class_work: parseInt(classWork),
       hours: parseInt(hours),
-      department_id: parseInt(department.current?.value ?? '0'),
+      major_id: parseInt(major.current?.value ?? '0'),
     };
 
     axios
@@ -208,20 +203,20 @@ const Page = () => {
                       dir="rtl"
                       placeholder="ادخل رقم المادة"
                       type="text"
-                      className="w-[100px] p-2.5 bg-grey border-black border-2 rounded-[5px]"
+                      className="w-[100px] px-4 py-2 bg-grey border-black border-2 rounded-[5px]"
                       onChange={(e) => setCourseNumber(e.target.value)}
                     />
                     <select
                       id="dep"
                       dir="rtl"
-                      ref={department}
-                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
-                      defaultValue="القسم"
+                      ref={major}
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md "
+                      defaultValue="التخصص"
                     >
-                      <option disabled>القسم</option>
-                      {departments.map((dep, index) => (
+                      <option disabled>التخصص</option>
+                      {majors.map((dep, index) => (
                         <option value={dep.id} key={index}>
-                          {dep.name}
+                          {dep.major_name}
                         </option>
                       ))}
                     </select>
@@ -309,7 +304,7 @@ const Page = () => {
                 </th>
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">الكريدت</th>
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">الساعات</th>
-                <th className="py-2 px-4 bg-gray-200 text-gray-700">القسم</th>
+                <th className="py-2 px-4 bg-gray-200 text-gray-700">التخصص</th>
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">
                   اسم المادة
                 </th>
@@ -406,19 +401,19 @@ const Page = () => {
                         onChange={(e) =>
                           handleInputChangeDep(
                             e.target.value,
-                            'department_id',
+                            'major_id',
                             item.id
                           )
                         }
                         defaultValue={
-                          departments?.find(
-                            (dep) => dep.id === item2?.department_id
-                          )?.id
+                          majors?.find(
+                            (dep) => dep.id === item2?.id
+                          )?.major_name
                         }
                       >
-                        {departments.map((dep, index) => (
+                        {majors.map((dep, index) => (
                           <option value={dep.id} key={index}>
-                            {dep.name}
+                            {dep.major_name}
                           </option>
                         ))}
                       </select>
@@ -472,9 +467,9 @@ const Page = () => {
                       {item.hours}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {departments?.find(
-                        (dep) => dep.id === item2?.department_id
-                      )?.name || ''}
+                      {majors?.find(
+                        (dep) => dep.id === item2?.major_id
+                      )?.major_name || ''}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
                       <Link

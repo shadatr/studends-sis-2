@@ -96,14 +96,14 @@ const Page = () => {
   const [Location, setLocation] = useState<string>();
   const [major, setMajor] = useState<string>();
   const type = useRef<HTMLSelectElement>(null);
-    const [edit, setEdit] = useState(false);
-    const [examProg, setExamProg] = useState<ExamProgramType[]>([]);
-    const [selectedCourse2, setSelecetedCourse2] = useState<string>();
-    const [selectedStartHour2, setSelecetedStartHour2] = useState('10:00');
-    const [duration, setDuration] = useState<string>();
-    const [selecetedDay2, setSelecetedDay2] = useState(new Date());
-    const [Location2, setLocation2] = useState<string>();
-    const printableContentRef2 = useRef<HTMLDivElement>(null);
+  const [edit, setEdit] = useState(false);
+  const [examProg, setExamProg] = useState<ExamProgramType[]>([]);
+  const [selectedCourse2, setSelecetedCourse2] = useState<string>();
+  const [selectedStartHour2, setSelecetedStartHour2] = useState('10:00');
+  const [duration, setDuration] = useState<string>();
+  const [selecetedDay2, setSelecetedDay2] = useState(new Date());
+  const [Location2, setLocation2] = useState<string>();
+  const printableContentRef2 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -139,10 +139,9 @@ const Page = () => {
       setPerms(message2);
     };
     fetchPosts();
-  }, [user,edit]);
+  }, [user, edit]);
 
   const handleChangeMajor = async () => {
-
     const resMajorCourses = await axios.get(
       `/api/course/courseMajorReg/${selectedMajor?.id}`
     );
@@ -241,7 +240,6 @@ const Page = () => {
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
   };
-
 
   const handleSubmit = () => {
     if (
@@ -352,93 +350,93 @@ const Page = () => {
       });
   };
 
-    const handleSubmitExam = () => {
-      if (
-        !(
-          selecetedDay2&&
-          selectedCourse2 &&
-          selectedStartHour2 &&
-          duration &&
-          Location2
-        )
-      ) {
-        toast.error('يجب ملئ جميع البيانات');
-        return;
-      }
+  const handleSubmitExam = () => {
+    if (
+      !(
+        selecetedDay2 &&
+        selectedCourse2 &&
+        selectedStartHour2 &&
+        duration &&
+        Location2
+      )
+    ) {
+      toast.error('يجب ملئ جميع البيانات');
+      return;
+    }
 
-      const findClass = courses.find(
-        (course) => course.course_name == selectedCourse2
-      );
-      const exam = examProg.find((e) => e.course_id == findClass?.id);
-      if (exam) {
-        toast.error('هذه المادة مسجلة بالفعل');
-        return;
-      }
+    const findClass = courses.find(
+      (course) => course.course_name == selectedCourse2
+    );
+    const exam = examProg.find((e) => e.course_id == findClass?.id);
+    if (exam) {
+      toast.error('هذه المادة مسجلة بالفعل');
+      return;
+    }
 
-      const data = {
-        course_id: findClass?.id,
-        hour: selectedStartHour2,
-        date: selecetedDay2.toLocaleString(),
-        duration: duration,
-        location: Location2,
-      };
-
-      axios
-        .post('/api/examProg/1', data)
-        .then((res) => {
-          toast.success(res.data.message);
-          const dataUsageHistory = {
-            id: user?.id,
-            type: 'admin',
-            action: ' تعديل جدول الامتحانات',
-          };
-          axios.post('/api/usageHistory', dataUsageHistory);
-        })
-        .catch((err) => {
-          toast.error(err.response.data.message);
-        });
-      setEdit(!edit);
+    const data = {
+      course_id: findClass?.id,
+      hour: selectedStartHour2,
+      date: selecetedDay2.toLocaleString(),
+      duration: duration,
+      location: Location2,
     };
 
-    const handleDeleteExam = (item: ExamProgramType) => {
-      axios
-        .post('/api/examProg/1/deleteExamProg', item)
-        .then((res) => {
-          toast.success(res.data.message);
-          const dataUsageHistory = {
-            id: user?.id,
-            type: 'admin',
-            action: ' تعديل جدول الامتحانات',
-          };
-          axios.post('/api/usageHistory', dataUsageHistory);
-        })
-        .catch((err) => {
-          toast.error(err.response.data.message);
-        });
-      setEdit(!edit);
-    };
+    axios
+      .post('/api/examProg/1', data)
+      .then((res) => {
+        toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل جدول الامتحانات',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      });
+    setEdit(!edit);
+  };
 
-    const deleteAllProgram = () => {
-      axios
-        .post('/api/examProg/1/deleteAllExamProg')
-        .then((res) => {
-          toast.success(res.data.message);
-          const dataUsageHistory = {
-            id: user?.id,
-            type: 'admin',
-            action: ' تعديل جدول الامتحانات',
-          };
-          axios.post('/api/usageHistory', dataUsageHistory);
-        })
-        .catch((err) => {
-          toast.error(err.response.data.message);
-        });
-      setEdit(!edit);
-    };
+  const handleDeleteExam = (item: ExamProgramType) => {
+    axios
+      .post('/api/examProg/1/deleteExamProg', item)
+      .then((res) => {
+        toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل جدول الامتحانات',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      });
+    setEdit(!edit);
+  };
 
-    const handlePrint2 = useReactToPrint({
-      content: () => printableContentRef2.current,
-    });
+  const deleteAllProgram = () => {
+    axios
+      .post('/api/examProg/1/deleteAllExamProg')
+      .then((res) => {
+        toast.success(res.data.message);
+        const dataUsageHistory = {
+          id: user?.id,
+          type: 'admin',
+          action: ' تعديل جدول الامتحانات',
+        };
+        axios.post('/api/usageHistory', dataUsageHistory);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      });
+    setEdit(!edit);
+  };
+
+  const handlePrint2 = useReactToPrint({
+    content: () => printableContentRef2.current,
+  });
 
   return (
     <div className="flex flex-col absolute w-[80%]  items-center justify-center text-[16px]">

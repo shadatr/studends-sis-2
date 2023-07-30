@@ -46,8 +46,9 @@ export type PersonalInfoType = {
   graduation_year?: string;
   can_graduate: boolean;
   number: number;
-  graduate_advisor_approval:boolean;
-  final_gpa: number
+  graduate_advisor_approval: boolean;
+  final_gpa: number;
+  department_id?: number;
 };
 
 export type MajorRegType = {
@@ -65,16 +66,17 @@ export type MajorRegType = {
 export type MajorType = {
   id?: number;
   major_name: string;
-  department_id?: number;
   credits_needed: number;
   active: boolean
 };
 
 
 export type DepartmentRegType = {
+  credits_needed: number;
   id?: number;
   name: string;
-  active:boolean;
+  active: boolean;
+  major_id: number;
 };
 
 export type AdminStaffType = {
@@ -102,14 +104,16 @@ export type AddCourseType = {
   class_work?: number;
   midterm?: number;
   final?: number;
-  department_id:number;
+  department_id: number;
+  major_id: number;
 };
 
 export type MajorCourseType = {
   id: number;
   major_id: number;
   course_id: number;
-  isOptional: boolean
+  department_id: number;
+  isOptional: boolean;
 };
 
 export type MajorEnrollmentType = {
@@ -533,6 +537,13 @@ export type StudenCourseGPAType = {
     semesters?: number;
     department_id?: number;
     credits_needed?: number;
+  };
+  department: {
+    credits_needed: number;
+    id?: number;
+    name: string;
+    active: boolean;
+    major_id: number;
   };
 };
 

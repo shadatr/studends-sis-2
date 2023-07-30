@@ -53,7 +53,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     };
 
     fetchPosts();
-  }, []);
+  }, [params.id]);
 
   const handleActivate = (studentId: number, active: boolean) => {
     const data = { studentId, active };
