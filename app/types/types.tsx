@@ -241,6 +241,7 @@ export type ClassesInfoType = {
     credits?: number;
     passing_percentage?: number;
     pass?: boolean;
+    major_id:number;
     class_work?: number;
     midterm?: number;
     final?: number;

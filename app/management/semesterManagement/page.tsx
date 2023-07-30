@@ -190,22 +190,25 @@ const Page = () => {
 
     const clss: ClassesInfoType[] = [];
     classes.forEach((cls) => {
-      if (type?.current?.value === 'جميع المجموعات') {
+      if (type?.current?.value === 'جميع المجموعات' && cls.course.major_id==selectedMajor?.id) {
         clss.push(cls);
       } else if (
         type?.current?.value == 'في انتظار قبول الدرجات' &&
         cls.class.publish_grades == false &&
-        !cls.courseEnrollements.find((c) => c.result == null)
+        !cls.courseEnrollements.find((c) => c.result == null) &&
+        cls.course.major_id == selectedMajor?.id
       ) {
         clss.push(cls);
       } else if (
         type?.current?.value === 'تم قبول الدرجات' &&
-        cls.class.publish_grades
+        cls.class.publish_grades &&
+        cls.course.major_id == selectedMajor?.id
       ) {
         clss.push(cls);
       } else if (
         type?.current?.value === 'لم يتم ادخال جميع الدرجات' &&
-        cls.courseEnrollements.find((c) => c.result == null)
+        cls.courseEnrollements.find((c) => c.result == null) &&
+        cls.course.major_id == selectedMajor?.id
       ) {
         clss.push(cls);
       }
@@ -268,9 +271,6 @@ const Page = () => {
       (hour) => hour.name === selectedEndHour
     );
 
-    const sectionId = sections.find(
-      (item) => item.name === section.current?.value
-    );
 
     const hasConflictingClass = classes.some(
       (cls) =>
