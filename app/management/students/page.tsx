@@ -51,7 +51,7 @@ const Page = () => {
   const handleMajor = () => {
     if (selectedMajor != 'جميع الطلاب' && selectedMajor) {
       axios
-        .get(`/api/major/majorStudents/${parseInt(selectedMajor)}}`)
+        .get(`/api/major/majorStudents/${selectedMajor}`)
         .then((resp) => {
           const message: PersonalInfoType[] = resp.data.message;
           setStudents(message);
