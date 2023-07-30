@@ -277,7 +277,6 @@ const Page = () => {
             )
           );
 
-          console.log(repeat);
 
           selectedCourses.map((item) => {
             if (
@@ -356,7 +355,6 @@ const Page = () => {
         ) {
           const condCourses = courses.filter(
             (co) =>
-              co.courseEnrollements.can_repeat == true &&
               co.class.semester == `${year[0].AA}-${year[0].BA}` &&
               co.courseEnrollements.student_id == student.id
           );
