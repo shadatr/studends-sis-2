@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
   try {
     await supabase.from('tb_major_courses').insert([data]);
-   return new Response(JSON.stringify({ message: 'تم تسجيل المادة بنجاح' }), {
+    return new Response(JSON.stringify({ message: 'تم تسجيل المادة بنجاح' }), {
       headers: { 'content-type': 'application/json' },
     });
   } catch (error) {
@@ -24,23 +24,42 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request, { params }: { params: { majorId: number ,depId: number} }) {
+export async function GET(
+  request: Request,
+  { params }: { params: { majorId: number; depId: number } }
+) {
   try {
-    const data = await supabase
-      .from('tb_major_courses')
-      .select('*')
-      .eq('major_id', params.majorId)
-      .eq('department_id', params.depId);
+    if (params.depId == -1) {
+      const data = await supabase
+        .from('tb_major_courses')
+        .select('*')
+        .eq('major_id', params.majorId);
+      if (data.error) {
+        return new Response(JSON.stringify({ message: 'an error occured' }), {
+          status: 403,
+        });
+      }
 
-    if (data.error) {
-      return new Response(JSON.stringify({ message: 'an error occured' }), {
-        status: 403,
+      return new Response(JSON.stringify({ message: data.data }), {
+        status: 200,
+        headers: { revalidate: dynamic },
+      });
+    } else {
+      const data = await supabase
+        .from('tb_major_courses')
+        .select('*')
+        .eq('major_id', params.majorId)
+        .eq('department_id', params.depId);
+      if (data.error) {
+        return new Response(JSON.stringify({ message: 'an error occured' }), {
+          status: 403,
+        });
+      }
+
+      return new Response(JSON.stringify({ message: data.data }), {
+        status: 200,
+        headers: { revalidate: dynamic },
       });
     }
-
-    return new Response(JSON.stringify({ message: data.data }), {
-      status: 200,
-      headers: { revalidate: dynamic },
-    });
   } catch {}
 }

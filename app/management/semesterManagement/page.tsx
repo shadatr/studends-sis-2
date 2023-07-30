@@ -143,7 +143,7 @@ const Page = () => {
 
   const handleChangeMajor = async () => {
     const resMajorCourses = await axios.get(
-      `/api/course/courseMajorReg/${selectedMajor?.id}`
+      `/api/course/courseMajorReg/${selectedMajor?.id}/-1`
     );
     const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
       .message;
