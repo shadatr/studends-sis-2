@@ -68,14 +68,14 @@ const Page = () => {
   }, [user, load, edit, edit2]);
 
   const handleRegisterDep = () => {
-    if (!newItemDep || !credits || !newMajorDep) {
+    if (!newItemDep || !credits2 || !newMajorDep) {
       toast.error('يجب كتابة اسم القسم');
       return;
     }
     const data = {
       name: newItemDep,
       major_id: newMajorDep,
-      credits_needed: parseInt(credits),
+      credits_needed: parseInt(credits2),
     };
     axios
       .post('/api/department/departmentRegister', data)
