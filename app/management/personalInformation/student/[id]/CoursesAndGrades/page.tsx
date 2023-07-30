@@ -264,7 +264,7 @@ const Page = ({ params }: { params: { id: number } }) => {
     const uniqueCourses: any = [];
 
     updatedCheckList.forEach((item) => {
-      if (!uniqueCourseIds.has(item.course.id)) {
+      if (!uniqueCourseIds.has(item.course.id)&&!checkList.find((i)=>i.course.id== item.course.id)) {
         uniqueCourseIds.add(item.course.id);
         uniqueCourses.push(item);
       }

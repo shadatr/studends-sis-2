@@ -389,7 +389,7 @@ const handleDelete = (item?: StudentClassType) => {
                           <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                             {item.course.hours}
                           </td>
-                          <td className="border border-gray-300lg:py-2 lg:px-4 sm:p-1">
+                          <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
                             {item.majorCourse.isOptional ? 'اختياري' : 'اجباري'}
                           </td>
                           <td className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1">
@@ -427,7 +427,7 @@ const handleDelete = (item?: StudentClassType) => {
                   <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     المواد المشروطة
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 bg-grey">
+                  <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">
                     الكريدت
                   </th>
                   <th className="border border-gray-300 lg:py-2 lg:px-4 sm:p-1 bg-grey">

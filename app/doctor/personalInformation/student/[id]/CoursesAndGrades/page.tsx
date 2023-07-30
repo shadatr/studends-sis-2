@@ -253,7 +253,10 @@ const Page = ({ params }: { params: { id: number } }) => {
     const uniqueCourses: any = [];
 
     updatedCheckList.forEach((item) => {
-      if (!uniqueCourseIds.has(item.course.id)) {
+      if (
+        !uniqueCourseIds.has(item.course.id) &&
+        !checkList.find((i) => i.course.id == item.course.id)
+      ) {
         uniqueCourseIds.add(item.course.id);
         uniqueCourses.push(item);
       }
@@ -414,9 +417,6 @@ const Page = ({ params }: { params: { id: number } }) => {
                       الكريدت
                     </th>
                     <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
-                      درجة النجاح
-                    </th>
-                    <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
                       الساعات
                     </th>
                     <th className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1 bg-grey">
@@ -463,9 +463,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                           {item.course.credits}
                         </td>
-                        <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
-                          {item.course.passing_percentage}
-                        </td>
+                  
                         <td className="border border-gray-300 lg:px-4 lg:py-2 sm:p-1">
                           {item.course.hours}
                         </td>
