@@ -8,6 +8,7 @@ import {
   PersonalInfoType,
   InfoDoctorType,
   MajorRegType,
+  DepartmentRegType,
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
@@ -21,6 +22,7 @@ const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'اللقب' },
   { header: 'رقم الطالب' },
   { header: 'تاريخ الميلاد' },
+    { header: 'القسم' },
   { header: 'التخصص' },
   { header: 'الفصل الدراسي' },
   { header: 'عنوان السكن' },
@@ -45,6 +47,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [edit, setEdit] = useState(false);
   const printableContentRef = useRef<HTMLDivElement>(null);
   const [major, setMajor] = useState<MajorRegType[]>([]);
+  const [departments, setDepartments] = useState<DepartmentRegType[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -55,6 +58,11 @@ const Page = ({ params }: { params: { id: number } }) => {
       } catch (error) {
         console.error('Error fetching data:', error);
       }
+
+      axios.get('/api/department/departmentRegister').then((resp) => {
+        const message: DepartmentRegType[] = resp.data.message;
+        setDepartments(message);
+      });
 
       const response = await axios.get(
         `/api/allPermission/student/selectedPerms/${params.id}`
@@ -231,6 +239,32 @@ const Page = ({ params }: { params: { id: number } }) => {
                         }
                       />
                     </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <select
+                        id="dep"
+                        dir="rtl"
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'department_id')
+                        }
+                        className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
+                        defaultValue={
+                          item.department_id
+                            ? departments?.find(
+                                (maj) => item.department_id == maj.id
+                              )?.name
+                            : 'لا يوجد'
+                        }
+                      >
+                        {departments?.map((maj, index) => {
+                          if (maj.active)
+                            return (
+                              <option key={index} value={maj.name}>
+                                {maj.name}
+                              </option>
+                            );
+                        })}
+                      </select>
+                    </td>
                     <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px]justify-end">
                       <select
                         id="dep"
@@ -344,6 +378,12 @@ const Page = ({ params }: { params: { id: number } }) => {
                   </td>
                   <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.birth_date}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.department_id
+                      ? departments?.find((maj) => item.department_id == maj.id)
+                          ?.name
+                      : 'لا يوجد'}
                   </td>
                   <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.major

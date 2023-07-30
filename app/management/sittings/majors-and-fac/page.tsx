@@ -531,6 +531,7 @@ const Page = () => {
               <tbody>
                 {departments.length ? (
                   departments.map((deptItem, index) => {
+                    if(deptItem.id!=0){
                     const item2 = departments2.find(
                       (item2) => item2.id == deptItem.id
                     );
@@ -666,7 +667,7 @@ const Page = () => {
                           }
                         </td>
                       </tr>
-                    );
+                    );}
                   })
                 ) : (
                   <tr>

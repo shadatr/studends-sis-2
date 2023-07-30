@@ -9,6 +9,7 @@ import {
   InfoDoctorType,
   GetPermissionType,
   MajorRegType,
+  DepartmentRegType,
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
@@ -22,6 +23,7 @@ const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'اللقب' },
   { header: 'رقم الطالب' },
   { header: 'تاريخ الميلاد' },
+  { header: 'القسم' },
   { header: 'التخصص' },
   { header: 'الفصل الدراسي' },
   { header: 'عنوان السكن' },
@@ -47,6 +49,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [doctors, setDoctors] = useState<InfoDoctorType[]>([]);
   const [edit, setEdit] = useState(false);
   const [major, setMajor] = useState<MajorRegType[]>();
+    const [departments, setDepartments] = useState<DepartmentRegType[]>([]);
   const printableContentRef = useRef<HTMLDivElement>(null);
   const user = session.data?.user;
 
@@ -59,6 +62,11 @@ const Page = ({ params }: { params: { id: number } }) => {
       } catch (error) {
         console.error('Error fetching data:', error);
       }
+
+      axios.get('/api/department/departmentRegister').then((resp) => {
+        const message: DepartmentRegType[] = resp.data.message;
+        setDepartments(message);
+      });
 
       const responsePer = await axios.get(
         `/api/allPermission/admin/selectedPerms/${user?.id}`
@@ -270,11 +278,36 @@ const Page = ({ params }: { params: { id: number } }) => {
                             : 'لا يوجد'
                         }
                       >
-                        <option disabled>الدكتور</option>
                         {major?.map((maj, index) => {
                           if (maj.active)
                             return (
                               <option key={index}>{maj.major_name}</option>
+                            );
+                        })}
+                      </select>
+                    </td>
+                    <td className="flex w-[700px] p-2 justify-end">
+                      <select
+                        id="dep"
+                        dir="rtl"
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, 'department_id')
+                        }
+                        className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
+                        defaultValue={
+                          item.department_id
+                            ? departments?.find(
+                                (maj) => item.department_id == maj.id
+                              )?.name
+                            : 'لا يوجد'
+                        }
+                      >
+                        {departments?.map((maj, index) => {
+                          if (maj.active)
+                            return (
+                              <option key={index} value={maj.name}>
+                                {maj.name}
+                              </option>
                             );
                         })}
                       </select>
@@ -367,6 +400,11 @@ const Page = ({ params }: { params: { id: number } }) => {
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
                     {item.birth_date}
+                  </td>
+                  <td className="flex w-[700px] p-2 justify-end">
+                    {item.department_id
+                      ? departments?.find((maj) => item.department_id == maj.id)?.name
+                      : 'لا يوجد'}
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
                     {item.major

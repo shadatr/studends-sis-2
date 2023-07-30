@@ -6,6 +6,7 @@ import {
   LetterGradesType,
   TranscriptType,
   PersonalInfoType,
+  DepartmentRegType
 } from '@/app/types/types';
 import axios from 'axios';
 
@@ -17,52 +18,60 @@ const Transcript = ({ user, majorId }: { user: number; majorId: number }) => {
   const [majorCredit, setMajorCredit] = useState<number>();
   const [studentCredit, setStudentCredit] = useState<number>();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (user) {
-          const responseCourseLetter = await axios.get(
-            `/api/exams/letterGrades`
-          );
-          const messageCourseLetter: LetterGradesType[] =
-            responseCourseLetter.data.message;
-          setCourseLetter(messageCourseLetter);
+ useEffect(() => {
+   const fetchData = async () => {
+     try {
+       if (user) {
+         const responseCourseLetter = await axios.get(
+           '/api/exams/letterGrades'
+         );
+         const messageCourseLetter = responseCourseLetter.data.message;
+         setCourseLetter(messageCourseLetter);
 
-          const resp = await axios.get(`/api/personalInfo/student/${user}`);
-          const message: PersonalInfoType[] = resp.data.message;
-          setStudentInfo(message);
+         const resp = await axios.get(`/api/personalInfo/student/${user}`);
+         const message1 = resp.data.message;
+         setStudentInfo(message1);
 
-          const responseCourse = await axios.get(
-            `/api/getAll/studentCoursesGpa/${user}`
-          );
+         axios.get('/api/department/departmentRegister').then(async (resp) => {
+           const message:DepartmentRegType[] = resp.data.message;
+           const responseMaj = await axios.get(
+             `/api/major/getSpecificMajor/${majorId}`
+           );
+           const messageMaj = responseMaj.data.message;
 
-          const messageCourse: StudenCourseGPAType[] =
-            responseCourse.data.message;
-          setCourses(messageCourse);
+           const dep = message.find((i) => i.id === message1[0].department_id);
 
-          const majCredit = messageCourse.find((c) => c);
+           if (messageMaj[0]?.credits_needed && dep?.credits_needed !== null) {
+             setMajorCredit(
+               messageMaj[0]?.credits_needed + dep?.credits_needed
+             );
+           }
+         });
 
-          const responseMaj = await axios.get(
-            `/api/major/getSpecificMajor/${majorId}`
-          );
-          const messageMaj: MajorRegType[] = responseMaj.data.message;
+         const responseCourse = await axios.get(
+           `/api/getAll/studentCoursesGpa/${user}`
+         );
+         const messageCourse: StudenCourseGPAType []= responseCourse.data.message;
+         setCourses(messageCourse);
 
-          setMajorCredit(messageMaj[0].credits_needed);
+         const majCredit = messageCourse.find((c) => c);
 
-          setStudentCredit(majCredit?.student?.credits);
+         setStudentCredit(majCredit?.student?.credits);
 
-          const responseTranscript = await axios.get(`/api/transcript/${user}`);
-          const messageTranscript: TranscriptType[] =
-            responseTranscript.data.message;
-          setTranscript(messageTranscript);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
+         const responseTranscript = await axios.get(
+           `/api/transcript/${user}`
+         );
+         const messageTranscript = responseTranscript.data.message;
+         setTranscript(messageTranscript);
+       }
+     } catch (error) {
+       console.error('Error fetching data:', error);
+     }
+   };
 
-    fetchData();
-  }, [majorId, user]);
+   fetchData();
+ }, [majorId, user]);
+
 
   return (
     <div className="absolute lg:w-[85%] sm:w-[100%] flex flex-col p-10 justify-content items-center lg:text-[16px] sm:text-[8px]">
