@@ -184,23 +184,12 @@ const Page = () => {
                 totalQualityPoints += i.points * selectedCourse?.course.credits;
               }
             });
-
-            const data = {
-              value: parseFloat(
-                (totalQualityPoints / studentTotalCredits).toFixed(2)
-              ),
-              name: 'final_gpa',
-              student_id: student.id,
-            };
-
-            axios.post('/api/transcript/approveGraduation', data);
-
             if (
               graduation?.major.credits_needed &&
               graduation?.department.credits_needed &&
-              studentTotalCredits >=(
+              studentTotalCredits >=
                 graduation?.major.credits_needed +
-                  graduation?.department.credits_needed )&&
+                  graduation?.department.credits_needed &&
               parseFloat(gpa[0].AA) <=
                 parseFloat(
                   (totalQualityPoints / studentTotalCredits).toFixed(2)
@@ -220,6 +209,7 @@ const Page = () => {
               }
             });
 
+            console.log(studentTotalCredits);
             if (studentTotalCredits && student.id && graduationYear?.semester) {
               const data = {
                 credits: studentTotalCredits,
@@ -230,6 +220,18 @@ const Page = () => {
 
               axios.post('/api/transcript/editCredits', data);
             }
+
+            const data = {
+              value: parseFloat(
+                (totalQualityPoints / studentTotalCredits).toFixed(2)
+              ),
+              name: 'final_gpa',
+              student_id: student.id,
+            };
+
+            axios.post('/api/transcript/approveGraduation', data);
+
+            
           }
         }
       });
