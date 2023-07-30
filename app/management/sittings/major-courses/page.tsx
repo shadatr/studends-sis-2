@@ -179,11 +179,13 @@ const Page = () => {
               defaultValue="القسم"
             >
               <option disabled>القسم</option>
-              {departments.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
+              {departments
+                .filter((d) => selectedMajor?.id==d.major_id)
+                .map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
             </select>
             <select
               id="dep"
