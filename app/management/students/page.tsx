@@ -24,6 +24,7 @@ const Page = () => {
   }
   const user = session.data?.user;
 
+  const [selectedMajor, setSelectedMajor] = useState<string>();
   const [majors, setMajors] = useState<MajorRegType[]>([]);
   const [refresh, setRefresh] = useState<boolean>(false);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
@@ -37,18 +38,32 @@ const Page = () => {
       const messagePer: GetPermissionType[] = responsePer.data.message;
       setPerms(messagePer);
 
+
       axios.get('/api/major/getMajors').then((resp) => {
         const message: MajorRegType[] = resp.data.message;
         setMajors(message);
       });
 
+      
+    };
+    fetchPosts();
+  }, [user, refresh]);
+
+  const handleMajor = () => {
+    if (selectedMajor != 'جميع الطلاب' && selectedMajor) {
+      axios
+        .get(`/api/major/majorStudents/${parseInt(selectedMajor)}}`)
+        .then((resp) => {
+          const message: PersonalInfoType[] = resp.data.message;
+          setStudents(message);
+        });
+    } else {
       axios.get('/api/getAll/student').then((resp) => {
         const message: PersonalInfoType[] = resp.data.message;
         setStudents(message);
       });
-    };
-    fetchPosts();
-  }, [user, refresh]);
+    }
+  };
 
   const handleActivate = (studentId: number, active: boolean) => {
     const data = { studentId, active };
@@ -89,6 +104,37 @@ const Page = () => {
                 return null;
               })}
               <SearchBar />
+              <button
+                onClick={handleMajor}
+                className="bg-green-700 m-2 hover:bg-green-600 lg:p-3 sm:p-1 rounded-md text-white lg:w-[150px] sm:w-[60px]"
+              >
+                بحث
+              </button>
+              <select
+                id="dep"
+                dir="rtl"
+                onChange={(e) => {
+                  setSelectedMajor(e.target.value);
+                }}
+                className="lg:px-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md ml-4 lg:w-[200px] sm:w-[100px]"
+              >
+                <option>اختر التخصص</option>
+                <option>جميع الطلاب</option>
+                {majors.map((item) => (
+                  <option key={item.id}>{item.major_name}</option>
+                ))}
+              </select>
+              {selectedMajor && selectedMajor != 'جميع الطلاب' && (
+                <Link
+                  className="bg-green-700 m-2 hover:bg-green-600 p-3 rounded-md text-white lg:w-[200px] sm:w-[80px]"
+                  href={`/management/students/graduatedStudents/${parseInt(
+                    selectedMajor
+                  )}`}
+                >
+                  الخرجين
+                </Link>
+              )}
+
               <table className="border-collapse mt-8 w-[1100px]">
                 <thead>
                   <tr className="bg-gray-200">

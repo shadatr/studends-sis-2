@@ -177,7 +177,7 @@ const Page = () => {
               if (
                 selectedCourse &&
                 selectedCourse.course.credits &&
-                i.points!=null &&
+                i.points != null &&
                 !i.repeated
               ) {
                 studentTotalCredits += selectedCourse?.course.credits;
@@ -232,7 +232,6 @@ const Page = () => {
       });
     }
   };
-
   const handleSubmit = () => {
     let allDataSent = true;
 
@@ -263,47 +262,76 @@ const Page = () => {
         (co) => co.courseEnrollements.student_id == student.id
       );
 
-      selectedCourses.map((selectedCourse) => {
+      const repCour: StudenCourseType[] = []; // Initialize an empty array to store repeated courses
+
+      selectedCourses.forEach((selectedCourse) => {
         const repeatedCourse = selectedCourses.filter(
-          (co) => co.course.id === selectedCourse?.course.id
+          (co) => co.course.id === selectedCourse.course.id
         );
 
         if (repeatedCourse.length > 1) {
-          const repeat = repeatedCourse.find((co) =>
-            courseLetter.find(
-              (item) =>
-                co.class?.semester != `${year[0].AA}-${year[0].BA}` &&
-                !item.repeated
-            )
-          );
+          repCour.push(...repeatedCourse); // Use spread operator to add repeated courses to the array
+        }
+      });
 
-
-          selectedCourses.map((item) => {
+      repCour.forEach((repeat) => {
+        if (
+          repeat.class?.semester != `${year[0].AA}-${year[0].BA}` &&
+          !courseLetter.some(
+            (item) =>
+              item.repeated &&
+              item.course_enrollment_id === repeat.courseEnrollements.id
+          )
+        ) {
+          selectedCourses.forEach((item) => {
             if (
               item.course.credits &&
-              item.class.semester === repeat?.class.semester &&
-              item.course.id != repeat?.course.id
+              item.class.semester === repeat.class.semester &&
+              item.course.id !== repeat.course.id
             ) {
               const studentResult = courseLetter.find(
                 (item2) =>
                   item2.course_enrollment_id === item.courseEnrollements.id
               );
-              if (studentResult?.points!=null) {
-                studentTotalGradePoints2 +=
-                  studentResult?.points * item.course.credits;
-                studentTotalCredits2 += item.course.credits;
+              if (studentResult?.points != null) {
+                // Check if the course is not repeated before adding it to the total
+                const isNotRepeated = !repCour.some(
+                  (rep) =>
+                    rep.courseEnrollements.id === item.courseEnrollements.id
+                );
+                if (isNotRepeated) {
+                  studentTotalGradePoints2 +=
+                    studentResult?.points * item.course.credits;
+                  studentTotalCredits2 += item.course.credits;
+                }
               }
             }
           });
+        }
+      });
 
+      repCour.map((repeat) => {
+        if (
+          repeat.class.semester != `${year[0].AA}-${year[0].BA}` &&
+          !courseLetter.some(
+            (item) =>
+              item.repeated &&
+              item.course_enrollment_id === repeat.courseEnrollements.id
+          )
+        ) {
           const data2 = {
             student_id: student.id,
-            course_enrollment_id: repeat?.courseEnrollements.id,
-            semester: repeat?.class.semester,
+            course_enrollment_id: repeat.courseEnrollements.id,
+            semester: repeat.class.semester,
             gpa: parseFloat(
               (studentTotalGradePoints2 / studentTotalCredits2).toFixed(2)
             ),
           };
+          console.log(
+            parseFloat(
+              (studentTotalGradePoints2 / studentTotalCredits2).toFixed(2)
+            )
+          );
 
           if (studentTotalGradePoints2 && studentTotalCredits2) {
             axios.post(`/api/transcript/transcriptUpdate`, data2).catch(() => {
@@ -311,20 +339,22 @@ const Page = () => {
             });
           }
         }
+      });
 
+      selectedCourses.forEach((selectedCourse) => {
         const studentResult = courseLetter.find(
           (item) =>
-            item.course_enrollment_id === selectedCourse?.courseEnrollements.id
+            item.course_enrollment_id === selectedCourse.courseEnrollements.id
         );
 
         if (
-          selectedCourse?.course.credits &&
-          studentResult?.points!=null &&
+          selectedCourse.course.credits &&
+          studentResult?.points != null &&
           selectedCourse.class.semester === `${year[0].AA}-${year[0].BA}`
         ) {
           studentTotalGradePoints +=
-            studentResult?.points * selectedCourse?.course.credits;
-          studentTotalCredits += selectedCourse?.course.credits;
+            studentResult?.points * selectedCourse.course.credits;
+          studentTotalCredits += selectedCourse.course.credits;
         }
       });
 
@@ -333,45 +363,47 @@ const Page = () => {
           item.semester == `${year[0].AA}-${year[0].BA}` &&
           student.id == item.student_id
       );
-      if (gpaFound) {
-        return;
-      }
-      const data2 = {
-        student_id: student.id,
-        semester: `${year[0].AA}-${year[0].BA}`,
-        studentSemester: student.semester,
-        gpa: parseFloat(
-          (studentTotalGradePoints / studentTotalCredits).toFixed(2)
-        ),
-        credits: studentTotalCredits,
-      };
 
-      if (studentTotalGradePoints && studentTotalCredits && gpa[0].AA) {
-        axios.post(`/api/transcript/${1}`, data2).catch(() => {
-          allDataSent = false;
-        });
-        if (
-          (studentTotalGradePoints / studentTotalCredits).toFixed(2) < gpa[0].AA
-        ) {
-          const condCourses = courses.filter(
-            (co) =>
-              co.class.semester == `${year[0].AA}-${year[0].BA}` &&
-              co.courseEnrollements.student_id == student.id
-          );
-          const updatedCondCourses = condCourses.map((co) => {
-            return {
-              ...co.courseEnrollements,
-              pass: false,
-              can_repeat: false,
-            };
+      if (!gpaFound) {
+        const data2 = {
+          student_id: student.id,
+          semester: `${year[0].AA}-${year[0].BA}`,
+          studentSemester: student.semester,
+          gpa: parseFloat(
+            (studentTotalGradePoints / studentTotalCredits).toFixed(2)
+          ),
+          credits: studentTotalCredits,
+        };
+
+        if (studentTotalGradePoints && studentTotalCredits && gpa[0]?.AA) {
+          axios.post(`/api/transcript/${1}`, data2).catch(() => {
+            allDataSent = false;
           });
-          axios.post(
-            `/api/exams/updateUnconditionalPassing/${student.id}`,
-            updatedCondCourses
-          );
+          if (
+            (studentTotalGradePoints / studentTotalCredits).toFixed(2) <
+            gpa[0].AA
+          ) {
+            const condCourses = courses.filter(
+              (co) =>
+                co.class.semester == `${year[0].AA}-${year[0].BA}` &&
+                co.courseEnrollements.student_id == student.id
+            );
+            const updatedCondCourses = condCourses.map((co) => {
+              return {
+                ...co.courseEnrollements,
+                pass: false,
+                can_repeat: false,
+              };
+            });
+            axios.post(
+              `/api/exams/updateUnconditionalPassing/${student.id}`,
+              updatedCondCourses
+            );
+          }
         }
       }
     });
+
     handleSubmit3();
     if (allDataSent) {
       setRefresh(!refresh);
