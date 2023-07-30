@@ -184,6 +184,8 @@ const Page = () => {
                 totalQualityPoints += i.points * selectedCourse?.course.credits;
               }
             });
+
+
             if (
               graduation?.major.credits_needed &&
               graduation?.department.credits_needed &&
@@ -209,7 +211,6 @@ const Page = () => {
               }
             });
 
-            console.log(studentTotalCredits);
             if (studentTotalCredits && student.id && graduationYear?.semester) {
               const data = {
                 credits: studentTotalCredits,
@@ -231,7 +232,6 @@ const Page = () => {
 
             axios.post('/api/transcript/approveGraduation', data);
 
-            
           }
         }
       });
