@@ -18,8 +18,7 @@ export async function GET(
       .from('tb_major_courses')
       .select('*')
       .eq('major_id', params.majId)
-      .eq('department_id', params.depId)
-      .eq('department_id', 0);
+      .in('department_id', [params.depId, 0]);
 
     const dataSection = supabase.from('tb_section').select('*');
 
