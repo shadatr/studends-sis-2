@@ -1,5 +1,5 @@
 'use client';
-import { PersonalInfoType } from '@/app/types/types';
+import { MajorRegType, PersonalInfoType } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -28,8 +28,21 @@ const Page = ({ params }: { params: { id: number } }) => {
     const fetchPosts = async () => {
       const response = await axios.get(`/api/getAll/graduatedStudents`);
       const message: PersonalInfoType[] = response.data.message;
+
+      const resp = await axios.get('/api/major/getMajors');
+      const message2: MajorRegType[] = resp.data.message;
+      const selelectedMajors = message2.filter(
+        (maj) => maj.department_id == user?.head_of_department_id
+      );
       const stu = message.filter(
-        (st) => st.graduate_advisor_approval && st.can_graduate && !st.graduated
+        (st) =>
+          st.graduate_advisor_approval &&
+          st.can_graduate &&
+          !st.graduated &&
+          selelectedMajors.find(
+            (m) =>
+              m.id == st.major && m.department_id == user?.head_of_department_id
+          )
       );
       setStudents(stu);
     };
@@ -51,13 +64,25 @@ const Page = ({ params }: { params: { id: number } }) => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setApprove(false);
-    axios
+    const resp = await axios.get('/api/major/getMajors');
+    const message2: MajorRegType[] = resp.data.message;
+    const selelectedMajors = message2.filter(
+      (maj) => maj.department_id == user?.head_of_department_id
+      );
+      axios
       .get(`/api/major/graduatedStudents/${params.id}/${semester}-${year}`)
       .then((resp) => {
         const message: PersonalInfoType[] = resp.data.message;
-        setStudents(message);
+        const stu = message.filter((st) =>
+          selelectedMajors.find(
+            (m) =>
+              m.id == st.major &&
+              m.department_id == user?.head_of_department_id
+          )
+        );
+        setStudents(stu);
       });
   };
 

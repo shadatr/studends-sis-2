@@ -43,7 +43,11 @@ const Page = ({ params }: { params: { id: number } }) => {
       const response = await axios.get(`/api/getAll/graduatedStudents`);
       const message: PersonalInfoType[] = response.data.message;
       const stu = message.filter(
-        (st) => st.graduate_advisor_approval && st.can_graduate && !st.graduated
+        (st) =>
+          st.graduate_advisor_approval &&
+          st.can_graduate &&
+          !st.graduated &&
+          params.id==st.major
       );
       setStudents(stu);
     };

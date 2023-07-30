@@ -99,7 +99,6 @@ const Page = () => {
     const fetchPosts = async () => {
       const resp = await axios.get('/api/major/getMajors');
       const message: MajorRegType[] = resp.data.message;
-      console.log(user);
       const selelectedMajors = message.filter(
         (maj) => maj.department_id == user?.head_of_department_id
       );

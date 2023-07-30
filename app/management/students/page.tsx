@@ -120,7 +120,7 @@ const Page = () => {
                 <option>اختر التخصص</option>
                 <option>جميع الطلاب</option>
                 {majors.map((item) => (
-                  <option value={item.id}>{item.major_name}</option>
+                  <option value={item.id} key={item.id}>{item.major_name}</option>
                 ))}
               </select>
               {selectedMajor && selectedMajor != 'جميع الطلاب' && (
