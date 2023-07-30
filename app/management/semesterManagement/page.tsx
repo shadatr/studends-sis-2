@@ -294,8 +294,8 @@ const Page = () => {
     let duplicateFound = false;
 
     classes.forEach((item) => {
-      if (
-        item.section.id == sectionId?.id &&
+      if ( section.current?.value&&
+        item.section.id == parseInt(section.current?.value)  &&
         item.class.semester == `${year[0].AA}-${year[0].BA}`
       ) {
         duplicateFound = true;
@@ -309,7 +309,7 @@ const Page = () => {
     }
     const data = {
       doctor_id: doctor,
-      section_id: sectionId?.id,
+      section_id: section.current?.value ? parseInt(section.current?.value): 0,
       semester: `${year[0].AA}-${year[0].BA}`,
       day: findDay?.day,
       starts_at: findStartTime?.id,
@@ -617,7 +617,7 @@ const Page = () => {
                             parseInt(selectedCourse)
                         )
                         .map((course) => (
-                          <option key={course.id}>{course.name}</option>
+                          <option key={course.id} value={course.id}>{course.name}</option>
                         ))}
                     </select>
                     <select
