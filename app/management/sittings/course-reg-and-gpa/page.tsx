@@ -289,7 +289,7 @@ const Page = () => {
                 (item2) =>
                   item2.course_enrollment_id === item.courseEnrollements.id
               );
-              if (studentResult?.points) {
+              if (studentResult?.points!=null) {
                 studentTotalGradePoints2 +=
                   studentResult?.points * item.course.credits;
                 studentTotalCredits2 += item.course.credits;
@@ -320,7 +320,7 @@ const Page = () => {
 
         if (
           selectedCourse?.course.credits &&
-          studentResult?.points &&
+          studentResult?.points!=null &&
           selectedCourse.class.semester === `${year[0].AA}-${year[0].BA}`
         ) {
           studentTotalGradePoints +=
