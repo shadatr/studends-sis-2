@@ -38,7 +38,7 @@ const Navbar = () => {
   const user = session.data?.user;
   const handleShowProfile = () => {
     if (user?.userType === 'student') {
-      push('/student/studentinfo');
+      push('/student/studentinformation');
     } else if (user?.userType === 'admin') {
       push('/management/managerInfo');
     } else if (user?.userType === 'doctor') {
