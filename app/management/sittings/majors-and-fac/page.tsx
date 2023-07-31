@@ -568,7 +568,7 @@ const Page = () => {
                           <input
                             className=" w-[300px] text-right "
                             dir="rtl"
-                            type="text"
+                            type="number"
                             value={item2?.credits_needed}
                             onChange={(e) =>
                               handleInputChangeDepartment(
