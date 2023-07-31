@@ -239,7 +239,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         }
                       />
                     </td>
-                    <td className="flex w-[700px] p-2 justify-end">
+                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                       <select
                         id="dep"
                         dir="rtl"
@@ -265,7 +265,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         })}
                       </select>
                     </td>
-                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px]justify-end">
+                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                       <select
                         id="dep"
                         dir="rtl"
