@@ -574,7 +574,7 @@ const Page = () => {
                               handleInputChangeDepartment(
                                 e.target.value,
                                 'credits_needed',
-                                deptItem.credits_needed
+                                deptItem.id
                               )
                             }
                           />
