@@ -496,7 +496,7 @@ const Page = () => {
             setSelectedMajor(parseInt(e.target.value));
           }}
           className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4 w-[200px]"
-          defaultValue={'اختر التخصص'}
+          defaultValue='اختر التخصص'
         >
           <option disabled>اختر التخصص</option>
           {majors
