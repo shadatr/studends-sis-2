@@ -598,7 +598,6 @@ const Page = () => {
                           <select
                             id="dep"
                             dir="rtl"
-                            ref={majorDep}
                             onChange={(e) =>
                               handleInputChangeDepartment(
                                 e.target.value,

@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const deleteReq = await supabase
       .from('tb_admin_majors')
       .delete()
-      .eq('id', req)
+      .eq('id', req);
        console.log(deleteReq.error?.message);
     return new Response(JSON.stringify({ message: 'تم مسح التخصص بنجاح' }));
   } catch {}
