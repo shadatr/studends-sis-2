@@ -14,6 +14,7 @@ import {
   GetPermissionType,
   LettersType,
   ExamProgramType,
+  AdminMajorType,
 } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -104,6 +105,7 @@ const Page = () => {
   const [selecetedDay2, setSelecetedDay2] = useState(new Date());
   const [Location2, setLocation2] = useState<string>();
   const printableContentRef2 = useRef<HTMLDivElement>(null);
+  const [adminMajors, setAdminMajors] = useState<AdminMajorType[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -137,6 +139,12 @@ const Page = () => {
       );
       const message2: GetPermissionType[] = response.data.message;
       setPerms(message2);
+
+      const responsePer2 = await axios.get(
+        `/api/allPermission/admin/adminMajors/${user?.id}`
+      );
+      const messagePer2: AdminMajorType[] = responsePer2.data.message;
+      setAdminMajors(messagePer2);
     };
     fetchPosts();
   }, [user, edit]);
@@ -490,10 +498,13 @@ const Page = () => {
           }}
           className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4 w-[200px]"
         >
-          <option>اختر التخصص</option>
-          {majors.map((item) => (
-            <option key={item.id}>{item.major_name}</option>
-          ))}
+          {majors
+            .filter((item) => adminMajors.find((m) => m.major_id === item.id))
+            .map((item2) => (
+              <option key={item2.id} value={item2.id}>
+                {item2.major_name}
+              </option>
+            ))}
         </select>
         {activeTab === 'Tab 2' && (
           <select
@@ -613,11 +624,13 @@ const Page = () => {
                       {sections
                         .filter(
                           (sec) =>
-                            selectedCourse&&sec.course_id ==
-                            parseInt(selectedCourse)
+                            selectedCourse &&
+                            sec.course_id == parseInt(selectedCourse)
                         )
                         .map((course) => (
-                          <option key={course.id} value={course.id}>{course.name}</option>
+                          <option key={course.id} value={course.id}>
+                            {course.name}
+                          </option>
                         ))}
                     </select>
                     <select

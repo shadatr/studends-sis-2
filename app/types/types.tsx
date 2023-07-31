@@ -70,6 +70,11 @@ export type MajorType = {
   active: boolean
 };
 
+export type AdminMajorType = {
+  id?: number;
+  admin_id: string;
+  major_id: number;
+};
 
 export type DepartmentRegType = {
   credits_needed: number;

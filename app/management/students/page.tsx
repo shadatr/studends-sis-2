@@ -8,6 +8,7 @@ import {
   GetPermissionType,
   PersonalInfoType,
   DepartmentRegType,
+  AdminMajorType,
 } from '@/app/types/types';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
@@ -31,6 +32,7 @@ const Page = () => {
   const [refresh, setRefresh] = useState<boolean>(false);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
   const [students, setStudents] = useState<PersonalInfoType[]>([]);
+  const [adminMajors, setAdminMajors] = useState<AdminMajorType[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -39,6 +41,12 @@ const Page = () => {
       );
       const messagePer: GetPermissionType[] = responsePer.data.message;
       setPerms(messagePer);
+
+      const responsePer2 = await axios.get(
+        `/api/allPermission/admin/adminMajors/${user?.id}`
+      );
+      const messagePer2: AdminMajorType[] = responsePer2.data.message;
+      setAdminMajors(messagePer2);
 
       axios.get('/api/department/departmentRegister').then((resp) => {
         const message: DepartmentRegType[] = resp.data.message;
@@ -122,11 +130,15 @@ const Page = () => {
               >
                 <option>اختر التخصص</option>
                 <option>جميع الطلاب</option>
-                {majors.map((item) => (
-                  <option value={item.id} key={item.id}>
-                    {item.major_name}
-                  </option>
-                ))}
+                {majors
+                  .filter((item) =>
+                    adminMajors.find((m) => m.major_id === item.id)
+                  )
+                  .map((item2) => (
+                    <option key={item2.id} value={item2.id}>
+                      {item2.major_name}
+                    </option>
+                  ))}
               </select>
               {selectedMajor && selectedMajor != 'جميع الطلاب' && (
                 <Link
@@ -222,9 +234,8 @@ const Page = () => {
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           {
-                            departments.find(
-                              (m) => m.id == user.department_id
-                            )?.name
+                            departments.find((m) => m.id == user.department_id)
+                              ?.name
                           }
                         </td>
                         <td className="border border-gray-300 px-4 py-2">

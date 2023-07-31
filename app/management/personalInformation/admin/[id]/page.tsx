@@ -1,16 +1,19 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import {
   AssignPermissionType,
   GetPermissionType,
   PersonalInfoHeaderType,
   PersonalInfoType,
+  MajorType,
+  AdminMajorType,
 } from '@/app/types/types';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
+import { BsXCircleFill } from 'react-icons/bs';
 
 const doctorInfo: PersonalInfoHeaderType[] = [
   { header: 'الاسم' },
@@ -28,17 +31,19 @@ const Page = ({ params }: { params: { id: number } }) => {
   if (session.data?.user ? session.data?.user.userType !== 'admin' : false) {
     redirect('/');
   }
-   const user = session.data?.user;
-   
+  const user = session.data?.user;
+
   const [useMyData, useSetMydata] = useState<PersonalInfoType[]>([]);
   const [newData, setNewData] = useState<PersonalInfoType[]>([]);
   const [checkList, setCheckList] = useState<AssignPermissionType[]>([]);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
-    const [perms2, setPerms2] = useState<GetPermissionType[]>([]);
   const [adminPerms, setAdminPerms] = useState<GetPermissionType[]>([]);
   const [refresh, setRefresh] = useState(false);
   const [edit, setEdit] = useState(false);
- 
+  const [majors, setMajors] = useState<MajorType[]>([]);
+  const [adminMajors, setAdminMajors] = useState<AdminMajorType[]>([]);
+
+  const major = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -49,6 +54,10 @@ const Page = ({ params }: { params: { id: number } }) => {
       } catch (error) {
         console.error('Error fetching data:', error);
       }
+
+      const resp = await axios.get('/api/major/majorReg');
+      const message2: MajorType[] = resp.data.message;
+      setMajors(message2);
 
       const response = await axios.get(
         `/api/allPermission/admin/selectedPerms/${user?.id}`
@@ -62,6 +71,12 @@ const Page = ({ params }: { params: { id: number } }) => {
       const messagePer: GetPermissionType[] = responsePer.data.message;
       setAdminPerms(messagePer);
 
+      const responsePer2 = await axios.get(
+        `/api/allPermission/admin/adminMajors/${params.id}`
+      );
+      const messagePer2: AdminMajorType[] = responsePer2.data.message;
+      setAdminMajors(messagePer2);
+
       axios.get(`/api/personalInfo/manager/${params.id}`).then((resp) => {
         const message: PersonalInfoType[] = resp.data.message;
         useSetMydata(message);
@@ -69,48 +84,64 @@ const Page = ({ params }: { params: { id: number } }) => {
       });
     };
     fetchPosts();
-  }, [params.id, refresh, edit,user]);
+  }, [params.id, refresh, edit, user]);
 
+  const handleAddMajor = () => {
+    const data = {
+      admin_id: params.id,
+      major_id: major.current?.value,
+    };
+    axios
+      .post(`/api/allPermission/admin/adminMajors/${user?.id}`, data)
+      .then((res) => toast.success('تم الاضافة بنجاح'))
+      .catch((er) => toast.error('حدث خطا'));
+    setRefresh(!refresh);
+  };
 
+  const handleDeleteMajor = (item?: number) => {
+    axios
+      .post(`/api/allPermission/admin/deleteMajor`, item)
+      .then((res) => toast.success('تم الحذف'))
+      .catch((er) => toast.error('حدث خطا'));
+    setRefresh(!refresh);
+  };
 
-const handleChangePerms = (
-  per: keyof GetPermissionType,
-  value: boolean,
-  id: number,
-  permId:number
-) => {
-  const updatedPerms = adminPerms.map((perm) => {
-    if (perm.id == id && perm.permission_id == permId) {
-      return {
-        ...perm,
-        [per]: value,
-      };
-    }
-    return perm;
-  });
-  axios
-    .post(`/api/allPermission/admin/selectedPerms/${params.id}`, updatedPerms)
-    .then((res) => {
-      if (res.data.message === 'تم تغيير حالة صلاحية الموظف بنجاح') {
-        toast.success(res.data.message);
-        setRefresh(!refresh);
-        const dataUsageHistory = {
-          id: user?.id,
-          type: 'admin',
-          action: ' تغيير صلاحية موظف',
+  const handleChangePerms = (
+    per: keyof GetPermissionType,
+    value: boolean,
+    id: number,
+    permId: number
+  ) => {
+    const updatedPerms = adminPerms.map((perm) => {
+      if (perm.id == id && perm.permission_id == permId) {
+        return {
+          ...perm,
+          [per]: value,
         };
-        axios.post('/api/usageHistory', dataUsageHistory);
-      } else {
-        toast.error('فشل في تغيير صلاحية الموظف.');
       }
-    })
-    .catch((error) => {
-      toast.error('حدث خطأ أثناء تحديث صلاحية الموظف.');
-      console.error(error);
+      return perm;
     });
-};
-
-
+    axios
+      .post(`/api/allPermission/admin/selectedPerms/${params.id}`, updatedPerms)
+      .then((res) => {
+        if (res.data.message === 'تم تغيير حالة صلاحية الموظف بنجاح') {
+          toast.success(res.data.message);
+          setRefresh(!refresh);
+          const dataUsageHistory = {
+            id: user?.id,
+            type: 'admin',
+            action: ' تغيير صلاحية موظف',
+          };
+          axios.post('/api/usageHistory', dataUsageHistory);
+        } else {
+          toast.error('فشل في تغيير صلاحية الموظف.');
+        }
+      })
+      .catch((error) => {
+        toast.error('حدث خطأ أثناء تحديث صلاحية الموظف.');
+        console.error(error);
+      });
+  };
 
   const handleInputChange = (e: string, field: keyof PersonalInfoType) => {
     const updatedData = newData.map((data) => {
@@ -277,6 +308,49 @@ const handleChangePerms = (
               ))}
         </tbody>
       </table>
+      <div className="w-[800px] flex flex-col justify-center items-center relative m-5">
+        <div className=" flex flex-row mb-4 w-[400px]">
+          <button
+            onClick={handleAddMajor}
+            className="  px-4 w-[100px] bg-green-600 text-white rounded-l-md focus:outline-none hover:bg-green-500"
+          >
+            اضافة
+          </button>
+          <select
+            dir="rtl"
+            ref={major}
+            defaultValue="اختر التخصص"
+            className="p-2 pr-8 bg-gray-100 border border-gray-300 w-[300px] rounded-md focus:outline-none focus:ring focus:border-blue-300"
+          >
+            <option disabled>اختر التخصص</option>
+            {majors.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.major_name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* For the list of majors */}
+        <div
+          className="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          style={{ maxWidth: '800px' }}
+        >
+          {adminMajors.map((m) => (
+            <div
+              key={m.id}
+              className="flex justify-between items-center px-4 py-2 bg-white rounded-md shadow-md border border-gray-300"
+            >
+              <h1>{majors.find((maj) => maj.id == m.major_id)?.major_name}</h1>
+              <BsXCircleFill
+                className="text-red-600 cursor-pointer"
+                onClick={() => handleDeleteMajor(m.id)}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
       {perms.map((permItemm, idx) => {
         if (permItemm.permission_id === 5 && permItemm.edit) {
           return (
@@ -295,19 +369,20 @@ const handleChangePerms = (
                   </tr>
                 </thead>
                 <tbody>
-                  {adminPerms.map((permItem, index)=> {
-                  
+                  {adminPerms.map((permItem, index) => {
                     const selectedPer = checkList.find(
                       (item) => item.id == permItem.permission_id
                     );
-                    
+
                     return (
                       <tr
                         key={index}
                         className={index % 2 === 0 ? 'bg-gray-100' : ''}
                       >
                         <td className="border border-gray-300 px-4 py-2">
-                          {![5, 15, 17,14].includes(permItem.permission_id) && (
+                          {![5, 15, 17, 14].includes(
+                            permItem.permission_id
+                          ) && (
                             <button
                               onClick={() =>
                                 handleChangePerms(
@@ -422,7 +497,7 @@ const handleChangePerms = (
                         </td>
                       </tr>
                     );
-                    })}
+                  })}
                 </tbody>
               </table>
             </div>

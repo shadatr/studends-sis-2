@@ -489,7 +489,7 @@ const Page = () => {
               return (
                 <button
                   key={idx}
-                  className="py-3 px-8 rounded-md bg-blue-500 hover:bg-blue-600 text-white font-bold"
+                  className="py-3 px-8 rounded-md bg-gray-400 hover:bg-gray-500 text-white font-bold"
                   type="submit"
                   onClick={() => (edit ? handleSubmit2() : setEdit(!edit))}
                 >
