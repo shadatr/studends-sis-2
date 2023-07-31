@@ -460,25 +460,20 @@ const Page = () => {
   };
 
   return (
-    <div className="absolute flex flex-col w-[80%] items-center justify-center">
+    <div className="flex flex-col items-center justify-center w-[80%] absolute">
       {perms.map((permItem, idx) => {
         if (permItem.permission_id === 14 && permItem.edit) {
           return (
-            <div
-              key={idx + 2}
-              className="w-[100px] flex justify-center items-center flex-col"
-            >
+            <div key={idx} className="m-5">
               <button
-                onClick={() => {
-                  handleActivate();
-                }}
-                className={`p-3 rounded-md m-10 text-white w-[200px] ${
+                onClick={handleActivate}
+                className={`py-3 px-8 rounded-md ${
                   active
                     ? 'bg-red-600 hover:bg-red-500'
                     : 'bg-green-600 hover:bg-green-500'
-                }`}
+                } text-white font-bold`}
               >
-                {active ? 'اغلاق تسجيل المواد' : ' فتح تسجيل المواد '}
+                {active ? 'إغلاق تسجيل المواد' : 'فتح تسجيل المواد'}
               </button>
             </div>
           );
@@ -487,18 +482,18 @@ const Page = () => {
         }
       })}
 
-      <div className="flex flex-col w-[500px] m-3">
-        <div className="flex flex-row">
+      <div className="mt-10 bg-white p-8 rounded-lg shadow-md">
+        <div className="flex items-center justify-between mb-5">
           {perms.map((permItem, idx) => {
             if (permItem.permission_id === 13 && permItem.edit) {
               return (
                 <button
                   key={idx}
-                  className="m-2 bg-blue-500 hover:bg-blue-600  text-secondary p-3 rounded-md w-[200px]"
+                  className="py-3 px-8 rounded-md bg-blue-500 hover:bg-blue-600 text-white font-bold"
                   type="submit"
                   onClick={() => (edit ? handleSubmit2() : setEdit(!edit))}
                 >
-                  {edit ? 'ارسال' : 'تعديل'}
+                  {edit ? 'إرسال' : 'تعديل'}
                 </button>
               );
             } else {
@@ -506,10 +501,10 @@ const Page = () => {
             }
           })}
           {edit ? (
-            <>
+            <div className="flex items-center">
               <input
                 dir="rtl"
-                placeholder=" السنة"
+                placeholder="السنة"
                 type="text"
                 className="w-20 p-2 bg-gray-200 border-2 border-black rounded-md ml-4"
                 onChange={(e) => handleChangeYear('BA', e.target.value)}
@@ -526,9 +521,9 @@ const Page = () => {
                 <option>خريف</option>
                 <option>ربيع</option>
               </select>
-            </>
+            </div>
           ) : (
-            <>
+            <div className="flex items-center">
               {year && year.length > 0 ? (
                 <>
                   <h1 className="w-20 p-2 bg-gray-200 border-2 border-black rounded-md ml-4 flex justify-center items-center">
@@ -541,7 +536,7 @@ const Page = () => {
               ) : (
                 ''
               )}
-            </>
+            </div>
           )}
         </div>
         {perms.map((permItem, idx) => {
@@ -550,9 +545,9 @@ const Page = () => {
               <button
                 key={idx}
                 onClick={handleSubmit}
-                className="bg-green-700 m-[20px] hover:bg-green-600 p-3 rounded-md text-white w-[300px]"
+                className="py-3 px-8 rounded-md bg-green-700 hover:bg-green-600 text-white font-bold w-full"
               >
-                ارسال المجموع النهائي في جميع التخصصات
+                إرسال المجموع النهائي في جميع التخصصات
               </button>
             );
           } else {
