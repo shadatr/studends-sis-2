@@ -123,13 +123,15 @@ const Page = () => {
         const messageCourse: StudenCourseGPAType[] =
           responseCourse.data.message;
 
+          console.log(messageCourse);
+
         const majCredit = messageCourse.find(
           (c) => c.student?.id == student.id
         );
 
         if (majCredit) {
           const messageMajCourse = await axios.get(
-            `/api/course/courseMajorReg/${majCredit?.major?.id}/${majCredit?.department.id}`
+            `/api/course/courseMajorReg/${majCredit?.major?.id}/${majCredit?.student?.department_id}`
           );
           const responseCourseMaj: MajorCourseType[] =
             messageMajCourse.data.message;

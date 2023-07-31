@@ -527,7 +527,7 @@ export type StudenCourseGPAType = {
     major: number;
     advisor?: string;
     active?: boolean;
-    head_of_deparment_id?: number;
+    department_id: number;
     graduated: boolean;
     graduation_year?: string;
     credits?: number;

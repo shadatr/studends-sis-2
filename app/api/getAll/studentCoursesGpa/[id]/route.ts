@@ -73,7 +73,7 @@ export async function GET(
 
       const maj = major?.find((c) => stu?.major === c.id);
 
-      const de = dep?.find((c) => stu?.major === c.id);
+      const de = dep?.find((c) => stu?.department_id === c.id);
 
       return {
         class: clas,
