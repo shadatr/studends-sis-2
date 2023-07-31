@@ -182,8 +182,13 @@ const Page = () => {
               defaultValue="القسم"
             >
               <option disabled>القسم</option>
+              <option key={0} value={'0'}>
+                عام
+              </option>
               {departments
-                .filter((d) => selectedMajor&& parseInt(selectedMajor) == d.major_id)
+                .filter(
+                  (d) => selectedMajor && parseInt(selectedMajor) == d.major_id
+                )
                 .map((item) => (
                   <option key={item.id} value={item.id}>
                     {item.name}
@@ -193,9 +198,7 @@ const Page = () => {
             <select
               id="dep"
               dir="rtl"
-              onChange={(e) => 
-                setSelectedMajor(e.target.value)
-              }
+              onChange={(e) => setSelectedMajor(e.target.value)}
               className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4 w-[200px]"
             >
               <option>اختر التخصص</option>
