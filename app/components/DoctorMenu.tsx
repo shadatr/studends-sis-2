@@ -10,7 +10,7 @@ const item: MenuItemType[] = [
   { id: 3, link: 'courses-and-grades', name: 'المواد و الدرجات' },
   { id: 4, link: 'courseProg', name: 'جدول المحاضرات' },
   { id: 6, link: 'examProg', name: 'جدول الامتحانات' },
-  { id: 9, link: 'head-of-department-work', name: 'اعمال عميد الكلية' },
+  // { id: 9, link: 'head-of-department-work', name: 'اعمال عميد الكلية' },
   { id: 10, link: 'advisorWork', name: 'اعمال الاشراف' },
 ];
 function DoctorMenu() {

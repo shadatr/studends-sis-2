@@ -129,7 +129,6 @@ const Page = () => {
                 className="lg:px-2 sm:p-1  bg-gray-200 border-2 border-black rounded-md ml-4 lg:w-[200px] sm:w-[100px]"
               >
                 <option>اختر التخصص</option>
-                <option>جميع الطلاب</option>
                 {majors
                   .filter((item) =>
                     adminMajors.find((m) => m.major_id === item.id)

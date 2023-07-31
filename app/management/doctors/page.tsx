@@ -98,9 +98,7 @@ const Page = () => {
                     <th className="border border-gray-300 px-4 py-2">
                       المعلومات الشخصية
                     </th>
-                    <th className="border border-gray-300 px-4 py-2">
-                      رئيس قسم
-                    </th>
+                    
                     <th className="border border-gray-300 px-4 py-2">
                       تاريخ الانشاء
                     </th>
@@ -141,22 +139,7 @@ const Page = () => {
                           الملف الشخصي
                         </Link>
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        <button
-                          className="bg-green-500 hover:bg-green-600 px-5 py-1 mr-3 rounded-md text-white"
-                          onClick={() => {
-                            setSelectedDoctor(user);
-                            setIsModalOpen(true);
-                          }}
-                        >
-                          تعيين
-                        </button>
-                        {user.head_of_department_id
-                          ? departments.find(
-                              (dep) => dep.id === user.head_of_department_id
-                            )?.name || 'لا يوجد'
-                          : 'لا يوجد'}
-                      </td>
+                      
 
                       <td className="border border-gray-300 px-4 py-2">
                         {user.enrollment_date}
