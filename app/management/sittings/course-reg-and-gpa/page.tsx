@@ -190,7 +190,7 @@ const Page = () => {
 
             if (
               graduation?.major.credits_needed &&
-              graduation?.department.credits_needed &&
+              graduation?.department.credits_needed!=null &&
               studentTotalCredits >=
                 graduation?.major.credits_needed +
                   graduation?.department.credits_needed &&
