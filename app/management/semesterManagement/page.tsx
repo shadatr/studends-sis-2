@@ -79,7 +79,7 @@ const Page = () => {
   const [classes, setClasses] = useState<ClassesInfoType[]>([]);
   const [classesGrade, setClassesGrade] = useState<ClassesInfoType[]>([]);
   const [majors, setMajors] = useState<MajorRegType[]>([]);
-  const [selectedMajor, setSelectedMajor] = useState<MajorRegType>();
+  const [selectedMajor, setSelectedMajor] = useState<number>();
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
   const [majorCourses, setMajorCourses] = useState<MajorCourseType[]>([]);
   const [courses, setCourses] = useState<AddCourseType[]>([]);
@@ -151,7 +151,7 @@ const Page = () => {
 
   const handleChangeMajor = async () => {
     const resMajorCourses = await axios.get(
-      `/api/course/courseMajorReg/${selectedMajor?.id}/-1`
+      `/api/course/courseMajorReg/${selectedMajor}/-1`
     );
     const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
       .message;
@@ -198,25 +198,25 @@ const Page = () => {
 
     const clss: ClassesInfoType[] = [];
     classes.forEach((cls) => {
-      if (type?.current?.value === 'جميع المجموعات' && cls.course.major_id==selectedMajor?.id) {
+      if (type?.current?.value === 'جميع المجموعات' && cls.course.major_id==selectedMajor) {
         clss.push(cls);
       } else if (
         type?.current?.value == 'في انتظار قبول الدرجات' &&
         cls.class.publish_grades == false &&
         !cls.courseEnrollements.find((c) => c.result == null) &&
-        cls.course.major_id == selectedMajor?.id
+        cls.course.major_id == selectedMajor
       ) {
         clss.push(cls);
       } else if (
         type?.current?.value === 'تم قبول الدرجات' &&
         cls.class.publish_grades &&
-        cls.course.major_id == selectedMajor?.id
+        cls.course.major_id == selectedMajor
       ) {
         clss.push(cls);
       } else if (
         type?.current?.value === 'لم يتم ادخال جميع الدرجات' &&
         cls.courseEnrollements.find((c) => c.result == null) &&
-        cls.course.major_id == selectedMajor?.id
+        cls.course.major_id == selectedMajor
       ) {
         clss.push(cls);
       }
@@ -233,7 +233,7 @@ const Page = () => {
     setCourses(messageCour);
 
     const responseMaj = await axios.get(
-      `/api/majorEnrollment/${selectedMajor?.id}`
+      `/api/majorEnrollment/${selectedMajor}`
     );
     const messageMaj: MajorRegType[] = responseMaj.data.message;
     setMajor(messageMaj[0].major_name);
@@ -493,11 +493,12 @@ const Page = () => {
           id="dep"
           dir="rtl"
           onChange={(e) => {
-            const maj = majors.find((i) => i.major_name === e.target.value);
-            setSelectedMajor(maj);
+            setSelectedMajor(parseInt(e.target.value));
           }}
           className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4 w-[200px]"
+       
         >
+          <option disabled></option>
           {majors
             .filter((item) => adminMajors.find((m) => m.major_id === item.id))
             .map((item2) => (
@@ -528,12 +529,7 @@ const Page = () => {
               const selectedMajorCourse = courses.filter((item1) =>
                 majorCourses.find((item2) => item1.id === item2.course_id)
               );
-              const courseId = selectedMajorCourse.find(
-                (item) => item.course_name === selectedCourse
-              );
-              const selectedSections = sections.filter(
-                (item1) => item1.course_id === courseId?.id
-              );
+              
 
               if (
                 permItem.permission_id === 8 &&
