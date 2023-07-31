@@ -90,12 +90,10 @@ const AnnoPage = () => {
       return;
     }
 
-    const selectedClass = classes.find((cls) => cls.section.name == SelecetdSections);
-
     const data = {
       announcement_text: newItem,
       general: false,
-      posted_for_class_id: selectedClass?.class.id,
+      posted_for_class_id: SelecetdSections,
     };
     axios.post('/api/announcements/newUniAnnouncement', data).then((resp) => {
       toast.success(resp.data.message);
@@ -200,7 +198,7 @@ const AnnoPage = () => {
               اختر المادة
             </option>
             {classes.map((cls, index) => (
-              <option key={index}>{cls.section.name}</option>
+              <option key={index} value={cls.class.id}>{cls.section.name}</option>
             ))}
           </select>
           <h1>اضف اعلان للمواد</h1>
