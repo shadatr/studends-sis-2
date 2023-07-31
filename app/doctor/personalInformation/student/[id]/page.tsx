@@ -329,7 +329,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         }
                       />
                     </td>
-                    <td className="flex w-[700px] p-2 justify-end">
+                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                       <input
                         className="  lg:w-[700px] sm:w-[200px] text-right "
                         type="text"
@@ -340,7 +340,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                       />
                     </td>
 
-                    <td className="flex  lg:w-[700px] sm:w-[200px] lg:p-2 sm:p-1 sm:w-[200px]justify-end">
+                    <td className="flex  lg:w-[700px] sm:w-[200px] lg:p-2 sm:p-1  justify-end">
                       <select
                         id="dep"
                         dir="rtl"
@@ -379,7 +379,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                   <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.birth_date}
                   </td>
-                  <td className="flex w-[700px] p-2 justify-end">
+                  <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.department_id
                       ? departments?.find((maj) => item.department_id == maj.id)
                           ?.name
