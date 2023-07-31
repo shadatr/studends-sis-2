@@ -106,7 +106,7 @@ const Page = () => {
   };
 
   const handleSubmit3 = () => {
-    if (user) {
+
       students.map(async (student) => {
         let totalQualityPoints = 0;
         let studentTotalCredits = 0;
@@ -129,7 +129,7 @@ const Page = () => {
 
         if (majCredit) {
           const messageMajCourse = await axios.get(
-            `/api/course/courseMajorReg/${majCredit?.major?.id}/${majCredit?.major?.department_id}`
+            `/api/course/courseMajorReg/${majCredit?.major?.id}/${majCredit?.department.id}`
           );
           const responseCourseMaj: MajorCourseType[] =
             messageMajCourse.data.message;
@@ -235,9 +235,10 @@ const Page = () => {
           }
         }
       });
-    }
+
   };
   const handleSubmit = () => {
+    handleSubmit3();
     let allDataSent = true;
 
     const missingGrade = courseLetter.find(
@@ -407,7 +408,10 @@ const Page = () => {
           }
         }
       }
+
     });
+
+
 
     handleSubmit3();
     if (allDataSent) {
