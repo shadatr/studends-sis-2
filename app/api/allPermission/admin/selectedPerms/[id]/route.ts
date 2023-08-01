@@ -1,7 +1,10 @@
-import { createClient } from "@supabase/supabase-js";
-import {GetPermissionType} from '@/app/types/types';
+import { createClient } from '@supabase/supabase-js';
+import { GetPermissionType } from '@/app/types/types';
 
-const supabase = createClient(process.env.SUPABASE_URL || "", process.env.SUPABASE_KEY || "");
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_KEY || ''
+);
 
 export const dynamic = 'force-dynamic';
 
@@ -16,29 +19,33 @@ export async function POST(request: Request) {
           .eq('permission_id', i.permission_id)
           .eq('id', i.id);
 
-          return ress;
+        return ress;
       } catch (error) {
         return { error };
       }
     })
   );
-  if (res){
-    return new Response(JSON.stringify({ message: "تم تغيير حالة صلاحية الموظف بنجاح" }), {
-      headers: { "content-type": "application/json" },
-    });
+  if (res) {
+    return new Response(
+      JSON.stringify({ message: 'تم تغيير حالة صلاحية الموظف بنجاح' }),
+      {
+        headers: { 'content-type': 'application/json' },
+      }
+    );
   }
 }
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: number } }){
+  { params }: { params: { id: number } }
+) {
   const data = await supabase
     .from('tb_admin_perms')
     .select('*')
     .eq('admin_id', params.id)
     .order('id', { ascending: false });
 
-    try {
+  try {
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {
         status: 403,

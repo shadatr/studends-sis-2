@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/app/types/supabase';
-import { GetPermissionType } from '@/app/types/types';
 
 const supabase = createClient<Database>(
   process.env.SUPABASE_URL || '',
