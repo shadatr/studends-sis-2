@@ -89,7 +89,6 @@ const Page = () => {
   const [select, setSelect] = useState(false);
   const section = useRef<HTMLSelectElement>(null);
   const [doctor, setDoctor] = useState<number>();
-  const [selectedCourse, setSelecetedCourse] = useState<string>();
   const [selectedStartHour, setSelecetedStartHour] = useState<string>();
   const [selectedEndHour, setSelecetedEndHour] = useState<string>();
   const [selectedDay, setSelecetedDay] = useState<string>();
@@ -97,6 +96,7 @@ const Page = () => {
   const [Location, setLocation] = useState<string>();
   const [major, setMajor] = useState<string>();
   const type = useRef<HTMLSelectElement>(null);
+    const selectedCourse = useRef<HTMLSelectElement>(null);
   const [edit, setEdit] = useState(false);
   const [examProg, setExamProg] = useState<ExamProgramType[]>([]);
   const [selectedCourse2, setSelecetedCourse2] = useState<string>();
@@ -448,6 +448,10 @@ const Page = () => {
     content: () => printableContentRef2.current,
   });
 
+   const selectedMajorCourse = courses.filter((item1) =>
+     majorCourses.find((item2) => item1.id === item2.course_id)
+   );
+
   return (
     <div className="flex flex-col absolute w-[80%]  items-center justify-center text-[16px]">
       <div className="text-sm flex flex-row ">
@@ -526,9 +530,6 @@ const Page = () => {
         perms.find((per) => per.permission_id == 8 && per.see) && (
           <>
             {perms.map((permItem, idx) => {
-              const selectedMajorCourse = courses.filter((item1) =>
-                majorCourses.find((item2) => item1.id === item2.course_id)
-              );
               
 
               if (
@@ -613,26 +614,37 @@ const Page = () => {
                       id="dep"
                       dir="rtl"
                       ref={section}
-                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4  w-[150px]"
+                      className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4 w-[150px]"
                       defaultValue="المجموعة"
                     >
                       <option disabled>المجموعة</option>
                       {sections
                         .filter(
                           (sec) =>
-                            selectedCourse &&
-                            sec.course_id == parseInt(selectedCourse)
+                            selectedCourse.current?.value &&
+                            sec.course_id ===
+                              parseInt(selectedCourse.current?.value)
                         )
-                        .map((course) => (
-                          <option key={course.id} value={course.id}>
-                            {course.name}
-                          </option>
-                        ))}
+                        .map((sec) => {
+                          if (
+                            selectedCourse.current?.value &&
+                            sec.course_id ===
+                              parseInt(selectedCourse.current?.value)
+                          ) {
+                            return (
+                              <option key={sec.id} value={sec.id}>
+                                {sec.name}
+                              </option>
+                            );
+                          } else {
+                            return null;
+                          }
+                        })}
                     </select>
+
                     <select
-                      id="dep"
                       dir="rtl"
-                      onChange={(e) => setSelecetedCourse(e.target.value)}
+                      ref={selectedCourse}
                       className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4 w-[150px]"
                       defaultValue="المادة"
                     >
