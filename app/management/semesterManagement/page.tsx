@@ -14,6 +14,7 @@ import {
   LettersType,
   ExamProgramType,
   AdminMajorType,
+  MajorCourseType,
 } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -157,16 +158,6 @@ const Page = () => {
       .message;
     setMajorCourses(messageMajorCour);
 
-    const progClassPromises = messageMajorCour.map(async (course) => {
-      const responseReq = await axios.get(`/api/examProg/${course.id}`);
-      const { message: courseMessage }: { message: ExamProgramType[] } =
-        responseReq.data;
-      return courseMessage;
-    });
-
-    const progClassData = await Promise.all(progClassPromises);
-    const programClass = progClassData.flat();
-    setExamProg(programClass);
 
     const sectionsPromises = messageMajorCour.map(async (course) => {
       const responseReq = await axios.get(
@@ -180,8 +171,6 @@ const Page = () => {
     const sections = sectionData.flat();
     setSections(sections);
 
-    console.log(sections);
-
     const classPromises = sections.map(async (section) => {
       const responseReq = await axios.get(
         `/api/getAll/getAllClassInfo/${section.id}`
@@ -194,7 +183,34 @@ const Page = () => {
     const classData = await Promise.all(classPromises);
     const classes = classData.flat();
 
-    setClasses(classes);
+    {const resMajorCourses = await axios.get(
+      `/api/course/courseMajorReg/${selectedMajor}/-1`
+    );
+    const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
+      .message;
+
+    const sectionsPromises = messageMajorCour.map(async (course) => {
+      const responseReq = await axios.get(
+        `/api/getAll/getAllSections/${course.course_id}`
+      );
+      const { message: secMessage }: { message: SectionType[] } =
+        responseReq.data;
+      return secMessage;
+    });
+    const sectionData = await Promise.all(sectionsPromises);
+    const sections = sectionData.flat();
+
+    const classPromises = sections.map(async (section) => {
+      const responseReq = await axios.get(
+        `/api/getAll/getAllClassInfo/${section.id}`
+      );
+      const { message: classMessage }: { message: ClassesInfoType[] } =
+        responseReq.data;
+      return classMessage;
+    });
+    const classData = await Promise.all(classPromises);
+    const classes = classData.flat();
+    setClasses(classes);}
 
     const clss: ClassesInfoType[] = [];
     classes.forEach((cls) => {
@@ -979,7 +995,7 @@ const handleChangeCourse = () => {
                         id="dep"
                         dir="rtl"
                         onChange={(e) => setSelecetedCourse2(e.target.value)}
-                        className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4"
+                        className="px-4 py-2 w-[200px] bg-gray-200 border-2 border-black rounded-md ml-4"
                         defaultValue=""
                       >
                         <option disabled value="">
