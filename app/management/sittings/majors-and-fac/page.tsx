@@ -606,12 +606,9 @@ const Page = () => {
                               )
                             }
                             className="p-2 text-sm "
-                            defaultValue={
-                              departments.find(
-                                (dep) => deptItem.major_id == dep.id
-                              )?.name
-                            }
+                            value={deptItem.major_id || ''}
                           >
+                            <option value="">Select a Major</option>
                             {majors.map((item, index) => {
                               if (item.active) {
                                 return (
@@ -620,6 +617,7 @@ const Page = () => {
                                   </option>
                                 );
                               }
+                              return null;
                             })}
                           </select>
                         </td>

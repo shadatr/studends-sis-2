@@ -405,11 +405,7 @@ const Page = () => {
                             item.id
                           )
                         }
-                        defaultValue={
-                          majors?.find(
-                            (dep) => dep.id === item2?.id
-                          )?.major_name
-                        }
+                        value={item2?.major_id || ''}
                       >
                         {majors.map((dep, index) => (
                           <option value={dep.id} key={index}>
@@ -467,9 +463,8 @@ const Page = () => {
                       {item.hours}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {majors?.find(
-                        (dep) => dep.id === item2?.major_id
-                      )?.major_name || ''}
+                      {majors?.find((dep) => dep.id === item2?.major_id)
+                        ?.major_name || ''}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
                       <Link

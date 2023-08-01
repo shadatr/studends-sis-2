@@ -12,6 +12,7 @@ export async function POST(request: Request) {
     .update({ active: active })
     .eq('id', doctorId)
     .order('id', { ascending: true });
+
   if (!data.error){
     return new Response(JSON.stringify({ message: "تم تغيير حالة الدكتور بنجاح" }), {
       headers: { "content-type": "application/json" },
