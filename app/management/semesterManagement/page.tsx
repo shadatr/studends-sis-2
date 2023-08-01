@@ -452,6 +452,13 @@ const Page = () => {
      majorCourses.find((item2) => item1.id === item2.course_id)
    );
 
+
+   const selectedSections=sections.filter(
+     (sec) =>
+       selectedCourse.current?.value &&
+       sec.course_id === parseInt(selectedCourse.current?.value)
+   );
+
   return (
     <div className="flex flex-col absolute w-[80%]  items-center justify-center text-[16px]">
       <div className="text-sm flex flex-row ">
@@ -618,28 +625,21 @@ const Page = () => {
                       defaultValue="المجموعة"
                     >
                       <option disabled>المجموعة</option>
-                      {sections
-                        .filter(
-                          (sec) =>
-                            selectedCourse.current?.value &&
-                            sec.course_id ===
-                              parseInt(selectedCourse.current?.value)
-                        )
-                        .map((sec) => {
-                          if (
-                            selectedCourse.current?.value &&
-                            sec.course_id ===
-                              parseInt(selectedCourse.current?.value)
-                          ) {
-                            return (
-                              <option key={sec.id} value={sec.id}>
-                                {sec.name}
-                              </option>
-                            );
-                          } else {
-                            return null;
-                          }
-                        })}
+                      {sections.map((sec) => {
+                        if (
+                          selectedCourse.current?.value &&
+                          sec.course_id ===
+                            parseInt(selectedCourse.current?.value)
+                        ) {
+                          return (
+                            <option key={sec.id} value={sec.id}>
+                              {sec.name}
+                            </option>
+                          );
+                        } else {
+                          return null;
+                        }
+                      })}
                     </select>
 
                     <select
