@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request, { params }: { params: { id: number } }) {
   try {
-    const data = await supabase.from('tb_courses').select('*').eq('major_id', params.id).eq('active',true);
+    const data = await supabase.from('tb_courses').select('*').eq('major_id', params.id);
 
     console.log(data.error?.message);
     if (data.error) {

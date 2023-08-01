@@ -3,7 +3,6 @@ import axios from 'axios';
 import React, { useEffect, useState, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import {
-  MajorCourseType,
   SectionType,
   DayOfWeekType,
   CheckedType,
@@ -81,7 +80,7 @@ const Page = () => {
   const [majors, setMajors] = useState<MajorRegType[]>([]);
   const [selectedMajor, setSelectedMajor] = useState<number>();
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
-  const [majorCourses, setMajorCourses] = useState<MajorCourseType[]>([]);
+  const [majorCourses, setMajorCourses] = useState<AddCourseType[]>([]);
   const [courses, setCourses] = useState<AddCourseType[]>([]);
   const [sections, setSections] = useState<SectionType[]>([]);
   const [selectedSections, setSelectedSections] = useState<SectionType[]>([]);
@@ -152,14 +151,14 @@ const Page = () => {
 
   const handleChangeMajor = async () => {
     const resMajorCourses = await axios.get(
-      `/api/course/courseMajorReg/${selectedMajor}/-1`
+      `/api/course/majorCourses/${selectedMajor}`
     );
-    const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
+    const messageMajorCour: AddCourseType[] = await resMajorCourses.data
       .message;
     setMajorCourses(messageMajorCour);
 
     const progClassPromises = messageMajorCour.map(async (course) => {
-      const responseReq = await axios.get(`/api/examProg/${course.course_id}`);
+      const responseReq = await axios.get(`/api/examProg/${course.id}`);
       const { message: courseMessage }: { message: ExamProgramType[] } =
         responseReq.data;
       return courseMessage;
@@ -171,7 +170,7 @@ const Page = () => {
 
     const sectionsPromises = messageMajorCour.map(async (course) => {
       const responseReq = await axios.get(
-        `/api/getAll/getAllSections/${course.course_id}`
+        `/api/getAll/getAllSections/${course.id}`
       );
       const { message: secMessage }: { message: SectionType[] } =
         responseReq.data;
@@ -452,9 +451,6 @@ const Page = () => {
     content: () => printableContentRef2.current,
   });
 
-  const selectedMajorCourse = courses.filter((item1) =>
-    majorCourses.find((item2) => item1.id === item2.course_id)
-  );
 
 const handleChangeCourse = () => {
   if (!selectedCourse.current?.value) {
@@ -651,7 +647,7 @@ const handleChangeCourse = () => {
                       onChange={handleChangeCourse}
                     >
                       <option disabled>المادة</option>
-                      {selectedMajorCourse.map((course, index) => (
+                      {majorCourses.map((course, index) => (
                         <option key={index} value={course.id}>
                           {course.course_name}
                         </option>

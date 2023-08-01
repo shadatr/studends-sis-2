@@ -29,6 +29,7 @@ const Page = () => {
   const [selectedMajor, setSelectedMajor] = useState<string>();
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
   const [majorCourses, setMajorCourses] = useState<MajorCourseType[]>([]);
+    const [majorCoursesGeneral, setMajorCoursesGeneral] = useState<MajorCourseType[]>([]);
   const [courses, setCourses] = useState<AddCourseType[]>([]);
   const [course, setCourse] = useState<number>();
   const [loadCourses, setLoadCourse] = useState(false);
@@ -81,9 +82,14 @@ const Page = () => {
     const resMajorCourses = await axios.get(
       `/api/course/courseMajorReg/${selectedMajor}/${department.current?.value}`
     );
-    const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
-      .message;
+    const messageMajorCour: MajorCourseType[] = await resMajorCourses.data.message;
     setMajorCourses(messageMajorCour);
+
+    const resMajorCourses2 = await axios.get(
+      `/api/course/courseMajorReg/${selectedMajor}/0`
+    );
+    const messageMajorCour2: MajorCourseType[] = await resMajorCourses2.data.message;
+    setMajorCoursesGeneral(messageMajorCour2);
 
     const res = await axios.get(`/api/course/courseRegistration`);
     const messageCour: AddCourseType[] = await res.data.message;
@@ -108,6 +114,18 @@ const Page = () => {
 
     if (duplicateFound) {
       toast.error('هذه المادة مسجلة بالفعل');
+      return;
+    }
+
+    majorCoursesGeneral.forEach((item) => {
+      if (item.course_id == course) {
+        duplicateFound = true;
+        return;
+      }
+    });
+
+    if (duplicateFound) {
+      toast.error('هذه المادة مسجلة بالفعل في العام');
       return;
     }
 
