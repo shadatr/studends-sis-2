@@ -139,7 +139,7 @@ const Page = ({ params }: { params: { courseId: number } }) => {
   };
 
   return (
-    <div className="flex absolute flex-col w-screen justify-center items-center  text-sm">
+    <div className="flex absolute flex-col w-[80%] justify-center items-center  text-sm">
       <div className="text-sm flex flex-row ">
         <button
           onClick={() => handleTabClick('Tab 1')}
