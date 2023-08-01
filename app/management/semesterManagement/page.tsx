@@ -84,6 +84,7 @@ const Page = () => {
   const [majorCourses, setMajorCourses] = useState<MajorCourseType[]>([]);
   const [courses, setCourses] = useState<AddCourseType[]>([]);
   const [sections, setSections] = useState<SectionType[]>([]);
+  const [selectedSections, setSelectedSections] = useState<SectionType[]>([]);
   const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
   const [activeTab, setActiveTab] = useState<string>('Tab 1');
   const [select, setSelect] = useState(false);
@@ -96,7 +97,7 @@ const Page = () => {
   const [Location, setLocation] = useState<string>();
   const [major, setMajor] = useState<string>();
   const type = useRef<HTMLSelectElement>(null);
-    const selectedCourse = useRef<HTMLSelectElement>(null);
+  const selectedCourse = useRef<HTMLSelectElement>(null);
   const [edit, setEdit] = useState(false);
   const [examProg, setExamProg] = useState<ExamProgramType[]>([]);
   const [selectedCourse2, setSelecetedCourse2] = useState<string>();
@@ -198,7 +199,10 @@ const Page = () => {
 
     const clss: ClassesInfoType[] = [];
     classes.forEach((cls) => {
-      if (type?.current?.value === 'جميع المجموعات' && cls.course.major_id==selectedMajor) {
+      if (
+        type?.current?.value === 'جميع المجموعات' &&
+        cls.course.major_id == selectedMajor
+      ) {
         clss.push(cls);
       } else if (
         type?.current?.value == 'في انتظار قبول الدرجات' &&
@@ -279,7 +283,6 @@ const Page = () => {
       (hour) => hour.name === selectedEndHour
     );
 
-
     const hasConflictingClass = classes.some(
       (cls) =>
         cls.class.doctor_id === doctor &&
@@ -302,8 +305,9 @@ const Page = () => {
     let duplicateFound = false;
 
     classes.forEach((item) => {
-      if ( section.current?.value&&
-        item.section.id == parseInt(section.current?.value)  &&
+      if (
+        section.current?.value &&
+        item.section.id == parseInt(section.current?.value) &&
         item.class.semester == `${year[0].AA}-${year[0].BA}`
       ) {
         duplicateFound = true;
@@ -317,7 +321,7 @@ const Page = () => {
     }
     const data = {
       doctor_id: doctor,
-      section_id: section.current?.value ? parseInt(section.current?.value): 0,
+      section_id: section.current?.value ? parseInt(section.current?.value) : 0,
       semester: `${year[0].AA}-${year[0].BA}`,
       day: findDay?.day,
       starts_at: findStartTime?.id,
@@ -448,16 +452,25 @@ const Page = () => {
     content: () => printableContentRef2.current,
   });
 
-   const selectedMajorCourse = courses.filter((item1) =>
-     majorCourses.find((item2) => item1.id === item2.course_id)
-   );
+  const selectedMajorCourse = courses.filter((item1) =>
+    majorCourses.find((item2) => item1.id === item2.course_id)
+  );
+
+const handleChangeCourse = () => {
+  if (!selectedCourse.current?.value) {
+    setSelectedSections([]);
+    return;
+  }
+
+  const selectedCourseId = parseInt(selectedCourse.current.value);
+  const filteredSections = sections.filter(
+    (sec) => sec.course_id === selectedCourseId
+  );
+
+  setSelectedSections(filteredSections);
+};
 
 
-   const selectedSections=sections.filter(
-     (sec) =>
-       selectedCourse.current?.value &&
-       sec.course_id === parseInt(selectedCourse.current?.value)
-   );
 
   return (
     <div className="flex flex-col absolute w-[80%]  items-center justify-center text-[16px]">
@@ -507,7 +520,7 @@ const Page = () => {
             setSelectedMajor(parseInt(e.target.value));
           }}
           className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4 w-[200px]"
-          defaultValue='اختر التخصص'
+          defaultValue="اختر التخصص"
         >
           <option disabled>اختر التخصص</option>
           {majors
@@ -537,8 +550,6 @@ const Page = () => {
         perms.find((per) => per.permission_id == 8 && per.see) && (
           <>
             {perms.map((permItem, idx) => {
-              
-
               if (
                 permItem.permission_id === 8 &&
                 permItem.add &&
@@ -625,21 +636,11 @@ const Page = () => {
                       defaultValue="المجموعة"
                     >
                       <option disabled>المجموعة</option>
-                      {sections.map((sec) => {
-                        if (
-                          selectedCourse.current?.value &&
-                          sec.course_id ===
-                            parseInt(selectedCourse.current?.value)
-                        ) {
-                          return (
-                            <option key={sec.id} value={sec.id}>
-                              {sec.name}
-                            </option>
-                          );
-                        } else {
-                          return null;
-                        }
-                      })}
+                      {selectedSections.map((sec) => (
+                        <option key={sec.id} value={sec.id}>
+                          {sec.name}
+                        </option>
+                      ))}
                     </select>
 
                     <select
@@ -647,6 +648,7 @@ const Page = () => {
                       ref={selectedCourse}
                       className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4 w-[150px]"
                       defaultValue="المادة"
+                      onChange={handleChangeCourse}
                     >
                       <option disabled>المادة</option>
                       {selectedMajorCourse.map((course, index) => (
