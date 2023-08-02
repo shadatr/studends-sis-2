@@ -2,7 +2,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { AddCourseType, MajorType, GetPermissionType } from '@/app/types/types';
+import {
+  AddCourseType,
+  MajorType,
+  GetPermissionType,
+  PrerequisiteCourseType,
+} from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -32,7 +37,9 @@ const Page = () => {
   const [courseNumber, setCourseNumber] = useState('');
   const major = useRef<HTMLSelectElement>(null);
   const [majors, setMajors] = useState<MajorType[]>([]);
-
+  const [prerequisites, setPrerequisites] = useState<PrerequisiteCourseType[]>(
+    []
+  );
   useEffect(() => {
     const fetchPosts = async () => {
       const response = await axios.get(
@@ -56,6 +63,13 @@ const Page = () => {
       const resp = await axios.get('/api/major/majorReg');
       const message: MajorType[] = resp.data.message;
       setMajors(message);
+
+      const responsePerCourse = await axios.get(
+        `/api/course/prerequisitesCourses`
+      );
+      const messagePerCourse: PrerequisiteCourseType[] =
+        responsePerCourse.data.message;
+      setPrerequisites(messagePerCourse);
     };
 
     fetchPosts();
@@ -294,13 +308,16 @@ const Page = () => {
             <thead className="">
               <tr>
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">
-                  نسبة اعمال السنة{' '}
+                  المواد المشروطة
                 </th>
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">
-                  نسبة الامتحان النهائي{' '}
+                  نسبة اعمال السنة
                 </th>
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">
-                  نسبة الامتحان النصفي{' '}
+                  نسبة الامتحان النهائي
+                </th>
+                <th className="py-2 px-4 bg-gray-200 text-gray-700">
+                  نسبة الامتحان النصفي
                 </th>
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">الكريدت</th>
                 <th className="py-2 px-4 bg-gray-200 text-gray-700">الساعات</th>
@@ -318,6 +335,20 @@ const Page = () => {
                 const item2 = allCourses2.find((i) => i.id == item.id);
                 return edit ? (
                   <tr key={index}>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {prerequisites
+                        .filter((pre) => pre.course_id === item.id)
+                        .map((preq) => {
+                          const prerequisiteCourse = allCourses.find(
+                            (cour) => cour.id === preq.prerequisite_course_id
+                          );
+                          return prerequisiteCourse
+                            ? prerequisiteCourse.course_number
+                            : '';
+                        })
+                        .join(', ')}
+                    </td>
+
                     <td className="border border-gray-300 px-4 py-2">
                       <input
                         dir="rtl"
@@ -447,6 +478,19 @@ const Page = () => {
                   </tr>
                 ) : (
                   <tr key={index}>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {prerequisites
+                        .filter((pre) => pre.course_id === item.id)
+                        .map((preq) => {
+                          const prerequisiteCourse = allCourses.find(
+                            (cour) => cour.id === preq.prerequisite_course_id
+                          );
+                          return prerequisiteCourse
+                            ? prerequisiteCourse.course_number
+                            : '';
+                        })
+                        .join(', ')}
+                    </td>
                     <td className="border border-gray-300 px-4 py-2">
                       {item.class_work}
                     </td>

@@ -29,7 +29,9 @@ const Page = () => {
   const [selectedMajor, setSelectedMajor] = useState<string>();
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
   const [majorCourses, setMajorCourses] = useState<MajorCourseType[]>([]);
-    const [majorCoursesGeneral, setMajorCoursesGeneral] = useState<MajorCourseType[]>([]);
+  const [majorCoursesGeneral, setMajorCoursesGeneral] = useState<
+    MajorCourseType[]
+  >([]);
   const [courses, setCourses] = useState<AddCourseType[]>([]);
   const [course, setCourse] = useState<number>();
   const [loadCourses, setLoadCourse] = useState(false);
@@ -82,13 +84,15 @@ const Page = () => {
     const resMajorCourses = await axios.get(
       `/api/course/courseMajorReg/${selectedMajor}/${department.current?.value}`
     );
-    const messageMajorCour: MajorCourseType[] = await resMajorCourses.data.message;
+    const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
+      .message;
     setMajorCourses(messageMajorCour);
 
     const resMajorCourses2 = await axios.get(
       `/api/course/courseMajorReg/${selectedMajor}/0`
     );
-    const messageMajorCour2: MajorCourseType[] = await resMajorCourses2.data.message;
+    const messageMajorCour2: MajorCourseType[] = await resMajorCourses2.data
+      .message;
     setMajorCoursesGeneral(messageMajorCour2);
 
     const res = await axios.get(`/api/course/courseRegistration`);
@@ -141,8 +145,6 @@ const Page = () => {
         isOptional: opt,
       };
 
-      console.log(data);
-
       axios
         .post(`/api/course/courseMajorReg/1/1`, data)
         .then((res) => {
@@ -179,7 +181,9 @@ const Page = () => {
         toast.error(err.response.data.message);
       });
   };
-
+  const sortedCourses = courses
+    .slice()
+    .sort((a, b) => a.course_name.localeCompare(b.course_name));
   return (
     <div className="flex flex-col absolute w-[80%]  items-center justify-center text-[16px]">
       {perms.find((per) => per.permission_id == 7 && per.see) && (
@@ -250,7 +254,7 @@ const Page = () => {
                     defaultValue="المادة"
                   >
                     <option disabled>المادة</option>
-                    {courses.map((item) => (
+                    {sortedCourses.map((item) => (
                       <option key={item.id} value={item.id}>
                         {item.course_name}-
                         {majors.find((m) => m.id == item.major_id)?.major_name}

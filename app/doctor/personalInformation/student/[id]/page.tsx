@@ -334,7 +334,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         id="dep"
                         dir="rtl"
                         onChange={(e) =>
-                          handleInputChangeDoctor(e.target.value, 'advisor')
+                          handleInputChange(e.target.value, 'advisor')
                         }
                         className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
                         value={item.advisor || 'الدكتور'}
@@ -342,7 +342,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         <option disabled>الدكتور</option>
                         {doctors.map((doc, index) => {
                           if (doc.active)
-                            return <option key={index}>{doc.name}</option>;
+                            return <option key={index} value='doc.id'>{doc.name}</option>;
                         })}
                       </select>
                     </td>
@@ -372,7 +372,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                     {item.department_id
                       ? departments?.find((maj) => item.department_id == maj.id)
                           ?.name
-                      : 'لا يوجد'}
+                      : 'عام'}
                   </td>
                   <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
                     {item.semester}

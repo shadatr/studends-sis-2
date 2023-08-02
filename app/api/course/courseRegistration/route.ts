@@ -47,7 +47,7 @@ export async function GET() {
     const data = await supabase
       .from('tb_courses')
       .select('*')
-      .order('major_id', { ascending: false });
+      .order('course_number', { ascending: false });
 
     if (data.error) {
       return new Response(JSON.stringify({ message: 'an error occured' }), {

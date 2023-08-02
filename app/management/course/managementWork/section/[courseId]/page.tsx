@@ -138,6 +138,7 @@ const Page = ({ params }: { params: { courseId: number } }) => {
     });
   };
 
+
   return (
     <div className="flex absolute flex-col w-[80%] justify-center items-center  text-sm">
       <div className="text-sm flex flex-row ">
@@ -205,6 +206,10 @@ const Page = ({ params }: { params: { courseId: number } }) => {
               (item) => item.id != params.courseId
             );
 
+            const sortedCourses = selectedCourses
+              .slice()
+              .sort((a, b) => a.course_name.localeCompare(b.course_name));
+
             if (permItem.permission_id === 6 && permItem.edit) {
               return (
                 <>
@@ -216,13 +221,13 @@ const Page = ({ params }: { params: { courseId: number } }) => {
                     <option disabled value="">
                       اختر مادة
                     </option>
-                    {selectedCourses.map((course, index) => (
+                    {sortedCourses.map((course, index) => (
                       <option
                         key={index}
                         value={course.course_name}
                         className="items-right flex h-[50px]"
                       >
-                        {course.course_name}
+                        {course.course_name}-{course.course_number}
                       </option>
                     ))}
                   </select>
