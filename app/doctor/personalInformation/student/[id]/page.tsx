@@ -313,13 +313,13 @@ const Page = ({ params }: { params: { id: number } }) => {
                           handleInputChange(e.target.value, 'advisor')
                         }
                         className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
-                        value={item.advisor || 'الدكتور'}
+                        value={item2.advisor || 'الدكتور'}
                       >
                         <option disabled>الدكتور</option>
                         {doctors.map((doc, index) => {
                           if (doc.active)
                             return (
-                              <option key={index} value="doc.id">
+                              <option key={index} value={doc.id}>
                                 {doc.name}
                               </option>
                             );
