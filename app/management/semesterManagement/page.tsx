@@ -438,6 +438,10 @@ const Page = () => {
     content: () => printableContentRef2.current,
   });
 
+  const sortedCourses = majorCourses
+    .slice()
+    .sort((a, b) => a.course_name.localeCompare(b.course_name));
+
   return (
     <div className="flex flex-col absolute w-[80%]  items-center justify-center text-[16px]">
       <div className="text-sm flex flex-row ">
@@ -603,7 +607,12 @@ const Page = () => {
                     >
                       <option disabled>المجموعة</option>
                       {sections
-                        .filter((sec) => selectedCourse.current?.value&& sec.course_id === parseInt(selectedCourse.current?.value))
+                        .filter(
+                          (sec) =>
+                            selectedCourse.current?.value &&
+                            sec.course_id ===
+                              parseInt(selectedCourse.current?.value)
+                        )
                         .map((sec) => (
                           <option key={sec.id} value={sec.id}>
                             {sec.name}
@@ -618,7 +627,7 @@ const Page = () => {
                       defaultValue="المادة"
                     >
                       <option disabled>المادة</option>
-                      {majorCourses.map((course, index) => (
+                      {sortedCourses.map((course, index) => (
                         <option key={index} value={course.id}>
                           {course.course_name}
                         </option>
