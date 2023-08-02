@@ -183,34 +183,7 @@ const Page = () => {
     const classData = await Promise.all(classPromises);
     const classes = classData.flat();
 
-    {const resMajorCourses = await axios.get(
-      `/api/course/courseMajorReg/${selectedMajor}/-1`
-    );
-    const messageMajorCour: MajorCourseType[] = await resMajorCourses.data
-      .message;
-
-    const sectionsPromises = messageMajorCour.map(async (course) => {
-      const responseReq = await axios.get(
-        `/api/getAll/getAllSections/${course.course_id}`
-      );
-      const { message: secMessage }: { message: SectionType[] } =
-        responseReq.data;
-      return secMessage;
-    });
-    const sectionData = await Promise.all(sectionsPromises);
-    const sections = sectionData.flat();
-
-    const classPromises = sections.map(async (section) => {
-      const responseReq = await axios.get(
-        `/api/getAll/getAllClassInfo/${section.id}`
-      );
-      const { message: classMessage }: { message: ClassesInfoType[] } =
-        responseReq.data;
-      return classMessage;
-    });
-    const classData = await Promise.all(classPromises);
-    const classes = classData.flat();
-    setClasses(classes);}
+    setClasses(classes);
 
     const clss: ClassesInfoType[] = [];
     classes.forEach((cls) => {

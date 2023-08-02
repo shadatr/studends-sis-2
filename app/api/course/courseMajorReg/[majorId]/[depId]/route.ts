@@ -40,6 +40,8 @@ export async function GET(
         });
       }
 
+      console.log(true);
+
       return new Response(JSON.stringify({ message: data.data }), {
         status: 200,
         headers: { revalidate: dynamic },
@@ -50,6 +52,8 @@ export async function GET(
         .select('*')
         .eq('major_id', params.majorId)
         .eq('department_id', params.depId);
+
+        console.log(false);
       if (data.error) {
         return new Response(JSON.stringify({ message: 'an error occured' }), {
           status: 403,

@@ -23,8 +23,8 @@ const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'اللقب' },
   { header: 'رقم الطالب' },
   { header: 'تاريخ الميلاد' },
-  { header: 'القسم' },
   { header: 'التخصص' },
+  { header: 'القسم' },
   { header: 'الفصل الدراسي' },
   { header: 'عنوان السكن' },
   { header: 'رقم الهاتف' },
@@ -159,16 +159,6 @@ const Page = ({ params }: { params: { id: number } }) => {
       });
   };
 
-  const handleInputChangeMajor = (e: string, field: keyof PersonalInfoType) => {
-    const value = major?.find((item) => item.major_name == e);
-    const updatedData = newData.map((data) => {
-      return {
-        ...data,
-        [field]: value?.id,
-      };
-    });
-    setNewData(updatedData);
-  };
 
   const handlePrint = useReactToPrint({
     content: () => printableContentRef.current,
@@ -268,20 +258,17 @@ const Page = ({ params }: { params: { id: number } }) => {
                         id="dep"
                         dir="rtl"
                         onChange={(e) =>
-                          handleInputChangeMajor(e.target.value, 'major')
+                          handleInputChange(e.target.value, 'major')
                         }
                         className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
-                        defaultValue={
-                          item.major
-                            ? major?.find((maj) => item.major == maj.id)
-                                ?.major_name
-                            : 'لا يوجد'
-                        }
+                        value={item2.major}
                       >
                         {major?.map((maj, index) => {
                           if (maj.active)
                             return (
-                              <option key={index}>{maj.major_name}</option>
+                              <option key={index} value={maj.id}>
+                                {maj.major_name}
+                              </option>
                             );
                         })}
                       </select>
@@ -294,18 +281,12 @@ const Page = ({ params }: { params: { id: number } }) => {
                           handleInputChange(e.target.value, 'department_id')
                         }
                         className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
-                        defaultValue={
-                          item.department_id
-                            ? departments?.find(
-                                (maj) => item.department_id == maj.id
-                              )?.name
-                            : 'لا يوجد'
-                        }
+                        value={item2.department_id}
                       >
                         {departments?.map((maj, index) => {
                           if (maj.active)
                             return (
-                              <option key={index} value={maj.name}>
+                              <option key={index} value={maj.id}>
                                 {maj.name}
                               </option>
                             );
@@ -370,12 +351,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                           handleInputChangeDoctor(e.target.value, 'advisor')
                         }
                         className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
-                        defaultValue={
-                          item.advisor
-                            ? doctors.find((doc) => item.advisor == doc.id)
-                                ?.name
-                            : 'لا يوجد'
-                        }
+                        value={item.advisor || 'الدكتور'}
                       >
                         <option disabled>الدكتور</option>
                         {doctors.map((doc, index) => {
@@ -402,13 +378,14 @@ const Page = ({ params }: { params: { id: number } }) => {
                     {item.birth_date}
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
-                    {item.department_id
-                      ? departments?.find((maj) => item.department_id == maj.id)?.name
+                    {item.major
+                      ? major?.find((maj) => item.major == maj.id)?.major_name
                       : 'لا يوجد'}
                   </td>
                   <td className="flex w-[700px] p-2 justify-end">
-                    {item.major
-                      ? major?.find((maj) => item.major == maj.id)?.major_name
+                    {item.department_id
+                      ? departments?.find((maj) => item.department_id == maj.id)
+                          ?.name
                       : 'لا يوجد'}
                   </td>
 

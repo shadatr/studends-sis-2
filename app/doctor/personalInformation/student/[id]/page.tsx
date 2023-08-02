@@ -22,8 +22,8 @@ const stuInfo: PersonalInfoHeaderType[] = [
   { header: 'اللقب' },
   { header: 'رقم الطالب' },
   { header: 'تاريخ الميلاد' },
-    { header: 'القسم' },
   { header: 'التخصص' },
+  { header: 'القسم' },
   { header: 'الفصل الدراسي' },
   { header: 'عنوان السكن' },
   { header: 'رقم الهاتف' },
@@ -244,23 +244,16 @@ const Page = ({ params }: { params: { id: number } }) => {
                         id="dep"
                         dir="rtl"
                         onChange={(e) =>
-                          handleInputChange(e.target.value, 'department_id')
+                          handleInputChangeMajor(e.target.value, 'major')
                         }
                         className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
-                        defaultValue={
-                          item.department_id
-                            ? departments?.find(
-                                (maj) => item.department_id == maj.id
-                              )?.name
-                            : 'لا يوجد'
-                        }
+                        value={item.major}
                       >
-                        {departments?.map((maj, index) => {
+                        <option disabled>الدكتور</option>
+                        {major.map((maj, index) => {
                           if (maj.active)
                             return (
-                              <option key={index} value={maj.name}>
-                                {maj.name}
-                              </option>
+                              <option key={index}>{maj.major_name}</option>
                             );
                         })}
                       </select>
@@ -270,21 +263,17 @@ const Page = ({ params }: { params: { id: number } }) => {
                         id="dep"
                         dir="rtl"
                         onChange={(e) =>
-                          handleInputChangeMajor(e.target.value, 'major')
+                          handleInputChange(e.target.value, 'department_id')
                         }
                         className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
-                        defaultValue={
-                          item.major
-                            ? major.find((maj) => item.major == maj.id)
-                                ?.major_name
-                            : 'لا يوجد'
-                        }
+                        value={item.department_id}
                       >
-                        <option disabled>الدكتور</option>
-                        {major.map((maj, index) => {
+                        {departments?.map((maj, index) => {
                           if (maj.active)
                             return (
-                              <option key={index}>{maj.major_name}</option>
+                              <option key={index} value={maj.name}>
+                                {maj.name}
+                              </option>
                             );
                         })}
                       </select>
@@ -348,12 +337,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                           handleInputChangeDoctor(e.target.value, 'advisor')
                         }
                         className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
-                        defaultValue={
-                          item.advisor
-                            ? doctors.find((doc) => item.advisor == doc.id)
-                                ?.name
-                            : 'لا يوجد'
-                        }
+                        value={item.advisor || 'الدكتور'}
                       >
                         <option disabled>الدكتور</option>
                         {doctors.map((doc, index) => {
@@ -380,14 +364,14 @@ const Page = ({ params }: { params: { id: number } }) => {
                     {item.birth_date}
                   </td>
                   <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
-                    {item.department_id
-                      ? departments?.find((maj) => item.department_id == maj.id)
-                          ?.name
+                    {item.major
+                      ? major?.find((maj) => item.major == maj.id)?.major_name
                       : 'لا يوجد'}
                   </td>
                   <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
-                    {item.major
-                      ? major?.find((maj) => item.major == maj.id)?.major_name
+                    {item.department_id
+                      ? departments?.find((maj) => item.department_id == maj.id)
+                          ?.name
                       : 'لا يوجد'}
                   </td>
                   <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
