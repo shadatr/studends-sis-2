@@ -104,31 +104,6 @@ const Page = ({ params }: { params: { id: number } }) => {
       });
   };
 
-  const handleInputChangeDoctor = (
-    e: string,
-    field: keyof PersonalInfoType
-  ) => {
-    const value = doctors.find((item) => item.name === e);
-    const updatedData = newData.map((data) => {
-      return {
-        ...data,
-        [field]: value?.id,
-      };
-    });
-
-    setNewData(updatedData);
-  };
-
-  const handleInputChangeMajor = (e: string, field: keyof PersonalInfoType) => {
-    const value = major.find((item) => item.major_name == e);
-    const updatedData = newData.map((data) => {
-      return {
-        ...data,
-        [field]: value?.id,
-      };
-    });
-    setNewData(updatedData);
-  };
 
   const handleInputChange = (e: string, field: keyof PersonalInfoType) => {
     const updatedData = newData.map((data) => {
@@ -239,26 +214,27 @@ const Page = ({ params }: { params: { id: number } }) => {
                         }
                       />
                     </td>
-                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
+                    <td className="flex w-[700px] p-2 justify-end">
                       <select
                         id="dep"
                         dir="rtl"
                         onChange={(e) =>
-                          handleInputChangeMajor(e.target.value, 'major')
+                          handleInputChange(e.target.value, 'major')
                         }
                         className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
-                        value={item.major}
+                        value={item2.major}
                       >
-                        <option disabled>الدكتور</option>
-                        {major.map((maj, index) => {
+                        {major?.map((maj, index) => {
                           if (maj.active)
                             return (
-                              <option key={index}>{maj.major_name}</option>
+                              <option key={index} value={maj.id}>
+                                {maj.major_name}
+                              </option>
                             );
                         })}
                       </select>
                     </td>
-                    <td className="flex lg:w-[700px] lg:p-2 sm:p-1 sm:w-[200px] justify-end">
+                    <td className="flex w-[700px] p-2 justify-end">
                       <select
                         id="dep"
                         dir="rtl"
@@ -266,12 +242,12 @@ const Page = ({ params }: { params: { id: number } }) => {
                           handleInputChange(e.target.value, 'department_id')
                         }
                         className="px-2  bg-gray-200 border-2 border-black rounded-md ml-4"
-                        value={item.department_id}
+                        value={item2.department_id}
                       >
                         {departments?.map((maj, index) => {
                           if (maj.active)
                             return (
-                              <option key={index} value={maj.name}>
+                              <option key={index} value={maj.id}>
                                 {maj.name}
                               </option>
                             );
@@ -342,7 +318,11 @@ const Page = ({ params }: { params: { id: number } }) => {
                         <option disabled>الدكتور</option>
                         {doctors.map((doc, index) => {
                           if (doc.active)
-                            return <option key={index} value='doc.id'>{doc.name}</option>;
+                            return (
+                              <option key={index} value="doc.id">
+                                {doc.name}
+                              </option>
+                            );
                         })}
                       </select>
                     </td>

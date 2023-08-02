@@ -26,8 +26,6 @@ const Page = () => {
   const [doctors, setDoctors] = useState<DoctorsWithDepartmentsType[]>([]);
   const [refresh, setRefresh] = useState(false);
   const [perms, setPerms] = useState<GetPermissionType[]>([]);
-  const [selectedDoctor, setSelectedDoctor] =useState<DoctorsWithDepartmentsType>();
-  const [departments, setDepartments] = useState<DepartmentRegType[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -42,9 +40,6 @@ const Page = () => {
         const message2: DoctorsWithDepartmentsType[] = response2.data.message;
         setDoctors(message2);
 
-        const response3 = await axios.get('/api/getAll/getAllDepartments');
-        const message3: DepartmentRegType[] = response3.data.message;
-        setDepartments(message3);
       }
     };
     fetchPosts();
@@ -80,13 +75,7 @@ const Page = () => {
                 </Link>
               )}
               <SearchBar />
-              <AssignDepartment
-                isOpen={isModalOpen}
-                setIsOpen={setIsModalOpen}
-                selectedDoctor={selectedDoctor}
-                doctors={doctors}
-                setdoctors={setDoctors}
-              />
+             
               <table className="border-collapse w-[1100px]">
                 <thead>
                   <tr className="bg-gray-200">

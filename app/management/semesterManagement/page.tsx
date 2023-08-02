@@ -14,7 +14,6 @@ import {
   LettersType,
   ExamProgramType,
   AdminMajorType,
-  MajorCourseType,
 } from '@/app/types/types';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -84,7 +83,6 @@ const Page = () => {
   const [majorCourses, setMajorCourses] = useState<AddCourseType[]>([]);
   const [courses, setCourses] = useState<AddCourseType[]>([]);
   const [sections, setSections] = useState<SectionType[]>([]);
-  const [selectedSections, setSelectedSections] = useState<SectionType[]>([]);
   const [doctors, setDoctors] = useState<PersonalInfoType[]>([]);
   const [activeTab, setActiveTab] = useState<string>('Tab 1');
   const [select, setSelect] = useState(false);
@@ -440,23 +438,6 @@ const Page = () => {
     content: () => printableContentRef2.current,
   });
 
-
-const handleChangeCourse = () => {
-  if (!selectedCourse.current?.value) {
-    setSelectedSections([]);
-    return;
-  }
-
-  const selectedCourseId = parseInt(selectedCourse.current.value);
-  const filteredSections = sections.filter(
-    (sec) => sec.course_id === selectedCourseId
-  );
-
-  setSelectedSections(filteredSections);
-};
-
-
-
   return (
     <div className="flex flex-col absolute w-[80%]  items-center justify-center text-[16px]">
       <div className="text-sm flex flex-row ">
@@ -621,11 +602,13 @@ const handleChangeCourse = () => {
                       defaultValue="المجموعة"
                     >
                       <option disabled>المجموعة</option>
-                      {selectedSections.map((sec) => (
-                        <option key={sec.id} value={sec.id}>
-                          {sec.name}
-                        </option>
-                      ))}
+                      {sections
+                        .filter((sec) => selectedCourse.current?.value&& sec.course_id === parseInt(selectedCourse.current?.value))
+                        .map((sec) => (
+                          <option key={sec.id} value={sec.id}>
+                            {sec.name}
+                          </option>
+                        ))}
                     </select>
 
                     <select
@@ -633,7 +616,6 @@ const handleChangeCourse = () => {
                       ref={selectedCourse}
                       className="px-4 py-2 bg-gray-200 border-2 border-black rounded-md ml-4 w-[150px]"
                       defaultValue="المادة"
-                      onChange={handleChangeCourse}
                     >
                       <option disabled>المادة</option>
                       {majorCourses.map((course, index) => (

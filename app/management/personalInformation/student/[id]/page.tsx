@@ -126,21 +126,6 @@ const Page = ({ params }: { params: { id: number } }) => {
     setNewData(updatedData);
   };
 
-  const handleInputChangeDoctor = (
-    e: string,
-    field: keyof PersonalInfoType
-  ) => {
-    const value = doctors.find((item) => item.name === e);
-    const updatedData = newData.map((data) => {
-      return {
-        ...data,
-        [field]: value?.id,
-      };
-    });
-
-    setNewData(updatedData);
-  };
-
   const handleSubmitInfo = () => {
     setEdit(false);
     axios

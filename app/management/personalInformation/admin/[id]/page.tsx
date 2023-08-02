@@ -93,16 +93,16 @@ const Page = ({ params }: { params: { id: number } }) => {
     };
     axios
       .post(`/api/allPermission/admin/adminMajors/${user?.id}`, data)
-      .then((res) => toast.success('تم الاضافة بنجاح'))
-      .catch((er) => toast.error('حدث خطا'));
+      .then(() => toast.success('تم الاضافة بنجاح'))
+      .catch(() => toast.error('حدث خطا'));
     setRefresh(!refresh);
   };
 
   const handleDeleteMajor = (item?: number) => {
     axios
       .post(`/api/allPermission/admin/deleteMajor`, item)
-      .then((res) => toast.success('تم الحذف'))
-      .catch((er) => toast.error('حدث خطا'));
+      .then(() => toast.success('تم الحذف'))
+      .catch(() => toast.error('حدث خطا'));
     setRefresh(!refresh);
   };
 
